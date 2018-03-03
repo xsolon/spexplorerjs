@@ -66,19 +66,34 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="LICENSE" />
+    <Content Include="package.json" />
     <None Include="packages.config" />
+    <Content Include="app.js" />
+    <Content Include="views\error.ejs" />
+    <Content Include="views\index.ejs" />
+    <Content Include="README.md" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <Content Include="www" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="public\stylesheets\style.css" />
+    <Content Include="routes\index.js" />
+    <Content Include="routes\spexplorerjs.sln" />
+    <Content Include="routes\users.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="public\images\" />
+    <Folder Include="public\javascripts\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
