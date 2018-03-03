@@ -1,0 +1,27 @@
+{
+  "name": "spexplorerjs",
+  "version": "0.0.1",
+  "description": "SharePoint Explorer (JavaScript)",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xsolon/spexplorerjs.git"
+  },
+  "keywords": [
+    "SharePoint",
+    "Explorer",
+    "JSOM"
+  ],
+  "author": "xsolon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xsolon/spexplorerjs/issues"
+  },
+  "homepage": "https://github.com/xsolon/spexplorerjs#readme",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
