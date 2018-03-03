@@ -2,9 +2,11 @@
   "name": "spexplorerjs",
   "version": "0.0.2",
   "description": "SharePoint Explorer (JavaScript)",
-  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "jquery": "cpx node_modules/jquery/dist/jquery.min.js public/refs/",
+    "bootstrap": "cpx node_modules/bootstrap/dist/js/bootstrap.min.js public/refs/",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "npm run jquery && npm run bootstrap"
   },
   "repository": {
     "type": "git",
@@ -23,11 +25,16 @@
   "homepage": "https://github.com/xsolon/spexplorerjs#readme",
   "dependencies": {
     "body-parser": "~1.18.2",
+    "bootstrap": "^4.0.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "ejs": "~2.5.7",
     "express": "~4.15.5",
+    "jquery": "^3.3.1",
     "morgan": "~1.9.0",
     "serve-favicon": "~2.4.5"
+  },
+  "devDependencies": {
+    "cpx": "^1.5.0"
   }
 }
