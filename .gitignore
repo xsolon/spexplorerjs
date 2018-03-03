@@ -59,3 +59,11 @@ typings/
 
 # Debug log from npm
 npm-debug.log
+/.vs/spexplorerjs/v15/.suo
+/.vs/spexplorerjs/v15/Server/sqlite3/db.lock
+/.vs/spexplorerjs/v15/Server/sqlite3/storage.ide
+Debug
+bin
+/spexplorerjs.csproj.user
+packages
+/.vs/config/applicationhost.config
