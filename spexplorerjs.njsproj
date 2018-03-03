@@ -27,7 +27,6 @@
     <Content Include="views\error.ejs" />
     <Content Include="views\index.ejs" />
     <Content Include="public\stylesheets\style.css" />
-    <Content Include="routes\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="public" />
@@ -35,20 +34,6 @@
     <Folder Include="public\javascripts" />
     <Folder Include="public\stylesheets" />
     <Folder Include="routes" />
-    <Folder Include="routes\packages" />
-    <Folder Include="routes\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7" />
-    <Folder Include="routes\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\build" />
-    <Folder Include="routes\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\build\net45" />
-    <Folder Include="routes\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\content" />
-    <Folder Include="routes\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\content\net45" />
-    <Folder Include="routes\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\content\net46" />
-    <Folder Include="routes\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\lib" />
-    <Folder Include="routes\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\lib\net45" />
-    <Folder Include="routes\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\tools" />
-    <Folder Include="routes\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\tools\net45" />
-    <Folder Include="routes\packages\Microsoft.Net.Compilers.2.1.0" />
-    <Folder Include="routes\packages\Microsoft.Net.Compilers.2.1.0\build" />
-    <Folder Include="routes\packages\Microsoft.Net.Compilers.2.1.0\tools" />
     <Folder Include="spexplorerjs" />
     <Folder Include="views" />
   </ItemGroup>
