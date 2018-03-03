@@ -67,3 +67,4 @@ bin
 /spexplorerjs.csproj.user
 packages
 /.vs/config/applicationhost.config
+/routes/.vs
