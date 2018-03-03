@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-
+console.log('starting spexplorerjs');
 var app = require('./expressApp');
 var debug = require('debug')('spexplorerjs:server');
 var http = require('http');
@@ -13,6 +13,7 @@ var http = require('http');
  */
 
 var port = normalizePort(process.env.PORT || '3000');
+console.log('port:' + port);
 app.set('port', port);
 
 /**
