@@ -6,7 +6,8 @@
     "jquery": "cpx node_modules/jquery/dist/jquery.min.js public/refs/",
     "bootstrap": "cpx node_modules/bootstrap/dist/js/bootstrap.min.js public/refs/",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "npm run jquery && npm run bootstrap"
+    "prepare": "npm run jquery && npm run bootstrap",
+    "prestart": "npm run prepare"
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,7 @@
     "serve-favicon": "~2.4.5"
   },
   "devDependencies": {
-    "cpx": "^1.5.0"
+    "cpx": "^1.5.0",
+    "gulp": "^3.9.1"
   }
 }
