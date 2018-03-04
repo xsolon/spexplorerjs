@@ -7,7 +7,10 @@
     "bootstrap": "cpx node_modules/bootstrap/dist/js/bootstrap.min.js public/refs/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "npm run jquery && npm run bootstrap",
-    "prestart": "npm run prepare"
+    "eslint": "eslint public\\components\\**\\*.js --fix",
+    "comps": "node src\\scripts\\uglify.js",
+    "build": "npm run eslint && npm run comps"
+
   },
   "repository": {
     "type": "git",
@@ -38,6 +41,8 @@
   },
   "devDependencies": {
     "cpx": "^1.5.0",
-    "gulp": "^3.9.1"
+    "eslint": "^4.18.2",
+    "gulp": "^3.9.1",
+    "uglify-js": "^3.3.12"
   }
 }

@@ -17,12 +17,23 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
+    <Compile Include="gulp.js" />
+    <Compile Include="public\components\loader\loader.js" />
+    <Compile Include="public\components\loader\loader.min.js" />
+    <Compile Include="public\components\logger\logger.js" />
+    <Compile Include="public\components\logger\logger.min.js" />
+    <Compile Include="server.js" />
+    <Compile Include="src\scripts\eslint.js" />
+    <Compile Include="src\scripts\uglify.js" />
     <Content Include="package-lock.json" />
     <Content Include="package.json" />
+    <Content Include="public\components\loader\loader.min.js.map" />
+    <Content Include="public\components\logger\logger.min.js.map" />
     <Content Include="README.md" />
-    <Compile Include="app.js" />
+    <Compile Include=".eslintrc.js" />
     <Compile Include="appOld.js" />
     <Compile Include="expressApp.js" />
+    <Compile Include="public\refs\jquery.min.js" />
     <Compile Include="routes\index.js" />
     <Compile Include="routes\users.js" />
     <Content Include="views\error.ejs" />
@@ -30,12 +41,18 @@
     <Content Include="public\stylesheets\style.css" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="public\components\" />
+    <Folder Include="public\components\logger\" />
+    <Folder Include="public\components\loader\" />
+    <Folder Include="src\" />
     <Folder Include="public" />
     <Folder Include="public\images" />
     <Folder Include="public\javascripts" />
+    <Folder Include="public\refs\" />
     <Folder Include="public\stylesheets" />
     <Folder Include="routes" />
-    <Folder Include="spexplorerjs" />
+    <Folder Include="src\components\" />
+    <Folder Include="src\scripts\" />
     <Folder Include="views" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />

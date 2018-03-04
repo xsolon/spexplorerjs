@@ -6,8 +6,12 @@
   </head>
   <body>
       <script src="/refs/jquery.min.js"></script>
+      <script type="text/javascript" src="/components/logger/logger.min.js"></script>
       <h1><%= title %></h1>
 
       <p>Welcome to version: <%= version %></p>
+      <script type="text/javascript">
+          spexplorerjs.logger.log('index.load');
+      </script>
   </body>
 </html>
