@@ -1,9 +1,13 @@
-﻿var packer  = require('./src/components/packer/packer.js');
-var debug=true;
-var fs = require('fs');
+﻿var packer = require("./src/components/packer/packer.js");
 
-var file = './src/components/loader/loader.js';
-file = './src/components/logger/logger.js';
-
-packer.runWebPack(debug,file);
-packer.runWebPack(false,file);
+process.argv.forEach((val, index) => {
+    console.log(`${index}: ${val}`);
+    var type = val;
+    console.log(type);
+    if (type === "all") {
+        console.log("updating all");
+        packer.updateAll();
+    } else if (type === "watch") {
+        packer.watch();
+    }
+});

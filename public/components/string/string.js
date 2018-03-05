@@ -66,59 +66,14 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./loader.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./string.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "../logger/logger.js":
-/*!***************************!*\
-  !*** ../logger/logger.js ***!
-  \***************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-(function (ns) {
-
-	var log = function log() {
-		try {
-			if (this && this.source && arguments.length === 1) {
-				console.log.apply(console, [String.format("{0}: {1}", this.source, arguments[0])]);
-			} else console.log.apply(console, arguments);
-			//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
-		}
-	};
-	var error = function error() {
-		try {
-			console.error.apply(console, arguments);
-			//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
-		}
-	};
-	var warn = function warn() {
-		try {
-			console.warn.apply(console, arguments);
-			//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
-		}
-	};
-
-	ns["logger"] = { "version": "1.0.0", "log": log, "error": error, "warn": warn };
-	log("logger");
-})(window["spexplorerjs"] = window["spexplorerjs"] || {});
-
-/***/ }),
-
-/***/ "./loader.js":
+/***/ "./string.js":
 /*!*******************!*\
-  !*** ./loader.js ***!
+  !*** ./string.js ***!
   \*******************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -126,18 +81,55 @@
 "use strict";
 
 
-__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
-
 (function (ns) {
-    if (ns["loader"]) {
-        ns.logger.warn("loader already defined");
-    }
-    var loader = { "version": "1.0" };
-    loader["load"] = function (src) {
-        console.log(src);
-    };
-    ns["loader"] = loader;
-    console.log("loader: " + loader.version);
+	ns.string = {
+		version: "0.1",
+		format: function format() {
+			/// TODO: unit test, breaks in some cases
+			var args = arguments;
+			var tmpl = args[0];
+			for (var i = 0; i < args.length - 1; i++) {
+				var s = "\\{" + i + "\\}";
+				var reg1 = new RegExp(s, "g");
+				tmpl = tmpl.replace(reg1, encodeURIComponent(args[i + 1]));
+			}
+			try {
+				tmpl = decodeURIComponent(tmpl);
+			} catch (e) {
+				console && console.error(e);
+				throw e;
+			}
+
+			return tmpl;
+		}, startsWith: function startsWith(str1, str2) {
+			return str2.length > 0 && str1.substring(0, str2.length) === str2;
+		}, endsWith: function endsWith(str1, str2) {
+			return str2.length > 0 && str1 && str1.substring(str1.length - str2.length, str1.length) === str2;
+		}, trimEnd: function trimEnd(stringToTrim, charToRemove) {
+			var s = stringToTrim || ""; // make sure str1 is not null
+			var c = charToRemove;
+			var lastIndexOf = -1;
+			for (var i = s.length - 1; i >= 0; i--) {
+				if (s[i] === c) {
+					lastIndexOf = i;
+				} else {
+					break;
+				}
+			}
+			if (lastIndexOf > -1) s = s.substring(0, lastIndexOf);
+			return s;
+		}, trimStart: function trimStart(stringToTrim, sToRemove, opts) {
+			var exp = "^" + sToRemove + "+";
+			var reg = RegExp(exp, opts || "gi");
+
+			var res = stringToTrim.replace(reg, "");
+			return res;
+		}, trim: function trim(stringToTrim, sToRemove, opts) {
+			stringToTrim = this.trimStart(stringToTrim, sToRemove, opts);
+			stringToTrim = this.trimEnd(stringToTrim, sToRemove, opts);
+			return stringToTrim;
+		}
+	};
 })(window["spexplorerjs"] = window["spexplorerjs"] || {});
 
 /***/ })

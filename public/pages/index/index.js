@@ -66,7 +66,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./logger.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./index.js");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -10447,73 +10447,10 @@ return jQuery;
 
 /***/ }),
 
-/***/ "../string/string.js":
-/*!***************************!*\
-  !*** ../string/string.js ***!
-  \***************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-(function (ns) {
-	ns.string = {
-		version: "0.1",
-		format: function format() {
-			/// TODO: unit test, breaks in some cases
-			var args = arguments;
-			var tmpl = args[0];
-			for (var i = 0; i < args.length - 1; i++) {
-				var s = "\\{" + i + "\\}";
-				var reg1 = new RegExp(s, "g");
-				tmpl = tmpl.replace(reg1, encodeURIComponent(args[i + 1]));
-			}
-			try {
-				tmpl = decodeURIComponent(tmpl);
-			} catch (e) {
-				console && console.error(e);
-				throw e;
-			}
-
-			return tmpl;
-		}, startsWith: function startsWith(str1, str2) {
-			return str2.length > 0 && str1.substring(0, str2.length) === str2;
-		}, endsWith: function endsWith(str1, str2) {
-			return str2.length > 0 && str1 && str1.substring(str1.length - str2.length, str1.length) === str2;
-		}, trimEnd: function trimEnd(stringToTrim, charToRemove) {
-			var s = stringToTrim || ""; // make sure str1 is not null
-			var c = charToRemove;
-			var lastIndexOf = -1;
-			for (var i = s.length - 1; i >= 0; i--) {
-				if (s[i] === c) {
-					lastIndexOf = i;
-				} else {
-					break;
-				}
-			}
-			if (lastIndexOf > -1) s = s.substring(0, lastIndexOf);
-			return s;
-		}, trimStart: function trimStart(stringToTrim, sToRemove, opts) {
-			var exp = "^" + sToRemove + "+";
-			var reg = RegExp(exp, opts || "gi");
-
-			var res = stringToTrim.replace(reg, "");
-			return res;
-		}, trim: function trim(stringToTrim, sToRemove, opts) {
-			stringToTrim = this.trimStart(stringToTrim, sToRemove, opts);
-			stringToTrim = this.trimEnd(stringToTrim, sToRemove, opts);
-			return stringToTrim;
-		}
-	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {});
-
-/***/ }),
-
-/***/ "./logger.js":
-/*!*******************!*\
-  !*** ./logger.js ***!
-  \*******************/
+/***/ "../../components/logger/logger.js":
+/*!*******************************************************************************************************!*\
+  !*** C:/Users/administrator.DEV/source/repos/spexplorer/spexplorerjs/src/components/logger/logger.js ***!
+  \*******************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10529,7 +10466,7 @@ var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/di
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
-__webpack_require__(/*! ../string/string.js */ "../string/string.js");
+__webpack_require__(/*! ../string/string.js */ "../../components/string/string.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -10593,6 +10530,109 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 var logger = window["spexplorerjs"];
 exports.default = logger;
+
+/***/ }),
+
+/***/ "../../components/string/string.js":
+/*!*******************************************************************************************************!*\
+  !*** C:/Users/administrator.DEV/source/repos/spexplorer/spexplorerjs/src/components/string/string.js ***!
+  \*******************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function (ns) {
+	ns.string = {
+		version: "0.1",
+		format: function format() {
+			/// TODO: unit test, breaks in some cases
+			var args = arguments;
+			var tmpl = args[0];
+			for (var i = 0; i < args.length - 1; i++) {
+				var s = "\\{" + i + "\\}";
+				var reg1 = new RegExp(s, "g");
+				tmpl = tmpl.replace(reg1, encodeURIComponent(args[i + 1]));
+			}
+			try {
+				tmpl = decodeURIComponent(tmpl);
+			} catch (e) {
+				console && console.error(e);
+				throw e;
+			}
+
+			return tmpl;
+		}, startsWith: function startsWith(str1, str2) {
+			return str2.length > 0 && str1.substring(0, str2.length) === str2;
+		}, endsWith: function endsWith(str1, str2) {
+			return str2.length > 0 && str1 && str1.substring(str1.length - str2.length, str1.length) === str2;
+		}, trimEnd: function trimEnd(stringToTrim, charToRemove) {
+			var s = stringToTrim || ""; // make sure str1 is not null
+			var c = charToRemove;
+			var lastIndexOf = -1;
+			for (var i = s.length - 1; i >= 0; i--) {
+				if (s[i] === c) {
+					lastIndexOf = i;
+				} else {
+					break;
+				}
+			}
+			if (lastIndexOf > -1) s = s.substring(0, lastIndexOf);
+			return s;
+		}, trimStart: function trimStart(stringToTrim, sToRemove, opts) {
+			var exp = "^" + sToRemove + "+";
+			var reg = RegExp(exp, opts || "gi");
+
+			var res = stringToTrim.replace(reg, "");
+			return res;
+		}, trim: function trim(stringToTrim, sToRemove, opts) {
+			stringToTrim = this.trimStart(stringToTrim, sToRemove, opts);
+			stringToTrim = this.trimEnd(stringToTrim, sToRemove, opts);
+			return stringToTrim;
+		}
+	};
+})(window["spexplorerjs"] = window["spexplorerjs"] || {});
+
+/***/ }),
+
+/***/ "./index.js":
+/*!******************!*\
+  !*** ./index.js ***!
+  \******************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../../components/logger/logger.js */ "../../components/logger/logger.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (ns, $) {
+	var logf = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.logf.apply(logf, arguments);
+		};
+		d.source = "index";
+		return d;
+	}();
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+		};
+		d.source = "index";
+		return d;
+	}();
+
+	log("start 0.1.0");
+	logf("{0}:{1}", "jquery", $.fn.jquery);
+})(window["spexplorerjs"], _jquery2.default);
 
 /***/ })
 

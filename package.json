@@ -12,7 +12,9 @@
     "comps1": "node uglify.js",
     "build": "npm run eslint && npm run comps",
     "test1": "npx webpack src/components/loader/loader.js -o public/components/loader/loader.js --mode development",
-    "pack": "node src/components/loader/module.js"
+    "packOld": "node src/components/loader/module.js",
+    "pack": "node packer.js all",
+    "watch": "node packer.js watch"
   },
   "repository": {
     "type": "git",
@@ -45,6 +47,7 @@
     "serve-favicon": "~2.4.5"
   },
   "devDependencies": {
+    "chokidar": "^2.0.2",
     "cpx": "^1.5.0",
     "eslint": "^4.18.2",
     "eslint-loader": "^2.0.0",
