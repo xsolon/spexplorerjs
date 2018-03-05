@@ -44,6 +44,7 @@ var verify = function (src) {
     }, { filename: fileName });
 
     console.log(messages);
+
 };
 
 verify("public/components/logger/logger.js");

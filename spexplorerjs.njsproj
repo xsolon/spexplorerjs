@@ -23,8 +23,13 @@
     <Compile Include="public\components\logger\logger.js" />
     <Compile Include="public\components\logger\logger.min.js" />
     <Compile Include="server.js" />
+    <Compile Include="src\components\loader\loader.js" />
+    <Compile Include="src\components\loader\module.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\components\logger\logger.js" />
     <Compile Include="src\scripts\eslint.js" />
-    <Compile Include="src\scripts\uglify.js" />
+    <Compile Include="uglify.js" />
     <Content Include="package-lock.json" />
     <Content Include="package.json" />
     <Content Include="public\components\loader\loader.min.js.map" />
@@ -52,6 +57,8 @@
     <Folder Include="public\stylesheets" />
     <Folder Include="routes" />
     <Folder Include="src\components\" />
+    <Folder Include="src\components\loader\" />
+    <Folder Include="src\components\logger\" />
     <Folder Include="src\scripts\" />
     <Folder Include="views" />
   </ItemGroup>
@@ -97,4 +104,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <AnalysisIgnoredDirectories>node_modules;build;dist</AnalysisIgnoredDirectories>
+  </PropertyGroup>
 </Project>

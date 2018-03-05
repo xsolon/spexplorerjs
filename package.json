@@ -9,8 +9,10 @@
     "prepare": "npm run jquery && npm run bootstrap",
     "eslint": "eslint public\\components\\**\\*.js --fix",
     "comps": "node src\\scripts\\uglify.js",
-    "build": "npm run eslint && npm run comps"
-
+    "comps1": "node uglify.js",
+    "build": "npm run eslint && npm run comps",
+    "test1": "npx webpack src/components/loader/loader.js -o public/components/loader/loader.js --mode development",
+    "pack": "node src/components/loader/module.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,9 @@
   },
   "homepage": "https://github.com/xsolon/spexplorerjs#readme",
   "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.3",
+    "babel-preset-env": "^1.6.1",
     "body-parser": "~1.18.2",
     "bootstrap": "^4.0.0",
     "cookie-parser": "~1.4.3",
@@ -42,7 +47,11 @@
   "devDependencies": {
     "cpx": "^1.5.0",
     "eslint": "^4.18.2",
+    "eslint-loader": "^2.0.0",
     "gulp": "^3.9.1",
-    "uglify-js": "^3.3.12"
+    "uglify-js": "^3.3.12",
+    "uglifyjs-webpack-plugin": "^1.2.2",
+    "webpack": "^4.1.0",
+    "webpack-cli": "^2.0.10"
   }
 }
