@@ -1,0 +1,1 @@
+function log(){conosle.log(1)}console.log("app1");

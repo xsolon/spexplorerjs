@@ -1,12 +1,14 @@
+var fs = require("fs");
 var path = require("path");
 var webpack = require("webpack");
 var chokidar = require('chokidar');
 
 var files = [
-    "./src/components/string/string.js",
-    "./src/components/loader/loader.js",
-    "./src/components/logger/logger.js",
-    "./src/pages/index/index.js"
+    //"./src/components/string/string.js",
+    //"./src/components/loader/loader.js",
+    //"./src/components/logger/logger.js",
+    "./src/components/datatables/datatables.js",
+    //"./src/pages/index/index.js"
 ];
 var runWebPack = function (debug, filePath) {
 
@@ -19,6 +21,14 @@ var runWebPack = function (debug, filePath) {
     //var debug = process.env.NODE_ENV !== "production";
     console.log(publicDir);
     console.log("debug: " + debug);
+    const HtmlWebpackPlugin = require('html-webpack-plugin');
+    var HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
+    var template = ``;
+    var localTemplatePath = path.resolve(srcDir, "widget.html");
+    if (fs.existsSync(localTemplatePath)) {
+        template = localTemplatePath;
+    }
+
     const compiler = webpack({
         optimization: {
             minimize: debug ? false : true
@@ -33,6 +43,10 @@ var runWebPack = function (debug, filePath) {
         },
         module: {
             rules: [
+                {
+                    test: /\.css$/,
+                    use: ['css-loader']
+                },
                 {
                     enforce: "pre",
                     test: /\.js$/,
@@ -65,6 +79,8 @@ var runWebPack = function (debug, filePath) {
             new webpack.LoaderOptionsPlugin({
                 //       minimize: true
             })
+            , new HtmlWebpackPlugin({ template: template, appMountId: 'moduledef', inject: true, inlineSource: '.(js|css)$' })
+            //, new HtmlWebpackInlineSourcePlugin()
         ]
     });
 
