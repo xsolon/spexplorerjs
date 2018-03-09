@@ -27,5 +27,8 @@ module.exports = {
         strict: ["error", "global"],
         "no-console": ["error", { allow: ["warn", "error", "log"] }]
 
+    }, "globals": {
+        "SP": true,
+        "module":true
     }
 };

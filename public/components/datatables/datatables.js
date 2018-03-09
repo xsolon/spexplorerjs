@@ -72,9 +72,9 @@
 /******/ ({
 
 /***/ "../../../node_modules/css-loader/lib/css-base.js":
-/*!***************************************************************************************************************!*\
-  !*** C:/Users/administrator.DEV/source/repos/spexplorer/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
-  \***************************************************************************************************************/
+/*!**************************************************************************!*\
+  !*** C:/sc/spexpjs/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
+  \**************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -159,9 +159,9 @@ function toComment(sourceMap) {
 /***/ }),
 
 /***/ "../../../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css":
-/*!*************************************************************************************************************************************!*\
-  !*** C:/Users/administrator.DEV/source/repos/spexplorer/spexplorerjs/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css ***!
-  \*************************************************************************************************************************************/
+/*!************************************************************************************************!*\
+  !*** C:/sc/spexpjs/spexplorerjs/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css ***!
+  \************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -178,9 +178,9 @@ exports.push([module.i, "table.dataTable {\n  clear: both;\n  margin-top: 6px !i
 /***/ }),
 
 /***/ "../../../node_modules/datatables.net/js/jquery.dataTables.js":
-/*!***************************************************************************************************************************!*\
-  !*** C:/Users/administrator.DEV/source/repos/spexplorer/spexplorerjs/node_modules/datatables.net/js/jquery.dataTables.js ***!
-  \***************************************************************************************************************************/
+/*!**************************************************************************************!*\
+  !*** C:/sc/spexpjs/spexplorerjs/node_modules/datatables.net/js/jquery.dataTables.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15411,9 +15411,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! DataTables 1
 /***/ }),
 
 /***/ "../../../node_modules/jquery/dist/jquery.js":
-/*!**********************************************************************************************************!*\
-  !*** C:/Users/administrator.DEV/source/repos/spexplorer/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
-  \**********************************************************************************************************/
+/*!*********************************************************************!*\
+  !*** C:/sc/spexpjs/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
+  \*********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 

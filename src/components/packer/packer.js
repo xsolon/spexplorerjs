@@ -2,12 +2,13 @@ var fs = require("fs");
 var path = require("path");
 var webpack = require("webpack");
 var chokidar = require('chokidar');
-
+var widgetTransforms = require("../../scripts/widgettransforms.js");
 var files = [
-    //"./src/components/string/string.js",
-    //"./src/components/loader/loader.js",
-    //"./src/components/logger/logger.js",
-    "./src/components/datatables/datatables.js",
+    "./src/components/string/string.js"
+    //,"./src/components/loader/loader.js"
+    //,"./src/components/logger/logger.js"
+    //,"./src/components/datatables/datatables.js"
+    , "./src/components/sp/sp.web.js"
     //"./src/pages/index/index.js"
 ];
 var runWebPack = function (debug, filePath) {
@@ -17,18 +18,48 @@ var runWebPack = function (debug, filePath) {
     var srcDir = path.resolve(execPath, path.dirname(filePath));
     var publicDir = path.resolve(execPath, srcDir.replace("src", "public"));
     var moduleName = path.basename(filePath);
+
+    var modulePath = path.resolve(execPath, filePath.replace(".js", ".module.js"));
+    var template = ``;
+    var localTemplatePath = path.resolve(srcDir, "template.html");
+    if (fs.existsSync(modulePath)) {
+        var module = require(modulePath);
+        if (typeof module.sample === "string") {
+            localTemplatePath = path.resolve(srcDir, module.sample);
+        }
+    }
+
     var outputName = debug ? moduleName : moduleName.replace(".js", ".min.js");
     //var debug = process.env.NODE_ENV !== "production";
     console.log(publicDir);
     console.log("debug: " + debug);
-    const HtmlWebpackPlugin = require('html-webpack-plugin');
-    var HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
-    var template = ``;
-    var localTemplatePath = path.resolve(srcDir, "widget.html");
+    var HtmlWebpackPlugin = require('html-webpack-plugin');
+    //var HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
+    var prodPlugins = [
+        // new webpack.optimize.DedupePlugin(),
+        new webpack.optimize.OccurrenceOrderPlugin(),
+        //new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
+        new webpack.LoaderOptionsPlugin({
+            //       minimize: true
+        })
+        //, new HtmlWebpackInlineSourcePlugin()
+    ];
     if (fs.existsSync(localTemplatePath)) {
         template = localTemplatePath;
+        console.log("template:" + template);
+        prodPlugins.push(new HtmlWebpackPlugin({
+            template: template,
+            inject: true,
+            inlineSource: '.(js|css)$',
+            filename: path.basename(localTemplatePath)
+        }));
     }
 
+    var entry = path.resolve(execPath, filePath);
+
+    if (!fs.existsSync(entry)) {
+        throw "entry not found" + entry;
+    }
     const compiler = webpack({
         optimization: {
             minimize: debug ? false : true
@@ -36,7 +67,7 @@ var runWebPack = function (debug, filePath) {
         context: srcDir,
         mode: debug ? "development" : "production",
         devtool: debug ? false : "sourcemap",
-        entry: path.resolve(execPath, filePath),
+        entry: entry,
         output: {
             path: publicDir,
             filename: outputName
@@ -65,29 +96,33 @@ var runWebPack = function (debug, filePath) {
                         loader: "babel-loader",
                         options: {
                             //presets: ['@babel/preset-env'],
-                            presets: ["es2015"],
+                            presets: ["es2015"]
                             //plugins: [require('@babel/plugin-proposal-object-rest-spread')]
                         }
                     }
                 }
             ]
         },
-        plugins: debug ? [] : [
-            // new webpack.optimize.DedupePlugin(),
-            new webpack.optimize.OccurrenceOrderPlugin(),
-            //new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
-            new webpack.LoaderOptionsPlugin({
-                //       minimize: true
-            })
-            , new HtmlWebpackPlugin({ template: template, appMountId: 'moduledef', inject: true, inlineSource: '.(js|css)$' })
-            //, new HtmlWebpackInlineSourcePlugin()
-        ]
+        stats: {
+            colors: true,
+            modules: true,
+            reasons: true,
+            errorDetails: true
+        },
+        plugins: prodPlugins
     });
 
     compiler.run((err, stats) => {
         if (err) {
             console.error(err);
             return;
+        } else {
+
+            var samplePath = localTemplatePath.replace('src', 'public');
+            if (fs.existsSync(samplePath)) {
+                widgetTransforms.createWidget(samplePath);
+            }
+
         }
 
         console.log(stats.toString({
@@ -137,7 +172,7 @@ module.exports.updateAll = function () {
     for (var i = 0; i < files.length; i++) {
         var file = files[i];
         runWebPack(true, file);
-        runWebPack(false, file);
+        //runWebPack(false, file);
     }
 };
 

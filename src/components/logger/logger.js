@@ -58,6 +58,7 @@ import "../string/string.js";
 
 	ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn };
 	log("logger");
+	ns.$ = $;
 	return ns.logger;
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, $);
 var logger = window["spexplorerjs"];

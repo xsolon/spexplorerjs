@@ -32,9 +32,11 @@ module.exports = function (opts) {
 
             var $ = j$.load(str);
             
-            opts.transform($,file.path);
+            var result = opts.transform($,file.path);
             
-            if (opts.xmlMode) {
+            if (result) {
+                str = result;
+            }else if (opts.xmlMode) {
                 str = $.xml();
             } else
                 str = $.html();

@@ -66,7 +66,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./loader.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./sp.web.js");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -10526,6 +10526,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 	ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn };
 	log("logger");
+	ns.$ = $;
 	return ns.logger;
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 var logger = window["spexplorerjs"];
@@ -10543,7 +10544,7 @@ exports.default = logger;
 "use strict";
 
 
-(function (ns) {
+if (typeof window !== "undefined") (function (ns) {
 	ns.string = {
 		version: "0.1",
 		format: function format() {
@@ -10594,11 +10595,57 @@ exports.default = logger;
 	};
 })(window["spexplorerjs"] = window["spexplorerjs"] || {});
 
+module.exports.sample = function () {
+	return {
+		//sample: "./sp.web.html"
+	};
+};
+
 /***/ }),
 
-/***/ "./loader.js":
+/***/ "./sp.base.js":
+/*!********************!*\
+  !*** ./sp.base.js ***!
+  \********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (ns, $) {
+
+	ns.logger.log($.fn.jquery);
+	ns.sp = {};
+	ns.sp.collectionToArray = function (spCollection) {
+
+		var result = [];
+
+		if (spCollection) {
+			var le = spCollection.getEnumerator();
+			while (le.moveNext()) {
+				var li = le.get_current();
+				result.push(li);
+			}
+		}
+
+		return result;
+	};
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+
+/***/ }),
+
+/***/ "./sp.web.js":
 /*!*******************!*\
-  !*** ./loader.js ***!
+  !*** ./sp.web.js ***!
   \*******************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -10606,19 +10653,83 @@ exports.default = logger;
 "use strict";
 
 
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
 __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
-(function (ns) {
-	if (ns["loader"]) {
-		ns.logger.warn("loader already defined");
-	}
-	var loader = { "version": "1.0" };
-	loader["load"] = function (src) {
-		console.log(src);
+__webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (ns, $) {
+	var createWeb = function createWeb(parentWeb, title, url, template, inheritPermissions) {
+		return $.Deferred(function (dfd) {
+			var ctx = new SP.ClientContext.get_current();parentWeb = parentWeb || ctx.get_web();var WCI = new SP.WebCreationInformation();
+			WCI.set_webTemplate(template);
+			WCI.set_title(title);
+			WCI.set_url(url);
+			WCI.set_language(1033);
+			WCI.set_useSamePermissionsAsParentSite(inheritPermissions);
+			parentWeb.get_webs().add(WCI);
+			parentWeb.update();
+			ctx.load(parentWeb);
+			ctx.executeQueryAsync(function () {
+				dfd.resolve((parentWeb.get_serverRelativeUrl() + "/" + url).replace(/\/\/*/g, "/"));
+			}, function onError(sender, args) {
+				dfd.reject("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
+			});
+		}).promise();
 	};
-	ns["loader"] = loader;
-	console.log("loader: " + loader.version);
-})(window["spexplorerjs"] = window["spexplorerjs"] || {});
+
+	/**
+     * Load an existing site
+     * fails if site doesn't exist
+     * @param {string} url - site relative url of web
+     * @param {spsite} site- site reference, if null will load from current context
+     * @param {ClientContext} ctx - SharePoint client context, if null the current context will be used
+     * @param {function} loadFunc - function run before the web is loaded (web will be passed as argument)
+     */
+	var loadWeb = function loadWeb(url, site, ctx, loadFunc) {
+		return $.Deferred(function (dfd) {
+
+			ctx = ctx || SP.ClientContext.get_current();
+			site = site || ctx.get_site();
+			var web = url ? typeof url == "string" ? site.openWeb(url) : url : ctx.get_web();
+			var res = loadFunc && loadFunc(web) || ctx.load(web);
+
+			ctx.executeQueryAsync(function (sender, args) {
+				dfd.resolve(web, res, sender, args);
+			}, function onError(sender, args) {
+				dfd.reject({ sender: sender, args: args });
+				//dfd.reject('Request failed ' + args.get_message() + '\n' + args.get_stackTrace());
+			});
+		}).promise();
+	};
+
+	var webTemplates = function webTemplates(web, ctx) {
+		return $.Deferred(function (dfd) {
+
+			ctx = ctx || SP.ClientContext.get_current();
+			web = web || ctx.get_web();
+			var templates = web.getAvailableWebTemplates(1033, false);ctx.load(templates);ctx.executeQueryAsync(function () {
+				var templateArray = ns.sp.collectionToArray(templates);
+				dfd.resolve(templateArray);
+			}, function onError(sender, args) {
+				dfd.reject({ sender: sender, args: args });
+			});
+		}).promise();
+	};
+	var api = {
+		webTemplates: webTemplates,
+		createWeb: createWeb,
+		loadWeb: loadWeb,
+		version: "0.1"
+	};
+
+	ns.webapi = api;
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 
 /***/ })
 

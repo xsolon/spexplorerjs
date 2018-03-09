@@ -81,7 +81,7 @@
 "use strict";
 
 
-(function (ns) {
+if (typeof window !== "undefined") (function (ns) {
 	ns.string = {
 		version: "0.1",
 		format: function format() {
@@ -131,6 +131,12 @@
 		}
 	};
 })(window["spexplorerjs"] = window["spexplorerjs"] || {});
+
+module.exports.sample = function () {
+	return {
+		//sample: "./sp.web.html"
+	};
+};
 
 /***/ })
 

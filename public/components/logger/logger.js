@@ -72,9 +72,9 @@
 /******/ ({
 
 /***/ "../../../node_modules/jquery/dist/jquery.js":
-/*!**********************************************************************************************************!*\
-  !*** C:/Users/administrator.DEV/source/repos/spexplorer/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
-  \**********************************************************************************************************/
+/*!*********************************************************************!*\
+  !*** C:/sc/spexpjs/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
+  \*********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10457,7 +10457,7 @@ return jQuery;
 "use strict";
 
 
-(function (ns) {
+if (typeof window !== "undefined") (function (ns) {
 	ns.string = {
 		version: "0.1",
 		format: function format() {
@@ -10507,6 +10507,12 @@ return jQuery;
 		}
 	};
 })(window["spexplorerjs"] = window["spexplorerjs"] || {});
+
+module.exports.sample = function () {
+	return {
+		//sample: "./sp.web.html"
+	};
+};
 
 /***/ }),
 
@@ -10589,6 +10595,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 	ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn };
 	log("logger");
+	ns.$ = $;
 	return ns.logger;
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 var logger = window["spexplorerjs"];
