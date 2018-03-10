@@ -1,5 +1,7 @@
-<!DOCTYPE html><html><head>
-    <meta charset="utf-8">
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
     <title>XmlMirror</title>
 </head>
 <body>
@@ -12,11 +14,14 @@
         </style>
 
         <script type="text/html" id="xmlmirrortmpl">
-            <iframe src='https://localhost:8443/components/codemirror/xmleditor.html' id="codeframe" class="full"></iframe>
+            <iframe src='https://localhost:8443/components/mirrors/xmleditor.html' id="codeframe" class="full"></iframe>
         </script>
-        <div class="modules"><script type="text/javascript" src="xmlmirror.js"></script></div>
-
+        <div class="modules"></div>
+        <script type="text/javascript" src="xmlmirror.js"></script>
     </div>
     <div data-widget="xxmlmirror"></div>
-
-</body></html>
+    <script>
+        spexplorerjs.widgets.xxmlmirror.startup();
+    </script>
+</body>
+</html>

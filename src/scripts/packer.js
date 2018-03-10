@@ -2,17 +2,18 @@ var fs = require("fs");
 var path = require("path");
 var webpack = require("webpack");
 var chokidar = require('chokidar');
-var widgetTransforms = require("../../scripts/widgettransforms.js");
+var widgetTransforms = require("./widgettransforms.js");
 var files = [
     "./src/components/string/string.js"
     //,"./src/components/loader/loader.js"
     //,"./src/components/logger/logger.js"
     //,"./src/components/datatables/datatables.js"
     //, "./src/components/sp/sp.web.js"
+    , "./src/components/mirrors/xmleditor.js"
     , "./src/components/mirrors/xmlmirror.js"
     //"./src/pages/index/index.js"
 ];
-var runWebPack = function (debug, filePath) {
+var runWebPack = function(debug, filePath) {
 
     var execPath = process.cwd();
     console.log("Execution path:" + execPath);
@@ -50,7 +51,7 @@ var runWebPack = function (debug, filePath) {
         console.log("template:" + template);
         prodPlugins.push(new HtmlWebpackPlugin({
             template: template,
-            inject: true,
+            inject: false,
             inlineSource: '.(js|css)$',
             filename: path.basename(localTemplatePath)
         }));
@@ -121,7 +122,7 @@ var runWebPack = function (debug, filePath) {
 
             var samplePath = localTemplatePath.replace('src', 'public');
             if (fs.existsSync(samplePath)) {
-                widgetTransforms.createWidget(samplePath);
+                widgetTransforms.createWidget(samplePath, execPath);
             }
 
         }
@@ -133,7 +134,7 @@ var runWebPack = function (debug, filePath) {
     });
 };
 
-module.exports.watch = function () {
+module.exports.watch = function() {
 
     var watcher = chokidar.watch(files, {
         //ignored: /(^|[\/\\])\../,
@@ -168,7 +169,7 @@ module.exports.watch = function () {
 
 };
 
-module.exports.updateAll = function () {
+module.exports.updateAll = function() {
 
     for (var i = 0; i < files.length; i++) {
         var file = files[i];

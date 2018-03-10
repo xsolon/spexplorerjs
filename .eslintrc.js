@@ -28,7 +28,9 @@ module.exports = {
         "no-console": ["error", { allow: ["warn", "error", "log"] }]
 
     }, "globals": {
+        "jQuery": true,
         "SP": true,
+        "CodeMirror": true,// TODO: shouldn't have to be global
         "module":true
     }
 };

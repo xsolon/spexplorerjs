@@ -66,7 +66,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./xmlmirror.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./xmleditor.js");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -10527,9 +10527,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /***/ }),
 
-/***/ "./xmlmirror.js":
+/***/ "./xmleditor.js":
 /*!**********************!*\
-  !*** ./xmlmirror.js ***!
+  !*** ./xmleditor.js ***!
   \**********************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -10537,144 +10537,60 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 __webpack_require__(/*! ../string/string.js */ "../string/string.js");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+(function (ns, $) {
 
-(function (ns) {
-
-	//var debug = window.location.href.search(/localhost|debugxsptree/) > 0;
-	var log = new function () {
-		var d = function d() {
-			ns.logger && ns.logger.log.apply(log, arguments);
-		};
-		d.source = "xmlmirror";
-		return d;
-	}();
-	//var error = new function () {
-	//	var d = function () {
-	//		ns.logger && ns.logger.error.apply(log, arguments);
-	//	};
-	//	d.source = "xmlmirror";
-	//	return d;
-	//};
-
-	var xxmlmirror = function xxmlmirror(ui, opts) {
-
-		log("xxmlmirror.init");
-
-		var $el = (0, _jquery2.default)(ui);
-
-		opts.id = opts.id || (0, _jquery2.default)(".full").length;
-		$el.html((0, _jquery2.default)("#xmlmirrortmpl:first").html().trim());
-		var iframe = (0, _jquery2.default)("iframe", ui);
-		var src = iframe.attr("src");
-		iframe.attr("src", src + "?id=" + opts.id);
-		var run = (0, _jquery2.default)("button", ui);
-
-		var currentPromises = [];
-		run.click(function (event) {
-			event.preventDefault();
-			iframe[0].contentWindow.postMessage({ action: "get" }, "*");
-			return false;
-		});
-		iframe[0].addEventListener("load", function () {
-			iframe[0].contentWindow.postMessage({ action: "set", data: "log(spelem);" }, "*");
-		});
-		var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
-		var eventer = window[eventMethod];
-		var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
-
-		// Listen to message from child IFrame window
-		eventer(messageEvent, function (e) {
-			var data = JSON.parse(e.data);
-
-			if (data.id == opts.id) try {
-				var promise = currentPromises[0]; //todo: handle many
-				promise.resolve(data.code);
-				var index = currentPromises.indexOf(promise);
-				if (index > -1) {
-					currentPromises.splice(index, 1);
-				}
-			} catch (e) {
-				console.log(e.message);
-				throw e;
-			}
-		});
-
-		var me = {};
-		me.getXml = function () {
-			return _jquery2.default.Deferred(function (dfd) {
-				currentPromises.push(dfd);
-				iframe[0].contentWindow.postMessage({ action: "get" }, "*");
-			}).promise();
-		};
-		me.setXml = function (xml) {
-			iframe[0].contentWindow.postMessage({ action: "set", data: xml }, "*");
-		};
-		return me;
-	};
-
-	var widgetInfo = {
-		publicName: "xxmlmirror",
-		constructor: xxmlmirror,
-		version: "0.1.3",
-		getSelector: function getSelector() {
-			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
-			log("selector: " + selector);
-			return selector;
-		},
-		startup: function startup(context) {
-			log(widgetInfo.publicName + ".startup");
-			var selector = widgetInfo.getSelector();
-			var elems = (0, _jquery2.default)(selector, context || document);
-			log("Elems: " + elems.length);
-			elems[widgetInfo.publicName]({});
-			return elems;
+	var setupXml = function setupXml(el) {
+		var editor = el.CodeMirror;
+		if (editor) {
+			editor.toTextArea();
 		}
-	};
 
-	_jquery2.default.fn[widgetInfo.publicName] = function (opts) {
-		var args = arguments;
-		//var lastInstance = null;
-		var result = this.each(function () {
-
-			var $el = (0, _jquery2.default)(this);
-
-			var me = $el.data(widgetInfo.publicName);
-
-			if (me) {
-				// object has been initialized before
-
-				if (opts == null) {// request for instance
-					//lastInstance = me;
-				} else if (me[opts]) {
-					if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
+		editor = CodeMirror.fromTextArea(el, {
+			mode: "xml",
+			lineNumbers: true,
+			lineWrapping: true,
+			autoCloseTags: true,
+			viewportMargin: Infinity,
+			extraKeys: {
+				"'>'": function _(cm) {
+					cm.closeTag(cm, ">");
+				},
+				"'/'": function _(cm) {
+					cm.closeTag(cm, "/");
 				}
-			} else {
-
-				var obj = new widgetInfo.constructor(this, opts);
-				$el.data(widgetInfo.publicName, obj);
-			}
+				//"' '": function (cm) { CodeMirror.xmlHint(cm, ' '); },
+				//"'<'": function (cm) { CodeMirror.xmlHint(cm, '<'); },
+				//"Ctrl-Space": function (cm) { CodeMirror.xmlHint(cm, ''); }
+			},
+			foldGutter: {
+				rangeFinder: CodeMirror.fold.xml
+			}, gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"], lint: false
 		});
-
-		//if (lastInstance && result.length == 1) return lastInstance;
-		return result;
+		$(el).data("CodeMirror", editor);
 	};
 
-	(ns.widgets = ns.widgets || {})[widgetInfo.publicName] = widgetInfo;
+	setupXml($("textarea")[0]);
 
-	//if (xSolon.loader.isBusy) {
-	//    xSolon.loader.bits.push(widgetInfo.startup);
-	//}
-	//else {
-	widgetInfo.startup();
-	//}
-})(window["spexplorerjs"]);
+	var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+	var eventer = window[eventMethod];
+	var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+
+	// Listen to message from child IFrame window
+	eventer(messageEvent, function (e) {
+		var elem = e.data; //JSON.parse(e.data);
+		var editor = $("textarea").data("CodeMirror");
+		if (elem.action == "set") {
+			var data = ns.string.htmlDecode(elem.data);
+			editor.setValue(data);
+			editor.refresh();
+		} else if (elem.action == "get") {
+			var val = editor.getValue();
+			window.parent.postMessage(JSON.stringify({ code: val, action: elem.action, id: window.location.href.split("=")[1] }), "*");
+		}
+	});
+})(window["spexplorerjs"], jQuery);
 
 /***/ })
 

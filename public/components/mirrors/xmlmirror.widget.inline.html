@@ -7,9 +7,10 @@
         </style>
 
         <script type="text/html" id="xmlmirrortmpl">
-            <iframe src='https://localhost:8443/components/codemirror/xmleditor.html' id="codeframe" class="full"></iframe>
+            <iframe src='https://localhost:8443/components/mirrors/xmleditor.html' id="codeframe" class="full"></iframe>
         </script>
-        <div class="modules"><script type="text/javascript">//<![CDATA[
+        <div class="modules"></div>
+        <script type="text/javascript">//<![CDATA[
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -10469,9 +10470,26 @@ return jQuery;
 "use strict";
 
 
-if (typeof window !== "undefined") (function (ns) {
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// v 0.1.2: 2018-03-10: brought back htmlEncode/htmlDecode and jQuery dependency
+(function (ns, $) {
 	ns.string = {
 		version: "0.1",
+		htmlEncode: function htmlEncode(value) {
+			// create a in-memory div, set it's inner text(which jQuery
+			// automatically encodes)
+			// then grab the encoded contents back out. The div never exists on
+			// the page.
+			return $("<div/>").text(value).html();
+		},
+		htmlDecode: function htmlDecode(value) {
+			return $("<div/>").html(value).text();
+		},
 		format: function format() {
 			/// TODO: unit test, breaks in some cases
 			var args = arguments;
@@ -10518,13 +10536,7 @@ if (typeof window !== "undefined") (function (ns) {
 			return stringToTrim;
 		}
 	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {});
-
-module.exports.sample = function () {
-	return {
-		//sample: "./sp.web.html"
-	};
-};
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 
 /***/ }),
 
@@ -10679,7 +10691,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /***/ })
 
-/******/ }); //]]></script></div>
-
+/******/ }); //]]></script>
     </div>
     <div data-widget="xxmlmirror"></div>
+    <script>
+        spexplorerjs.widgets.xxmlmirror.startup();
+    </script>

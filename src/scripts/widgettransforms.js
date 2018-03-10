@@ -14,12 +14,185 @@ var $ = require("gulp-load-plugins")({
 var mytranform = require("./mytransforms.js");
 var inlinesource = require("gulp-inline-source");
 
-var createWidget = function (widgetPath) {
+// run gulp transformations on module
+// @widgetPath: path of .js file
+// @destFolder: public folder
+// @execPath: root path
+var prepareModule = function (widgetPath, destFolder, execPath) {
 
-    var dir = path.dirname(widgetPath);
-    gulp.src(widgetPath)
+    var sourceDir = path.dirname(widgetPath);
+
+
+};
+var getAbsoluteCdnPath = function (src, localHost, cdnHost) {
+    return src.replace(localHost, cdnHost);
+};
+var getLocalPath = function (src, baseDir, appDir) {
+
+    var localPath = "";
+
+    if (src.indexOf('.') === 0) { // relative & local
+        var fullPath = path.resolve(baseDir, src);
+        localPath = path.resolve(filePath, script.prop("src"));
+    }
+    else if (src.indexOf('https://localhost:8443') == 0) { // absolute path & local file
+
+        // TODO: all files should be served from public, do not expose node_modules
+        var fileSrc = src.replace('https://localhost:8443', (src.indexOf('node_module') > 0) ? '' : '/public');
+        localPath = appDir + fileSrc;
+
+    }
+    else if (src.indexOf('/') === 0) {// relative to root & local path
+        // TODO: all files should be served from public, do not expose node_modules
+        localPath = execPath + ((src.indexOf('node_module') > 0) ? '/' : '/public') + src;
+    }
+    else {
+        // local file ref  (eg: script.js) 
+        var fullPath = path.resolve(baseDir, src);
+        if (fs.existsSync(fullPath)) {
+            localPath = fullPath;
+        }
+    }
+    return localPath;
+};
+var inlineScripts = function (widgetPath, execPath) {
+    var sourceDir = path.dirname(widgetPath);
+    return gulp.src(widgetPath)
+        .pipe(mytranform({
+            transform: function (jDoc, filePath) {
+                var j$ = jDoc;
+
+                var scripts = j$('script[type="text/javascript"]');
+
+                scripts.each(function () {
+                    var script = j$(this);
+                    var src = script.prop("src");
+                    if (src) {
+
+                        var localPath = getLocalPath(src, sourceDir, execPath);
+
+                        if (localPath.length > 0) {
+                            var fileContent = fs.readFileSync(localPath, "utf8");
+
+                            fileContent = `//<![CDATA[\n\r${fileContent} //]]>`;
+                            script.text(fileContent).removeAttr("src");
+                        }
+                    }
+                });
+
+                var html = sanitizeHtml(j$("body").html())
+                    .replace("</script|<style|<link></use></tag></number></object></script>", "")
+                    .trim()
+                    ;
+
+                return html;
+            },
+            xmlMode: true
+        }))
+        .pipe($.rename(function (path) {
+
+            //path.dirname += "/ciao";
+            path.basename = path.basename += ".widget.inline";
+            //path.extname = ".md"
+        }))
+        .pipe(gulp.dest(sourceDir));
+
+};
+var absolutizeLinks = function (j$, baseDir, appDir, localHost, cdnHost) {
+
+    var scripts = j$('script[type="text/javascript"]');
+
+    scripts.each(function () {
+        var script = j$(this);
+        var src = script.prop("src");
+        if (src) {
+            var localPath = getLocalPath(src, baseDir, appDir);
+
+            if (localPath) {
+
+                localPath = localPath.replace(appDir, localHost).replace(/\\/g, "/").replace('/public/', '/');
+                script.attr('src', localPath);
+            }
+        }
+    });
+};
+
+var sanitizeHtml = function (html) {
+    html = html.replace('"<form></form><form></form>"', // jquery has this string which breaks if code is inline in html
+        'decodeURIComponent("%3Cform%3E%3C%2Fform%3E%3Cform%3E%3C%2Fform%3E")')
+        .replace('<a id="&quot; + expando + &quot;"></a>', '<a id=\'" + expando + "\'></a>')
+        .trim();
+
+    return html;
+};
+var sanitizeJsinHtml = function (j$) {
+
+    j$('script[type="text/javascript"]').each(function () {
+        var elem = j$(this);
+        var src = elem.attr('src');
+        if (src) {
+
+        } else {
+            var html = sanitizeHtml(elem.html());
+            elem.html(html);
+        }
+    });
+
+};
+var cdnScripts = function (widgetPath, execPath) {
+
+    var sourceDir = path.dirname(widgetPath);
+
+    return gulp.src(widgetPath)
+        .pipe(mytranform({
+            transform: function (jDoc, filePath) {
+                var j$ = jDoc;
+
+                var replaceAttr = function (col, attr, lookFor, replaceWith) {
+                    col.each(function () {
+                        var elem = j$(this);
+                        var val = elem.attr(attr).replace(lookFor, replaceWith);
+                        elem.attr(attr, val);
+                    });
+                };
+
+                var localHost = "https://localhost:8443";
+                var cdn = "https://spexplorerjs.azurewebsites.net"; // "prod" url
+
+                absolutizeLinks(j$, sourceDir, execPath, localHost, cdn);
+
+                var replaceScriptContent = function (col, lookFor, replaceWith) {
+                    col.each(function () {
+                        var elem = j$(this);
+                        var html = elem.html().replace(lookFor, replaceWith);
+                        elem.html(html);
+                    });
+                };
+
+                replaceAttr(j$('link[href^="https://localhost:8443"]'), 'href', "https://localhost:8443", cdn);
+                replaceAttr(j$('iframe[src^="https://localhost:8443"]'), 'src', "https://localhost:8443", cdn);
+                replaceAttr(j$('script[src^="https://localhost:8443"]'), 'src', "https://localhost:8443", cdn);
+                replaceAttr(j$('script[data-widget^="https://localhost:8443"]'), 'data-widget', "https://localhost:8443", cdn);
+                replaceScriptContent(j$('script[type="text/html"]'), "https://localhost:8443", cdn);
+
+
+                return j$('body').html().trim();
+            },
+            xmlMode: true
+        }))
+        .pipe($.rename(function (path) {
+
+            //path.dirname += "/ciao";
+            path.basename = path.basename += ".widget.cdn";
+            //path.extname = ".md"
+        })).pipe(gulp.dest(sourceDir));
+
+};
+var positionScriptInsideModule = function (widgetPath) {
+
+    return gulp.src(widgetPath)
         .pipe(inline({
-            base: dir,
+            base: sourceDir,
             css: [minifyCss, autoprefixer({ browsers: ["last 2 versions"] })],
             disabledTypes: ["svg", "img", "js"], // Only inline css files 
             ignore: ["./css/do-not-inline-me.css"]
@@ -28,16 +201,11 @@ var createWidget = function (widgetPath) {
             transform: function (jDoc, filePath) {
                 var j$ = jDoc;
 
-                //var all = `<div id='widget'>${j$("body").html()}</div>`;
-                //j$("body").html(all);
-
                 var scripts = j$('script[type^="text/javascript"]');
 
                 scripts.last().each(function () {
-                    console.log("moving last script");
                     var script = j$(this);
                     var module = j$('.modules');
-                    console.log(module.length);
                     script.appendTo(".modules");
                 });
 
@@ -57,84 +225,27 @@ var createWidget = function (widgetPath) {
 
             //path.dirname += "/ciao";
             //path.basename = path.basename += ".widget";
-            console.log(path.basename);
             //path.extname = ".md"
         }))
-        .pipe(gulp.dest(dir))
-        //.pipe(gulp.src(widgetPath))
-        .pipe(mytranform({
-            transform: function (jDoc, filePath) {
-                var j$ = jDoc;
+        .pipe(gulp.dest(sourceDir))
+        .on('end', function () {
+        });
+};
+var createWidget = function (widgetPath, execPath) {
 
-                var scripts = j$('script[type^="text/javascript"]');
+    var sourceDir = path.dirname(widgetPath);
 
-                scripts.each(function () {
-                    var script = j$(this);
-                    var src = script.prop("src");
-                    if (src && src.indexOf('http:' == 0)) {
-                        var fullPath = path.resolve(path.dirname(filePath), src);
-                        var localPath = path.resolve(dir, script.prop("src"));
-                        console.log(fullPath);
-                        var fileContent = fs.readFileSync(localPath, "utf8");
+    inlineScripts(widgetPath, execPath)
+        .on('end', function () {
+            console.log('widget.inline.done');
 
-                        fileContent = `//<![CDATA[\n\r${fileContent} //]]>`;
-                        script.text(fileContent).removeAttr("src");
-                    }
-                });
+        });
 
-                return j$("body").html()
-                    .replace("</script|<style|<link></use></tag></number></object></script>", "")
-                    .replace('"<form></form><form></form>"', // jquery has this string which breaks if code is inline in html
-                    'decodeURIComponent("%3Cform%3E%3C%2Fform%3E%3Cform%3E%3C%2Fform%3E")')
-                    .trim()
-                    ;
-            },
-            xmlMode: true
-        }))
-        .pipe($.rename(function (path) {
+    cdnScripts(widgetPath, execPath)
+        .on('end', function () {
+            console.log('widget.cdn.done');
 
-            //path.dirname += "/ciao";
-            path.basename = path.basename += ".widget";
-            console.log(path.basename);
-            //path.extname = ".md"
-        })).pipe(gulp.dest(dir))
-        .pipe(mytranform({
-            transform: function (jDoc, filePath) {
-                var j$ = jDoc;
-
-                var replaceAttr = function (col, attr, lookFor, replaceWith) {
-                    col.each(function () {
-                        var elem = j$(this);
-                        var val = elem.attr(attr).replace(lookFor, replaceWith);
-                        elem.attr(attr, val);
-                    });
-                };
-
-                var replaceScriptContent = function (col, lookFor, replaceWith) {
-                    col.each(function () {
-                        var elem = j$(this);
-                        var html = elem.html().replace(lookFor, replaceWith);
-                        elem.html(html);
-                    });
-                };
-                var cdn = "url";
-                replaceAttr(j$('link[href^="https://localhost:8443"]'), 'href', "https://localhost:8443", cdn);
-                replaceAttr(j$('iframe[src^="https://localhost:8443"]'), 'src', "https://localhost:8443", cdn);
-                replaceAttr(j$('script[src^="https://localhost:8443"]'), 'src', "https://localhost:8443", cdn);
-                replaceAttr(j$('script[data-widget^="https://localhost:8443"]'), 'data-widget', "https://localhost:8443", cdn);
-                replaceScriptContent(j$('script[type="text/html"]'), "https://localhost:8443", cdn);
-
-            },
-            xmlMode: true
-        }))
-        .pipe($.rename(function (path) {
-
-            //path.dirname += "/ciao";
-            path.basename = path.basename += ".cdn";
-            console.log(path.basename);
-            //path.extname = ".md"
-        })).pipe(gulp.dest(dir));
-
+        });
 
 };
 

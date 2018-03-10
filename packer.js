@@ -1,4 +1,4 @@
-﻿var packer = require("./src/components/packer/packer.js");
+﻿var packer = require("./src/scripts/packer.js");
 
 process.argv.forEach((val, index) => {
     console.log(`${index}: ${val}`);
