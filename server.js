@@ -23,6 +23,29 @@ app.set('port', port);
 var server = http.createServer(app);
 
 /**
+ * Run on ssl in dev
+ */
+
+var env = app.get('env');
+
+if (env == 'development') {
+
+    console.log('ssl');
+    var https = require('https');
+    var fs = require('fs');
+
+    var sslOptions = {
+        key: fs.readFileSync('src/keyDev1.pem'),
+        cert: fs.readFileSync('src/certDev1.pem'),
+        passphrase: 'password'
+    };
+
+    var serverSsl = https.createServer(sslOptions, app);
+    serverSsl.listen(8443);
+
+}
+
+/**
  * Listen on provided port, on all network interfaces.
  */
 

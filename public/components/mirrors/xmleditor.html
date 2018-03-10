@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Xml Editor</title>
+    <script data-check="window.jQuery" type="text/javascript" src="https://localhost:8443/node_modules/jquery/dist/jquery.js"></script>
+    <script data-check="$.fn.draggable" src='//ajax.aspnetcdn.com/ajax/jquery.ui/1.10.4/jquery-ui.min.js' type="text/javascript"></script>
+
+    <link rel="stylesheet" href="https://localhost:8443/node_modules/codemirror/lib/codemirror.css">
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/lib/codemirror.js"></script>
+    <script src="https://localhost:8443/node_modules/codemirror/addon/edit/closetag.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/mode/javascript/javascript.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/mode/css/css.js"></script>
+    <script src="https://localhost:8443/node_modules/codemirror/mode/xml/xml.js" type="text/javascript"></script>
+
+    <link rel="stylesheet" href="https://localhost:8443/node_modules/codemirror/addon/lint/lint.css" />
+    <link rel="stylesheet" href="https://localhost:8443/node_modules/codemirror/addon/fold/foldgutter.css" />
+
+    <!-- hint -->
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/hint/anyword-hint.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/hint/css-hint.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/hint/html-hint.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/hint/javascript-hint.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/hint/show-hint.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/hint/sql-hint.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/hint/xml-hint.js"></script>
+    <link href="https://localhost:8443/node_modules/codemirror/addon/hint/show-hint.css" rel="stylesheet" />
+    <!-- endhint -->
+    <!-- fold-->
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/fold/brace-fold.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/fold/comment-fold.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/fold/foldcode.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/fold/foldgutter.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/fold/indent-fold.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/fold/markdown-fold.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/fold/xml-fold.js"></script>
+    <link href="https://localhost:8443/node_modules/codemirror/addon/fold/foldgutter.css" rel="stylesheet" />
+    <!-- end fold-->
+    <!-- lint -->
+    <script type="text/javascript" src="https//ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js"></script>
+    <script type="text/javascript" src="https://rawgithub.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js"></script>
+    <script type="text/javascript" src="csslint.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/lint/lint.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/lint/coffeescript-lint.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/lint/css-lint.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/lint/html-lint.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/lint/javascript-lint.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/lint/json-lint.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/node_modules/codemirror/addon/lint/yaml-lint.js"></script>
+    <link href="https://localhost:8443/node_modules/codemirror/addon/lint/lint.css" rel="stylesheet" />
+
+    <!-- end lint -->
+    <script src="//xsolonblog2.appspot.com/js/string.js" type="text/javascript"></script>
+
+    <style type="text/css">
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body, .CodeMirror {
+            height: 95%;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <style type="text/css">
+            /* show the move cursor as the user moves the mouse over the panel header.*/
+            #content .panel-heading {
+                cursor: move;
+            }
+
+            .panelRemove, .panelToggle {
+                cursor: pointer;
+                cursor: hand;
+                margin-left: 10px;
+            }
+
+            .myBorder {
+                border: 1px solid #808080;
+                padding: 10px;
+            }
+
+            .onSort {
+                min-height: 200px;
+                min-width: 200px;
+                height: 100%;
+                width: 100%;
+                border-color: red;
+                border-width: 2px;
+                border-style: solid;
+            }
+
+            .xbootSection {
+                padding: 10px;
+            }
+
+            ul.sortable {
+                height: 100%;
+                width: 100%;
+            }
+
+            .CodeMirror-scroll {
+                overflow-y: hidden;
+                overflow-x: auto;
+            }
+        </style>
+    </div>
+    <div>
+    </div>
+    <textarea></textarea>
+    <script type="text/javascript">
+        var setupXml = function (el) {
+            var editor = el.CodeMirror;
+            if (editor) {
+                editor.toTextArea();
+            }
+
+            editor = CodeMirror.fromTextArea(el,
+                {
+                    mode: "xml",
+                    lineNumbers: true,
+                    lineWrapping: true,
+                    autoCloseTags: true,
+                    viewportMargin: Infinity,
+                    extraKeys: {
+                        "'>'": function (cm) { cm.closeTag(cm, '>'); },
+                        "'/'": function (cm) { cm.closeTag(cm, '/'); },
+                        //"' '": function (cm) { CodeMirror.xmlHint(cm, ' '); },
+                        //"'<'": function (cm) { CodeMirror.xmlHint(cm, '<'); },
+                        //"Ctrl-Space": function (cm) { CodeMirror.xmlHint(cm, ''); }
+                    },
+                    foldGutter: {
+                        rangeFinder: CodeMirror.fold.xml
+                    }, gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"], lint: false
+                });
+            $(el).data('CodeMirror', editor);
+        };
+
+        setupXml($('textarea')[0]);
+
+        var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+        var eventer = window[eventMethod];
+        var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+
+        // Listen to message from child IFrame window
+        eventer(messageEvent, function (e) {
+            var elem = e.data;//JSON.parse(e.data);
+            var editor = $('textarea').data('CodeMirror');
+            if (elem.action == 'set') {
+                var data = xSolon.string.htmlDecode(elem.data);
+                editor.setValue(data);
+                editor.refresh();
+            } else if (elem.action == 'get') {
+                var val = editor.getValue();
+                window.parent.postMessage(JSON.stringify({ code: val, action: elem.action, id: window.location.href.split('=')[1] }), '*');
+            }
+        });
+    </script>
+    <small>v0.1.0</small>
+</body>
+</html>

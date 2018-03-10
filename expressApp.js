@@ -10,6 +10,8 @@ var users = require("./routes/users");
 
 var app = express();
 
+app.use('/node_modules', express.static(__dirname + '/node_modules'));
+
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");

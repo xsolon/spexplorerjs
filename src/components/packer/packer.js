@@ -8,7 +8,8 @@ var files = [
     //,"./src/components/loader/loader.js"
     //,"./src/components/logger/logger.js"
     //,"./src/components/datatables/datatables.js"
-    , "./src/components/sp/sp.web.js"
+    //, "./src/components/sp/sp.web.js"
+    , "./src/components/mirrors/xmlmirror.js"
     //"./src/pages/index/index.js"
 ];
 var runWebPack = function (debug, filePath) {
