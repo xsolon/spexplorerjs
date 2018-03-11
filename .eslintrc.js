@@ -31,6 +31,8 @@ module.exports = {
         "jQuery": true,
         "SP": true,
         "CodeMirror": true,// TODO: shouldn't have to be global
-        "module":true
+        "module": true,
+        "ExecuteOrDelayUntilScriptLoaded": true,
+        "spexplorerjs": true
     }
 };

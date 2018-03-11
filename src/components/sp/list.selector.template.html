@@ -1,0 +1,61 @@
+﻿<div>
+    <div class="widgetInfo" style="font-size: small">list<span>v0.1.1</span></div>
+    <div>
+        <ul class="nav nav-tabs" style="max-height:40px">
+            <li class="active"><a data-toggle="tab" href="#splistinfo">List Info</a></li>
+            <li><a data-toggle="tab" href="#splistscripting">Scripting</a></li>
+            <li><a data-toggle="tab" href="#splistcustomactions">Custom Actions</a></li>
+            <li><a data-toggle="tab" href="#splistfiels">Fields</a></li>
+        </ul>
+        <div class="tab-content col-md-12">
+            <div id="splistinfo" class="tab-pane fade in active">
+                <div class="form-horizontal">
+                    <fieldset>
+
+                        <legend>List Editor</legend>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="textinput">List</label>
+                            <div class="col-md-10">
+                                <div data-widget="xSPTreeLight"></div>
+                                <span class="help-block">Select an existing list.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="textinput">Title</label>
+                            <div class="col-md-10">
+                                <input id="title" name="title" type="text" placeholder="placeholder" class="form-control input-md" />
+                                <span class="help-block">
+                                    A string that contains the title.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="textarea">Scripting</label>
+                            <div class="col-md-10">
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+            <div id="splistscripting" class="tab-pane fade">
+                <div style="max-height:250px" data-widget="xjsmirror"></div>
+            </div>
+            <div id="splistcustomactions" class="tab-pane fade">
+                <div data-widget="spCustomActions"></div>
+            </div>
+            <div id="splistfiels" class="tab-pane fade">
+                <div data-widget="spCustomActions"></div>
+            </div>
+        </div>
+    </div>
+
+    <style type="text/css">
+        .nav-tabs > li .close {
+            margin: -2px 0 0 10px;
+            font-size: 18px;
+        }
+    </style>
+</div>

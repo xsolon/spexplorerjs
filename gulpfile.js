@@ -59,6 +59,35 @@ var test = function () {
 
 
 };
+var less = require('gulp-less');
+var sass = require('gulp-sass');
+gulp.task("sass", function () {
+    return gulp.src("public/vendor/bootstrap/css/spexpjs.scss")
+        .pipe(sass().on('error', sass.logError))
+        .pipe($.rename(function (path) {
+
+            //path.dirname += "/ciao";
+            //path.basename = path.basename += ".widget";
+            console.log(path.basename);
+            path.extname = ".css";
+        }))
+        .pipe(gulp.dest('public/vendor/bootstrap/css'));
+
+});
+
+gulp.task("less", function () {
+    return gulp.src("public/vendor/bootstrap/css/spexpbootstrap.less")
+        .pipe(less({}))
+        .pipe($.rename(function (path) {
+
+            //path.dirname += "/ciao";
+            //path.basename = path.basename += ".widget";
+            console.log(path.basename);
+            path.extname = ".css";
+        }))
+        .pipe(gulp.dest('public/vendor/bootstrap/css'));
+
+});
 
 gulp.task("fixwidgets",
     function () {

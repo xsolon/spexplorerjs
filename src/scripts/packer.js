@@ -1,7 +1,7 @@
 var fs = require("fs");
 var path = require("path");
 var webpack = require("webpack");
-var chokidar = require('chokidar');
+var chokidar = require("chokidar");
 var widgetTransforms = require("./widgettransforms.js");
 var files = [
     "./src/components/string/string.js"
@@ -9,11 +9,14 @@ var files = [
     //,"./src/components/logger/logger.js"
     //,"./src/components/datatables/datatables.js"
     //, "./src/components/sp/sp.web.js"
-    , "./src/components/mirrors/xmleditor.js"
-    , "./src/components/mirrors/xmlmirror.js"
+    //, "./src/components/mirrors/xmleditor.js"
+    //, "./src/components/mirrors/xmlmirror.js"
+    , "./src/components/sp/treelight.js"
+    //, "./src/components/sp/list.selector.js"
+    , "./src/components/sp/field.selector.js"
     //"./src/pages/index/index.js"
 ];
-var runWebPack = function(debug, filePath) {
+var runWebPack = function (debug, filePath) {
 
     var execPath = process.cwd();
     console.log("Execution path:" + execPath);
@@ -35,7 +38,7 @@ var runWebPack = function(debug, filePath) {
     //var debug = process.env.NODE_ENV !== "production";
     console.log(publicDir);
     console.log("debug: " + debug);
-    var HtmlWebpackPlugin = require('html-webpack-plugin');
+    var HtmlWebpackPlugin = require("html-webpack-plugin");
     //var HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
     var prodPlugins = [
         // new webpack.optimize.DedupePlugin(),
@@ -52,7 +55,7 @@ var runWebPack = function(debug, filePath) {
         prodPlugins.push(new HtmlWebpackPlugin({
             template: template,
             inject: false,
-            inlineSource: '.(js|css)$',
+            inlineSource: ".(js|css)$",
             filename: path.basename(localTemplatePath)
         }));
     }
@@ -77,8 +80,17 @@ var runWebPack = function(debug, filePath) {
         module: {
             rules: [
                 {
+                    test: /\.html$/,
+                    use: [{
+                        loader: "html-loader",
+                        options: {
+                            minimize: false
+                        }
+                    }]
+                },
+                {
                     test: /\.css$/,
-                    use: ['css-loader']
+                    use: ["style-loader", "css-loader"]
                 },
                 {
                     enforce: "pre",
@@ -90,6 +102,18 @@ var runWebPack = function(debug, filePath) {
                         emitWarning: true,
                         fix: true
                     }
+                },
+                {
+                    test: /\.(eot|svg|ttf|woff|woff2)$/,
+                    use: [
+                        'url-loader'
+                    ]
+                },
+                {
+                    test: /\.(gif|png|jpe?g|svg)$/i,
+                    use: [
+                        'url-loader'
+                    ]
                 },
                 {
                     test: /\.js$/,
@@ -120,7 +144,7 @@ var runWebPack = function(debug, filePath) {
             return;
         } else {
 
-            var samplePath = localTemplatePath.replace('src', 'public');
+            var samplePath = localTemplatePath.replace("src", "public");
             if (fs.existsSync(samplePath)) {
                 widgetTransforms.createWidget(samplePath, execPath);
             }
@@ -134,7 +158,7 @@ var runWebPack = function(debug, filePath) {
     });
 };
 
-module.exports.watch = function() {
+module.exports.watch = function () {
 
     var watcher = chokidar.watch(files, {
         //ignored: /(^|[\/\\])\../,
@@ -142,25 +166,25 @@ module.exports.watch = function() {
     });
 
     watcher
-        .on('add', path => console.log(`File ${path} has been added`))
-        .on('change', path => {
+        .on("add", path => console.log(`File ${path} has been added`))
+        .on("change", path => {
             console.log(path);
             runWebPack(true, path);
             runWebPack(false, path);
         })
-        .on('unlink', path => {
+        .on("unlink", path => {
             console.log(`File ${path} has been removed`);
             watcher.add(path);
         });
 
-    const readline = require('readline');
+    const readline = require("readline");
 
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
     });
 
-    rl.question('Press enter to exit ', (answer) => {
+    rl.question("Press enter to exit ", (answer) => {
         rl.close();
         watcher.close();
     });
@@ -169,7 +193,7 @@ module.exports.watch = function() {
 
 };
 
-module.exports.updateAll = function() {
+module.exports.updateAll = function () {
 
     for (var i = 0; i < files.length; i++) {
         var file = files[i];
