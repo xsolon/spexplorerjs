@@ -13,348 +13,352 @@ import "./treelight.js";
 
 (function (ns, $) {
 
-    var debug = window.location.href.search(/[localhost|debugfieldsel]/) > 0;
-    var log = new function () {
-        var d = function () {
-            ns.logger && ns.logger.log.apply(log, arguments);
-            if (debug)
-                SP.UI.Notify.addNotification(arguments[0]);
-        };
-        d.source = "field.selector";
-        return d;
-    };
+	var debug = window.location.href.search(/[localhost|debugfieldsel]/) > 0;
+	var log = new function () {
+		var d = function () {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug)
+				SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "field.selector";
+		return d;
+	};
 
-    var fieldLabel = function (field) {
-        var tmpl = fieldtemplate.trim();
-        var valu = ns.string.format(tmpl, field.get_title(),
-            field.get_internalName(),
-            field.get_staticName(),
-            field.get_id().toString());
-        return valu;
-    };
+	var fieldLabel = function (field) {
+		var tmpl = fieldtemplate.trim();
+		var valu = ns.string.format(tmpl, field.get_title(),
+			field.get_internalName(),
+			field.get_staticName(),
+			field.get_id().toString());
+		return valu;
+	};
 
-    var SPDAL = function (siteUrl) {
-        var ctx = (siteUrl) ? new SP.ClientContext(siteUrl) : SP.ClientContext.get_current();
-        var web = ctx.get_web();
-        var lists = web.get_lists();
+	var SPDAL = function (siteUrl) {
+		var ctx = (siteUrl) ? new SP.ClientContext(siteUrl) : SP.ClientContext.get_current();
+		var web = ctx.get_web();
+		var lists = web.get_lists();
 
-        var getFields = function (listName) {
+		var getFields = function (listName) {
 
-            return $.Deferred(function (dfd) {
+			return $.Deferred(function (dfd) {
 
-                var list = null;
-                var iCtx = ctx;
-                if (typeof listName == "string") {
-                    list = lists.getByTitle(listName);
-                }
-                else {
-                    list = listName;
-                    iCtx = list.get_context();
-                }
-                var fields = list.get_fields();
-                iCtx.load(fields);
-                iCtx.executeQueryAsync(function () {
-                    log(list);
-                    var enumer = fields.getEnumerator();
-                    var spfields = [];
-                    while (enumer.moveNext()) {
-                        var cur = enumer.get_current();
-                        spfields.push(cur);
-                    }
-                    spfields.sort(function (x, y) { return x.get_title().localeCompare(y.get_title()); });
-                    dfd.resolve(spfields);
-                }, function onError(sender, args) {
-                    log(`Request failed ${args.get_message()}\n${args.get_stackTrace()}`);
-                    dfd.reject(args);
-                });
+				var list = null;
+				var iCtx = ctx;
+				if (typeof listName == "string") {
+					list = lists.getByTitle(listName);
+				}
+				else {
+					list = listName;
+					iCtx = list.get_context();
+				}
+				var fields = list.get_fields();
+				iCtx.load(fields);
+				iCtx.executeQueryAsync(function () {
+					log(list);
+					var enumer = fields.getEnumerator();
+					var spfields = [];
+					while (enumer.moveNext()) {
+						var cur = enumer.get_current();
+						spfields.push(cur);
+					}
+					spfields.sort(function (x, y) { return x.get_title().localeCompare(y.get_title()); });
+					dfd.resolve(spfields);
+				}, function onError(sender, args) {
+					log(`Request failed ${args.get_message()}\n${args.get_stackTrace()}`);
+					dfd.reject(args);
+				});
 
-            }).promise();
-        };
-        var getList = function (listTitle) {
-            return $.Deferred(function (dfd) {
+			}).promise();
+		};
+		var getList = function (listTitle) {
+			return $.Deferred(function (dfd) {
 
-                var list = lists.getByTitle(listTitle);
-                ns.sp.loadSpElem(list, ctx).done(function (list) {
-                    dfd.resolve(list);
-                });
+				var list = lists.getByTitle(listTitle);
+				ns.sp.loadSpElem(list, ctx).done(function (list) {
+					dfd.resolve(list);
+				});
 
-            }).promise();
-        };
+			}).promise();
+		};
 
-        var getLists = function () {
-            return $.Deferred(function (dfd) {
+		var getLists = function () {
+			return $.Deferred(function (dfd) {
 
-                ctx.load(lists, "Include(Title)");
-                ctx.executeQueryAsync(function () {
-                    log(lists);
-                    var enumer = lists.getEnumerator();
-                    var splists = [];
-                    while (enumer.moveNext()) {
-                        var cur = enumer.get_current();
-                        splists.push(cur.get_title());
-                    }
-                    dfd.resolve(splists);
-                }, function onError(sender, args) {
-                    log(`Request failed ${args.get_message()}\n${args.get_stackTrace()}`);
-                });
+				ctx.load(lists, "Include(Title)");
+				ctx.executeQueryAsync(function () {
+					log(lists);
+					var enumer = lists.getEnumerator();
+					var splists = [];
+					while (enumer.moveNext()) {
+						var cur = enumer.get_current();
+						splists.push(cur.get_title());
+					}
+					dfd.resolve(splists);
+				}, function onError(sender, args) {
+					log(`Request failed ${args.get_message()}\n${args.get_stackTrace()}`);
+				});
 
-            }).promise();
-        };
+			}).promise();
+		};
 
-        return { getFields: getFields, getLists: getLists, getList: getList };
-    };
-    var bindFieldSelect = function (sel, fields, excludereadonly) {
+		return { getFields: getFields, getLists: getLists, getList: getList };
+	};
+	var bindFieldSelect = function (sel, fields, excludereadonly) {
 
-        for (var i = 0; i < fields.length; i++) {
-            var field = fields[i];
-            var opt = $(ns.string.format("<option value=\"{1}\">{0}|{1}</option>",
-                field.get_internalName().toString(),
-                field.get_title()));
-            opt.prop("data-field", field);
+		for (var i = 0; i < fields.length; i++) {
+			var field = fields[i];
+			var opt = $(ns.string.format("<option value=\"{1}\">{0}|{1}</option>",
+				field.get_internalName().toString(),
+				field.get_title()));
+			opt.prop("data-field", field);
 
-            if (excludereadonly && field.get_readOnlyField()) {
-                log("readonly");
-            }
-            else
-                sel.append(opt);
-        }
+			if (excludereadonly && field.get_readOnlyField()) {
+				log("readonly");
+			}
+			else
+				sel.append(opt);
+		}
 
-        var initSelect2 = function (sel) {
-            sel.select2({
-                templateResult: function formatState(state) {
+		var initSelect2 = function (sel) {
+			sel.select2({
+				templateResult: function formatState(state) {
 
-                    if (!state.id) { return state.text; }
+					if (!state.id) { return state.text; }
 
-                    var field = $(state.element).prop("data-field");
+					var field = $(state.element).prop("data-field");
 
-                    var $state = $(fieldLabel(field));
+					var $state = $(fieldLabel(field));
 
-                    return $state;
-                }, templateSelection: function template(data/*, container*/) {
+					return $state;
+				}, templateSelection: function template(data/*, container*/) {
 
-                    return $(data.element).prop("data-field").get_title();
-                }
-            });
+					return $(data.element).prop("data-field").get_title();
+				}
+			});
 
-        };
-        initSelect2(sel);
-    };
-    var xSPFieldSelector = function (ui, opts) {
-        var $el = $(ui); var fieldContainer = null;// var selectedField = null;
-        opts = $.extend({
-            label: $el.attr("data-label"),
-            weburl: $el.attr("data-siteurl"),
-            listtitle: $el.attr("data-list"),
-            excludereadonly: $el.attr("data-excludereadonly")
-        }, opts);
-        try {
-            var state = $(".xwidgetstate:first", $el);
-            if (state.length > 0) {
-                opts = $.extend(opts, JSON.parse(state.html().trim()));
-            }
-        } catch (e) {
-            log(e);
-        }
+		};
+		initSelect2(sel);
+	};
+	var xSPFieldSelector = function (ui, opts) {
+		var $el = $(ui); var fieldContainer = null;// var selectedField = null;
+		opts = $.extend({
+			label: $el.attr("data-label"),
+			weburl: $el.attr("data-siteurl"),
+			listtitle: $el.attr("data-list"),
+			excludereadonly: $el.attr("data-excludereadonly")
+		}, opts);
+		try {
+			var state = $(".xwidgetstate:first", $el);
+			if (state.length > 0) {
+				opts = $.extend(opts, JSON.parse(state.html().trim()));
+			}
+		} catch (e) {
+			log(e);
+		}
 
-        $el.html(template.trim().replace("[label]", opts.label));
+		$el.html(template.trim().replace("[label]", opts.label));
 
-        var spdal = new SPDAL(opts.weburl);
-        var fieldSel = $(".fieldsDrp", ui).on("change", function () {
-            var field = fieldSel.find(":selected").prop("data-field");
-            if (field) {
+		var spdal = new SPDAL(opts.weburl);
+		var fieldSel = $(".fieldsDrp", ui).on("change", function () {
+			var field = fieldSel.find(":selected").prop("data-field");
+			if (field) {
 
-                log({ field: field });
-            }
-        });
+				log({ field: field });
+			}
+		});
 
-        var onListChange = function (list) {
+		var onListChange = function (list) {
 
-            return $.Deferred(function (dfd) {
+			return $.Deferred(function (dfd) {
 
-                fieldContainer = list;
-                opts.listtitle = list.get_title();
-                (function loadWebUrl() {
-                    var done = function () {
-                        opts.weburl = list.get_parentWebUrl();
-                    };
-                    if (list.isPropertyAvailable("ParentWebUrl")) {
-                        done();
-                    } else {
-                        ns.sp.loadSpElem(list, list.get_context()).done(done);
-                    }
-                })();
+				fieldContainer = list;
+				opts.listtitle = list.get_title();
+				(function loadWebUrl() {
+					var done = function () {
+						opts.weburl = list.get_parentWebUrl();
+					};
+					if (list.isPropertyAvailable("ParentWebUrl")) {
+						done();
+					} else {
+						ns.sp.loadSpElem(list, list.get_context()).done(done);
+					}
+				})();
 
-                spdal.getFields(list).done(function (fields) {
-                    fieldSel.html("");
-                    bindFieldSelect(fieldSel, fields, opts.excludereadonly);
-                    fieldSel.val(null).trigger("change.select2");
-                }).fail(function (err) {
-                    log(err);
-                }).always(function () { dfd.resolve(); });
+				spdal.getFields(list).done(function (fields) {
+					fieldSel.html("");
+					bindFieldSelect(fieldSel, fields, opts.excludereadonly);
+					fieldSel.val(null).trigger("change.select2");
+				}).fail(function (err) {
+					log(err);
+				}).always(function () { dfd.resolve(); });
 
-            }).promise();
+			}).promise();
 
-        };
+		};
 
-        var readonlycheck = $(".ereadonly", $el);
-        readonlycheck.click(function () {
-            opts.excludereadonly = $(this).prop("checked");
-            onListChange(fieldContainer);
-        }).prop("checked", opts.excludereadonly);
+		var readonlycheck = $(".ereadonly", $el);
+		readonlycheck.click(function () {
+			opts.excludereadonly = $(this).prop("checked");
+			onListChange(fieldContainer);
+		}).prop("checked", opts.excludereadonly);
 
-        var listCtrl = $("[data-widget=\"xSPTreeLight\"]", $el).xSPTreeLight().on("listchange", function (e, list) {
-            onListChange(list);
-        });
-        var loadList = function (listTitle) {
-            return $.Deferred(function (dfd) {
+		var listCtrl = $("[data-widget=\"xSPTreeLight\"]", $el).xSPTreeLight().on("listchange", function (e, list) {
+			
+			onListChange(list);
+		});
+		var loadList = function (listTitle) {
+			return $.Deferred(function (dfd) {
 
-                log(`loading list${listTitle}`);
+				log(`loading list${listTitle}`);
 
-                spdal.getList(listTitle).done(function (list) {
-                    onListChange(list);
-                    listCtrl.data("xSPTreeLight").value(list);
-                }).always(function () {
-                    dfd.resolve();
-                });
+				spdal.getList(listTitle).done(function (list) {
+					onListChange(list);
+					listCtrl.data("xSPTreeLight").value(list);
+				}).always(function () {
+					dfd.resolve();
+				});
 
-            }).promise();
+			}).promise();
 
-        };
-        if (opts.listtitle) {
-            loadList(opts.listtitle).done(function () {
-                $el.trigger("xwidget.init");
-            });
-        } else {
-            $el.trigger("xwidget.init");
-        }
+		};
+		if (opts.listtitle) {
+			loadList(opts.listtitle).done(function () {
+				$el.trigger("xwidget.init");
+			});
+		} else {
+			$el.trigger("xwidget.init");
+		}
 
-        return (function register() {
-            var me = {
-                value: function () {
-                    var field = fieldSel.find(":selected").prop("data-field");
-                    return field;
-                }, getFields() {
+		return (function register() {
+			var me = {
+				setList: function (list) {
+					//onListChange(list);
+					listCtrl.data("xSPTreeLight").value(list);
+					//container = list;
+				},
+				value: function () {
+					var field = fieldSel.find(":selected").prop("data-field");
+					return field;
+				}, getFields() {
 
-                    var fields = [];
-                    fieldSel.find("option").each(function () {
-                        fields.push($(this).prop("data-field"));
-                    });
+					var fields = [];
+					fieldSel.find("option").each(function () {
+						fields.push($(this).prop("data-field"));
+					});
 
-                    return fields;
+					return fields;
 
-                }, state: function (instate) {
-                    if (arguments.length > 0) {
-                        log({ setstate: instate });
-                        opts.listtitle = instate.listtitle;
-                        if (opts.weburl != instate.weburl) {
+				}, state: function (instate) {
+					if (arguments.length > 0) {
+						log({ setstate: instate });
+						opts.listtitle = instate.listtitle;
+						if (opts.weburl != instate.weburl) {
 
-                            spdal = new SPDAL(opts.weburl);
-                        }
-                        opts.excludereadonly = instate.excludereadonly;
-                        readonlycheck.prop("checked", opts.excludereadonly);
-                        opts = $.extend(opts, instate);
-                        $("legend:first", $el).html(opts.label);
-                        loadList(opts.listtitle);
+							spdal = new SPDAL(opts.weburl);
+						}
+						opts.excludereadonly = instate.excludereadonly;
+						readonlycheck.prop("checked", opts.excludereadonly);
+						opts = $.extend(opts, instate);
+						$("legend:first", $el).html(opts.label);
+						loadList(opts.listtitle);
 
-                    } else {
-                        var state = {
-                            label: $("legend:first", $el).html(),
-                            list: fieldContainer,
-                            listtitle: (fieldContainer) ? fieldContainer.get_title() : "",
-                            weburl: opts.weburl
-                            , excludereadonly: opts.excludereadonly
-                        };
+					} else {
+						var state = {
+							label: $("legend:first", $el).html(),
+							list: fieldContainer,
+							listtitle: (fieldContainer) ? fieldContainer.get_title() : "",
+							weburl: opts.weburl
+							, excludereadonly: opts.excludereadonly
+						};
 
-                        return state;
+						return state;
 
-                    }
-                }
-                , fieldcontainer: function () {
-                    return fieldContainer;
-                }, savestate: function () {
-                    var state = me.state();
-                    delete state.list; // complex object
+					}
+				}
+				, fieldcontainer: function () {
+					return fieldContainer;
+				}, savestate: function () {
+					var state = me.state();
+					delete state.list; // complex object
 
-                    var statectrl = $(".xwidgetstate:first", $el);
-                    if (statectrl.length == 0) {
-                        statectrl = $("<div class=\"xwidgetstate\" style=\"display:none\"/>");
-                    }
-                    statectrl.html(JSON.stringify(state));
-                }
-            };
+					var statectrl = $(".xwidgetstate:first", $el);
+					if (statectrl.length == 0) {
+						statectrl = $("<div class=\"xwidgetstate\" style=\"display:none\"/>");
+					}
+					statectrl.html(JSON.stringify(state));
+				}
+			};
 
-            $el.data("xSPFieldSelector", me).data("xwidget", me);
+			$el.data("xSPFieldSelector", me).data("xwidget", me);
 
-            return me;
+			return me;
 
-        })();
-    };
+		})();
+	};
 
-    var widgetInfo = {
-        publicName: "xSPFieldSelector",
-        constructor: xSPFieldSelector,
-        version: "0.1.3",
-        getSelector: function () {
-            var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
-            log(`selector: ${selector}`);
-            return selector;
-        },
-        startup: function (context) {
-            log(widgetInfo.publicName + ".startup");
-            var selector = widgetInfo.getSelector();
-            var elems = $(selector, context || document);
-            log(`Elems: ${elems.length}`);
-            elems[widgetInfo.publicName]({});
-            $(document).ready(function () {
-            });
+	var widgetInfo = {
+		publicName: "xSPFieldSelector",
+		constructor: xSPFieldSelector,
+		version: "0.1.3",
+		getSelector: function () {
+			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
+			log(`selector: ${selector}`);
+			return selector;
+		},
+		startup: function (context) {
+			log(widgetInfo.publicName + ".startup");
+			var selector = widgetInfo.getSelector();
+			var elems = $(selector, context || document);
+			log(`Elems: ${elems.length}`);
+			elems[widgetInfo.publicName]({});
 
-            return elems;
-        }
-    };
+			return elems;
+		}
+	};
 
-    $.fn[widgetInfo.publicName] = function (opts) {
-        var args = arguments;
-        //var lastInstance = null;
-        var result = this.each(function () {
+	$.fn[widgetInfo.publicName] = function (opts) {
+		var args = arguments;
+		//var lastInstance = null;
+		var result = this.each(function () {
 
-            var $el = $(this);
+			var $el = $(this);
 
-            var me = $el.data(widgetInfo.publicName);
+			var me = $el.data(widgetInfo.publicName);
 
-            if (me) { // object has been initialized before
+			if (me) { // object has been initialized before
 
-                if (opts == null) { // request for instance
-                    //lastInstance = me;
-                } else
-                    if (me[opts]) {
-                        if (typeof me[opts] == "function")
-                            me[opts].apply(me, Array.prototype.slice.call(args, 1));
-                        else
-                            me[opts] = args[1];
-                    }
+				if (opts == null) { // request for instance
+					//lastInstance = me;
+				} else
+				if (me[opts]) {
+					if (typeof me[opts] == "function")
+						me[opts].apply(me, Array.prototype.slice.call(args, 1));
+					else
+						me[opts] = args[1];
+				}
 
-            } else {
+			} else {
 
-                var obj = new widgetInfo.constructor(this, opts);
-                $el.data(widgetInfo.publicName, obj);
-            }
-        });
+				var obj = new widgetInfo.constructor(this, opts);
+				$el.data(widgetInfo.publicName, obj);
+			}
+		});
 
-        //if (lastInstance && result.length == 1) return lastInstance;
-        return result;
-    };
+		//if (lastInstance && result.length == 1) return lastInstance;
+		return result;
+	};
 
-    (ns.widgets = (ns.widgets || {}))[widgetInfo.publicName] = widgetInfo;
-    log(widgetInfo.publicName + ".registered");
+	(ns.widgets = (ns.widgets || {}))[widgetInfo.publicName] = widgetInfo;
+	log(widgetInfo.publicName + ".registered");
 
-    ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
+	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
 
-    //--
-    // if (ns.loader.isBusy) {
-    //	ns.loader.bits.push(init);
-    //}
-    //else {
+	//--
+	// if (ns.loader.isBusy) {
+	//	ns.loader.bits.push(init);
+	//}
+	//else {
 
-    //}
+	//}
 
 })(spexplorerjs, $);

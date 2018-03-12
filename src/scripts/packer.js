@@ -9,10 +9,12 @@ var files = [
     //,"./src/components/logger/logger.js"
     //,"./src/components/datatables/datatables.js"
     //, "./src/components/sp/sp.web.js"
+    , "./src/components/mirrors/jseditor.js"
+    , "./src/components/mirrors/jsmirror.js"
     //, "./src/components/mirrors/xmleditor.js"
     //, "./src/components/mirrors/xmlmirror.js"
     , "./src/components/sp/treelight.js"
-    //, "./src/components/sp/list.selector.js"
+    , "./src/components/sp/list.selector.js"
     , "./src/components/sp/field.selector.js"
     //"./src/pages/index/index.js"
 ];
@@ -79,6 +81,13 @@ var runWebPack = function (debug, filePath) {
         },
         module: {
             rules: [
+                {
+                    test: require.resolve('jquery'),
+                    use: [{
+                        loader: 'expose-loader',
+                        options: 'jQuery'
+                    }]
+                },
                 {
                     test: /\.html$/,
                     use: [{
@@ -188,8 +197,6 @@ module.exports.watch = function () {
         rl.close();
         watcher.close();
     });
-
-
 
 };
 

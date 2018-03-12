@@ -4,7 +4,10 @@ import "../logger/logger.js";
 import "./sp.base.js";
 import "./sp.web.js";
 import "./treelight.js";
+import "./field.selector.js";
+import "../mirrors/jsmirror.js";
 import template from "./list.selector.template.html";
+
 (function (ns, $, template) {
 
 	var debug = window.location.href.search(/[localhost|debuglistselector]/) > 0;
@@ -26,12 +29,15 @@ import template from "./list.selector.template.html";
 
 		$("#btnAdd", $el).click(function () {
 		});
-		//var jsWidget = ns.widgets.xjsmirror.startup($el);
+		var jsWidget = ns.widgets.xjsmirror.startup($el);
 
-		ns.widgets.xSPTreeLight.startup($el).on("listchange", function (event, list) {
+		var fieldSelector = ns.widgets.xSPFieldSelector.startup($el);
+
+		ns.widgets.xSPTreeLight.startup($(".listSelectorFirst",$el)).on("listchange", function (event, list) {
 
 			$("#title", $el).val(list.get_title());
-			//jsWidget.data("xjsmirror").setScriptingObject(list);
+			jsWidget.data("xjsmirror").setScriptingObject(list);
+			fieldSelector.data("xSPFieldSelector").setList(list);
 			//caCtrl.setList(list);
 		});
 

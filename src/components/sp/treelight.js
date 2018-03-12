@@ -1,7 +1,7 @@
-import $ from "jquery";
-import "../../../public/vendor/bootstrap/js/bootstrap.js";
+import jQuery from "jquery";
+//import "../../../public/vendor/bootstrap/js/bootstrap.js";
 //import "../../../public/vendor/bootstrap/css/spexpjs.css";
-//import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
+import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
 import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 import "jstree";
 import "../logger/logger.js";
@@ -466,4 +466,4 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 
 	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
 
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, $, template);
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, jQuery, template);
