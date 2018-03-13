@@ -7,6 +7,7 @@ import "../../../public/vendor/select2/css/select2.css";
 //import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 import "../logger/logger.js";
 import "./sp.base.js";
+import "../mirrors/xmlmirror.js";
 import template from "./field.selector.template.html";
 import fieldtemplate from "./field.selector.fieldtemplate.html";
 import "./treelight.js";
@@ -141,12 +142,14 @@ import "./treelight.js";
 	};
 	var xSPFieldSelector = function (ui, opts) {
 		var $el = $(ui); var fieldContainer = null;// var selectedField = null;
+
 		opts = $.extend({
 			label: $el.attr("data-label"),
 			weburl: $el.attr("data-siteurl"),
 			listtitle: $el.attr("data-list"),
 			excludereadonly: $el.attr("data-excludereadonly")
 		}, opts);
+
 		try {
 			var state = $(".xwidgetstate:first", $el);
 			if (state.length > 0) {
@@ -158,11 +161,15 @@ import "./treelight.js";
 
 		$el.html(template.trim().replace("[label]", opts.label));
 
+		var xmlMirror = ns.widgets.xxmlmirror.startup($el).data("xwidget");
+
 		var spdal = new SPDAL(opts.weburl);
 		var fieldSel = $(".fieldsDrp", ui).on("change", function () {
 			var field = fieldSel.find(":selected").prop("data-field");
 			if (field) {
 
+				var xml = field.get_schemaXml();
+				xmlMirror.setXml(xml);
 				log({ field: field });
 			}
 		});
@@ -203,7 +210,6 @@ import "./treelight.js";
 		}).prop("checked", opts.excludereadonly);
 
 		var listCtrl = $("[data-widget=\"xSPTreeLight\"]", $el).xSPTreeLight().on("listchange", function (e, list) {
-			
 			onListChange(list);
 		});
 		var loadList = function (listTitle) {
@@ -352,13 +358,5 @@ import "./treelight.js";
 	log(widgetInfo.publicName + ".registered");
 
 	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
-
-	//--
-	// if (ns.loader.isBusy) {
-	//	ns.loader.bits.push(init);
-	//}
-	//else {
-
-	//}
 
 })(spexplorerjs, $);

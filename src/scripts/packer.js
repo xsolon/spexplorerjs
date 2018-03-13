@@ -9,15 +9,16 @@ var files = [
     //,"./src/components/logger/logger.js"
     //,"./src/components/datatables/datatables.js"
     //, "./src/components/sp/sp.web.js"
-    , "./src/components/mirrors/jseditor.js"
-    , "./src/components/mirrors/jsmirror.js"
-    //, "./src/components/mirrors/xmleditor.js"
-    //, "./src/components/mirrors/xmlmirror.js"
-    , "./src/components/sp/treelight.js"
-    , "./src/components/sp/list.selector.js"
+    //, "./src/components/mirrors/jseditor.js"
+    //, "./src/components/mirrors/jsmirror.js"
+    , "./src/components/mirrors/xmleditor.js"
+    , "./src/components/mirrors/xmlmirror.js"
+    //, "./src/components/sp/treelight.js"
+    //, "./src/components/sp/list.selector.js"
     , "./src/components/sp/field.selector.js"
     //"./src/pages/index/index.js"
 ];
+
 var runWebPack = function (debug, filePath) {
 
     var execPath = process.cwd();

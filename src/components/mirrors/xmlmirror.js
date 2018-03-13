@@ -1,7 +1,10 @@
 import $ from "jquery";
 import "../string/string.js";
+import "../logger/logger.js";
+import "./xmleditor.js";
+import template from "./xmlmirror.template.html";
 
-(function (ns) {
+(function (ns, $) {
 
 	//var debug = window.location.href.search(/localhost|debugxsptree/) > 0;
 	var log = new function () {
@@ -26,52 +29,43 @@ import "../string/string.js";
 		var $el = $(ui);
 
 		opts.id = opts.id || $(".full").length;
-		$el.html($("#xmlmirrortmpl:first").html().trim());
+		$el.html(template.trim());
 		var iframe = $("iframe", ui);
 		var src = iframe.attr("src");
 		iframe.attr("src", src + "?id=" + opts.id);
-		var run = $("button", ui);
+		//var run = $("button", ui);
 
-		var currentPromises = [];
-		run.click(function (event) {
-			event.preventDefault();
-			iframe[0].contentWindow.postMessage({ action: "get" }, "*");
-			return false;
-		});
-		iframe[0].addEventListener("load", function () {
-			iframe[0].contentWindow.postMessage({ action: "set", data: "log(spelem);" }, "*");
-		});
-		var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
-		var eventer = window[eventMethod];
-		var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+		// --
+		var editor = null;
+		(function iframeImplementation() {
+			var iframe = $("iframe", ui);
+			iframe[0].contentWindow.document.write("<html><body><textarea></textarea></body></html>");
 
-		// Listen to message from child IFrame window
-		eventer(messageEvent, function (e) {
-			var data = JSON.parse(e.data);
 
-			if (data.id == opts.id)
-				try {
-					var promise = currentPromises[0];//todo: handle many
-					promise.resolve(data.code);
-					var index = currentPromises.indexOf(promise);
-					if (index > -1) {
-						currentPromises.splice(index, 1);
-					}
-				} catch (e) {
-					console.log(e.message);
-					throw e;
-				}
-		});
+			$("style").each(function () {
+				iframe.contents().find("body").append(this.cloneNode(true));
+			});
 
+			editor = ns.widgets.xmleditorinit(iframe.contents().find("textarea")[0]);
+
+			//run.click(function () {
+			//	runScript(editor.get());
+			//	return false;
+			//});
+
+		})();
+
+		//--
 		var me = {};
 		me.getXml = function () {
 			return $.Deferred(function (dfd) {
-				currentPromises.push(dfd);
-				iframe[0].contentWindow.postMessage({ action: "get" }, "*");
+
+				var code = editor.get();
+				dfd.resolve(code);
 			}).promise();
 		};
 		me.setXml = function (xml) {
-			iframe[0].contentWindow.postMessage({ action: "set", data: xml }, "*");
+			editor.set(xml);
 		};
 		return me;
 	};
@@ -97,7 +91,6 @@ import "../string/string.js";
 
 	$.fn[widgetInfo.publicName] = function (opts) {
 		var args = arguments;
-		//var lastInstance = null;
 		var result = this.each(function () {
 
 			var $el = $(this);
@@ -119,20 +112,14 @@ import "../string/string.js";
 			} else {
 
 				var obj = new widgetInfo.constructor(this, opts);
-				$el.data(widgetInfo.publicName, obj);
+				$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
 			}
 		});
 
-		//if (lastInstance && result.length == 1) return lastInstance;
 		return result;
 	};
 
 	(ns.widgets = (ns.widgets || {}))[widgetInfo.publicName] = widgetInfo;
 
-	//if (xSolon.loader.isBusy) {
-	//    xSolon.loader.bits.push(widgetInfo.startup);
-	//}
-	//else {
 	widgetInfo.startup();
-	//}
-})(window["spexplorerjs"]);
+})(window["spexplorerjs"], $);
