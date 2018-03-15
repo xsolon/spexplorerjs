@@ -1,3 +1,4 @@
+// v 0.1.4: 2018-03-15 - Added option to hide list selector
 import $ from "jquery";
 import "../../../public/vendor/select2/js/select2.full.js";
 import "../../../public/vendor/select2/css/select2.css";
@@ -147,7 +148,8 @@ import "./treelight.js";
 			label: $el.attr("data-label"),
 			weburl: $el.attr("data-siteurl"),
 			listtitle: $el.attr("data-list"),
-			excludereadonly: $el.attr("data-excludereadonly")
+			excludereadonly: $el.attr("data-excludereadonly"),
+			showSelector : true
 		}, opts);
 
 		try {
@@ -212,6 +214,9 @@ import "./treelight.js";
 		var listCtrl = $("[data-widget=\"xSPTreeLight\"]", $el).xSPTreeLight().on("listchange", function (e, list) {
 			onListChange(list);
 		});
+
+		if (!opts.showSelector) $(".listSelector", $el).hide(); // hide treelight section
+
 		var loadList = function (listTitle) {
 			return $.Deferred(function (dfd) {
 
@@ -235,6 +240,7 @@ import "./treelight.js";
 			$el.trigger("xwidget.init");
 		}
 
+		$(".widgetinfo", $el).html(widgetInfo.version);
 		return (function register() {
 			var me = {
 				setList: function (list) {
@@ -305,18 +311,18 @@ import "./treelight.js";
 	var widgetInfo = {
 		publicName: "xSPFieldSelector",
 		constructor: xSPFieldSelector,
-		version: "0.1.3",
+		version: "v 0.1.4",
 		getSelector: function () {
 			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
 			log(`selector: ${selector}`);
 			return selector;
 		},
-		startup: function (context) {
+		startup: function (context, opts) {
 			log(widgetInfo.publicName + ".startup");
 			var selector = widgetInfo.getSelector();
 			var elems = $(selector, context || document);
 			log(`Elems: ${elems.length}`);
-			elems[widgetInfo.publicName]({});
+			elems[widgetInfo.publicName](opts);
 
 			return elems;
 		}

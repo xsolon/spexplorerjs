@@ -72,9 +72,9 @@
 /******/ ({
 
 /***/ "../../../node_modules/jquery/dist/jquery.js":
-/*!*********************************************************************!*\
-  !*** C:/sc/spexpjs/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
-  \*********************************************************************/
+/*!**************************************************************************!*\
+  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
+  \**************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10447,6 +10447,49 @@ return jQuery;
 
 /***/ }),
 
+/***/ "../../../node_modules/jquery/dist/jquery.js-exposed":
+/*!**********************************************************************************!*\
+  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
+  \**********************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["jQuery"] = __webpack_require__(/*! -!./jquery.js */ "../../../node_modules/jquery/dist/jquery.js");
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "../../../node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
+/***/ "../../../node_modules/webpack/buildin/global.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1, eval)("this");
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+
 /***/ "../logger/logger.js":
 /*!***************************!*\
   !*** ../logger/logger.js ***!
@@ -10462,7 +10505,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = undefined;
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js");
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -10544,9 +10587,26 @@ exports.default = logger;
 "use strict";
 
 
-if (typeof window !== "undefined") (function (ns) {
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// v 0.1.2: 2018-03-10: brought back htmlEncode/htmlDecode and jQuery dependency
+(function (ns, $) {
 	ns.string = {
 		version: "0.1",
+		htmlEncode: function htmlEncode(value) {
+			// create a in-memory div, set it's inner text(which jQuery
+			// automatically encodes)
+			// then grab the encoded contents back out. The div never exists on
+			// the page.
+			return $("<div/>").text(value).html();
+		},
+		htmlDecode: function htmlDecode(value) {
+			return $("<div/>").html(value).text();
+		},
 		format: function format() {
 			/// TODO: unit test, breaks in some cases
 			var args = arguments;
@@ -10593,13 +10653,7 @@ if (typeof window !== "undefined") (function (ns) {
 			return stringToTrim;
 		}
 	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {});
-
-module.exports.sample = function () {
-	return {
-		//sample: "./sp.web.html"
-	};
-};
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 
 /***/ }),
 
@@ -10613,7 +10667,7 @@ module.exports.sample = function () {
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js");
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -10621,9 +10675,27 @@ __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// v 0.0.1 : 2018/03/11 - loadSpElem
 (function (ns, $) {
 
-	ns.logger.log($.fn.jquery);
+	var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "sp";
+		return d;
+	}();
+	var error = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.error.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "sp";
+		return d;
+	}();
+
 	ns.sp = {};
 	ns.sp.collectionToArray = function (spCollection) {
 
@@ -10639,6 +10711,35 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 		return result;
 	};
+	ns.sp.loadSpElem = function (elem, sptx, caller) {
+
+		sptx = sptx || SP.ClientContext.get_current();
+		return $.Deferred(function (dfd) {
+
+			if (elem.length) {
+				for (var i = 0; i < elem.length; i++) {
+					sptx.load(elem[i]);
+				}
+			} else sptx.load(elem);
+
+			sptx.executeQueryAsync(function () {
+				dfd.resolve(elem);
+			}, function (r, a) {
+				ns.sp.reqFailure(r, a, caller || "loadSpElem", dfd);
+			});
+		}).promise();
+	};
+
+	ns.sp.reqFailure = function (req, reqargs, from, dfd) {
+		// log context failure
+
+		var msg = from + " Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
+
+		if (dfd) dfd.reject(msg);else {
+			// if there is no promise log at this level
+			error(msg);
+		}
+	};
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 
 /***/ }),
@@ -10653,7 +10754,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js");
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -10664,15 +10765,18 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (function (ns, $) {
+	/// TODO: Document
 	var createWeb = function createWeb(parentWeb, title, url, template, inheritPermissions) {
 		return $.Deferred(function (dfd) {
-			var ctx = new SP.ClientContext.get_current();parentWeb = parentWeb || ctx.get_web();var WCI = new SP.WebCreationInformation();
-			WCI.set_webTemplate(template);
-			WCI.set_title(title);
-			WCI.set_url(url);
-			WCI.set_language(1033);
-			WCI.set_useSamePermissionsAsParentSite(inheritPermissions);
-			parentWeb.get_webs().add(WCI);
+			var ctx = SP.ClientContext.get_current();
+			parentWeb = parentWeb || ctx.get_web();
+			var wci = new SP.WebCreationInformation();
+			wci.set_webTemplate(template);
+			wci.set_title(title);
+			wci.set_url(url);
+			wci.set_language(1033);
+			wci.set_useSamePermissionsAsParentSite(inheritPermissions);
+			parentWeb.get_webs().add(wci);
 			parentWeb.update();
 			ctx.load(parentWeb);
 			ctx.executeQueryAsync(function () {
@@ -10708,6 +10812,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		}).promise();
 	};
 
+	// TODO: Document
 	var webTemplates = function webTemplates(web, ctx) {
 		return $.Deferred(function (dfd) {
 
@@ -10721,15 +10826,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			});
 		}).promise();
 	};
-	var api = {
+	ns.webapi = {
 		webTemplates: webTemplates,
 		createWeb: createWeb,
 		loadWeb: loadWeb,
 		version: "0.1"
 	};
-
-	ns.webapi = api;
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default); /// TODO: Document
+// v 0.0.1: 208-03-11 - Added loadWeb function
 
 /***/ })
 

@@ -68487,7 +68487,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n            width: 100%;\r\n            height: 100%;\r\n        }\r\n    </style>\r\n\r\n    <div class=\"full\">\r\n        <iframe src=\"#\" class=\"full\"></iframe>\r\n        <button type=\"button\">Run</button>\r\n    </div>\r\n</div>\r\n";
+module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n            width: 100%;\r\n            height: 100%;\r\n        }\r\n    </style>\r\n\r\n    <div class=\"full\">\r\n        <iframe src=\"#\" class=\"full\" style=\"resize:both\"></iframe>\r\n        <button type=\"button\">Run</button>\r\n    </div>\r\n</div>\r\n";
 
 /***/ }),
 
@@ -68506,6 +68506,10 @@ var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/di
 var _jquery2 = _interopRequireDefault(_jquery);
 
 __webpack_require__(/*! ../string/string.js */ "../string/string.js");
+
+var _xmleditorTemplate = __webpack_require__(/*! ./xmleditor.template.html */ "../mirrors/xmleditor.template.html");
+
+var _xmleditorTemplate2 = _interopRequireDefault(_xmleditorTemplate);
 
 __webpack_require__(/*! ../../../node_modules/codemirror/lib/codemirror.css */ "../../../node_modules/codemirror/lib/codemirror.css");
 
@@ -68559,6 +68563,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 //<!-- endhint -->
 //<!-- fold-->
+//v 0.1.1 : 2018-03-15: Support for IE
 window.CodeMirror = _codemirror2.default;
 //import "../../../node_modules/codemirror/addon/lint/coffeescript-lint.js";
 //import "../../../node_modules/codemirror/addon/lint/css-lint.js";
@@ -68596,6 +68601,7 @@ window.JSHINT = _jshint2.default.JSHINT;
 				rangeFinder: _codemirror2.default.fold.xml
 			}, gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"], lint: false
 		});
+
 		$(el).data("CodeMirror", editor);
 	};
 
@@ -68621,6 +68627,22 @@ window.JSHINT = _jshint2.default.JSHINT;
 	//});
 
 	ns.widgets = ns.widgets || {};
+	ns.widgets.xmleditorInitIframe = function (iframe) {
+
+		//https://www.kochan.io/javascript/how-to-dynamically-create-an-iframe.html
+		iframe.attr("src", "javascript:void((function(){var script = document.createElement('script');" + "script.innerHTML = \"(function() {" + "document.open();document.domain='" + document.domain + "';document.close();})();\";" + "document.write(\"<head>\" + script.outerHTML + \"</head><body></body>\");})())");
+
+		iframe[0].contentWindow.document.write(_xmleditorTemplate2.default);
+
+		var head = iframe.contents().find("head");
+		$("style").each(function () {
+			// cloneNode doesnt work in IE
+			//head.append(this.cloneNode(true));
+			$("<style type='text/css'>" + $(this).html() + "</style>").appendTo(head);
+		});
+
+		return ns.widgets.xmleditorinit(iframe.contents().find("textarea")[0]);
+	};
 	ns.widgets.xmleditorinit = function (ell) {
 
 		setupXml(ell);
@@ -68639,11 +68661,34 @@ window.JSHINT = _jshint2.default.JSHINT;
 	};
 	ns.widgets.xmleditor = function (iframe) {
 
-		iframe.contentWindow.document.write("<html><body><textarea></textarea></body></html>");
+		iframe.contentWindow.document.write(_xmleditorTemplate2.default);
 		var cont = $(iframe).contents().find("textarea");
 		ns.widgets.xmleditorinit(cont);
+
+		//var iframe = document.createElement('iframe');
+		//document.body.appendChild(iframe);
+
+		//https://www.kochan.io/javascript/how-to-dynamically-create-an-iframe.html
+		//iframe.src = 'javascript:void((function(){var script = document.createElement(\'script\');' +
+		//    'script.innerHTML = "(function() {' +
+		//    'document.open();document.domain=\'' + document.domain +
+		//    '\';document.close();})();";' +
+		//    'document.write("<head>" + script.outerHTML + "</head><body></body>");})())';
+
+		//iframe.contentWindow.document.write('<div>foo</div>');
 	};
 })(window["spexplorerjs"], _jquery2.default);
+
+/***/ }),
+
+/***/ "../mirrors/xmleditor.template.html":
+/*!******************************************!*\
+  !*** ../mirrors/xmleditor.template.html ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        html, body, textarea {\r\n            width: 99%;\r\n            height: 99%;\r\n        }\r\n\r\n        .CodeMirror {\r\n            width: 100%;\r\n            height: 100% !important;\r\n        }\r\n    </style>\r\n<textarea></textarea>\r\n</div>";
 
 /***/ }),
 
@@ -68708,13 +68753,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		var editor = null;
 		(function iframeImplementation() {
 			var iframe = $("iframe", ui);
-			iframe[0].contentWindow.document.write("<html><body><textarea></textarea></body></html>");
 
-			$("style").each(function () {
-				iframe.contents().find("body").append(this.cloneNode(true));
-			});
-
-			editor = ns.widgets.xmleditorinit(iframe.contents().find("textarea")[0]);
+			editor = ns.widgets.xmleditorInitIframe(iframe);
 
 			//run.click(function () {
 			//	runScript(editor.get());
@@ -68796,7 +68836,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n            width: 100%;\r\n            height: 100%;\r\n        }\r\n    </style>\r\n    <div class=\"full\">\r\n        <iframe src=\"#\" class=\"full\"></iframe>\r\n    </div>\r\n</div>\r\n";
+module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n            width: 100%;\r\n            height: 100%;\r\n        }\r\n\r\n    </style>\r\n    <div class=\"full\">\r\n        <iframe src=\"#\" class=\"full\" style=\"resize:both\"></iframe>\r\n    </div>\r\n</div>\r\n";
 
 /***/ }),
 
@@ -69057,7 +69097,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			label: $el.attr("data-label"),
 			weburl: $el.attr("data-siteurl"),
 			listtitle: $el.attr("data-list"),
-			excludereadonly: $el.attr("data-excludereadonly")
+			excludereadonly: $el.attr("data-excludereadonly"),
+			showSelector: true
 		}, opts);
 
 		try {
@@ -69122,6 +69163,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		var listCtrl = $("[data-widget=\"xSPTreeLight\"]", $el).xSPTreeLight().on("listchange", function (e, list) {
 			onListChange(list);
 		});
+
+		if (!opts.showSelector) $(".listSelector", $el).hide(); // hide treelight section
+
 		var loadList = function loadList(listTitle) {
 			return $.Deferred(function (dfd) {
 
@@ -69143,6 +69187,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			$el.trigger("xwidget.init");
 		}
 
+		$(".widgetinfo", $el).html(widgetInfo.version);
 		return function register() {
 			var me = {
 				setList: function setList(list) {
@@ -69210,18 +69255,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	var widgetInfo = {
 		publicName: "xSPFieldSelector",
 		constructor: xSPFieldSelector,
-		version: "0.1.3",
+		version: "v 0.1.4",
 		getSelector: function getSelector() {
 			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
 			log("selector: " + selector);
 			return selector;
 		},
-		startup: function startup(context) {
+		startup: function startup(context, opts) {
 			log(widgetInfo.publicName + ".startup");
 			var selector = widgetInfo.getSelector();
 			var elems = $(selector, context || document);
 			log("Elems: " + elems.length);
-			elems[widgetInfo.publicName]({});
+			elems[widgetInfo.publicName](opts);
 
 			return elems;
 		}
@@ -69259,7 +69304,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	log(widgetInfo.publicName + ".registered");
 
 	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
-})(spexplorerjs, _jquery2.default);
+})(spexplorerjs, _jquery2.default); // v 0.1.4: 2018-03-15 - Added option to hide list selector
 
 /***/ }),
 
@@ -69270,7 +69315,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<div class=\"xwidgetui\">\r\n    <fieldset class=\"form-horizontal\">\r\n        <legend>[label]</legend>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xSPTreeLight\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field</label>\r\n            <div class=\"col-md-10\">\r\n                <select class='fieldsDrp' style=\"width:100%\"></select>\r\n                <input type=\"checkbox\" class=\"ereadonly\" value=\"0\" />Exclude read only\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field Schema</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xxmlmirror\"></div>\r\n                <small>fieldselect 0.3.3</small>\r\n            </div>\r\n        </div>\r\n    </fieldset>\r\n\r\n</div>";
+module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<div class=\"xwidgetui\">\r\n    <fieldset class=\"form-horizontal\">\r\n        <legend>[label]</legend>\r\n        <div class=\"form-group listSelector\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xSPTreeLight\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field</label>\r\n            <div class=\"col-md-10\">\r\n                <select class='fieldsDrp' style=\"width:100%\"></select>\r\n                <input type=\"checkbox\" class=\"ereadonly\" value=\"0\" />Exclude read only\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field Schema</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xxmlmirror\"></div>\r\n                <small class=\"widgetinfo\">fieldselect 0.3.3</small>\r\n            </div>\r\n        </div>\r\n    </fieldset>\r\n\r\n</div>";
 
 /***/ }),
 
@@ -69329,10 +69374,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		$el.data("spListWidget", me);
 
 		$("#btnAdd", $el).click(function () {});
-		var jsWidget = ns.widgets.xjsmirror.startup($el).data('xwidget');
-		var xmlWidget = ns.widgets.xxmlmirror.startup($(".listschema", $el)).data('xwidget');
+		var jsWidget = ns.widgets.xjsmirror.startup($el).data("xwidget");
+		var xmlWidget = ns.widgets.xxmlmirror.startup($(".listschema", $el)).data("xwidget");
 
-		var fieldSelector = ns.widgets.xSPFieldSelector.startup($el);
+		var fieldSelector = ns.widgets.xSPFieldSelector.startup($el, { showSelector: false });
 
 		ns.widgets.xSPTreeLight.startup($(".listSelectorFirst", $el)).on("listchange", function (event, list) {
 
@@ -69412,12 +69457,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	};
 
 	init();
-	//if (xSolon.loader.isBusy) {
-	//    xSolon.loader.bits.push(init);
-	//}
-	//else {
-	//    init();
-	//}
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _listSelectorTemplate2.default); /// TODO: Document
 
 /***/ }),

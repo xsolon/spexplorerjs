@@ -3,18 +3,19 @@ var path = require("path");
 var webpack = require("webpack");
 var chokidar = require("chokidar");
 var widgetTransforms = require("./widgettransforms.js");
+
 var files = [
     "./src/components/string/string.js"
     //,"./src/components/loader/loader.js"
     //,"./src/components/logger/logger.js"
     //,"./src/components/datatables/datatables.js"
     //, "./src/components/sp/sp.web.js"
-    //, "./src/components/mirrors/jseditor.js"
-    //, "./src/components/mirrors/jsmirror.js"
+    , "./src/components/mirrors/jseditor.js"
+    , "./src/components/mirrors/jsmirror.js"
     , "./src/components/mirrors/xmleditor.js"
     , "./src/components/mirrors/xmlmirror.js"
-    //, "./src/components/sp/treelight.js"
-    //, "./src/components/sp/list.selector.js"
+    , "./src/components/sp/treelight.js"
+    , "./src/components/sp/list.selector.js"
     , "./src/components/sp/field.selector.js"
     //"./src/pages/index/index.js"
 ];

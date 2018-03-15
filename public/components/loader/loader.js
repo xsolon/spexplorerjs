@@ -72,9 +72,9 @@
 /******/ ({
 
 /***/ "../../../node_modules/jquery/dist/jquery.js":
-/*!*********************************************************************!*\
-  !*** C:/sc/spexpjs/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
-  \*********************************************************************/
+/*!**************************************************************************!*\
+  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
+  \**************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10447,6 +10447,49 @@ return jQuery;
 
 /***/ }),
 
+/***/ "../../../node_modules/jquery/dist/jquery.js-exposed":
+/*!**********************************************************************************!*\
+  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
+  \**********************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["jQuery"] = __webpack_require__(/*! -!./jquery.js */ "../../../node_modules/jquery/dist/jquery.js");
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "../../../node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
+/***/ "../../../node_modules/webpack/buildin/global.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1, eval)("this");
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+
 /***/ "../logger/logger.js":
 /*!***************************!*\
   !*** ../logger/logger.js ***!
@@ -10462,7 +10505,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = undefined;
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js");
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -10526,6 +10569,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 	ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn };
 	log("logger");
+	ns.$ = $;
 	return ns.logger;
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 var logger = window["spexplorerjs"];
@@ -10543,9 +10587,26 @@ exports.default = logger;
 "use strict";
 
 
-(function (ns) {
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// v 0.1.2: 2018-03-10: brought back htmlEncode/htmlDecode and jQuery dependency
+(function (ns, $) {
 	ns.string = {
 		version: "0.1",
+		htmlEncode: function htmlEncode(value) {
+			// create a in-memory div, set it's inner text(which jQuery
+			// automatically encodes)
+			// then grab the encoded contents back out. The div never exists on
+			// the page.
+			return $("<div/>").text(value).html();
+		},
+		htmlDecode: function htmlDecode(value) {
+			return $("<div/>").html(value).text();
+		},
 		format: function format() {
 			/// TODO: unit test, breaks in some cases
 			var args = arguments;
@@ -10592,7 +10653,7 @@ exports.default = logger;
 			return stringToTrim;
 		}
 	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {});
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 
 /***/ }),
 

@@ -39,14 +39,9 @@ import template from "./xmlmirror.template.html";
 		var editor = null;
 		(function iframeImplementation() {
 			var iframe = $("iframe", ui);
-			iframe[0].contentWindow.document.write("<html><body><textarea></textarea></body></html>");
 
-
-			$("style").each(function () {
-				iframe.contents().find("body").append(this.cloneNode(true));
-			});
-
-			editor = ns.widgets.xmleditorinit(iframe.contents().find("textarea")[0]);
+			
+			editor = ns.widgets.xmleditorInitIframe(iframe);
 
 			//run.click(function () {
 			//	runScript(editor.get());

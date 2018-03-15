@@ -1,5 +1,7 @@
+//v 0.1.1 : 2018-03-15: Support for IE
 import jQuery from "jquery";
 import "../string/string.js";
+import template from "./xmleditor.template.html";
 
 import "../../../node_modules/codemirror/lib/codemirror.css";
 import JSHINT from "../../../node_modules/jshint/dist/jshint.js";
@@ -68,7 +70,9 @@ window.JSHINT = JSHINT.JSHINT;
 					rangeFinder: CodeMirror.fold.xml
 				}, gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"], lint: false
 			});
+
 		$(el).data("CodeMirror", editor);
+
 	};
 
 	//setupXml($("textarea")[0]);
@@ -93,6 +97,30 @@ window.JSHINT = JSHINT.JSHINT;
 	//});
 
 	ns.widgets = ns.widgets || {};
+	ns.widgets.xmleditorInitIframe = function (iframe) {
+
+
+		//https://www.kochan.io/javascript/how-to-dynamically-create-an-iframe.html
+		iframe.attr("src",
+			"javascript:void((function(){var script = document.createElement('script');" +
+            "script.innerHTML = \"(function() {" +
+            "document.open();document.domain='" + document.domain +
+            "';document.close();})();\";" +
+            "document.write(\"<head>\" + script.outerHTML + \"</head><body></body>\");})())"
+		);
+
+		iframe[0].contentWindow.document.write(template);
+
+		var head = iframe.contents().find("head");
+		$("style").each(function () {
+			// cloneNode doesnt work in IE
+			//head.append(this.cloneNode(true));
+			$("<style type='text/css'>" + $(this).html() + "</style>").appendTo(head);
+
+		});
+
+		return ns.widgets.xmleditorinit(iframe.contents().find("textarea")[0]);
+	};
 	ns.widgets.xmleditorinit = function (ell) {
 
 		setupXml(ell);
@@ -112,8 +140,21 @@ window.JSHINT = JSHINT.JSHINT;
 	};
 	ns.widgets.xmleditor = function (iframe) {
 
-		iframe.contentWindow.document.write("<html><body><textarea></textarea></body></html>");
+
+		iframe.contentWindow.document.write(template);
 		var cont = $(iframe).contents().find("textarea");
 		ns.widgets.xmleditorinit(cont);
+
+		//var iframe = document.createElement('iframe');
+		//document.body.appendChild(iframe);
+
+		//https://www.kochan.io/javascript/how-to-dynamically-create-an-iframe.html
+		//iframe.src = 'javascript:void((function(){var script = document.createElement(\'script\');' +
+		//    'script.innerHTML = "(function() {' +
+		//    'document.open();document.domain=\'' + document.domain +
+		//    '\';document.close();})();";' +
+		//    'document.write("<head>" + script.outerHTML + "</head><body></body>");})())';
+
+		//iframe.contentWindow.document.write('<div>foo</div>');
 	};
 })(window["spexplorerjs"], jQuery);

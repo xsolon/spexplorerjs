@@ -32,7 +32,7 @@ import template from "./list.selector.template.html";
 		var jsWidget = ns.widgets.xjsmirror.startup($el).data("xwidget");
 		var xmlWidget = ns.widgets.xxmlmirror.startup($(".listschema", $el)).data("xwidget");
 
-		var fieldSelector = ns.widgets.xSPFieldSelector.startup($el);
+		var fieldSelector = ns.widgets.xSPFieldSelector.startup($el, {showSelector: false});
 
 		ns.widgets.xSPTreeLight.startup($(".listSelectorFirst",$el)).on("listchange", function (event, list) {
 
@@ -117,11 +117,5 @@ import template from "./list.selector.template.html";
 	};
 
 	init();
-	//if (xSolon.loader.isBusy) {
-	//    xSolon.loader.bits.push(init);
-	//}
-	//else {
-	//    init();
-	//}
 
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, $, template);
