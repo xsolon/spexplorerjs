@@ -6,6 +6,7 @@ import "./sp.web.js";
 import "./treelight.js";
 import "./field.selector.js";
 import "../mirrors/jsmirror.js";
+import "../mirrors/xmlmirror.js";
 import template from "./list.selector.template.html";
 
 (function (ns, $, template) {
@@ -27,18 +28,30 @@ import template from "./list.selector.template.html";
 		$el.html($(template).html());
 		$el.data("spListWidget", me);
 
-		$("#btnAdd", $el).click(function () {
-		});
-		var jsWidget = ns.widgets.xjsmirror.startup($el);
+		$("#btnAdd", $el).click(function () { });
+		var jsWidget = ns.widgets.xjsmirror.startup($el).data("xwidget");
+		var xmlWidget = ns.widgets.xxmlmirror.startup($(".listschema", $el)).data("xwidget");
 
 		var fieldSelector = ns.widgets.xSPFieldSelector.startup($el);
 
 		ns.widgets.xSPTreeLight.startup($(".listSelectorFirst",$el)).on("listchange", function (event, list) {
 
 			$("#title", $el).val(list.get_title());
-			jsWidget.data("xjsmirror").setScriptingObject(list);
+			jsWidget.setScriptingObject(list);
 			fieldSelector.data("xSPFieldSelector").setList(list);
 			//caCtrl.setList(list);
+
+			var showSchema = function () {
+				xmlWidget.setXml(list.get_schemaXml());
+			};
+
+			if (list.isPropertyAvailable("SchemaXml")) {
+				showSchema();
+			} else {
+				var ctx = list.get_context();
+				ctx.load(list, "SchemaXml");
+				ns.sp.loadSpElem(list, ctx).done(showSchema);
+			}
 		});
 
 		//var caElem = ns.widgets.spCustomActions.startup($el);

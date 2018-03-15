@@ -68491,6 +68491,315 @@ module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n 
 
 /***/ }),
 
+/***/ "../mirrors/xmleditor.js":
+/*!*******************************!*\
+  !*** ../mirrors/xmleditor.js ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../string/string.js */ "../string/string.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/lib/codemirror.css */ "../../../node_modules/codemirror/lib/codemirror.css");
+
+var _jshint = __webpack_require__(/*! ../../../node_modules/jshint/dist/jshint.js */ "../../../node_modules/jshint/dist/jshint.js");
+
+var _jshint2 = _interopRequireDefault(_jshint);
+
+var _codemirror = __webpack_require__(/*! ../../../node_modules/codemirror/lib/codemirror.js */ "../../../node_modules/codemirror/lib/codemirror.js");
+
+var _codemirror2 = _interopRequireDefault(_codemirror);
+
+__webpack_require__(/*! ../../../node_modules/codemirror/mode/javascript/javascript.js */ "../../../node_modules/codemirror/mode/javascript/javascript.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js */ "../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/mode/xml/xml.js */ "../../../node_modules/codemirror/mode/xml/xml.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/lint.css */ "../../../node_modules/codemirror/addon/lint/lint.css");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldgutter.css */ "../../../node_modules/codemirror/addon/fold/foldgutter.css");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/anyword-hint.js */ "../../../node_modules/codemirror/addon/hint/anyword-hint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/xml-hint.js */ "../../../node_modules/codemirror/addon/hint/xml-hint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/show-hint.css */ "../../../node_modules/codemirror/addon/hint/show-hint.css");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/brace-fold.js */ "../../../node_modules/codemirror/addon/fold/brace-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/comment-fold.js */ "../../../node_modules/codemirror/addon/fold/comment-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldcode.js */ "../../../node_modules/codemirror/addon/fold/foldcode.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldgutter.js */ "../../../node_modules/codemirror/addon/fold/foldgutter.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/indent-fold.js */ "../../../node_modules/codemirror/addon/fold/indent-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/markdown-fold.js */ "../../../node_modules/codemirror/addon/fold/markdown-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/xml-fold.js */ "../../../node_modules/codemirror/addon/fold/xml-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/lint.js */ "../../../node_modules/codemirror/addon/lint/lint.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//< !--end fold-- >
+//< !--lint -->
+//import "https://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js";
+//import "https://rawgithub.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js";
+//import "csslint.js";
+
+//<!-- endhint -->
+//<!-- fold-->
+window.CodeMirror = _codemirror2.default;
+//import "../../../node_modules/codemirror/addon/lint/coffeescript-lint.js";
+//import "../../../node_modules/codemirror/addon/lint/css-lint.js";
+//import "../../../node_modules/codemirror/addon/lint/html-lint.js";
+//import "../../../node_modules/codemirror/addon/lint/javascript-lint.js";
+//import "../../../node_modules/codemirror/addon/lint/json-lint.js";
+//import "../../../node_modules/codemirror/addon/lint/yaml-lint.js";
+
+
+//<!-- hint -->
+
+window.JSHINT = _jshint2.default.JSHINT;
+(function (ns, $) {
+
+	var setupXml = function setupXml(el) {
+		var editor = el.CodeMirror;
+		if (editor) {
+			editor.toTextArea();
+		}
+
+		editor = _codemirror2.default.fromTextArea(el, {
+			mode: "xml",
+			lineNumbers: true,
+			lineWrapping: true,
+			autoCloseTags: true,
+			viewportMargin: Infinity,
+			extraKeys: {
+				//"'>'": function (cm) { cm.closeTag(cm, ">"); },
+				//"'/'": function (cm) { cm.closeTag(cm, "/"); },
+				//"' '": function (cm) { CodeMirror.xmlHint(cm, ' '); },
+				//"'<'": function (cm) { CodeMirror.xmlHint(cm, '<'); },
+				//"Ctrl-Space": function (cm) { CodeMirror.xmlHint(cm, ''); }
+			},
+			foldGutter: {
+				rangeFinder: _codemirror2.default.fold.xml
+			}, gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"], lint: false
+		});
+		$(el).data("CodeMirror", editor);
+	};
+
+	//setupXml($("textarea")[0]);
+
+	// old iframe/postMessage implementation
+	//var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+	//var eventer = window[eventMethod];
+	//var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+
+	// Listen to message from child IFrame window
+	//eventer(messageEvent, function (e) {
+	//	var elem = e.data;//JSON.parse(e.data);
+	//	var editor = $("textarea").data("CodeMirror");
+	//	if (elem.action == "set") {
+	//		var data = ns.string.htmlDecode(elem.data);
+	//		editor.setValue(data);
+	//		editor.refresh();
+	//	} else if (elem.action == "get") {
+	//		var val = editor.getValue();
+	//		window.parent.postMessage(JSON.stringify({ code: val, action: elem.action, id: window.location.href.split("=")[1] }), "*");
+	//	}
+	//});
+
+	ns.widgets = ns.widgets || {};
+	ns.widgets.xmleditorinit = function (ell) {
+
+		setupXml(ell);
+
+		// Listen to message from child IFrame window
+		var editor = $(ell).data("CodeMirror");
+
+		return {
+			set: function set(data) {
+				editor.setValue(data);
+			}, get: function get() {
+				return editor.getValue();
+			}
+
+		};
+	};
+	ns.widgets.xmleditor = function (iframe) {
+
+		iframe.contentWindow.document.write("<html><body><textarea></textarea></body></html>");
+		var cont = $(iframe).contents().find("textarea");
+		ns.widgets.xmleditorinit(cont);
+	};
+})(window["spexplorerjs"], _jquery2.default);
+
+/***/ }),
+
+/***/ "../mirrors/xmlmirror.js":
+/*!*******************************!*\
+  !*** ../mirrors/xmlmirror.js ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../string/string.js */ "../string/string.js");
+
+__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
+
+__webpack_require__(/*! ./xmleditor.js */ "../mirrors/xmleditor.js");
+
+var _xmlmirrorTemplate = __webpack_require__(/*! ./xmlmirror.template.html */ "../mirrors/xmlmirror.template.html");
+
+var _xmlmirrorTemplate2 = _interopRequireDefault(_xmlmirrorTemplate);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (ns, $) {
+
+	//var debug = window.location.href.search(/localhost|debugxsptree/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+		};
+		d.source = "xmlmirror";
+		return d;
+	}();
+	//var error = new function () {
+	//	var d = function () {
+	//		ns.logger && ns.logger.error.apply(log, arguments);
+	//	};
+	//	d.source = "xmlmirror";
+	//	return d;
+	//};
+
+	var xxmlmirror = function xxmlmirror(ui, opts) {
+
+		log("xxmlmirror.init");
+
+		var $el = $(ui);
+
+		opts.id = opts.id || $(".full").length;
+		$el.html(_xmlmirrorTemplate2.default.trim());
+		var iframe = $("iframe", ui);
+		var src = iframe.attr("src");
+		iframe.attr("src", src + "?id=" + opts.id);
+		//var run = $("button", ui);
+
+		// --
+		var editor = null;
+		(function iframeImplementation() {
+			var iframe = $("iframe", ui);
+			iframe[0].contentWindow.document.write("<html><body><textarea></textarea></body></html>");
+
+			$("style").each(function () {
+				iframe.contents().find("body").append(this.cloneNode(true));
+			});
+
+			editor = ns.widgets.xmleditorinit(iframe.contents().find("textarea")[0]);
+
+			//run.click(function () {
+			//	runScript(editor.get());
+			//	return false;
+			//});
+		})();
+
+		//--
+		var me = {};
+		me.getXml = function () {
+			return $.Deferred(function (dfd) {
+
+				var code = editor.get();
+				dfd.resolve(code);
+			}).promise();
+		};
+		me.setXml = function (xml) {
+			editor.set(xml);
+		};
+		return me;
+	};
+
+	var widgetInfo = {
+		publicName: "xxmlmirror",
+		constructor: xxmlmirror,
+		version: "0.1.3",
+		getSelector: function getSelector() {
+			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
+			log("selector: " + selector);
+			return selector;
+		},
+		startup: function startup(context) {
+			log(widgetInfo.publicName + ".startup");
+			var selector = widgetInfo.getSelector();
+			var elems = $(selector, context || document);
+			log("Elems: " + elems.length);
+			elems[widgetInfo.publicName]({});
+			return elems;
+		}
+	};
+
+	$.fn[widgetInfo.publicName] = function (opts) {
+		var args = arguments;
+		var result = this.each(function () {
+
+			var $el = $(this);
+
+			var me = $el.data(widgetInfo.publicName);
+
+			if (me) {
+				// object has been initialized before
+
+				if (opts == null) {// request for instance
+					//lastInstance = me;
+				} else if (me[opts]) {
+					if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
+				}
+			} else {
+
+				var obj = new widgetInfo.constructor(this, opts);
+				$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
+			}
+		});
+
+		return result;
+	};
+
+	(ns.widgets = ns.widgets || {})[widgetInfo.publicName] = widgetInfo;
+
+	widgetInfo.startup();
+})(window["spexplorerjs"], _jquery2.default);
+
+/***/ }),
+
+/***/ "../mirrors/xmlmirror.template.html":
+/*!******************************************!*\
+  !*** ../mirrors/xmlmirror.template.html ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n            width: 100%;\r\n            height: 100%;\r\n        }\r\n    </style>\r\n    <div class=\"full\">\r\n        <iframe src=\"#\" class=\"full\"></iframe>\r\n    </div>\r\n</div>\r\n";
+
+/***/ }),
+
 /***/ "../string/string.js":
 /*!***************************!*\
   !*** ../string/string.js ***!
@@ -68604,6 +68913,8 @@ __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
 __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
+__webpack_require__(/*! ../mirrors/xmlmirror.js */ "../mirrors/xmlmirror.js");
+
 var _fieldSelectorTemplate = __webpack_require__(/*! ./field.selector.template.html */ "./field.selector.template.html");
 
 var _fieldSelectorTemplate2 = _interopRequireDefault(_fieldSelectorTemplate);
@@ -68616,6 +68927,10 @@ __webpack_require__(/*! ./treelight.js */ "./treelight.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//import "../../../public/vendor/bootstrap/js/bootstrap.js";
+//import "../../../public/vendor/bootstrap/css/spexpjs.css";
+//import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
+//import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 (function (ns, $) {
 
 	var debug = window.location.href.search(/[localhost|debugfieldsel]/) > 0;
@@ -68737,12 +69052,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	};
 	var xSPFieldSelector = function xSPFieldSelector(ui, opts) {
 		var $el = $(ui);var fieldContainer = null; // var selectedField = null;
+
 		opts = $.extend({
 			label: $el.attr("data-label"),
 			weburl: $el.attr("data-siteurl"),
 			listtitle: $el.attr("data-list"),
 			excludereadonly: $el.attr("data-excludereadonly")
 		}, opts);
+
 		try {
 			var state = $(".xwidgetstate:first", $el);
 			if (state.length > 0) {
@@ -68754,11 +69071,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 		$el.html(_fieldSelectorTemplate2.default.trim().replace("[label]", opts.label));
 
+		var xmlMirror = ns.widgets.xxmlmirror.startup($el).data("xwidget");
+
 		var spdal = new SPDAL(opts.weburl);
 		var fieldSel = $(".fieldsDrp", ui).on("change", function () {
 			var field = fieldSel.find(":selected").prop("data-field");
 			if (field) {
 
+				var xml = field.get_schemaXml();
+				xmlMirror.setXml(xml);
 				log({ field: field });
 			}
 		});
@@ -68799,7 +69120,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		}).prop("checked", opts.excludereadonly);
 
 		var listCtrl = $("[data-widget=\"xSPTreeLight\"]", $el).xSPTreeLight().on("listchange", function (e, list) {
-
 			onListChange(list);
 		});
 		var loadList = function loadList(listTitle) {
@@ -68939,19 +69259,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	log(widgetInfo.publicName + ".registered");
 
 	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
-
-	//--
-	// if (ns.loader.isBusy) {
-	//	ns.loader.bits.push(init);
-	//}
-	//else {
-
-	//}
 })(spexplorerjs, _jquery2.default);
-//import "../../../public/vendor/bootstrap/js/bootstrap.js";
-//import "../../../public/vendor/bootstrap/css/spexpjs.css";
-//import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
-//import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 
 /***/ }),
 
@@ -68962,7 +69270,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<div class=\"xwidgetui\">\r\n    <fieldset class=\"form-horizontal\">\r\n        <legend>[label]</legend>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xSPTreeLight\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field</label>\r\n            <div class=\"col-md-10\">\r\n                <select class='fieldsDrp' style=\"width:100%\"></select>\r\n            </div>\r\n        </div>\r\n        <input type=\"checkbox\" class=\"ereadonly\" value=\"0\" />Exclude read only\r\n        <small>fieldselect 0.3.2</small>\r\n\r\n        <div>\r\n            <div class=\"\"></div>\r\n        </div>\r\n    </fieldset>\r\n\r\n</div>";
+module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<div class=\"xwidgetui\">\r\n    <fieldset class=\"form-horizontal\">\r\n        <legend>[label]</legend>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xSPTreeLight\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field</label>\r\n            <div class=\"col-md-10\">\r\n                <select class='fieldsDrp' style=\"width:100%\"></select>\r\n                <input type=\"checkbox\" class=\"ereadonly\" value=\"0\" />Exclude read only\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field Schema</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xxmlmirror\"></div>\r\n                <small>fieldselect 0.3.3</small>\r\n            </div>\r\n        </div>\r\n    </fieldset>\r\n\r\n</div>";
 
 /***/ }),
 
@@ -68992,13 +69300,14 @@ __webpack_require__(/*! ./field.selector.js */ "./field.selector.js");
 
 __webpack_require__(/*! ../mirrors/jsmirror.js */ "../mirrors/jsmirror.js");
 
+__webpack_require__(/*! ../mirrors/xmlmirror.js */ "../mirrors/xmlmirror.js");
+
 var _listSelectorTemplate = __webpack_require__(/*! ./list.selector.template.html */ "./list.selector.template.html");
 
 var _listSelectorTemplate2 = _interopRequireDefault(_listSelectorTemplate);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/// TODO: Document
 (function (ns, $, template) {
 
 	var debug = window.location.href.search(/[localhost|debuglistselector]/) > 0;
@@ -69020,16 +69329,29 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		$el.data("spListWidget", me);
 
 		$("#btnAdd", $el).click(function () {});
-		var jsWidget = ns.widgets.xjsmirror.startup($el);
+		var jsWidget = ns.widgets.xjsmirror.startup($el).data('xwidget');
+		var xmlWidget = ns.widgets.xxmlmirror.startup($(".listschema", $el)).data('xwidget');
 
 		var fieldSelector = ns.widgets.xSPFieldSelector.startup($el);
 
 		ns.widgets.xSPTreeLight.startup($(".listSelectorFirst", $el)).on("listchange", function (event, list) {
 
 			$("#title", $el).val(list.get_title());
-			jsWidget.data("xjsmirror").setScriptingObject(list);
+			jsWidget.setScriptingObject(list);
 			fieldSelector.data("xSPFieldSelector").setList(list);
 			//caCtrl.setList(list);
+
+			var showSchema = function showSchema() {
+				xmlWidget.setXml(list.get_schemaXml());
+			};
+
+			if (list.isPropertyAvailable("SchemaXml")) {
+				showSchema();
+			} else {
+				var ctx = list.get_context();
+				ctx.load(list, "SchemaXml");
+				ns.sp.loadSpElem(list, ctx).done(showSchema);
+			}
 		});
 
 		//var caElem = ns.widgets.spCustomActions.startup($el);
@@ -69096,7 +69418,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	//else {
 	//    init();
 	//}
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _listSelectorTemplate2.default);
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _listSelectorTemplate2.default); /// TODO: Document
 
 /***/ }),
 
@@ -69107,7 +69429,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\r\n    <div class=\"widgetInfo\" style=\"font-size: small\">list<span>v0.1.1</span></div>\r\n    <div>\r\n        <ul class=\"nav nav-tabs\" style=\"max-height:40px\">\r\n            <li class=\"active\"><a data-toggle=\"tab\" href=\"#splistinfo\">List Info</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistscripting\">Scripting</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistcustomactions\">Custom Actions</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistfiels\">Fields</a></li>\r\n        </ul>\r\n        <div class=\"tab-content col-md-12\">\r\n            <div id=\"splistinfo\" class=\"tab-pane fade in active\">\r\n                <div class=\"form-horizontal\">\r\n                    <fieldset>\r\n\r\n                        <legend>List Editor</legend>\r\n\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textinput\">List</label>\r\n                            <div class=\"col-md-10 listSelectorFirst\">\r\n                                <div data-widget=\"xSPTreeLight\"></div>\r\n                                <span class=\"help-block\">Select an existing list.</span>\r\n                            </div>\r\n                        </div>\r\n\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textinput\">Title</label>\r\n                            <div class=\"col-md-10\">\r\n                                <input id=\"title\" name=\"title\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" />\r\n                                <span class=\"help-block\">\r\n                                    A string that contains the title.\r\n                                </span>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textarea\">Scripting</label>\r\n                            <div class=\"col-md-10\">\r\n                            </div>\r\n                        </div>\r\n\r\n                    </fieldset>\r\n                </div>\r\n            </div>\r\n            <div id=\"splistscripting\" class=\"tab-pane fade\">\r\n                <div data-widget=\"xjsmirror\"></div>\r\n            </div>\r\n            <div id=\"splistcustomactions\" class=\"tab-pane fade\">\r\n                <div data-widget=\"spCustomActions\"></div>\r\n            </div>\r\n            <div id=\"splistfiels\" class=\"tab-pane fade\">\r\n                <div data-widget=\"xSPFieldSelector\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n\r\n    <style type=\"text/css\">\r\n        .nav-tabs > li .close {\r\n            margin: -2px 0 0 10px;\r\n            font-size: 18px;\r\n        }\r\n    </style>\r\n</div>";
+module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .nav-tabs > li .close {\r\n            margin: -2px 0 0 10px;\r\n            font-size: 18px;\r\n        }\r\n    </style>\r\n    <div>\r\n        <ul class=\"nav nav-tabs\" style=\"max-height:40px\">\r\n            <li class=\"active\"><a data-toggle=\"tab\" href=\"#splistinfo\">List Info</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistscripting\">Scripting</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistcustomactions\">Custom Actions</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistfiels\">Fields</a></li>\r\n        </ul>\r\n        <div class=\"tab-content col-md-12\">\r\n            <div id=\"splistinfo\" class=\"tab-pane fade in active\">\r\n                <div class=\"form-horizontal\">\r\n                    <fieldset>\r\n\r\n                        <legend>List Editor</legend>\r\n\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textinput\">List</label>\r\n                            <div class=\"col-md-10 listSelectorFirst\">\r\n                                <div data-widget=\"xSPTreeLight\"></div>\r\n                                <span class=\"help-block\">Select an existing list.</span>\r\n                            </div>\r\n                        </div>\r\n\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textinput\">Title</label>\r\n                            <div class=\"col-md-10\">\r\n                                <input id=\"title\" name=\"title\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" />\r\n                                <span class=\"help-block\">\r\n                                    A string that contains the title.\r\n                                </span>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textarea\">Schema</label>\r\n                            <div class=\"col-md-10 listschema\">\r\n                                <div data-widget=\"xxmlmirror\"></div>\r\n                            </div>\r\n                        </div>\r\n                    </fieldset>\r\n                </div>\r\n            </div>\r\n            <div id=\"splistscripting\" class=\"tab-pane fade\">\r\n                <div data-widget=\"xjsmirror\"></div>\r\n            </div>\r\n            <div id=\"splistcustomactions\" class=\"tab-pane fade\">\r\n                <div data-widget=\"spCustomActions\"></div>\r\n            </div>\r\n            <div id=\"splistfiels\" class=\"tab-pane fade\">\r\n                <div data-widget=\"xSPFieldSelector\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"widgetInfo\" style=\"font-size: small\">list <span>v0.1.2</span></div>\r\n</div>";
 
 /***/ }),
 
