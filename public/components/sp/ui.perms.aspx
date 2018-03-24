@@ -40,10 +40,9 @@
 <asp:Content ContentPlaceHolderID="PlaceHolderMain" runat="server">
     <div>
         <div class="spexp">
-            <div data-widget="spCustomActions" data-listTitle="Users">
-            </div>
+            <div data-widget="spPermsSelector"></div>
         </div>
-        <script src="https://localhost:8443/components/sp/customaction.editor.js" type="text/javascript"></script>
+        <script src="https://localhost:8443/components/sp/ui.perms.js" type="text/javascript"></script>
 
     </div>
 </asp:Content>

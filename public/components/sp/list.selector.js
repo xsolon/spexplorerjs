@@ -68920,6 +68920,745 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /***/ }),
 
+/***/ "../widget.base.js":
+/*!*************************!*\
+  !*** ../widget.base.js ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// 0.1.0: 2018/03/23 - pass options to widget constructor
+(function (ns, $) {
+
+	var debug = window.location.href.search(/[localhost|debugcustomactions]/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "widgets";
+		return d;
+	}();
+
+	ns.widgets = ns.widgets || {};
+
+	var defineWidget = function defineWidget(name, constructor, version) {
+
+		return {
+			publicName: name,
+			constructor: constructor,
+			version: version,
+			startup: function startup(context, opts) {
+
+				log(name + ".startup");
+				var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
+				log("selector: " + selector);
+				var elems = $(selector, context || document);
+				log("Elems: " + elems.length);
+				elems[name](opts);
+				return elems;
+			}
+		};
+	};
+	var registerWidget = function registerWidget(widgetInfo) {
+
+		$.fn[widgetInfo.publicName] = function (opts) {
+			var args = arguments;
+			var result = this.each(function () {
+
+				var $el = $(this);
+
+				var me = $el.data(widgetInfo.publicName);
+
+				if (me) {
+					// object has been initialized before
+
+					if (opts == null) {// request for instance
+					} else if (me[opts]) {
+						if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
+					}
+				} else {
+					var obj = new widgetInfo.constructor(this, opts);
+					$(".version:first", this).html(widgetInfo.version);
+					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
+				}
+			});
+
+			return result;
+		};
+
+		ns.widgets[widgetInfo.publicName] = widgetInfo;
+		log(widgetInfo.publicName + ".registered");
+	};
+	var addWidget = function addWidget(name, constructor, version) {
+
+		var widgetInfo = defineWidget(name, constructor, version);
+		registerWidget(widgetInfo);
+		return widgetInfo;
+	};
+
+	ns.widgets.addWidget = addWidget;
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+
+/***/ }),
+
+/***/ "./customaction.dal.js":
+/*!*****************************!*\
+  !*** ./customaction.dal.js ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
+
+__webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (ns, $) {
+
+	var debug = window.location.href.search(/[localhost|debugcustomactionsel]/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "list.dal";
+		return d;
+	}();
+	//var error = new function () {
+	//	var d = function () {
+	//		ns.logger && ns.logger.error.apply(log, arguments);
+	//		if (debug)
+	//			SP.UI.Notify.addNotification(arguments[0]);
+	//	};
+	//	d.source = "list.selector";
+	//	return d;
+	//};
+
+	var CASPDAL = function CASPDAL(siteUrl) {
+		var ctx = siteUrl ? new SP.ClientContext(siteUrl) : SP.ClientContext.get_current();
+		var web = ctx.get_web();
+		var lists = web.get_lists();
+
+		var getFields = function getFields(listName) {
+
+			return $.Deferred(function (dfd) {
+
+				var list = null;
+				var iCtx = ctx;
+				if (typeof listName == "string") {
+					list = lists.getByTitle(listName);
+				} else {
+					list = listName;
+					iCtx = list.get_context();
+				}
+				var fields = list.get_fields();
+				iCtx.load(fields);
+				iCtx.executeQueryAsync(function () {
+					log(list);
+					var enumer = fields.getEnumerator();
+					var spfields = [];
+					while (enumer.moveNext()) {
+						var cur = enumer.get_current();
+						spfields.push(cur);
+					}
+					spfields.sort(function (x, y) {
+						return x.get_title().localeCompare(y.get_title());
+					});
+					dfd.resolve(spfields);
+				}, function onError(sender, args) {
+					log("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
+					dfd.reject(args);
+				});
+			}).promise();
+		};
+		var getList = function getList(listTitle) {
+			return $.Deferred(function (dfd) {
+
+				var list = lists.getByTitle(listTitle);
+				ns.sp.loadSpElem(list, ctx).done(function (list) {
+					dfd.resolve(list);
+				});
+			}).promise();
+		};
+
+		var getLists = function getLists() {
+			return $.Deferred(function (dfd) {
+
+				ctx.load(lists, "Include(Title)");
+				ctx.executeQueryAsync(function () {
+					log(lists);
+					var enumer = lists.getEnumerator();
+					var splists = [];
+					while (enumer.moveNext()) {
+						var cur = enumer.get_current();
+						splists.push(cur.get_title());
+					}
+					dfd.resolve(splists);
+				}, function onError(sender, args) {
+					log("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
+				});
+			}).promise();
+		};
+
+		var getActions = function getActions(elem) {
+			var container = elem || web;
+			var dfd = $.Deferred();
+			var actions = container.get_userCustomActions();
+			ctx.load(actions);
+
+			ctx.executeQueryAsync(function () {
+				var actionArray = ns.sp.collectionToArray(actions);
+
+				dfd.resolve(actionArray);
+			}, function (r, a) {
+				ns.sp.reqFailure(r, a, "clearActions", dfd);
+			});
+
+			return dfd.promise();
+		};
+		//var clearActions = function () {
+		//	var dfd = $.Deferred();
+		//	var actions = web.get_userCustomActions();
+		//	actions.clear();
+		//	ctx.load(actions);
+
+		//	ctx.executeQueryAsync(function () {
+		//		dfd.resolve(actions);
+		//	}, function (r, a) { reqFailure(r, a, "clearActions", dfd); });
+
+		//	return dfd.promise();
+		//};
+		var addCustomAction = function addCustomAction(list, location, ext, sequence, perms, title, src) {
+			var actions = list.get_userCustomActions();
+
+			var action = actions.add();
+
+			action.set_title(title);
+			action.set_location(location);
+			action.set_commandUIExtension(ext);
+			action.set_sequence(sequence || 0);
+			src && action.set_scriptSrc(src);
+			if (perms) action.set_rights(perms);
+			action.update();
+			ctx.load(action);
+			var dfd = $.Deferred();
+
+			ctx.executeQueryAsync(function () {
+				log("addCustomAction.done");
+				dfd.resolve(action);
+			}, function (r, a) {
+				ns.sp.reqFailure(r, a, "addCustomAction", dfd);
+			});
+
+			return dfd.promise();
+		};
+		//var addScriptLink = function (name, url, sequence) {
+		//	var dfd = $.Deferred();
+
+		//	var actions = ctx.get_site().get_userCustomActions();
+
+		//	var action = actions.add();
+		//	action.set_location("ScriptLink");
+		//	action.set_title(name);
+		//	action.set_scriptSrc(url);
+		//	action.set_sequence(sequence);
+		//	action.update();
+
+		//	ctx.load(action);
+
+		//	ctx.executeQueryAsync(function () {
+		//		dfd.resolve(action);
+		//	},
+		//	function (r, a) { ns.sp.reqFailure(r, a, "addScriptLink", dfd); });
+
+		//	return dfd.promise();
+
+		//};
+		var addScriptLink = function addScriptLink(name, url, sequence) {
+			var dfd = $.Deferred();
+
+			var actions = ctx.get_site().get_userCustomActions();
+
+			var action = actions.add();
+			action.set_location("ScriptLink");
+			action.set_title(name);
+			action.set_scriptSrc(url);
+			action.set_sequence(sequence);
+			action.update();
+
+			ctx.load(action);
+
+			ctx.executeQueryAsync(function () {
+				dfd.resolve(action);
+			}, function (r, a) {
+				ns.sp.reqFailure(r, a, "addScriptLink", dfd);
+			});
+
+			return dfd.promise();
+		};
+
+		return { getFields: getFields, getLists: getLists, getList: getList, getActions: getActions, addCustomAction: addCustomAction };
+	};
+
+	ns.customactions = {
+		dal: CASPDAL,
+		version: "0.1"
+	};
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+
+/***/ }),
+
+/***/ "./customaction.editor.js":
+/*!********************************!*\
+  !*** ./customaction.editor.js ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _customactionEditorTemplate = __webpack_require__(/*! ./customaction.editor.template.html */ "./customaction.editor.template.html");
+
+var _customactionEditorTemplate2 = _interopRequireDefault(_customactionEditorTemplate);
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
+
+__webpack_require__(/*! ./sp.list.js */ "./sp.list.js");
+
+__webpack_require__(/*! ./treelight.js */ "./treelight.js");
+
+__webpack_require__(/*! ./customaction.selector.js */ "./customaction.selector.js");
+
+__webpack_require__(/*! ./ui.perms.js */ "./ui.perms.js");
+
+__webpack_require__(/*! ../mirrors/xmlmirror.js */ "../mirrors/xmlmirror.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (ns, $, template) {
+
+	var debug = window.location.href.search(/[localhost|debugcustomactions]/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "list.selector";
+		return d;
+	}();
+	//var error = new function () {
+	//	var d = function () {
+	//		ns.logger && ns.logger.error.apply(log, arguments);
+	//		if (debug)
+	//			SP.UI.Notify.addNotification(arguments[0]);
+	//	};
+	//	d.source = "list.selector";
+	//	return d;
+	//};
+
+	var CustomActions = function CustomActions(el, opts) {
+		// constructor
+		var $el = $(el),
+		    me = {};
+		opts = $.extend({
+			showSelector: true,
+			listTitle: ($el.attr("data-listTitle") || "").trim()
+		}, opts);
+		$el.html($(template).html());
+		$el.data("spCustomActions", me);
+
+		//var actionSelector = $(".actionSelector", $el);
+		var actionSelector = ns.widgets.xSPCustomActionSelector.startup($el, { listtitle: opts.listTitle }); // $(ns.widgets.xSPCustomActionSelector.getSelector(), $el);
+
+		var selectionWidget = actionSelector.data("xwidget");
+		var xmlCtrl = ns.widgets.xxmlmirror.startup($el).data(ns.widgets.xxmlmirror.publicName);
+		var permissionsCtrl = ns.widgets.spPermsSelector.startup($el).data("xwidget");
+
+		actionSelector.on("selectionchange", function (event, ca) {
+			if (ca) {
+				$("[data-get").each(function () {
+					$(this).val(ca[$(this).attr("data-get")]());
+				});
+				xmlCtrl.setXml(ca.get_commandUIExtension());
+				var rights = ca.get_rights();
+				permissionsCtrl.setSpPerms(rights);
+			}
+		});
+
+		if (!opts.showSelector) $(".listSelector", actionSelector).hide(); // hide treelight section
+
+		$("#btnAdd", $el).click(function () {
+			var caSelCtrl = actionSelector.data(ns.widgets.xSPCustomActionSelector.publicName);
+
+			xmlCtrl.getXml().done(function (xml) {
+				var listOrWeb = caSelCtrl.container();
+				var selectedAction = caSelCtrl.value();
+				var spdal = new ns.customactions.dal();
+				var location = $("#Location", $el).val();
+				var sequence = $("#Sequence", $el).val();
+				var title = $("#Title", $el).val();
+				var permissions = permissionsCtrl.getSpPerms();
+				var src = $("#Src", $el).val();
+
+				log({
+					caValues: {
+						location: location, xml: xml, sequence: sequence, permissions: permissions, title: title
+					}
+				});
+				if (selectedAction == null) {
+					spdal.addCustomAction(listOrWeb, location, xml, sequence, permissions, title, src).done(function () {
+
+						selectionWidget.container(selectionWidget.container());
+					});
+				} else {
+					selectedAction.set_title(title);
+					selectedAction.set_location(location);
+					selectedAction.set_sequence(sequence);
+					selectedAction.set_rights(permissions);
+					selectedAction.set_scriptSrc(src);
+					selectedAction.set_commandUIExtension(xml);
+					selectedAction.update();
+
+					ns.sp.loadSpElem(selectedAction).done(function () {
+						log("Action udpated");
+					});
+				}
+			});
+		});
+		me.setList = function (list) {
+			selectionWidget.container(list);
+		};
+		return me;
+	};
+
+	var widgetInfo = ns.widgets.addWidget("spCustomActions", CustomActions, "0.1.1");
+
+	if (window["ExecuteOrDelayUntilScriptLoaded"]) {
+		ExecuteOrDelayUntilScriptLoaded(function () {
+			widgetInfo.startup();
+		}, "sp.js");
+		SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {});
+	} else widgetInfo.startup();
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _customactionEditorTemplate2.default);
+
+/***/ }),
+
+/***/ "./customaction.editor.template.html":
+/*!*******************************************!*\
+  !*** ./customaction.editor.template.html ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div>\r\n\r\n    <div class=\"widgetInfo\" style=\"font-size: small\">customactions <span class=\"version\">v0.1.2</span></div>\r\n    <div class=\"form-horizontal\">\r\n        <fieldset>\r\n\r\n            <!-- Form Name -->\r\n            <legend>Custom Action Editor</legend>\r\n\r\n            <div class=\"form-group\">\r\n                <label class=\"col-lg-2 col-md-2 control-label\" for=\"textinput\"></label>\r\n                <div class=\"col-lg-10 col-md-10\">\r\n                    <div class=\"actionSelector\" data-widget=\"xSPCustomActionSelector\"></div>\r\n                    <span class=\"help-block\">Select an existing custom action or list/web to add a new one.</span>\r\n                </div>\r\n            </div>\r\n\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Title</label>\r\n                <div class=\"col-md-4\">\r\n                    <input id=\"Title\" name=\"Title\" data-get=\"get_title\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" />\r\n                    <span class=\"help-block\">\r\n                        A string that contains the title.\r\n                    </span>\r\n                </div>\r\n            </div>\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Sequence</label>\r\n                <div class=\"col-md-4\">\r\n                    <input min=\"0\" max=\"65536\" id=\"Sequence\" data-get=\"get_sequence\" name=\"Sequence\" type=\"number\" placeholder=\"placeholder\" class=\"form-control input-md\">\r\n                    <span class=\"help-block\">\r\n                        Its value must be equal to or greater than 0. Its value must be equal to or less than 65536.                                https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.usercustomaction.sequence(v=office.15).aspx\r\n                    </span>\r\n                </div>\r\n            </div>\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Location</label>\r\n                <div class=\"col-md-4\">\r\n                    <select id=\"Location\" name=\"Location\" class=\"form-control input-md\" data-get=\"get_location\">\r\n                        <option>CommandUI.Ribbon.ListView</option>\r\n                        <option>CommandUI.Ribbon.NewForm</option>\r\n                        <option>CommandUI.Ribbon.EditForm</option>\r\n                        <option>CommandUI.Ribbon.DisplayForm</option>\r\n                        <option>CommandUI.Ribbon</option>\r\n                        <option>ScriptLink</option>\r\n                    </select>\r\n                    <span class=\"help-block\">Location</span>\r\n                    https://msdn.microsoft.com/en-us/library/office/ee537543.aspx\r\n                </div>\r\n            </div>\r\n\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Src</label>\r\n                <div class=\"col-md-4\">\r\n                    <input id=\"Src\" name=\"Src\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" data-get=\"get_scriptSrc\" />\r\n                    <span class=\"help-block\">help</span>\r\n                </div>\r\n            </div>\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textarea\">Xml</label>\r\n                <div class=\"col-md-4\">\r\n                    <div style=\"max-height:250px\" data-widget=\"xxmlmirror\"></div>\r\n                    <textarea class=\"form-control hidden hide\" id=\"textarea\" name=\"textarea\">default text</textarea>\r\n                </div>\r\n            </div>\r\n\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Permissions</label>\r\n                <div class=\"col-md-4\">\r\n                    <div data-widget=\"spPermsSelector\"></div>\r\n                    <span class=\"help-block\">Permissions</span>\r\n                </div>\r\n            </div>\r\n            <!-- Button (Double) -->\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"button1id\"></label>\r\n                <div class=\"col-md-8\">\r\n                    <button id=\"btnAdd\" name=\"btnAdd\" class=\"btn btn-success\" type=\"button\">Add/Update</button>\r\n                    <button id=\"btnRemove\" name=\"btnRemove\" class=\"btn btn-danger\" type=\"button\">Remove</button>\r\n                </div>\r\n            </div>\r\n\r\n        </fieldset>\r\n    </div>\r\n\r\n</div>\r\n";
+
+/***/ }),
+
+/***/ "./customaction.selector.itemtemplate.html":
+/*!*************************************************!*\
+  !*** ./customaction.selector.itemtemplate.html ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<b>{0}</b>\r\n<ul class='xfieldInfo'>\r\n    <li>Name: {1}</li>\r\n    <li>Description: {2}</li>\r\n    <li>Id: {3}</li>\r\n</ul>";
+
+/***/ }),
+
+/***/ "./customaction.selector.js":
+/*!**********************************!*\
+  !*** ./customaction.selector.js ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _customactionSelectorTemplate = __webpack_require__(/*! ./customaction.selector.template.html */ "./customaction.selector.template.html");
+
+var _customactionSelectorTemplate2 = _interopRequireDefault(_customactionSelectorTemplate);
+
+var _customactionSelectorItemtemplate = __webpack_require__(/*! ./customaction.selector.itemtemplate.html */ "./customaction.selector.itemtemplate.html");
+
+var _customactionSelectorItemtemplate2 = _interopRequireDefault(_customactionSelectorItemtemplate);
+
+__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../../../public/vendor/select2/js/select2.full.js */ "../../../public/vendor/select2/js/select2.full.js");
+
+__webpack_require__(/*! ../../../public/vendor/select2/css/select2.css */ "../../../public/vendor/select2/css/select2.css");
+
+__webpack_require__(/*! ./customaction.dal.js */ "./customaction.dal.js");
+
+__webpack_require__(/*! ./sp.list.js */ "./sp.list.js");
+
+__webpack_require__(/*! ./treelight.js */ "./treelight.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (ns, $, template, itemtemplate) {
+
+	var debug = window.location.href.search(/[localhost|debugcustomactionsel]/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "list.selector";
+		return d;
+	}();
+	//var error = new function () {
+	//	var d = function () {
+	//		ns.logger && ns.logger.error.apply(log, arguments);
+	//		if (debug)
+	//			SP.UI.Notify.addNotification(arguments[0]);
+	//	};
+	//	d.source = "list.selector";
+	//	return d;
+	//};
+
+	var fieldLabel = function fieldLabel(field) {
+		var tmpl = itemtemplate.trim();
+		var valu = ns.string.format(tmpl, field.get_title(), field.get_name(), field.get_description(), field.get_id().toString());
+		return valu;
+	};
+
+	var addOptions = function addOptions(ctrl, actions) {
+		log("Actions:" + actions.length);
+		for (var i = 0; i < actions.length; i++) {
+			var ca = actions[i];
+			var opt = $(ns.string.format("<option value=\"{1}\">{0}</option>", ca.get_title(), ca.get_id().toString()));
+			opt.prop("data-field", ca);
+
+			ctrl.append(opt);
+		}
+	};
+
+	var bindActionSelect = function bindActionSelect(sel) {
+		var initSelect2 = function initSelect2(sel) {
+			sel.select2({
+				templateResult: function formatState(state) {
+
+					if (!state.id) {
+						return state.text;
+					}
+
+					var field = $(state.element).prop("data-field");
+
+					var $state = $(fieldLabel(field));
+
+					return $state;
+				}, templateSelection: function template(data /*, container*/) {
+					var ca = $(data.element).prop("data-field");
+					return ca.get_title();
+				}
+			});
+		};
+		initSelect2(sel);
+	};
+
+	var xSPCustomActionSelector = function xSPCustomActionSelector(ui, opts) {
+		var $el = $(ui);var _container = null;
+		//var selectedField = null;
+		opts = $.extend({
+			label: $el.attr("data-label"),
+			weburl: $el.attr("data-siteurl"),
+			listtitle: $el.attr("data-list")
+			//excludereadonly: $el.attr('data-excludereadonly')
+		}, opts);
+		try {
+			var state = $(".xwidgetstate:first", $el);
+			if (state.length > 0) {
+				opts = $.extend(opts, JSON.parse(state.html().trim()));
+			}
+		} catch (e) {
+			log(e);
+		}
+
+		$el.html(template.trim().replace("[label]", opts.label));
+
+		var spdal = new ns.customactions.dal(opts.weburl);
+		var fieldSel = $(".casDrp", ui);
+		fieldSel.on("change.select2", function () {
+			var data = fieldSel.select2("data");
+			var field = null;
+			if (data.length > 0) {
+				field = $(data[0].element).prop("data-field");
+			}
+			$el.trigger("selectionchange", field);
+		});
+		bindActionSelect(fieldSel);
+		var onListChange = function onListChange(list) {
+
+			return $.Deferred(function (dfd) {
+
+				_container = list;
+				opts.listtitle = list.get_title();
+				(function loadWebUrl() {
+					var done = function done() {
+						opts.weburl = list.get_parentWebUrl();
+					};
+					if (list.isPropertyAvailable("ParentWebUrl")) {
+						done();
+					} else {
+						ns.sp.loadSpElem(list, list.get_context()).done(done);
+					}
+				})();
+
+				spdal.getActions(list).done(function (actions) {
+					fieldSel.html("");
+					addOptions(fieldSel, actions);
+					fieldSel.val(null).trigger("change.select2");
+				}).fail(function (err) {
+					log(err);
+				}).always(function () {
+					dfd.resolve();
+				});
+			}).promise();
+		};
+
+		var listCtrl = $("[data-widget=\"xSPTreeLight\"]", $el).xSPTreeLight().on("listchange", function (e, list) {
+			onListChange(list);
+		});
+
+		var loadList = function loadList(listTitle) {
+			return $.Deferred(function (dfd) {
+
+				log("loading list" + listTitle);
+
+				spdal.getList(listTitle).done(function (list) {
+					onListChange(list);
+					listCtrl.data("xSPTreeLight").value(list);
+				}).always(function () {
+					dfd.resolve();
+				});
+			}).promise();
+		};
+		if (opts.listtitle) {
+			loadList(opts.listtitle).done(function () {
+				$el.trigger("xwidget.init");
+			});
+		} else {
+			$el.trigger("xwidget.init");
+		}
+
+		return function register() {
+			var me = {
+				value: function value() {
+					var field = fieldSel.find(":selected").prop("data-field");
+					return field;
+				},
+				getOptions: function getOptions() {
+
+					var fields = [];
+					fieldSel.find("option").each(function () {
+						fields.push($(this).prop("data-field"));
+					});
+
+					return fields;
+				},
+				state: function state(instate) {
+					if (arguments.length > 0) {
+						log({ setstate: instate });
+						opts.listtitle = instate.listtitle;
+						if (opts.weburl != instate.weburl) {
+
+							spdal = new ns.listapi.dal(opts.weburl);
+						}
+						//opts.excludereadonly = instate.excludereadonly;
+						//readonlycheck.prop("checked", opts.excludereadonly);
+						opts = $.extend(opts, instate);
+						$("legend:first", $el).html(opts.label);
+						loadList(opts.listtitle);
+					} else {
+						var state = {
+							label: $("legend:first", $el).html(),
+							list: _container,
+							listtitle: _container ? _container.get_title() : "",
+							weburl: opts.weburl
+							//, excludereadonly: opts.excludereadonly
+						};
+
+						return state;
+					}
+				},
+				container: function container(list) {
+					if (list) {
+						onListChange(list);
+						listCtrl.data("xSPTreeLight").value(list);
+						_container = list;
+					}
+
+					return _container;
+				}, savestate: function savestate() {
+					var state = me.state();
+					delete state.list; // complex object
+
+					var statectrl = $(".xwidgetstate:first", $el);
+					if (statectrl.length == 0) {
+						statectrl = $("<div class=\"xwidgetstate\" style=\"display:none\"/>");
+					}
+					statectrl.html(JSON.stringify(state));
+				}
+			};
+
+			return me;
+		}();
+	};
+
+	var widgetInfo = ns.widgets.addWidget("xSPCustomActionSelector", xSPCustomActionSelector, "0.1.4");
+
+	if (window["ExecuteOrDelayUntilScriptLoaded"]) {
+		ExecuteOrDelayUntilScriptLoaded(function () {
+			widgetInfo.startup();
+		}, "sp.js");
+		SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {});
+	} else widgetInfo.startup();
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _customactionSelectorTemplate2.default, _customactionSelectorItemtemplate2.default);
+
+/***/ }),
+
+/***/ "./customaction.selector.template.html":
+/*!*********************************************!*\
+  !*** ./customaction.selector.template.html ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<div class=\"xwidgetui\">\r\n    <div class=\"form-group listSelector\">\r\n        <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n        <div class=\"col-md-10\">\r\n            <div data-widget=\"xSPTreeLight\"></div>\r\n        </div>\r\n    </div>\r\n    <div class=\"form-group\">\r\n        <label class=\"col-md-2 control-label\" for=\"selectbasic\">Custom Action</label>\r\n        <div class=\"col-md-10\">\r\n            <select class='casDrp' style=\"width:100%\"></select>\r\n            <small>select 0.3.2</small>\r\n        </div>\r\n    </div>\r\n</div>";
+
+/***/ }),
+
 /***/ "./field.selector.fieldtemplate.html":
 /*!*******************************************!*\
   !*** ./field.selector.fieldtemplate.html ***!
@@ -69343,6 +70082,8 @@ __webpack_require__(/*! ./treelight.js */ "./treelight.js");
 
 __webpack_require__(/*! ./field.selector.js */ "./field.selector.js");
 
+__webpack_require__(/*! ./customaction.editor.js */ "./customaction.editor.js");
+
 __webpack_require__(/*! ../mirrors/jsmirror.js */ "../mirrors/jsmirror.js");
 
 __webpack_require__(/*! ../mirrors/xmlmirror.js */ "../mirrors/xmlmirror.js");
@@ -69353,6 +70094,9 @@ var _listSelectorTemplate2 = _interopRequireDefault(_listSelectorTemplate);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// v 1.1.1 - 2018/03/24 - Register through widgets.base
+//                      - Sync custom actions control with list selector
+/// TODO: Document
 (function (ns, $, template) {
 
 	var debug = window.location.href.search(/[localhost|debuglistselector]/) > 0;
@@ -69374,17 +70118,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		$el.data("spListWidget", me);
 
 		$("#btnAdd", $el).click(function () {});
+
 		var jsWidget = ns.widgets.xjsmirror.startup($el).data("xwidget");
 		var xmlWidget = ns.widgets.xxmlmirror.startup($(".listschema", $el)).data("xwidget");
-
 		var fieldSelector = ns.widgets.xSPFieldSelector.startup($el, { showSelector: false });
+		var caCtrl = ns.widgets.spCustomActions.startup($el, { showSelector: false }).data("xwidget");
 
 		ns.widgets.xSPTreeLight.startup($(".listSelectorFirst", $el)).on("listchange", function (event, list) {
 
 			$("#title", $el).val(list.get_title());
 			jsWidget.setScriptingObject(list);
 			fieldSelector.data("xSPFieldSelector").setList(list);
-			//caCtrl.setList(list);
+			caCtrl.setList(list);
 
 			var showSchema = function showSchema() {
 				xmlWidget.setXml(list.get_schemaXml());
@@ -69399,65 +70144,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			}
 		});
 
-		//var caElem = ns.widgets.spCustomActions.startup($el);
-		//var caCtrl = caElem.data("spCustomActions");
 		return me;
 	};
 
-	var widgetInfo = {
-		publicName: "spListWidget",
-		constructor: SPListWidget,
-		version: "0.1.1",
-		startup: function startup(context) {
+	var widgetInfo = ns.widgets.addWidget("spListWidget", SPListWidget, "0.1.2");
 
-			log(widgetInfo.publicName + ".startup");
-			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
-			log("selector: " + selector);
-			var elems = $(selector, context || document);
-			log("Elems: " + elems.length);
-			elems[widgetInfo.publicName]({});
-		}
-	};
-
-	$.fn[widgetInfo.publicName] = function (opts) {
-		var args = arguments;
-		//var lastInstance = null;
-		var result = this.each(function () {
-
-			var $el = $(this);
-
-			var me = $el.data(widgetInfo.publicName);
-
-			if (me) {
-				// object has been initialized before
-
-				if (opts == null) {// request for instance
-					//lastInstance = me;
-				} else if (me[opts]) {
-					if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
-				}
-			} else {
-				var obj = new widgetInfo.constructor(this, opts);
-				$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
-			}
-		});
-
-		return result;
-	};
-
-	(ns.widgets = ns.widgets || {})[widgetInfo.publicName] = widgetInfo;
-
-	var init = function splistInit() {
-		if (window["ExecuteOrDelayUntilScriptLoaded"]) {
-			ExecuteOrDelayUntilScriptLoaded(function () {
-				widgetInfo.startup();
-			}, "sp.js");
-			SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {});
-		} else widgetInfo.startup();
-	};
-
-	init();
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _listSelectorTemplate2.default); /// TODO: Document
+	if (window["ExecuteOrDelayUntilScriptLoaded"]) {
+		ExecuteOrDelayUntilScriptLoaded(function () {
+			widgetInfo.startup();
+		}, "sp.js");
+		SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {});
+	} else widgetInfo.startup();
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _listSelectorTemplate2.default);
 
 /***/ }),
 
@@ -69468,7 +70166,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .nav-tabs > li .close {\r\n            margin: -2px 0 0 10px;\r\n            font-size: 18px;\r\n        }\r\n    </style>\r\n    <div>\r\n        <ul class=\"nav nav-tabs\" style=\"max-height:40px\">\r\n            <li class=\"active\"><a data-toggle=\"tab\" href=\"#splistinfo\">List Info</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistscripting\">Scripting</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistcustomactions\">Custom Actions</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistfiels\">Fields</a></li>\r\n        </ul>\r\n        <div class=\"tab-content col-md-12\">\r\n            <div id=\"splistinfo\" class=\"tab-pane fade in active\">\r\n                <div class=\"form-horizontal\">\r\n                    <fieldset>\r\n\r\n                        <legend>List Editor</legend>\r\n\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textinput\">List</label>\r\n                            <div class=\"col-md-10 listSelectorFirst\">\r\n                                <div data-widget=\"xSPTreeLight\"></div>\r\n                                <span class=\"help-block\">Select an existing list.</span>\r\n                            </div>\r\n                        </div>\r\n\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textinput\">Title</label>\r\n                            <div class=\"col-md-10\">\r\n                                <input id=\"title\" name=\"title\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" />\r\n                                <span class=\"help-block\">\r\n                                    A string that contains the title.\r\n                                </span>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textarea\">Schema</label>\r\n                            <div class=\"col-md-10 listschema\">\r\n                                <div data-widget=\"xxmlmirror\"></div>\r\n                            </div>\r\n                        </div>\r\n                    </fieldset>\r\n                </div>\r\n            </div>\r\n            <div id=\"splistscripting\" class=\"tab-pane fade\">\r\n                <div data-widget=\"xjsmirror\"></div>\r\n            </div>\r\n            <div id=\"splistcustomactions\" class=\"tab-pane fade\">\r\n                <div data-widget=\"spCustomActions\"></div>\r\n            </div>\r\n            <div id=\"splistfiels\" class=\"tab-pane fade\">\r\n                <div data-widget=\"xSPFieldSelector\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"widgetInfo\" style=\"font-size: small\">list <span>v0.1.2</span></div>\r\n</div>";
+module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .nav-tabs > li .close {\r\n            margin: -2px 0 0 10px;\r\n            font-size: 18px;\r\n        }\r\n    </style>\r\n    <div>\r\n        <ul class=\"nav nav-tabs\" style=\"max-height:40px\">\r\n            <li class=\"active\"><a data-toggle=\"tab\" href=\"#splistinfo\">List Info</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistscripting\">Scripting</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistcustomactions\">Custom Actions</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistfiels\">Fields</a></li>\r\n        </ul>\r\n        <div class=\"tab-content col-md-12\">\r\n            <div id=\"splistinfo\" class=\"tab-pane fade in active\">\r\n                <div class=\"form-horizontal\">\r\n                    <fieldset>\r\n\r\n                        <legend>List Editor</legend>\r\n\r\n                        <div class=\"form-group listSelector\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textinput\">List</label>\r\n                            <div class=\"col-md-10 listSelectorFirst\">\r\n                                <div data-widget=\"xSPTreeLight\"></div>\r\n                                <span class=\"help-block\">Select an existing list.</span>\r\n                            </div>\r\n                        </div>\r\n\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textinput\">Title</label>\r\n                            <div class=\"col-md-10\">\r\n                                <input id=\"title\" name=\"title\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" />\r\n                                <span class=\"help-block\">\r\n                                    A string that contains the title.\r\n                                </span>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textarea\">Schema</label>\r\n                            <div class=\"col-md-10 listschema\">\r\n                                <div data-widget=\"xxmlmirror\"></div>\r\n                            </div>\r\n                        </div>\r\n                    </fieldset>\r\n                </div>\r\n            </div>\r\n            <div id=\"splistscripting\" class=\"tab-pane fade\">\r\n                <div data-widget=\"xjsmirror\"></div>\r\n            </div>\r\n            <div id=\"splistcustomactions\" class=\"tab-pane fade\">\r\n                <div data-widget=\"spCustomActions\"></div>\r\n            </div>\r\n            <div id=\"splistfiels\" class=\"tab-pane fade\">\r\n                <div data-widget=\"xSPFieldSelector\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"widgetInfo\" style=\"font-size: small\">list <span>v0.1.2</span></div>\r\n</div>";
 
 /***/ }),
 
@@ -69554,6 +70252,972 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			// if there is no promise log at this level
 			error(msg);
 		}
+	};
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+
+/***/ }),
+
+/***/ "./sp.list.js":
+/*!********************!*\
+  !*** ./sp.list.js ***!
+  \********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
+
+__webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (ns, $) {
+
+	var SpDal = function SpDal(args, log, error) {
+
+		var ctx = null;
+		try {
+			ctx = new SP.ClientContext();
+		} catch (e) {
+			ctx = SP.ClientContext.get_current();
+		}
+		var web = ctx.get_web();
+		var lists = web.get_lists();
+		var list = null;
+		var items = null;
+		var listFields = null;
+
+		ctx.load(web, ["Id", "ServerRelativeUrl"]);
+		ctx.load(lists, "Include(Title, Fields.Include(Title))");
+		ctx.load(lists, "Include(Fields.Include(Title))");
+
+		log = log || ns.log;
+		error = log || ns.log;
+
+		var listExists = function listExists(lists, listTitle) {
+
+			return $.Deferred(function (dfd) {
+				var onloaded = function onloaded() {
+					var result = { exists: false, list: null };
+
+					var le = lists.getEnumerator();
+					while (le.moveNext()) {
+						var list = le.get_current();
+						if (list.get_title() == listTitle) {
+							result.exists = true;
+							result.list = list;
+							break;
+						}
+					}
+					log({ listExists: listTitle, result: result });
+					dfd.resolve(result);
+				};
+				if (lists.get_data().length == 0) {
+					// not initialized
+
+					var ctx = lists.get_context();
+
+					ctx.executeQueryAsync(function () {
+						onloaded();
+					}, function (r, a) {
+						reqFailure(r, a, "listExists", dfd);
+					});
+				} else {
+					onloaded();
+				}
+			}).promise();
+		};
+		var pathSteps = function pathSteps(path) {
+			var bits = path.split("/");
+			var qu = [];
+			for (var i = bits.length; i > 0; i--) {
+				var current = bits.slice(0, i).join("/");
+				if (current == "") current = "/";
+				qu.push(current);
+			}
+			return qu;
+		};
+
+		//var emptyPromise = function () { // couldn't resist
+		//	return $.Deferred(function (dfd) {
+		//		dfd.resolve();
+		//	}).promise();
+		//};
+		var addItems = function addItems(items, splist, spfields, folderUrl) {
+			var dfd = $.Deferred();
+
+			getlist().done(function () {
+				splist = list;
+				spfields = spfields || listFields;
+
+				if (items && items.length > 0) {
+					var spItems = [];
+					for (var i = 0; i < items.length; i++) {
+
+						var data = items[i];
+						var itemCreateInfo = new SP.ListItemCreationInformation();
+						if (folderUrl) {
+							itemCreateInfo.set_folderUrl(folderUrl);
+						}
+
+						var newspitem = splist.addItem(itemCreateInfo);
+						for (var f in data) {
+							var fieldType = spfields[f].get_typeAsString();
+							var val = null;
+							if (fieldType == "URL") {
+								val = new SP.FieldUrlValue();
+								val.set_url(data[f]);
+							} else if (fieldType.search("Lookup") == 0) {
+
+								var itemVal = data[f];
+								if (itemVal) {
+									if (itemVal.length) {
+										val = [];
+										for (var j = 0; j < itemVal.length; j++) {
+											var iVal = new SP.FieldLookupValue();
+											iVal.set_lookupId(itemVal[j]);
+											val.push(iVal);
+										}
+									} else {
+										val = new SP.FieldLookupValue();
+										val.set_lookupId(itemVal);
+									}
+								}
+							} else {
+								val = data[f];
+							}
+
+							newspitem.set_item(f, val);
+						}
+						newspitem.update();
+						ctx.load(newspitem);
+						spItems.push(newspitem);
+					}
+					ctx.executeQueryAsync(function () {
+						log("addItems done");
+						dfd.resolve(spItems);
+					}, function (r, a) {
+						reqFailure(r, a, "addItems" + args.listTitle, dfd);
+					});
+				} else {
+					dfd.resolve();
+				}
+			});
+
+			return dfd.promise();
+		};
+		//var defaultItems = function (spfields) {
+		//	if (typeof args.DefaultItems == "function") {
+		//		args.DefaultItems(spfields, me).done(function (items) {
+		//			addItems(spfields, items);
+		//		});
+		//	} else {
+		//		addItems(spfields, args.DefaultItems);
+		//	}
+		//};
+		var handleOnReady = function handleOnReady(splist, dfd) {
+			log("OnListReady");
+			if (args.OnListReady) {
+				args.OnListReady(me, splist, ctx).done(function () {
+					dfd.resolve(splist);
+				});
+			} else dfd.resolve(splist);
+		};
+		var handleOnCreated = function handleOnCreated(splist, dfd) {
+			log("OnListCreated");
+			if (args.OnListCreated) {
+				args.OnListCreated(me, splist, ctx).done(function () {
+					dfd.resolve(splist);
+				});
+			} else dfd.resolve(splist);
+		};
+
+		var clearActions = function clearActions() {
+			var dfd = $.Deferred();
+			var actions = web.get_userCustomActions();
+			actions.clear();
+			ctx.load(actions);
+
+			ctx.executeQueryAsync(function () {
+				dfd.resolve(actions);
+			}, function (r, a) {
+				reqFailure(r, a, "clearActions", dfd);
+			});
+
+			return dfd.promise();
+		};
+		var ensureFolder = function ensureFolder(path) {
+			var dfd = $.Deferred();
+
+			folderExists(path).done(function (folder) {
+				if (folder == false) {
+
+					var parentFolders = pathSteps(path);
+					var parentFolderPath = parentFolders[1];
+					var bits = path.split("/");
+					var name = bits[bits.length - 1];
+					ensureFolder(parentFolderPath).done(function () /*parentSpFolder*/{
+						createFolder(name, parentFolderPath).done(function (folder) {
+							dfd.resolve(folder);
+						});
+					});
+				} else {
+					dfd.resolve(folder);
+				}
+			});
+			return dfd.promise();
+		};
+		var folderExists = function folderExists(path) {
+			var dfd = $.Deferred();
+			var folder = web.getFolderByServerRelativeUrl(path);
+
+			ctx.load(folder, "Name", "ServerRelativeUrl");
+
+			ctx.executeQueryAsync(function () {
+				//if (folder.get_exists()) { // Not available in 2013
+				//    // Folder exists and isn't hidden from us. Print its name.
+				//    //console.log(folder.get_name());
+				//    dfd.resolve(folder);
+				//}
+				//else {
+				//    dfd.resolve(folder);
+				//    //console.log("Folder exists but is hidden (security-trimmed) for us.");
+				//}
+				try {
+					//var url = folder.get_serverRelativeUrl();
+					dfd.resolve(folder);
+				} catch (e) {
+					dfd.resolve(false);
+				}
+			}, function (s, args) {
+				if (args.get_errorTypeName() === "System.IO.FileNotFoundException") {
+					// Folder doesn't exist at all.
+					//console.log("Folder does not exist.");
+					dfd.resolve(false);
+				} else {
+					// An unexpected error occurred.
+					//console.log("Error: " + args.get_message());
+					dfd.resolve(false);
+				}
+			});
+
+			return dfd.promise();
+		};
+		var createFolder = function createFolder(name, parentFolderPath) {
+			if (list) {
+				list.set_enableFolderCreation(true);
+				list.update();
+			}
+			var itemCreateInfo = new SP.ListItemCreationInformation();
+			itemCreateInfo.set_underlyingObjectType(SP.FileSystemObjectType.folder);
+			itemCreateInfo.set_leafName(name);
+			if (parentFolderPath) {
+				itemCreateInfo.set_folderUrl(parentFolderPath);
+			}
+			var li = list.addItem(itemCreateInfo);
+			li.set_item("Title", name);
+			li.update();
+
+			var dfd = $.Deferred();
+			ctx.load(li);
+			var folder = li.get_folder();
+			ctx.load(folder);
+			ctx.executeQueryAsync(function () {
+				dfd.resolve(folder);
+			}, function (r, a) {
+				reqFailure(r, a, "createFolder", dfd);
+			});
+
+			return dfd.promise();
+		};
+		var addCustomAction = function addCustomAction(location, ext, perms) {
+			var actions = list.get_userCustomActions();
+
+			var action = actions.add();
+
+			action.set_location(location);
+			action.set_commandUIExtension(ext);
+			action.set_sequence(0);
+			if (perms) action.set_rights(perms);
+			action.update();
+			ctx.load(action);
+			var dfd = $.Deferred();
+
+			ctx.executeQueryAsync(function () {
+				log("addCustomAction.done");
+				dfd.resolve(action);
+			}, function (r, a) {
+				reqFailure(r, a, "addCustomAction", dfd);
+			});
+
+			return dfd.promise();
+		};
+		var addScriptLink = function addScriptLink(name, url, sequence) {
+			var dfd = $.Deferred();
+
+			var actions = ctx.get_site().get_userCustomActions();
+
+			var action = actions.add();
+			action.set_location("ScriptLink");
+			action.set_title(name);
+			action.set_scriptSrc(url);
+			action.set_sequence(sequence);
+			action.update();
+
+			ctx.load(action);
+
+			ctx.executeQueryAsync(function () {
+				dfd.resolve(action);
+			}, function (r, a) {
+				reqFailure(r, a, "addScriptLink", dfd);
+			});
+
+			return dfd.promise();
+		};
+		//var getGroupsOld = function () {
+		//	return $.Deferred(function (dfd) {
+		//		var groupCollection = web.get_siteGroups();
+		//		ctx.load(groupCollection);
+
+		//		ctx.executeQueryAsync(function (sender/*, args*/) {
+		//			var res = {};
+		//			var le = groupCollection.getEnumerator();
+		//			while (le.moveNext()) {
+		//				var group = le.get_current();
+		//				var groupName = group.get_title();
+		//				res[groupName] = group;
+		//			}
+		//			dfd.resolve(res);
+		//		},
+		//		function (r, a) { reqFailure(r, a, "getGroups", dfd); });
+		//	}).promise();
+
+		//};
+		var breakRoleInheritance = function breakRoleInheritance(copyRoleAssignments, clearSubscopes) {
+			list.breakRoleInheritance(copyRoleAssignments, clearSubscopes);
+			list.update();
+
+			return loadSpElem(list, ctx);
+		};
+
+		var breakItemRoleInheritance = function breakItemRoleInheritance(copyRoleAssignments, clearSubscopes, item) {
+			item = item || list;
+			item.breakRoleInheritance(copyRoleAssignments, clearSubscopes);
+			item.update();
+
+			return loadSpElem(item, ctx);
+		};
+		//var breakRoleInheritanceRest = function (copyRoleAssignments, clearSubscopes, webUrl, listName) {
+		//	webUrl = webUrl || web.get_serverRelativeUrl();
+		//	listName = listName || args.ListTitle;
+		//	log("breakingRole Inheritance: " + listName);
+		//	var req = window.location.href.substring(0, window.location.href.indexOf(window.location.pathname)) +
+		//              "{0}/_api/web/lists/getByTitle('{1}')/breakroleinheritance(copyRoleAssignments={2},clearSubscopes={3})";
+		//	req = req.replace("{0}", webUrl).replace("{1}", listName).replace("{2}", copyRoleAssignments)
+		//		.replace("{3}", clearSubscopes);
+
+		//	return $.ajax({
+		//		url: req,
+		//		type: "POST",
+		//		headers: { "accept": "application/json;odata=verbose" },
+		//	});
+		//};
+
+		var addPermission = function addPermission(principalIn, permissions, securable, parentWeb) {
+			return $.Deferred(function (dfd) {
+				parentWeb = parentWeb || web;
+				securable = securable || list;
+				var safePrincipal = principalIn;
+				var safeAddPermission = function safeAddPermission(principal) {
+
+					var collContribute = SP.RoleDefinitionBindingCollection.newObject(ctx);
+
+					for (var i = 0; i < permissions.length; i++) {
+						var perm = permissions[i];
+						log("adding Permissions " + perm);
+
+						var rdContribute = parentWeb.get_roleDefinitions().getByName(perm);
+						// Create a new RoleDefinitionBindingCollection.
+						// Add the role to the collection.
+						collContribute.add(rdContribute);
+					}
+
+					// Get the RoleAssignmentCollection for the target web.
+					//var assignments = securable.get_roleAssignments();
+					// assign the group to the new RoleDefinitionBindingCollection.
+					//var roleAssignmentContribute = assignments.add(principal, collContribute);
+
+					ctx.load(principal);
+
+					ctx.executeQueryAsync(function () /*sender*/ /*, args*/{
+						dfd.resolve(principal);
+					}, function (r, a) {
+						reqFailure(r, a, "addPermission", dfd);
+					});
+				};
+
+				if (SP.Group.isInstanceOfType(principalIn)) {
+					safeAddPermission(safePrincipal);
+				} else {
+					ensureGroup(principalIn).done(function (res) {
+						safePrincipal = res;
+						safeAddPermission(safePrincipal);
+					});
+				}
+			}).promise();
+		};
+
+		var processAsQueue = function processAsQueue(arr, action) {
+			// make sure array doesn't change
+
+			return $.Deferred(function (dfd) {
+				var step = 0;
+				var doNext = function doNext() {
+					if (arr == null || step >= arr.length) {
+						dfd.resolve();
+					} else {
+						var item = arr[step++];
+						action(item, ctx, list, web).done(function () {
+							doNext();
+						});
+					}
+				};
+
+				if (typeof arr == "function") {
+					arr().done(function (items) {
+						arr = items;
+						doNext();
+					});
+				} else {
+					doNext();
+				}
+			}).promise();
+		};
+		var spGroups = null;
+		var getGroups = function getGroups(force) {
+			if (force) {
+				spGroups = null;
+			}
+			return $.Deferred(function (dfd) {
+
+				if (spGroups == null) {
+					var groupCollection = web.get_siteGroups();
+					ctx.load(groupCollection);
+
+					ctx.executeQueryAsync(function () /*sender, args*/{
+						spGroups = {};
+						var le = groupCollection.getEnumerator();
+						while (le.moveNext()) {
+							var group = le.get_current();
+							var groupName = group.get_title();
+							spGroups[groupName] = group;
+						}
+						log("Loaded Groups: " + groupCollection.get_count());
+						dfd.resolve(spGroups);
+					}, function (r, a) {
+						reqFailure(r, a, "getGroups", dfd);
+					});
+				} else {
+					dfd.resolve(spGroups);
+				}
+			}).promise();
+		};
+		var ensureGroup = function ensureGroup(name, desc) {
+			return $.Deferred(function (dfd) {
+
+				getGroups().done(function (spGroups) {
+					if (spGroups[name]) {
+						dfd.resolve(spGroups[name]);
+					} else {
+						createGroup(name, desc).done(function (group) {
+							dfd.resolve(group);
+						});
+					}
+				});
+			}).promise();
+		};
+		var ensureGroups = function ensureGroups(groups) {
+			return $.Deferred(function (dfdG) {
+				getGroups().done(function () /*spGroups*/{
+					processAsQueue(groups, function (group) {
+						return $.Deferred(function (dfd) {
+							ensureGroup(group.name, group.desc).done(function (spGroup) {
+								log("Adding permissions for " + group.name);
+								addPermission(spGroup, group.permissions, web).done(function () {
+									log("adding pemission is done");
+									dfd.resolve();
+								});
+							});
+						}).promise();
+					}).done(function () {
+						dfdG.resolve();
+					});
+				}); //;
+			}).promise();
+		};
+		var createGroup = function createGroup(name, desc, parentWeb) {
+			return $.Deferred(function (dfd) {
+				parentWeb = parentWeb || web;
+				var ctx = parentWeb.get_context();
+				var groupCollection = parentWeb.get_siteGroups();
+
+				log("creating group: " + name);
+				var spGroup = groupCollection.add(function () {
+					var membersGRP = new SP.GroupCreationInformation();
+					membersGRP.set_title(name);
+					membersGRP.set_description(desc);
+					return membersGRP;
+				}());
+
+				spGroup.set_onlyAllowMembersViewMembership(false);
+				spGroup.update();
+				ctx.load(spGroup);
+				ctx.executeQueryAsync(function () {
+					dfd.resolve(spGroup);
+				}, function (r, a) {
+					reqFailure(r, a, "createGroups", dfd);
+				});
+			}).promise();
+		};
+		var createList = function createList(listTitle, templateType) {
+			log("Creating list " + listTitle);
+			return $.Deferred(function (dfd) {
+
+				var listCreationInfo = new SP.ListCreationInformation();
+				listCreationInfo.set_title(listTitle);
+				listCreationInfo.set_templateType(templateType);
+
+				var oList = web.get_lists().add(listCreationInfo);
+
+				ctx.load(oList);
+
+				ctx.executeQueryAsync(function () {
+					log(args.ListTitle + " creation done");
+					list = oList;
+					handleOnCreated(list, dfd);
+				}, function (r, a) {
+					reqFailure(r, a, "createList", dfd);
+				});
+			}).promise();
+		};
+		var reqFailure = function reqFailure(req, reqargs, from, dfd) {
+			// log context failure
+
+			var msg = from + "(list:" + args.ListTitle + ") : Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
+			error(msg);
+
+			if (dfd) dfd.reject(msg);
+		};
+		var ensureList = function ensureList(web, args) {
+			return $.Deferred(function (dfd) {
+
+				if (list != null) {
+					dfd.resolve(list);
+				} else {
+
+					lists = web.get_lists();
+
+					var done = function done() {
+						log("lists loaded");
+						listExists(lists, args.ListTitle).done(function (res) {
+							if (res.exists) {
+								log("list already exists");
+								list = res.list;
+
+								var rootFolder = list.get_rootFolder();
+								ctx.load(rootFolder, ["ServerRelativeUrl"]);
+								ctx.executeQueryAsync(function () {
+									ensureFields(list).done(function () {
+										dfd.resolve(list);
+									});
+								});
+							} else {
+								createList(args.ListTitle, args.ListTemplate).done(function (splist) {
+
+									var rootFolder = splist.get_rootFolder();
+									ctx.load(rootFolder, ["ServerRelativeUrl"]);
+									ctx.executeQueryAsync();
+
+									var defaultItems = function defaultItems(spfields) {
+										if (typeof args.DefaultItems == "function") {
+											args.DefaultItems(spfields, me).done(function (items) {
+												addItems(items, splist, spfields);
+											});
+										} else {
+											addItems(args.DefaultItems, splist, spfields);
+										}
+									};
+									log(args.ListTitle + ": creating fields");
+
+									ensureFields(splist, args.Fields || []).done(function (spfields) {
+										defaultItems(spfields);
+										if (args.Permissions) {
+											breakRoleInheritance(false, true).done(function () {
+												log("done with inheritance");
+												processAsQueue(args.Permissions, function (entry) {
+													var groupName = entry.name;
+													var perms = entry.permissions;
+													log("adding perm: " + groupName + " to " + args.ListTitle);
+													return addPermission(groupName, perms, splist);
+												}).done(function () {
+													log("done adding permissions");
+													handleOnReady(splist, dfd);
+												});
+											});
+										} else {
+											handleOnReady(splist, dfd);
+										}
+									}).fail(function (err) {
+										log(err);
+									});
+								}).fail(function (err) {
+
+									log(err);
+								});
+							}
+						});
+					};
+
+					log("loading lists...");
+					ctx.load(lists);
+
+					ctx.executeQueryAsync(done, function (r, a) {
+						reqFailure(r, a, "ensureList", dfd);
+					});
+				}
+			}).promise();
+		};
+		var ensureFields = function ensureFields(list, fields) {
+			fields = fields || [];
+			var spfields = list.get_fields();
+			var getMarkup = function getMarkup(field) {
+				return $.Deferred(function (dfd) {
+
+					var xml = field.markup;
+					if (typeof field.markup == "function") {
+						field.markup(ctx, list, spfields, lists, web).done(function (xml) {
+							dfd.resolve(xml);
+						});
+					} else {
+						dfd.resolve(xml);
+					}
+				}).promise();
+			};
+			return $.Deferred(function (dfd) {
+				var done = function done() {
+					spfields = list.get_fields();
+
+					ctx.load(spfields, "Include(Title,FieldTypeKind,TypeAsString,InternalName)");
+					ctx.executeQueryAsync(function () {
+						log("existing fields loaded");
+						var le = spfields.getEnumerator();
+						var parsed = {};
+						while (le.moveNext()) {
+							var field = le.get_current();
+							parsed[field.get_internalName()] = field;
+						}
+						listFields = parsed;
+						dfd.resolve(parsed);
+					}, function onError(sender, args) {
+						dfd.reject("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
+					});
+				};
+				processAsQueue(fields, function (field) {
+					return $.Deferred(function (fieldDfd) {
+						getMarkup(field).done(function (xml) {
+
+							log("adding: " + xml);
+							var spField = spfields.addFieldAsXml(xml, true, SP.AddFieldOptions.defaultValue);
+
+							if (field.post) {
+								field.post(spField);
+							}
+							ctx.load(spField);
+							fieldDfd.resolve();
+						});
+					}).promise();
+				}).done(done);
+			}).promise();
+		};
+
+		var deleteList = function deleteList(lists, listTitle) {
+			log("deleting list " + listTitle);
+			return $.Deferred(function (dfd) {
+
+				listExists(lists, listTitle).done(function (listexists) {
+
+					if (listexists.exists) {
+						listexists.list.deleteObject();
+						ctx.executeQueryAsync(function () {
+							dfd.resolve("list deleted");
+						}, function (r, a) {
+							reqFailure(r, a, "deleteList", dfd);
+						});
+					} else {
+						dfd.resolve("list not found");
+					}
+				});
+			}).promise();
+		};
+		var delTheList = function delTheList() {
+			return deleteList(lists, args.ListTitle);
+		};
+
+		var loadSpElem = function loadSpElem(elem, sptx, caller) {
+
+			sptx = sptx || ctx;
+			return $.Deferred(function (dfd) {
+
+				if (elem.length) {
+					for (var i = 0; i < elem.length; i++) {
+						sptx.load(elem[i]);
+					}
+				} else sptx.load(elem);
+
+				sptx.executeQueryAsync(function () {
+					dfd.resolve(elem);
+				}, function (r, a) {
+					reqFailure(r, a, caller || "loadSpElem", dfd);
+				});
+			}).promise();
+		};
+		var getlist = function getlist() {
+			return $.Deferred(function (dfd) {
+
+				ensureList(web, args).done(function (list) {
+					//ensureFields(list).done(function () {
+					dfd.resolve(list, ctx, web);
+					//});
+				});
+			}).promise();
+		};
+		var _getitems = function _getitems(caml) {
+			return $.Deferred(function (dfd) {
+				//var rootFolder = list.get_rootFolder();
+				var ctx = list.get_context();
+				//var scripts = [];
+				var queryXml = caml || args.DefaultQuery || "<View Scope='Recursive'>\
+<ViewFields>\
+<FieldRef Name='ID'></FieldRef>\
+<FieldRef Name='Title'></FieldRef>\
+</ViewFields><RowLimit>1000</RowLimit>\
+</View>";
+				//loadSpElem(rootFolder, ctx),
+				$.when(getAll(list, ctx, queryXml)).done(function (items) {
+					log(items);
+
+					if (args.itemParser) {
+						dfd.resolve(args.itemParser(items));
+					} else {
+						dfd.resolve(items);
+					}
+				}).fail(function () {
+
+					error("getitems error");
+				});
+			}).promise();
+		};
+		var getItem = function getItem(id) {
+			return $.Deferred(function (dfd) {
+				getlist().done(function (list) {
+					var oListItem = list.getItemById(id);
+
+					loadSpElem(oListItem, ctx).done(function (el) {
+						dfd.resolve(el, list, web, ctx);
+					}).fail(function (err) {
+						dfd.reject(err);
+					});
+				});
+			}).promise();
+		};
+		var saveItem = function saveItem(id, title, desc, script) {
+			ctx = ctx || SP.ClientContext.get_current();
+
+			var dfd = $.Deferred();
+
+			var web = ctx.get_web();
+			var list = web.get_lists();
+			var targetList = list.getByTitle(args.ListTitle);
+			var oListItem = null;
+
+			if (id && id > 0) {
+				oListItem = targetList.getItemById(id);
+			} else {
+				var itemCreateInfo = new SP.ListItemCreationInformation();
+				oListItem = targetList.addItem(itemCreateInfo);
+			}
+
+			oListItem.set_item(args.FieldNames.title, title);
+			oListItem.set_item(args.FieldNames.desc, desc);
+			oListItem.set_item(args.FieldNames.script, script);
+
+			oListItem.update();
+
+			loadSpElem(oListItem, ctx).done(function (el) {
+				dfd.resolve(el);
+			}).fail(function (err) {
+				dfd.reject(err);
+			});
+
+			return dfd.promise();
+		};
+		var getAll = function getAll(splist, spctx, caml, folder, limit) {
+
+			limit = limit || 0;
+			splist = splist || list;
+			spctx = spctx || ctx;
+			var query = new SP.CamlQuery();
+
+			var queryXml = caml || "<View Scope='Recursive'>\
+        <ViewFields>\
+          <FieldRef Name='ID'></FieldRef>\
+        </ViewFields><RowLimit>1000</RowLimit>\
+      </View>";
+
+			if (folder) {
+				query.set_folderServerRelativeUrl(folder);
+			}
+			query.set_viewXml(queryXml);
+
+			var items = [],
+			    spItems;
+
+			getlist().done(function (splist) {
+
+				var loadNext = function loadNext(pageInfo) {
+
+					log("loading" + pageInfo);
+					pageInfo = pageInfo || "";
+
+					var pos = new SP.ListItemCollectionPosition();
+					pos.set_pagingInfo(pageInfo);
+					query.set_listItemCollectionPosition(pos);
+					spItems = splist.getItems(query);
+					spctx.load(spItems);
+
+					var onSuccess = function onSuccess() /*sender, args*/{
+						parseRows(spItems);
+						var position = spItems.get_listItemCollectionPosition();
+						if (position !== null && (limit == 0 || items.length < limit)) {
+							var info = position.get_pagingInfo();
+							loadNext(info);
+						} else {
+							dfd.resolve(items, splist, listFields, web, ctx);
+						}
+					};
+
+					spctx.executeQueryAsync(onSuccess, function (r, a) {
+
+						reqFailure(r, a, "getAll", dfd);
+						error("caml: " + caml);
+					});
+				};
+				var parseRows = function parseRows(spItems) {
+					var itemsCount = spItems.get_count();
+					for (var i = 0; i < itemsCount; i++) {
+						var item = spItems.itemAt(i);
+						if (item) {
+							items.push(item);
+						}
+					}
+				};
+
+				loadNext();
+			}).fail(function () {});
+
+			var dfd = $.Deferred();
+			return dfd.promise();
+		};
+
+		var addWebPart = function addWebPart(serverRelativeFormUrl, wpXml, zone, position) {
+
+			return $.Deferred(function (dfd) {
+				var oFile = web.getFileByServerRelativeUrl(serverRelativeFormUrl);
+
+				var lpm = oFile.getLimitedWebPartManager(SP.WebParts.PersonalizationScope.shared);
+
+				var oWebPartDefinition = lpm.importWebPart(wpXml);
+				var oWebPart = oWebPartDefinition.get_webPart();
+
+				var wp = lpm.addWebPart(oWebPart, zone || "LeftColumn", position || 0);
+				var wps = lpm.get_webParts();
+				ctx.load(wps, "Include(WebPart.Title)");
+
+				loadSpElem([oWebPart, wp], ctx, "Add web part").done(function () {
+					wp = wps.getById(wp.get_id());
+					var wpp = wp.get_webPart();
+					var props = wpp.get_properties();
+
+					loadSpElem([wp, wpp, props]).done(function () /*res*/{
+						dfd.resolve(wp);
+					});
+				});
+			});
+		};
+
+		var me = {
+			addCustomAction: addCustomAction,
+			args: args,
+			deleteList: delTheList,
+			addWebPart: addWebPart,
+			getitems: function getitems(force, caml) {
+				if (force) {
+					items = null;
+				}
+				return $.Deferred(function (dfd) {
+
+					if (items) {
+						dfd.resolve(items);
+					} else {
+						getlist().done(function () /*list*/{
+							_getitems(caml).done(function (res) {
+								items = res;
+								dfd.resolve(items);
+							});
+						});
+					}
+				}).promise();
+			},
+			getitem: function getitem(id) {
+				return $.Deferred(function (dfd) {
+
+					getItem(id).done(function (el) {
+						dfd.resolve(el, list, web);
+					});
+				}).promise();
+			},
+			getlist: getlist,
+			createGroup: createGroup,
+			getGroups: getGroups,
+			ensureGroups: ensureGroups,
+			ensureGroup: ensureGroup,
+			save: saveItem,
+			addScriptLink: addScriptLink,
+			clearActions: clearActions,
+			createFolder: createFolder,
+			loadSpElem: loadSpElem,
+			processAsQueue: processAsQueue,
+			ensureFolder: ensureFolder,
+			getItems: getAll,
+			addItems: addItems,
+			ctx: ctx,
+			list: list,
+			spErrorHandler: reqFailure,
+			breakItemRoleInheritance: breakItemRoleInheritance,
+			breakRoleInheritance: breakRoleInheritance
+		};
+		return me;
+	};
+
+	ns.listapi = {
+		dal: SpDal,
+		version: "0.1"
 	};
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 
@@ -70134,6 +71798,108 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"dropdown\">\r\n    <button class=\"btn btn-default dropdown-toggle\" type=\"button\" id=\"dropdownMenu1\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"true\">\r\n        <span class=\"sptreelabel\">Select List...</span>\r\n        <span class=\"caret\">\r\n        </span>\r\n    </button>\r\n    <div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\">\r\n        <div style=\"max-height:300px;overflow-y:auto\" class='cc'>\r\n            <div class=\"tree\"></div>\r\n        </div>\r\n    </div>\r\n</div>";
+
+/***/ }),
+
+/***/ "./ui.perms.js":
+/*!*********************!*\
+  !*** ./ui.perms.js ***!
+  \*********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../../../public/vendor/select2/js/select2.full.js */ "../../../public/vendor/select2/js/select2.full.js");
+
+__webpack_require__(/*! ../../../public/vendor/select2/css/select2.css */ "../../../public/vendor/select2/css/select2.css");
+
+__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
+
+var _uiPermsTemplate = __webpack_require__(/*! ./ui.perms.template.html */ "./ui.perms.template.html");
+
+var _uiPermsTemplate2 = _interopRequireDefault(_uiPermsTemplate);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (ns, $) {
+	var debug = window.location.href.search(/[localhost|debugcustomactions]/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "permissions";
+		return d;
+	}();
+
+	var PermissionUI = function PermissionUI(el /*, opts*/) {
+		// constructor
+		var $el = $(el),
+		    me = {};
+		//opts = $.extend({
+		//}, opts);
+		$el.html($(_uiPermsTemplate2.default).html());
+		$el.data(widgetInfo.publicName, me);
+
+		var perms = null;
+		var select = $("[name=\"Permissions\"]").change(function () {
+			var vals = $(this).val();
+			log(vals);
+			perms = new SP.BasePermissions();
+			for (var i = 0; i < vals.length; i++) {
+				perms.set(parseInt(vals[i]));
+			}
+			$el.attr("data-value", vals).trigger("change");
+		}).select2({});
+
+		me.setSpPerms = function (spperms) {
+
+			$("option", $el).each(function () {
+				var opti = $(this);
+				var perm = parseInt(opti.val());
+				var has = !isNaN(perm) && spperms.has(perm);
+				/// TODO: implement debug
+				//log("{opti.text()}: {has}");
+				opti.prop("selected", has);
+			});
+			select.trigger("change");
+		};
+		me.getSpPerms = function () {
+			return perms;
+		};
+		me.getSpPermArray = function () {
+			return $el.attr("data-value");
+		};
+
+		return me;
+	};
+
+	var widgetInfo = ns.widgets.addWidget("spPermsSelector", PermissionUI, "0.1.0");
+
+	if (window["ExecuteOrDelayUntilScriptLoaded"]) {
+		ExecuteOrDelayUntilScriptLoaded(function () {
+			widgetInfo.startup();
+		}, "sp.js");
+		SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {});
+	} else widgetInfo.startup();
+})(spexplorerjs, _jquery2.default);
+
+/***/ }),
+
+/***/ "./ui.perms.template.html":
+/*!********************************!*\
+  !*** ./ui.perms.template.html ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div>\r\n    <select multiple name=\"Permissions\" class=\"form-control input-md\">\r\n        <option></option>\r\n        <option value='1'>viewListItems</option>\r\n        <option value='2'>addListItems</option>\r\n        <option value='3'>editListItems</option>\r\n        <option value='4'>deleteListItems</option>\r\n        <option value='5'>approveItems</option>\r\n        <option value='6'>openItems</option>\r\n        <option value='7'>viewVersions</option>\r\n        <option value='8'>deleteVersions</option>\r\n        <option value='9'>cancelCheckout</option>\r\n        <option value='10'>managePersonalViews</option>\r\n        <option value='12'>manageLists</option>\r\n        <option value='13'>viewFormPages</option>\r\n        <option value='14'>anonymousSearchAccessList</option>\r\n        <option value='17'>open</option>\r\n        <option value='18'>viewPages</option>\r\n        <option value='19'>addAndCustomizePages</option>\r\n        <option value='20'>applyThemeAndBorder</option>\r\n        <option value='21'>applyStyleSheets</option>\r\n        <option value='22'>viewUsageData</option>\r\n        <option value='23'>createSSCSite</option>\r\n        <option value='24'>manageSubwebs</option>\r\n        <option value='25'>createGroups</option>\r\n        <option value='26'>managePermissions</option>\r\n        <option value='27'>browseDirectories</option>\r\n        <option value='28'>browseUserInfo</option>\r\n        <option value='29'>addDelPrivateWebParts</option>\r\n        <option value='30'>updatePersonalWebParts</option>\r\n        <option value='31'>manageWeb</option>\r\n        <option value='32'>anonymousSearchAccessWebLists</option>\r\n        <option value='37'>useClientIntegration</option>\r\n        <option value='38'>useRemoteAPIs</option>\r\n        <option value='39'>manageAlerts</option>\r\n        <option value='40'>createAlerts</option>\r\n        <option value='41'>editMyUserInfo</option>\r\n        <option value='63'>enumeratePermissions</option>\r\n        <option value='65'>fullMask</option>\r\n    </select>\r\n</div>";
 
 /***/ })
 

@@ -66660,6 +66660,7 @@ var _jquery2 = _interopRequireDefault(_jquery);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// 0.1.0: 2018/03/23 - pass options to widget constructor
 (function (ns, $) {
 
 	var debug = window.location.href.search(/[localhost|debugcustomactions]/) > 0;
@@ -66680,14 +66681,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			publicName: name,
 			constructor: constructor,
 			version: version,
-			startup: function startup(context) {
+			startup: function startup(context, opts) {
 
 				log(name + ".startup");
 				var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
 				log("selector: " + selector);
 				var elems = $(selector, context || document);
 				log("Elems: " + elems.length);
-				elems[name]({});
+				elems[name](opts);
 				return elems;
 			}
 		};
@@ -66711,6 +66712,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					}
 				} else {
 					var obj = new widgetInfo.constructor(this, opts);
+					$(".version:first", this).html(widgetInfo.version);
 					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
 				}
 			});
@@ -66962,11 +66964,11 @@ var _customactionEditorTemplate = __webpack_require__(/*! ./customaction.editor.
 
 var _customactionEditorTemplate2 = _interopRequireDefault(_customactionEditorTemplate);
 
-__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
-
 var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
 
 var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
 
 __webpack_require__(/*! ./sp.list.js */ "./sp.list.js");
 
@@ -66974,9 +66976,9 @@ __webpack_require__(/*! ./treelight.js */ "./treelight.js");
 
 __webpack_require__(/*! ./customaction.selector.js */ "./customaction.selector.js");
 
-__webpack_require__(/*! ../mirrors/xmlmirror.js */ "../mirrors/xmlmirror.js");
+__webpack_require__(/*! ./ui.perms.js */ "./ui.perms.js");
 
-__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
+__webpack_require__(/*! ../mirrors/xmlmirror.js */ "../mirrors/xmlmirror.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -67004,24 +67006,33 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	var CustomActions = function CustomActions(el, opts) {
 		// constructor
 		var $el = $(el),
-		    me = {},
-		    ctx = null;
-		opts = $.extend({}, opts);
+		    me = {};
+		opts = $.extend({
+			showSelector: true,
+			listTitle: ($el.attr("data-listTitle") || "").trim()
+		}, opts);
 		$el.html($(template).html());
 		$el.data("spCustomActions", me);
 
 		//var actionSelector = $(".actionSelector", $el);
-		var actionSelector = ns.widgets.xSPCustomActionSelector.startup($el); // $(ns.widgets.xSPCustomActionSelector.getSelector(), $el);
-		var selectionWidget = actionSelector.data(ns.widgets.xSPCustomActionSelector.publicName);
+		var actionSelector = ns.widgets.xSPCustomActionSelector.startup($el, { listtitle: opts.listTitle }); // $(ns.widgets.xSPCustomActionSelector.getSelector(), $el);
+
+		var selectionWidget = actionSelector.data("xwidget");
 		var xmlCtrl = ns.widgets.xxmlmirror.startup($el).data(ns.widgets.xxmlmirror.publicName);
+		var permissionsCtrl = ns.widgets.spPermsSelector.startup($el).data("xwidget");
+
 		actionSelector.on("selectionchange", function (event, ca) {
 			if (ca) {
 				$("[data-get").each(function () {
 					$(this).val(ca[$(this).attr("data-get")]());
 				});
 				xmlCtrl.setXml(ca.get_commandUIExtension());
+				var rights = ca.get_rights();
+				permissionsCtrl.setSpPerms(rights);
 			}
 		});
+
+		if (!opts.showSelector) $(".listSelector", actionSelector).hide(); // hide treelight section
 
 		$("#btnAdd", $el).click(function () {
 			var caSelCtrl = actionSelector.data(ns.widgets.xSPCustomActionSelector.publicName);
@@ -67030,25 +67041,44 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				var listOrWeb = caSelCtrl.container();
 				var selectedAction = caSelCtrl.value();
 				var spdal = new ns.customactions.dal();
-				var location = $("#location", $el).val();
-				var sequence = $("#sequence", $el).val();
-				var title = $("#title", $el).val();
-				var permissions = new SP.BasePermissions();
-				permissions.set(SP.PermissionKind.editListItems);
+				var location = $("#Location", $el).val();
+				var sequence = $("#Sequence", $el).val();
+				var title = $("#Title", $el).val();
+				var permissions = permissionsCtrl.getSpPerms();
 				var src = $("#Src", $el).val();
+
+				log({
+					caValues: {
+						location: location, xml: xml, sequence: sequence, permissions: permissions, title: title
+					}
+				});
 				if (selectedAction == null) {
-					spdal.addCustomAction(listOrWeb, location, xml, sequence, permissions, title, src);
+					spdal.addCustomAction(listOrWeb, location, xml, sequence, permissions, title, src).done(function () {
+
+						selectionWidget.container(selectionWidget.container());
+					});
+				} else {
+					selectedAction.set_title(title);
+					selectedAction.set_location(location);
+					selectedAction.set_sequence(sequence);
+					selectedAction.set_rights(permissions);
+					selectedAction.set_scriptSrc(src);
+					selectedAction.set_commandUIExtension(xml);
+					selectedAction.update();
+
+					ns.sp.loadSpElem(selectedAction).done(function () {
+						log("Action udpated");
+					});
 				}
 			});
 		});
-		//ns.widgets.xSPCustomActionSelector.startup($el);
 		me.setList = function (list) {
 			selectionWidget.container(list);
 		};
 		return me;
 	};
 
-	var widgetInfo = ns.widgets.addWidget("spCustomActions", CustomActions, "0.1.0");
+	var widgetInfo = ns.widgets.addWidget("spCustomActions", CustomActions, "0.1.1");
 
 	if (window["ExecuteOrDelayUntilScriptLoaded"]) {
 		ExecuteOrDelayUntilScriptLoaded(function () {
@@ -67067,7 +67097,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\r\n\r\n    <div class=\"widgetInfo\" style=\"font-size: small\">customactions <span>v0.1.2</span></div>\r\n    <div class=\"form-horizontal\">\r\n        <fieldset>\r\n\r\n            <!-- Form Name -->\r\n            <legend>Custom Action Editor</legend>\r\n\r\n            <div class=\"form-group\">\r\n                <label class=\"col-lg-2 col-md-2 control-label\" for=\"textinput\">List/Action</label>\r\n                <div class=\"col-lg-10 col-md-10\">\r\n                    <div class=\"actionSelector\" data-widget=\"xSPCustomActionSelector\"></div>\r\n                    <span class=\"help-block\">Select an existing custom action or list/web to add a new one.</span>\r\n                </div>\r\n            </div>\r\n\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Title</label>\r\n                <div class=\"col-md-4\">\r\n                    <input id=\"Title\" name=\"Title\" data-get=\"get_title\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" />\r\n                    <span class=\"help-block\">\r\n                        A string that contains the title.\r\n                    </span>\r\n                </div>\r\n            </div>\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Sequence</label>\r\n                <div class=\"col-md-4\">\r\n                    <input min=\"0\" max=\"65536\" id=\"Sequence\" data-get=\"get_sequence\" name=\"Sequence\" type=\"number\" placeholder=\"placeholder\" class=\"form-control input-md\">\r\n                    <span class=\"help-block\">\r\n                        Its value must be equal to or greater than 0. Its value must be equal to or less than 65536.                                https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.usercustomaction.sequence(v=office.15).aspx\r\n                    </span>\r\n                </div>\r\n            </div>\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Location</label>\r\n                <div class=\"col-md-4\">\r\n                    <select id=\"Location\" name=\"Location\" class=\"form-control input-md\" data-get=\"get_location\">\r\n                        <option>CommandUI.Ribbon.ListView</option>\r\n                        <option>CommandUI.Ribbon.NewForm</option>\r\n                        <option>CommandUI.Ribbon.EditForm</option>\r\n                        <option>CommandUI.Ribbon.DisplayForm</option>\r\n                        <option>CommandUI.Ribbon</option>\r\n                        <option>ScriptLink</option>\r\n                    </select>\r\n                    <span class=\"help-block\">Location</span>\r\n                    https://msdn.microsoft.com/en-us/library/office/ee537543.aspx\r\n                </div>\r\n            </div>\r\n\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Src</label>\r\n                <div class=\"col-md-4\">\r\n                    <input id=\"Src\" name=\"Src\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" data-get=\"get_scriptSrc\" />\r\n                    <span class=\"help-block\">help</span>\r\n                </div>\r\n            </div>\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textarea\">Xml</label>\r\n                <div class=\"col-md-4\">\r\n                    <div style=\"max-height:250px\" data-widget=\"xxmlmirror\"></div>\r\n                    <textarea class=\"form-control hidden hide\" id=\"textarea\" name=\"textarea\">default text</textarea>\r\n                </div>\r\n            </div>\r\n\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Permissions</label>\r\n                <div class=\"col-md-4\">\r\n                    <select multiple id=\"Permissions\" name=\"Permissions\" class=\"form-control input-md\">\r\n                        <option></option>\r\n                        <option value='1'>viewListItems</option>\r\n                        <option value='2'>addListItems</option>\r\n                        <option value='3'>editListItems</option>\r\n                        <option value='4'>deleteListItems</option>\r\n                        <option value='5'>approveItems</option>\r\n                        <option value='6'>openItems</option>\r\n                        <option value='7'>viewVersions</option>\r\n                        <option value='8'>deleteVersions</option>\r\n                        <option value='9'>cancelCheckout</option>\r\n                        <option value='10'>managePersonalViews</option>\r\n                        <option value='12'>manageLists</option>\r\n                        <option value='13'>viewFormPages</option>\r\n                        <option value='14'>anonymousSearchAccessList</option>\r\n                        <option value='17'>open</option>\r\n                        <option value='18'>viewPages</option>\r\n                        <option value='19'>addAndCustomizePages</option>\r\n                        <option value='20'>applyThemeAndBorder</option>\r\n                        <option value='21'>applyStyleSheets</option>\r\n                        <option value='22'>viewUsageData</option>\r\n                        <option value='23'>createSSCSite</option>\r\n                        <option value='24'>manageSubwebs</option>\r\n                        <option value='25'>createGroups</option>\r\n                        <option value='26'>managePermissions</option>\r\n                        <option value='27'>browseDirectories</option>\r\n                        <option value='28'>browseUserInfo</option>\r\n                        <option value='29'>addDelPrivateWebParts</option>\r\n                        <option value='30'>updatePersonalWebParts</option>\r\n                        <option value='31'>manageWeb</option>\r\n                        <option value='32'>anonymousSearchAccessWebLists</option>\r\n                        <option value='37'>useClientIntegration</option>\r\n                        <option value='38'>useRemoteAPIs</option>\r\n                        <option value='39'>manageAlerts</option>\r\n                        <option value='40'>createAlerts</option>\r\n                        <option value='41'>editMyUserInfo</option>\r\n                        <option value='63'>enumeratePermissions</option>\r\n                        <option value='65'>fullMask</option>\r\n                    </select>\r\n                    <span class=\"help-block\">Permissions</span>\r\n                </div>\r\n            </div>\r\n            <!-- Button (Double) -->\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"button1id\"></label>\r\n                <div class=\"col-md-8\">\r\n                    <button id=\"btnAdd\" name=\"btnAdd\" class=\"btn btn-success\" type=\"button\">Add/Update</button>\r\n                    <button id=\"btnRemove\" name=\"btnRemove\" class=\"btn btn-danger\" type=\"button\">Remove</button>\r\n                </div>\r\n            </div>\r\n\r\n        </fieldset>\r\n    </div>\r\n\r\n</div>\r\n";
+module.exports = "<div>\r\n\r\n    <div class=\"widgetInfo\" style=\"font-size: small\">customactions <span class=\"version\">v0.1.2</span></div>\r\n    <div class=\"form-horizontal\">\r\n        <fieldset>\r\n\r\n            <!-- Form Name -->\r\n            <legend>Custom Action Editor</legend>\r\n\r\n            <div class=\"form-group\">\r\n                <label class=\"col-lg-2 col-md-2 control-label\" for=\"textinput\"></label>\r\n                <div class=\"col-lg-10 col-md-10\">\r\n                    <div class=\"actionSelector\" data-widget=\"xSPCustomActionSelector\"></div>\r\n                    <span class=\"help-block\">Select an existing custom action or list/web to add a new one.</span>\r\n                </div>\r\n            </div>\r\n\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Title</label>\r\n                <div class=\"col-md-4\">\r\n                    <input id=\"Title\" name=\"Title\" data-get=\"get_title\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" />\r\n                    <span class=\"help-block\">\r\n                        A string that contains the title.\r\n                    </span>\r\n                </div>\r\n            </div>\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Sequence</label>\r\n                <div class=\"col-md-4\">\r\n                    <input min=\"0\" max=\"65536\" id=\"Sequence\" data-get=\"get_sequence\" name=\"Sequence\" type=\"number\" placeholder=\"placeholder\" class=\"form-control input-md\">\r\n                    <span class=\"help-block\">\r\n                        Its value must be equal to or greater than 0. Its value must be equal to or less than 65536.                                https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.usercustomaction.sequence(v=office.15).aspx\r\n                    </span>\r\n                </div>\r\n            </div>\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Location</label>\r\n                <div class=\"col-md-4\">\r\n                    <select id=\"Location\" name=\"Location\" class=\"form-control input-md\" data-get=\"get_location\">\r\n                        <option>CommandUI.Ribbon.ListView</option>\r\n                        <option>CommandUI.Ribbon.NewForm</option>\r\n                        <option>CommandUI.Ribbon.EditForm</option>\r\n                        <option>CommandUI.Ribbon.DisplayForm</option>\r\n                        <option>CommandUI.Ribbon</option>\r\n                        <option>ScriptLink</option>\r\n                    </select>\r\n                    <span class=\"help-block\">Location</span>\r\n                    https://msdn.microsoft.com/en-us/library/office/ee537543.aspx\r\n                </div>\r\n            </div>\r\n\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Src</label>\r\n                <div class=\"col-md-4\">\r\n                    <input id=\"Src\" name=\"Src\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" data-get=\"get_scriptSrc\" />\r\n                    <span class=\"help-block\">help</span>\r\n                </div>\r\n            </div>\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textarea\">Xml</label>\r\n                <div class=\"col-md-4\">\r\n                    <div style=\"max-height:250px\" data-widget=\"xxmlmirror\"></div>\r\n                    <textarea class=\"form-control hidden hide\" id=\"textarea\" name=\"textarea\">default text</textarea>\r\n                </div>\r\n            </div>\r\n\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"textinput\">Permissions</label>\r\n                <div class=\"col-md-4\">\r\n                    <div data-widget=\"spPermsSelector\"></div>\r\n                    <span class=\"help-block\">Permissions</span>\r\n                </div>\r\n            </div>\r\n            <!-- Button (Double) -->\r\n            <div class=\"form-group\">\r\n                <label class=\"col-md-4 control-label\" for=\"button1id\"></label>\r\n                <div class=\"col-md-8\">\r\n                    <button id=\"btnAdd\" name=\"btnAdd\" class=\"btn btn-success\" type=\"button\">Add/Update</button>\r\n                    <button id=\"btnRemove\" name=\"btnRemove\" class=\"btn btn-danger\" type=\"button\">Remove</button>\r\n                </div>\r\n            </div>\r\n\r\n        </fieldset>\r\n    </div>\r\n\r\n</div>\r\n";
 
 /***/ }),
 
@@ -67242,6 +67272,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		var listCtrl = $("[data-widget=\"xSPTreeLight\"]", $el).xSPTreeLight().on("listchange", function (e, list) {
 			onListChange(list);
 		});
+
 		var loadList = function loadList(listTitle) {
 			return $.Deferred(function (dfd) {
 
@@ -67269,7 +67300,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					var field = fieldSel.find(":selected").prop("data-field");
 					return field;
 				},
-				getFields: function getFields() {
+				getOptions: function getOptions() {
 
 					var fields = [];
 					fieldSel.find("option").each(function () {
@@ -67287,7 +67318,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 							spdal = new ns.listapi.dal(opts.weburl);
 						}
 						//opts.excludereadonly = instate.excludereadonly;
-						readonlycheck.prop("checked", opts.excludereadonly);
+						//readonlycheck.prop("checked", opts.excludereadonly);
 						opts = $.extend(opts, instate);
 						$("legend:first", $el).html(opts.label);
 						loadList(opts.listtitle);
@@ -67296,8 +67327,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 							label: $("legend:first", $el).html(),
 							list: _container,
 							listtitle: _container ? _container.get_title() : "",
-							weburl: opts.weburl,
-							excludereadonly: opts.excludereadonly
+							weburl: opts.weburl
+							//, excludereadonly: opts.excludereadonly
 						};
 
 						return state;
@@ -67327,66 +67358,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		}();
 	};
 
-	(function register() {
-		var widgetInfo = {
-			publicName: "xSPCustomActionSelector",
-			constructor: xSPCustomActionSelector,
-			version: "0.1.3",
-			getSelector: function getSelector() {
-				var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
-				log("selector: " + selector);
-				return selector;
-			},
-			startup: function startup(context) {
-				log(widgetInfo.publicName + ".startup");
-				var selector = widgetInfo.getSelector();
-				var elems = $(selector, context || document);
-				log("Elems: " + elems.length);
-				return elems[widgetInfo.publicName]({});
-			}
-		};
+	var widgetInfo = ns.widgets.addWidget("xSPCustomActionSelector", xSPCustomActionSelector, "0.1.4");
 
-		$.fn[widgetInfo.publicName] = function (opts) {
-			var args = arguments;
-			//var lastInstance = null;
-			var result = this.each(function () {
-
-				var $el = $(this);
-
-				var me = $el.data(widgetInfo.publicName);
-
-				if (me) {
-					// object has been initialized before
-
-					if (opts == null) {// request for instance
-						//lastInstance = me;
-					} else if (me[opts]) {
-						if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
-					}
-				} else {
-
-					var obj = new widgetInfo.constructor(this, opts);
-					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
-				}
-			});
-
-			//if (lastInstance && result.length == 1) return lastInstance;
-			return result;
-		};
-		(ns.widgets = ns.widgets || {})[widgetInfo.publicName] = widgetInfo;
-		log(widgetInfo.publicName + ".registered");
-
-		var init = function customActionSelectorInit() {
-			if (window["ExecuteOrDelayUntilScriptLoaded"]) {
-				ExecuteOrDelayUntilScriptLoaded(function () {
-					widgetInfo.startup();
-				}, "sp.js");
-				SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {});
-			} else widgetInfo.startup();
-		};
-
-		init();
-	})();
+	if (window["ExecuteOrDelayUntilScriptLoaded"]) {
+		ExecuteOrDelayUntilScriptLoaded(function () {
+			widgetInfo.startup();
+		}, "sp.js");
+		SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {});
+	} else widgetInfo.startup();
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _customactionSelectorTemplate2.default, _customactionSelectorItemtemplate2.default);
 
 /***/ }),
@@ -67398,7 +67377,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<div class=\"xwidgetui\">\r\n    <div class=\"form-group\">\r\n        <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n        <div class=\"col-md-10\">\r\n            <div data-widget=\"xSPTreeLight\"></div>\r\n        </div>\r\n    </div>\r\n    <div class=\"form-group\">\r\n        <label class=\"col-md-2 control-label\" for=\"selectbasic\">Custom Action</label>\r\n        <div class=\"col-md-10\">\r\n            <select class='casDrp' style=\"width:100%\"></select>\r\n            <small>select 0.3.2</small>\r\n        </div>\r\n    </div>\r\n</div>";
+module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<div class=\"xwidgetui\">\r\n    <div class=\"form-group listSelector\">\r\n        <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n        <div class=\"col-md-10\">\r\n            <div data-widget=\"xSPTreeLight\"></div>\r\n        </div>\r\n    </div>\r\n    <div class=\"form-group\">\r\n        <label class=\"col-md-2 control-label\" for=\"selectbasic\">Custom Action</label>\r\n        <div class=\"col-md-10\">\r\n            <select class='casDrp' style=\"width:100%\"></select>\r\n            <small>select 0.3.2</small>\r\n        </div>\r\n    </div>\r\n</div>";
 
 /***/ }),
 
@@ -69030,6 +69009,108 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"dropdown\">\r\n    <button class=\"btn btn-default dropdown-toggle\" type=\"button\" id=\"dropdownMenu1\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"true\">\r\n        <span class=\"sptreelabel\">Select List...</span>\r\n        <span class=\"caret\">\r\n        </span>\r\n    </button>\r\n    <div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\">\r\n        <div style=\"max-height:300px;overflow-y:auto\" class='cc'>\r\n            <div class=\"tree\"></div>\r\n        </div>\r\n    </div>\r\n</div>";
+
+/***/ }),
+
+/***/ "./ui.perms.js":
+/*!*********************!*\
+  !*** ./ui.perms.js ***!
+  \*********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../../../public/vendor/select2/js/select2.full.js */ "../../../public/vendor/select2/js/select2.full.js");
+
+__webpack_require__(/*! ../../../public/vendor/select2/css/select2.css */ "../../../public/vendor/select2/css/select2.css");
+
+__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
+
+var _uiPermsTemplate = __webpack_require__(/*! ./ui.perms.template.html */ "./ui.perms.template.html");
+
+var _uiPermsTemplate2 = _interopRequireDefault(_uiPermsTemplate);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (ns, $) {
+	var debug = window.location.href.search(/[localhost|debugcustomactions]/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "permissions";
+		return d;
+	}();
+
+	var PermissionUI = function PermissionUI(el /*, opts*/) {
+		// constructor
+		var $el = $(el),
+		    me = {};
+		//opts = $.extend({
+		//}, opts);
+		$el.html($(_uiPermsTemplate2.default).html());
+		$el.data(widgetInfo.publicName, me);
+
+		var perms = null;
+		var select = $("[name=\"Permissions\"]").change(function () {
+			var vals = $(this).val();
+			log(vals);
+			perms = new SP.BasePermissions();
+			for (var i = 0; i < vals.length; i++) {
+				perms.set(parseInt(vals[i]));
+			}
+			$el.attr("data-value", vals).trigger("change");
+		}).select2({});
+
+		me.setSpPerms = function (spperms) {
+
+			$("option", $el).each(function () {
+				var opti = $(this);
+				var perm = parseInt(opti.val());
+				var has = !isNaN(perm) && spperms.has(perm);
+				/// TODO: implement debug
+				//log("{opti.text()}: {has}");
+				opti.prop("selected", has);
+			});
+			select.trigger("change");
+		};
+		me.getSpPerms = function () {
+			return perms;
+		};
+		me.getSpPermArray = function () {
+			return $el.attr("data-value");
+		};
+
+		return me;
+	};
+
+	var widgetInfo = ns.widgets.addWidget("spPermsSelector", PermissionUI, "0.1.0");
+
+	if (window["ExecuteOrDelayUntilScriptLoaded"]) {
+		ExecuteOrDelayUntilScriptLoaded(function () {
+			widgetInfo.startup();
+		}, "sp.js");
+		SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {});
+	} else widgetInfo.startup();
+})(spexplorerjs, _jquery2.default);
+
+/***/ }),
+
+/***/ "./ui.perms.template.html":
+/*!********************************!*\
+  !*** ./ui.perms.template.html ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div>\r\n    <select multiple name=\"Permissions\" class=\"form-control input-md\">\r\n        <option></option>\r\n        <option value='1'>viewListItems</option>\r\n        <option value='2'>addListItems</option>\r\n        <option value='3'>editListItems</option>\r\n        <option value='4'>deleteListItems</option>\r\n        <option value='5'>approveItems</option>\r\n        <option value='6'>openItems</option>\r\n        <option value='7'>viewVersions</option>\r\n        <option value='8'>deleteVersions</option>\r\n        <option value='9'>cancelCheckout</option>\r\n        <option value='10'>managePersonalViews</option>\r\n        <option value='12'>manageLists</option>\r\n        <option value='13'>viewFormPages</option>\r\n        <option value='14'>anonymousSearchAccessList</option>\r\n        <option value='17'>open</option>\r\n        <option value='18'>viewPages</option>\r\n        <option value='19'>addAndCustomizePages</option>\r\n        <option value='20'>applyThemeAndBorder</option>\r\n        <option value='21'>applyStyleSheets</option>\r\n        <option value='22'>viewUsageData</option>\r\n        <option value='23'>createSSCSite</option>\r\n        <option value='24'>manageSubwebs</option>\r\n        <option value='25'>createGroups</option>\r\n        <option value='26'>managePermissions</option>\r\n        <option value='27'>browseDirectories</option>\r\n        <option value='28'>browseUserInfo</option>\r\n        <option value='29'>addDelPrivateWebParts</option>\r\n        <option value='30'>updatePersonalWebParts</option>\r\n        <option value='31'>manageWeb</option>\r\n        <option value='32'>anonymousSearchAccessWebLists</option>\r\n        <option value='37'>useClientIntegration</option>\r\n        <option value='38'>useRemoteAPIs</option>\r\n        <option value='39'>manageAlerts</option>\r\n        <option value='40'>createAlerts</option>\r\n        <option value='41'>editMyUserInfo</option>\r\n        <option value='63'>enumeratePermissions</option>\r\n        <option value='65'>fullMask</option>\r\n    </select>\r\n</div>";
 
 /***/ })
 

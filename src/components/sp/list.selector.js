@@ -1,3 +1,5 @@
+// v 0.1.1 - 2018/03/24 - Register through widgets.base
+//                      - Sync custom actions control with list selector
 /// TODO: Document
 import $ from "jquery";
 import "../logger/logger.js";
@@ -5,6 +7,7 @@ import "./sp.base.js";
 import "./sp.web.js";
 import "./treelight.js";
 import "./field.selector.js";
+import "./customaction.editor.js";
 import "../mirrors/jsmirror.js";
 import "../mirrors/xmlmirror.js";
 import template from "./list.selector.template.html";
@@ -26,20 +29,20 @@ import template from "./list.selector.template.html";
 		var $el = $(el), me = {};//, ctx = null;
 		//opts = $.extend({}, opts);
 		$el.html($(template).html());
-		$el.data("spListWidget", me);
 
 		$("#btnAdd", $el).click(function () { });
+
 		var jsWidget = ns.widgets.xjsmirror.startup($el).data("xwidget");
 		var xmlWidget = ns.widgets.xxmlmirror.startup($(".listschema", $el)).data("xwidget");
-
 		var fieldSelector = ns.widgets.xSPFieldSelector.startup($el, {showSelector: false});
+		var caCtrl = ns.widgets.spCustomActions.startup($el, { showSelector: false }).data("xwidget");
 
 		ns.widgets.xSPTreeLight.startup($(".listSelectorFirst",$el)).on("listchange", function (event, list) {
 
 			$("#title", $el).val(list.get_title());
 			jsWidget.setScriptingObject(list);
 			fieldSelector.data("xSPFieldSelector").setList(list);
-			//caCtrl.setList(list);
+			caCtrl.setList(list);
 
 			var showSchema = function () {
 				xmlWidget.setXml(list.get_schemaXml());
@@ -54,68 +57,17 @@ import template from "./list.selector.template.html";
 			}
 		});
 
-		//var caElem = ns.widgets.spCustomActions.startup($el);
-		//var caCtrl = caElem.data("spCustomActions");
 		return me;
 	};
 
-	var widgetInfo = {
-		publicName: "spListWidget",
-		constructor: SPListWidget,
-		version: "0.1.1",
-		startup: function (context) {
+	var widgetInfo = ns.widgets.addWidget("spListWidget", SPListWidget, "0.1.2");
 
-			log(widgetInfo.publicName + ".startup");
-			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
-			log("selector: " + selector);
-			var elems = $(selector, context || document);
-			log("Elems: " + elems.length);
-			elems[widgetInfo.publicName]({});
-		}
-	};
-
-	$.fn[widgetInfo.publicName] = function (opts) {
-		var args = arguments;
-		//var lastInstance = null;
-		var result = this.each(function () {
-
-			var $el = $(this);
-
-			var me = $el.data(widgetInfo.publicName);
-
-			if (me) { // object has been initialized before
-
-				if (opts == null) { // request for instance
-					//lastInstance = me;
-				} else
-				if (me[opts]) {
-					if (typeof me[opts] == "function")
-						me[opts].apply(me, Array.prototype.slice.call(args, 1));
-					else
-						me[opts] = args[1];
-				}
-
-			} else {
-				var obj = new widgetInfo.constructor(this, opts);
-				$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
-			}
-		});
-
-		return result;
-	};
-
-	(ns.widgets = (ns.widgets || {}))[widgetInfo.publicName] = widgetInfo;
-
-	var init = function splistInit() {
-		if (window["ExecuteOrDelayUntilScriptLoaded"]) {
-			ExecuteOrDelayUntilScriptLoaded(function () {
-				widgetInfo.startup();
-			}, "sp.js");
-			SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () { });
-		}
-		else widgetInfo.startup();
-	};
-
-	init();
+	if (window["ExecuteOrDelayUntilScriptLoaded"]) {
+		ExecuteOrDelayUntilScriptLoaded(function () {
+			widgetInfo.startup();
+		}, "sp.js");
+		SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () { });
+	}
+	else widgetInfo.startup();
 
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, $, template);

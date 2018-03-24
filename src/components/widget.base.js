@@ -1,4 +1,4 @@
-
+// 0.1.0: 2018/03/23 - pass options to widget constructor
 import "./logger/logger.js";
 import $ from "jquery";
 
@@ -23,14 +23,14 @@ import $ from "jquery";
 			publicName: name,
 			constructor: constructor,
 			version: version,
-			startup: function (context) {
+			startup: function (context, opts) {
 
 				log(name + ".startup");
 				var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
 				log("selector: " + selector);
 				var elems = $(selector, context || document);
 				log("Elems: " + elems.length);
-				elems[name]({});
+				elems[name](opts);
 				return elems;
 			}
 		};
@@ -58,6 +58,7 @@ import $ from "jquery";
 
 				} else {
 					var obj = new widgetInfo.constructor(this, opts);
+					$(".version:first", this).html(widgetInfo.version);
 					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
 				}
 			});
