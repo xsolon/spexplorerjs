@@ -1,0 +1,124 @@
+﻿<div>
+
+    <div class="widgetInfo" style="font-size: small">customactions <span>v0.1.2</span></div>
+    <div class="form-horizontal">
+        <fieldset>
+
+            <!-- Form Name -->
+            <legend>Custom Action Editor</legend>
+
+            <div class="form-group">
+                <label class="col-lg-2 col-md-2 control-label" for="textinput">List/Action</label>
+                <div class="col-lg-10 col-md-10">
+                    <div class="actionSelector" data-widget="xSPCustomActionSelector"></div>
+                    <span class="help-block">Select an existing custom action or list/web to add a new one.</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textinput">Title</label>
+                <div class="col-md-4">
+                    <input id="Title" name="Title" data-get="get_title" type="text" placeholder="placeholder" class="form-control input-md" />
+                    <span class="help-block">
+                        A string that contains the title.
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textinput">Sequence</label>
+                <div class="col-md-4">
+                    <input min="0" max="65536" id="Sequence" data-get="get_sequence" name="Sequence" type="number" placeholder="placeholder" class="form-control input-md">
+                    <span class="help-block">
+                        Its value must be equal to or greater than 0. Its value must be equal to or less than 65536.                                https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.usercustomaction.sequence(v=office.15).aspx
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textinput">Location</label>
+                <div class="col-md-4">
+                    <select id="Location" name="Location" class="form-control input-md" data-get="get_location">
+                        <option>CommandUI.Ribbon.ListView</option>
+                        <option>CommandUI.Ribbon.NewForm</option>
+                        <option>CommandUI.Ribbon.EditForm</option>
+                        <option>CommandUI.Ribbon.DisplayForm</option>
+                        <option>CommandUI.Ribbon</option>
+                        <option>ScriptLink</option>
+                    </select>
+                    <span class="help-block">Location</span>
+                    https://msdn.microsoft.com/en-us/library/office/ee537543.aspx
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textinput">Src</label>
+                <div class="col-md-4">
+                    <input id="Src" name="Src" type="text" placeholder="placeholder" class="form-control input-md" data-get="get_scriptSrc" />
+                    <span class="help-block">help</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textarea">Xml</label>
+                <div class="col-md-4">
+                    <div style="max-height:250px" data-widget="xxmlmirror"></div>
+                    <textarea class="form-control hidden hide" id="textarea" name="textarea">default text</textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="textinput">Permissions</label>
+                <div class="col-md-4">
+                    <select multiple id="Permissions" name="Permissions" class="form-control input-md">
+                        <option></option>
+                        <option value='1'>viewListItems</option>
+                        <option value='2'>addListItems</option>
+                        <option value='3'>editListItems</option>
+                        <option value='4'>deleteListItems</option>
+                        <option value='5'>approveItems</option>
+                        <option value='6'>openItems</option>
+                        <option value='7'>viewVersions</option>
+                        <option value='8'>deleteVersions</option>
+                        <option value='9'>cancelCheckout</option>
+                        <option value='10'>managePersonalViews</option>
+                        <option value='12'>manageLists</option>
+                        <option value='13'>viewFormPages</option>
+                        <option value='14'>anonymousSearchAccessList</option>
+                        <option value='17'>open</option>
+                        <option value='18'>viewPages</option>
+                        <option value='19'>addAndCustomizePages</option>
+                        <option value='20'>applyThemeAndBorder</option>
+                        <option value='21'>applyStyleSheets</option>
+                        <option value='22'>viewUsageData</option>
+                        <option value='23'>createSSCSite</option>
+                        <option value='24'>manageSubwebs</option>
+                        <option value='25'>createGroups</option>
+                        <option value='26'>managePermissions</option>
+                        <option value='27'>browseDirectories</option>
+                        <option value='28'>browseUserInfo</option>
+                        <option value='29'>addDelPrivateWebParts</option>
+                        <option value='30'>updatePersonalWebParts</option>
+                        <option value='31'>manageWeb</option>
+                        <option value='32'>anonymousSearchAccessWebLists</option>
+                        <option value='37'>useClientIntegration</option>
+                        <option value='38'>useRemoteAPIs</option>
+                        <option value='39'>manageAlerts</option>
+                        <option value='40'>createAlerts</option>
+                        <option value='41'>editMyUserInfo</option>
+                        <option value='63'>enumeratePermissions</option>
+                        <option value='65'>fullMask</option>
+                    </select>
+                    <span class="help-block">Permissions</span>
+                </div>
+            </div>
+            <!-- Button (Double) -->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="button1id"></label>
+                <div class="col-md-8">
+                    <button id="btnAdd" name="btnAdd" class="btn btn-success" type="button">Add/Update</button>
+                    <button id="btnRemove" name="btnRemove" class="btn btn-danger" type="button">Remove</button>
+                </div>
+            </div>
+
+        </fieldset>
+    </div>
+
+</div>
