@@ -48,7 +48,7 @@ body #s4-leftpanel {
         <SharePoint:ScriptBlock runat="server">if(typeof(MSOLayout_MakeInvisibleIfEmpty) == "function") {MSOLayout_MakeInvisibleIfEmpty();}</SharePoint:ScriptBlock>
     </table>
     <div class="spexp">
-        <div data-widget="xSPTreeLight"></div>
+        <div data-widget="xSpExplorer"></div>
     </div>
-    [[[Script]]]
+    <script type="text/javascript" src="https://spexplorerjs.azurewebsites.net/components/sp/sp.explorer.js"></script>
 </asp:Content>

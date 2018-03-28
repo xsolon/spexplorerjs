@@ -249,4 +249,64 @@ var createWidget = function (widgetPath, execPath) {
 
 };
 
-module.exports = { createWidget: createWidget };
+var log = function (msg) {
+    console.log(msg);
+};
+var createSpPage = function (module, inline) {
+
+    log('createSpPage:' + JSON.stringify(module));
+
+    var srcPath = path.dirname(module.localTemplatePath);
+    var srcPageTemplate = path.resolve(srcPath, module.spPage);
+
+    var widgetPath = module.filePath.replace("src", "public");
+
+    log('widgetPath:' + widgetPath);
+    var fileContent = fs.readFileSync(widgetPath, "utf8");
+    var pageTemplate = fs.readFileSync(srcPageTemplate, "utf8");
+
+    fileContent = "//<![CDATA[" + sanitizeHtml(fileContent) + "\r\n//]]>";
+    fileContent = encodeURIComponent(fileContent);
+    fileContent = "eval()"; decodeURIComponent()
+    var fileName = path.basename(widgetPath);
+    var sourceDir = path.dirname(widgetPath);
+
+    (function inline() {
+        var page = pageTemplate
+            .replace('[[[Title]]]', fileName)
+            .replace('[[[WidgetPublicName]]]', module.publicName)
+            .replace('[[[Content]]]', fileContent)
+            .replace('[[[Src]]]', "");
+
+        var outputPage = path.join(sourceDir, fileName.replace(".js", ".aspx"));
+        log(outputPage);
+        fs.writeFileSync(outputPage, page);
+
+    })();
+
+    var scriptBlockTemplate = '<SharePoint:ScriptBlock runat="server">[[[Content]]]</SharePoint:ScriptBlock>';
+    /// TODO: uploader to use scriptlink
+    var scriptLinkTempalte = '<ScriptLink language="javascript" name="MyJS.js" Defer="true" runat="server"/>';
+    scriptLinkTempalte = '<script type="text/javascript" src="[[[Src]]]"></script>';
+
+    var cdn = function (url, environment) {
+
+        var page = pageTemplate
+            .replace('[[[Title]]]', fileName)
+            .replace('[[[WidgetPublicName]]]', module.publicName)
+            .replace('[[[Script]]]', scriptLinkTempalte)
+            .replace('[[[Content]]]', "")
+            .replace('[[[Src]]]', url + "components/sp/" + fileName);
+
+        var outputPage = path.join(sourceDir, fileName.replace(".js", environment + ".aspx"));
+        log(outputPage);
+        fs.writeFileSync(outputPage, page);
+    }
+
+    cdn('https://spexplorerjs.azurewebsites.net/', '');
+    cdn('https://spexplorerjsdev.azurewebsites.net/', '.dev');
+    cdn('https://localhost:8443/', '.local');
+
+};
+
+module.exports = { createWidget: createWidget, createSpPage: createSpPage };

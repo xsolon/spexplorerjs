@@ -67078,7 +67078,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		return me;
 	};
 
-	var widgetInfo = ns.widgets.addWidget("spCustomActions", CustomActions, "0.1.1");
+	var widgetInfo = ns.widgets.addWidget("spCustomActions", CustomActions, "0.1.2");
 
 	if (window["ExecuteOrDelayUntilScriptLoaded"]) {
 		ExecuteOrDelayUntilScriptLoaded(function () {
@@ -67086,7 +67086,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		}, "sp.js");
 		SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {});
 	} else widgetInfo.startup();
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _customactionEditorTemplate2.default);
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _customactionEditorTemplate2.default); // v 0.1.2 - 2018/03/24 - Option to preload local list: use attribute data-ListTitle
+//                      - Working update of basic custom action fields: Title, Src, Sequence, Rights, Xml
+// TODO: Implement all fields
 
 /***/ }),
 

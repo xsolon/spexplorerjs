@@ -1,14 +1,17 @@
+// v 0.1.4: 2018-03-28  - Used widget registration, use local images for list/web collection nodes
+//                      - Selectable option
 import jQuery from "jquery";
 //import "../../../public/vendor/bootstrap/js/bootstrap.js";
 //import "../../../public/vendor/bootstrap/css/spexpjs.css";
 import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
 import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 import "jstree";
-import "../logger/logger.js";
+import "../widget.base.js";
 import "./sp.base.js";
 import "./sp.web.js";
 import template from "./treelight.template.html";
 import "../../../node_modules/jstree/dist/themes/default/style.min.css";
+
 (function (ns, $, template) {
 	var debug = window.location.href.search(/[localhost|debugtreelight]/) > 0;
 	var log = new function () {
@@ -21,22 +24,33 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 		return d;
 	};
 
-	var xSPTreeLight = function (ui/*, opts*/) {
+	var xSPTreeLight = function (ui, opts) {
 
 		var $el = $(ui).html(template.trim());
 		var selectedSpElement = null;
 		var ctx = SP.ClientContext.get_current();
-		//opts = $.extend({
-		//    //siteUrl: $el.attr('data-siteurl'),
-		//}, opts);
+
+		opts = $.extend({
+			selectable: $el.attr("data-selectable") || "SP.List|SP.Web"
+		}, opts);
 
 		var selectionChanged = function (spElem) {
 			selectedSpElement = spElem;
-			$(".sptreelabel", $el).html(spElem.get_title());
-			log("listchange");
+
+			var selectionName = (spElem.get_title) ? spElem.get_title() : spElem.constructor.getName();
+
+			$(".sptreelabel", $el).html(selectionName);
+
+			var eventName = spElem.constructor.getName() + ".change";
+			log(eventName);
+			$el.trigger("selectionchange", [spElem]);
+
+			// backwards support
 			$el.trigger("listchange", [spElem]);
+
 			$(".dropdown.open .dropdown-toggle", $el).dropdown("toggle");
 		};
+
 		var tree = (function (treeElem) {
 			var loadGroups = function (node, cb) {
 				var web = tree.get_node(node.parent).data;
@@ -281,8 +295,12 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 					e.stopPropagation();
 					log({ jstreechanged: data.node.id });
 					var spElem = data.node.data;
-					if (SP.List.isInstanceOfType(spElem)) {
-						selectionChanged(spElem);
+					if (spElem) {
+						var type = spElem.constructor.getName();
+						if (opts.selectable.indexOf(type) > -1) {
+							// && SP.List.isInstanceOfType(spElem)) {
+							selectionChanged(spElem);
+						}
 					}
 				}).on("open_node.jstree", function (e/*, data*/) {
 					e.preventDefault();
@@ -306,10 +324,10 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 					}, "last", function () {
 						log("web node created");
 						tree.create_node(id, {
-							text: "Lists", children: true, id: id + "_Lists", icon: "http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/16/Actions-view-list-tree-icon.png"
+							text: "Lists", children: true, id: id + "_Lists", icon: "/_layouts/15/images/itgen.png?rev=23"
 						});
 						tree.create_node(id, {
-							text: "Webs", id: id + "_Webs", icon: "http://icons.iconarchive.com/icons/icons8/ios7/16/Data-Flow-Chart-icon.png"
+							text: "Webs", id: id + "_Webs", icon: "/_layouts/15/images/siteicon_16x16.png"
 						});
 						//tree.create_node(id, {
 						//    text: 'Meta', id: id + "_Meta", icon: 'http://icons.iconarchive.com/icons/fatcow/farm-fresh/16/database-table-icon.png'
@@ -353,7 +371,7 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 						var nWeb = tree.get_node(id);
 						log(nWeb);
 						//if (!nWeb) {
-							
+
 						//}
 						(function doWebs() {
 							var lenum = args.subs.getEnumerator();
@@ -407,62 +425,7 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 		})();
 	};
 
-	var widgetInfo = {
-		publicName: "xSPTreeLight",
-		constructor: xSPTreeLight,
-		version: "0.1.3",
-		getSelector: function () {
-			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
-			log("selector: " + selector);
-			return selector;
-		},
-		startup: function (context) {
-			log(widgetInfo.publicName + ".startup");
-			var selector = widgetInfo.getSelector();
-			var elems = $(selector, context || document);
-			log("Elems: " + elems.length);
-			elems[widgetInfo.publicName]({});
-			$(document).ready(function () {
-			});
-
-			return elems;
-		}
-	};
-
-	$.fn[widgetInfo.publicName] = function (opts) {
-		var args = arguments;
-		//var lastInstance = null;
-		var result = this.each(function () {
-
-			var $el = $(this);
-
-			var me = $el.data(widgetInfo.publicName);
-
-			if (me) { // object has been initialized before
-
-				if (opts == null) { // request for instance
-					//lastInstance = me;
-				} else
-				if (me[opts]) {
-					if (typeof me[opts] == "function")
-						me[opts].apply(me, Array.prototype.slice.call(args, 1));
-					else
-						me[opts] = args[1];
-				}
-
-			} else {
-
-				var obj = new widgetInfo.constructor(this, opts);
-				$el.data(widgetInfo.publicName, obj);
-			}
-		});
-
-		//if (lastInstance && result.length == 1) return lastInstance;
-		return result;
-	};
-
-	(ns.widgets = (ns.widgets || {}))[widgetInfo.publicName] = widgetInfo;
-	log(widgetInfo.publicName + ".registered");
+	var widgetInfo = ns.widgets.addWidget("xSPTreeLight", xSPTreeLight, "0.1.4");
 
 	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
 

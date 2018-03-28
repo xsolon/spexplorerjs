@@ -43,6 +43,7 @@ if (env == 'development') {
     var serverSsl = https.createServer(sslOptions, app);
     serverSsl.listen(8443);
 
+    console.log('ssl port:' + 8443);
 }
 
 /**
