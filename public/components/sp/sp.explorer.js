@@ -61919,6 +61919,7 @@ __webpack_require__(/*! ../string/string.js */ "../string/string.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// v 0.0.1: 2018-03-28  - debug, get
 (function (ns, $) {
 
 	var logf = function logf() {
@@ -61972,8 +61973,60 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			alert(e);
 		}
 	};
+	var debug = function debug() {
+		try {
+			console.log.apply(console, arguments);
+			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+		} catch (e) {
+			alert(e);
+		}
+	};
 
-	ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn };
+	var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
+		var scopedLog = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.log.apply(scopedLog, arguments);
+				onTrace && onTrace({ type: "log", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedError = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.error.apply(scopedError, arguments);
+				onTrace && onTrace({ type: "error", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedDebug = new function () {
+			var d = function d() {
+				if (debugging) {
+					ns.logger && ns.logger.log.apply(scopedDebug, arguments);
+					onTrace && onTrace({ type: "debug", args: arguments });
+				}
+			};
+			d.source = source;
+			return d;
+		}();
+
+		var scopedWarn = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.error.apply(scopedWarn, arguments);
+				onTrace && onTrace({ type: "warn", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+
+		return {
+			log: scopedLog,
+			error: scopedError,
+			debug: scopedDebug,
+			warn: scopedWarn
+		};
+	};
+	ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn, "debug": debug, get: defineScopedTracing };
 	log("logger");
 	ns.$ = $;
 	return ns.logger;
@@ -62516,6 +62569,89 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	ns.widgets.addWidget = addWidget;
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 
+(function (ns, $) {
+
+	/// Iterate over an expanding array
+	//  Example:
+	//  var arr = [1, 2];
+	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
+	//    if (item == 1) {
+	//        arr.push(3);
+	//    }
+	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
+	//});
+	/// arr: array to process
+	/// action: promise (argument: item removed from array)
+	var processDynamicArrayAsQueue = function processDynamicArrayAsQueue(arr, action) {
+		return $.Deferred(function (dfd) {
+			var doNext = function doNext() {
+				if (arr == null || arr.length == 0) {
+					dfd.resolve();
+				} else {
+					var item = arr.shift();
+					action(item).done(function () {
+						doNext();
+					});
+				}
+			};
+
+			if (typeof arr == "function") {
+				arr().done(function (items) {
+					arr = items;
+					doNext();
+				});
+			} else {
+				doNext();
+			}
+		}).promise();
+	};
+
+	// obsolete use processDynamicArrayAsQueue
+	// make sure array doesn't change
+	var processAsQueue = function processAsQueue(arr, action) {
+
+		return $.Deferred(function (dfd) {
+			var step = 0;
+			var doNext = function doNext() {
+				if (arr == null || step >= arr.length) {
+					dfd.resolve();
+				} else {
+					var item = arr[step++];
+					action(item).done(function () {
+						doNext();
+					});
+				}
+			};
+
+			if (typeof arr == "function") {
+				arr().done(function (items) {
+					arr = items;
+					doNext();
+				});
+			} else {
+				doNext();
+			}
+		}).promise();
+	};
+
+	var enumer = function enumer(values) {
+		var me = {};
+		for (var i = 0; i < values.length; i++) {
+			me[values[i]] = 1;
+		}
+		if (Object.freeze) {
+			me = Object.freeze(me);
+		}
+
+		return me;
+	};
+
+	ns.funcs = {
+		processAsQueue: processDynamicArrayAsQueue,
+		enum: enumer
+	};
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+
 /***/ }),
 
 /***/ "./sp.base.js":
@@ -62536,7 +62672,7 @@ __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// v 0.0.1 : 2018/03/11 - loadSpElem
+// v 0.0.1 : 2018-03-11 - loadSpElem
 (function (ns, $) {
 
 	var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
@@ -62621,6 +62757,8 @@ var _jquery2 = _interopRequireDefault(_jquery);
 
 __webpack_require__(/*! ./treelight.js */ "./treelight.js");
 
+__webpack_require__(/*! ./sp.web.js */ "./sp.web.js");
+
 __webpack_require__(/*! ../mirrors/jsmirror.js */ "../mirrors/jsmirror.js");
 
 var _spExplorerTemplate = __webpack_require__(/*! ./sp.explorer.template.html */ "./sp.explorer.template.html");
@@ -62631,6 +62769,9 @@ __webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// v 0.0.1 - 2018/03/24 - v 1
+
+/// TODO: Document
 (function (ns, $, template) {
 
 	var debug = window.location.href.search(/[localhost|spexplorer]/) > 0;
@@ -62661,9 +62802,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	var widgetInfo = ns.widgets.addWidget("xSpExplorer", SpExplorer, "0.0.1");
 
 	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _spExplorerTemplate2.default); // v 0.0.1 - 2018/03/24 - v 1
-
-/// TODO: Document
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _spExplorerTemplate2.default);
 
 /***/ }),
 
@@ -62699,6 +62838,15 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (function (ns, $) {
+	var debug = window.location.href.search(/[localhost|webapi]/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "webapi";
+		return d;
+	}();
 	/// TODO: Document
 	var createWeb = function createWeb(parentWeb, title, url, template, inheritPermissions) {
 		return $.Deferred(function (dfd) {
@@ -62765,10 +62913,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		webTemplates: webTemplates,
 		createWeb: createWeb,
 		loadWeb: loadWeb,
-		version: "0.1"
+		version: "0.1.2"
 	};
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default); /// TODO: Document
-// v 0.0.1: 208-03-11 - Added loadWeb function
+// v 0.0.2: 2018-03-28 - WebDal
+// v 0.0.1: 2018-03-11 - Added loadWeb function
 
 /***/ }),
 
@@ -62809,15 +62958,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //import "../../../public/vendor/bootstrap/js/bootstrap.js";
 //import "../../../public/vendor/bootstrap/css/spexpjs.css";
 (function (ns, $, template) {
-	var debug = window.location.href.search(/[localhost|debugtreelight]/) > 0;
-	var log = new function () {
-		var d = function d() {
-			ns.logger && ns.logger.log.apply(log, arguments);
-			if (debug) SP.UI.Notify.addNotification(arguments[0]);
-		};
-		d.source = "treelight";
-		return d;
-	}();
+	var debugging = window.location.href.search(/(localhost|debugtreelight)/) > 0;
+	var tracing = ns.logger.get("treelight", debugging);
+	var log = tracing.log;
+	var debug = tracing.debug;
+	var error = tracing.error;
 
 	var xSPTreeLight = function xSPTreeLight(ui, opts) {
 
@@ -62826,8 +62971,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		var ctx = SP.ClientContext.get_current();
 
 		opts = $.extend({
-			selectable: $el.attr("data-selectable") || "SP.List|SP.Web"
+			selectable: $el.attr("data-selectable") || "SP.List|SP.Web",
+			load: $el.attr("data-load") || "All"
 		}, opts);
+
+		opts.selectable = ns.funcs.enum(opts.selectable.split("|"));
 
 		var selectionChanged = function selectionChanged(spElem) {
 			selectedSpElement = spElem;
@@ -62993,6 +63141,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				cb(items);
 			};
 			var loadLists = function loadLists(node, cb) {
+				debug("loading lists");
 				var parent = node.parent;
 				var web = tree.get_node(parent).data;
 
@@ -63076,7 +63225,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				var spElem = data.node.data;
 				if (spElem) {
 					var type = spElem.constructor.getName();
-					if (opts.selectable.indexOf(type) > -1) {
+					if (opts.selectable[type]) {
 						// && SP.List.isInstanceOfType(spElem)) {
 						selectionChanged(spElem);
 					}
@@ -63091,95 +63240,61 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			return jTree.data("jstree");
 		}($el.find(".tree"));
 
-		(function loadTree(tree) {
-			var processWeb = function processWeb(curWeb, args) {
-				log({ processWeb: curWeb });
-				//var path = curWeb.get_path().get_identity().split("|");
-				(function () {
+		if (true) {
+
+			var websToProcess = [{ web: ctx.get_web(), parentNode: null }];
+
+			var addWebNode = function addWebNode(curWeb, parentNode, subs) {
+				return $.Deferred(function (dfd) {
 					var id = curWeb.get_id().toString();
-					log("creating web node: " + id);
-					tree.create_node(args.parentNode, {
+					debug("creating web node: " + id);
+
+					tree.create_node(parentNode, {
 						text: curWeb.get_title(), id: id, data: curWeb, icon: "/_layouts/images/sts_web16.gif"
 					}, "last", function () {
-						log("web node created");
-						tree.create_node(id, {
-							text: "Lists", children: true, id: id + "_Lists", icon: "/_layouts/15/images/itgen.png?rev=23"
-						});
-						tree.create_node(id, {
-							text: "Webs", id: id + "_Webs", icon: "/_layouts/15/images/siteicon_16x16.png"
-						});
-						//tree.create_node(id, {
-						//    text: 'Meta', id: id + "_Meta", icon: 'http://icons.iconarchive.com/icons/fatcow/farm-fresh/16/database-table-icon.png'
-						//});
-						//tree.create_node(id + "_Meta", {
-						//    text: 'Content Types', id: id + "_ContentTypes", data: curWeb.get_contentTypes(), children: true, icon: 'http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/application-icon-large-icon.png'
-						//});
-						//tree.create_node(id + "_Meta", {
-						//    text: 'Fields', id: id + "_Fields", data: curWeb.get_fields(), children: true, icon: 'http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-menu-icon.png'
-						//});
-						//(function loadSecurity() {
-						//    var done = function () {
-						//        if (curWeb.get_hasUniqueRoleAssignments())
-						//            tree.create_node(id, {
-						//                text: 'Security', id: id + "_Security", data: curWeb.get_roleAssignments(), icon: 'http://icons.iconarchive.com/icons/kyo-tux/phuzion/16/Misc-Security-icon.png'
-						//            }
-						//                            );
-						//    };
-						//    if (!curWeb.isPropertyAvailable('HasUniqueRoleAssignments')) {
-						//        ctx.load(curWeb, 'HasUniqueRoleAssignments');
-						//        ctx.executeQueryAsync(done);
-						//    }
-						//    else done();
-						//})();
-						// if (!args.parentNode) {
-						//    tree.create_node(id, {
-						//        text: 'Site Groups', id: "Site_Groups", children: true, icon: 'http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/16/Actions-resource-group-icon.png'
-						//    }
-						//                    );
-						//    tree.create_node(id, {
-						//        text: 'Site Users', id: "Site_Users", children: true, icon: 'http://icons.iconarchive.com/icons/treetog/junior/16/user-group-icon.png'
-						//    }
-						//                    );
-						//    tree.create_node(id, {
-						//        text: 'Snippets', id: "Snippets", children: false, icon: 'http://icons.iconarchive.com/icons/fatcow/farm-fresh/16/script-code-red-icon.png', data: {
-						//            snippet: '5516798471879038457'
-						//        }
-						//    }
-						//                    );
-						//}
-						var nWeb = tree.get_node(id);
-						log(nWeb);
-						//if (!nWeb) {
 
-						//}
+						debug("web node created");
+						tree.create_node(id, { text: "Lists", children: true, id: id + "_Lists", icon: "/_layouts/15/images/itgen.png?rev=23" });
+						tree.create_node(id, { text: "Webs", id: id + "_Webs", icon: "/_layouts/15/images/siteicon_16x16.png" });
+
+						if (opts.load["SP.ContentType"]) {}
+
+						var nWeb = tree.get_node(id);
+						debug(nWeb);
+
 						(function doWebs() {
-							var lenum = args.subs.getEnumerator();
+							var lenum = subs.getEnumerator();
 							var parent = tree.get_node(nWeb.id + "_Webs");
 							while (lenum.moveNext()) {
 								var list = lenum.get_current();
-								queueWeb(list, parent);
+								websToProcess.push({ web: list, parentNode: parent });
 							}
+							dfd.resolve();
 						})();
 					});
-				})();
+				}).promise();
 			};
-			var queueWeb = function queueWeb(spWeb, parentNode) {
-				log("queueWeb" + spWeb);
-				ns.webapi.loadWeb(spWeb, null, ctx, function (web) {
+
+			ns.funcs.processAsQueue(websToProcess, function (iterNode) {
+				return $.Deferred(function (dfd) {
+					var web = iterNode.web;
+
 					ctx.load(web, "Id", "Title", "HasUniqueRoleAssignments", "ServerRelativeUrl");
 					var subs = web.getSubwebsForCurrentUser();
-					ctx.load(subs);
-					//var lists = web.get_lists();
-					//ctx.load(lists, 'Include(Id,Title,HasUniqueRoleAssignments,ImageUrl,ItemCount,DefaultViewUrl)');
-					return {
-						subs: subs, parentNode: parentNode
-					};
-				}).done(processWeb).fail(function (e) {
-					log({ loadWebFailed: e });
-				});
-			};
-			queueWeb(null, null);
-		})(tree);
+
+					ns.sp.loadSpElem(subs).done(function () {
+						iterNode.subs = subs;
+						addWebNode(web, iterNode.parentNode, iterNode.subs).done(function () {
+							dfd.resolve();
+						});
+					});
+				}).promise();
+			}).done(function () {
+				log('tree loaded');
+			});
+		}
+
+		if (false) {}
 
 		$(".cc", $el).click(function (event) {
 			// prevent propagation so drop down doesn't close
@@ -63209,6 +63324,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _treelightTemplate2.default); // v 0.1.4: 2018-03-28  - Used widget registration, use local images for list/web collection nodes
 //                      - Selectable option
+//                      - loadTree uses processAsQueue
 
 /***/ }),
 

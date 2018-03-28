@@ -1,4 +1,4 @@
-// v 0.0.1 : 2018/03/11 - loadSpElem
+// v 0.0.1 : 2018-03-11 - loadSpElem
 import $ from "jquery";
 import "../logger/logger.js";
 
@@ -54,7 +54,7 @@ import "../logger/logger.js";
 			sptx.executeQueryAsync(function () {
 				dfd.resolve(elem);
 			},
-			function (r, a) {  ns.sp.reqFailure(r, a, caller || "loadSpElem", dfd); });
+			function (r, a) { ns.sp.reqFailure(r, a, caller || "loadSpElem", dfd); });
 
 		}).promise();
 

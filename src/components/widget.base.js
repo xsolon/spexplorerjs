@@ -80,3 +80,86 @@ import $ from "jquery";
 	ns.widgets.addWidget = addWidget;
 
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, $);
+
+(function (ns, $) {
+
+
+	/// Iterate over an expanding array
+	//  Example:
+	//  var arr = [1, 2];
+	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
+	//    if (item == 1) {
+	//        arr.push(3);
+	//    }
+	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
+	//});
+	/// arr: array to process
+	/// action: promise (argument: item removed from array)
+	var processDynamicArrayAsQueue = function (arr, action) {
+		return $.Deferred(function (dfd) {
+			var doNext = function () {
+				if (arr == null || arr.length == 0) {
+					dfd.resolve();
+				} else {
+					var item = arr.shift();
+					action(item).done(function () {
+						doNext();
+					});
+				}
+			};
+
+			if (typeof arr == "function") {
+				arr().done(function (items) {
+					arr = items;
+					doNext();
+				});
+			} else {
+				doNext();
+			}
+		}).promise();
+
+	};
+
+	// obsolete use processDynamicArrayAsQueue
+	// make sure array doesn't change
+	var processAsQueue = function (arr, action) {
+
+		return $.Deferred(function (dfd) {
+			var step = 0;
+			var doNext = function () {
+				if (arr == null || (step >= (arr.length))) {
+					dfd.resolve();
+				} else {
+					var item = arr[step++];
+					action(item).done(function () {
+						doNext();
+					});
+				}
+			};
+
+			if (typeof arr == "function") {
+				arr().done(function (items) {
+					arr = items;
+					doNext();
+				});
+			} else {
+				doNext();
+			}
+		}).promise();
+	};
+
+	var enumer = function (values) {
+		var me = {};
+		for (var i = 0; i < values.length; i++) {
+			me[values[i]] = 1;
+		}
+		if (Object.freeze) { me = Object.freeze(me); }
+
+		return me;
+	};
+
+	ns.funcs = {
+		processAsQueue: processDynamicArrayAsQueue,
+		enum: enumer
+	};
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, $);

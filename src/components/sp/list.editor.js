@@ -1,3 +1,4 @@
+// v 0.1.2 - 2018/03/28 - Renamed to list.editor (from list.selector)
 // v 0.1.1 - 2018/03/24 - Register through widgets.base
 //                      - Sync custom actions control with list selector
 /// TODO: Document
@@ -10,11 +11,11 @@ import "./field.selector.js";
 import "./customaction.editor.js";
 import "../mirrors/jsmirror.js";
 import "../mirrors/xmlmirror.js";
-import template from "./list.selector.template.html";
+import template from "./list.editor.template.html";
 
 (function (ns, $, template) {
 
-	var debug = window.location.href.search(/[localhost|debuglistselector]/) > 0;
+	var debug = window.location.href.search(/[localhost|debuglisteditor]/) > 0;
 	var log = new function () {
 		var d = function () {
 			ns.logger && ns.logger.log.apply(log, arguments);

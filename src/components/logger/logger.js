@@ -1,3 +1,4 @@
+// v 0.0.1: 2018-03-28  - debug, get
 import $ from "jquery";
 import "../string/string.js";
 (function (ns, $) {
@@ -55,8 +56,61 @@ import "../string/string.js";
 			alert(e);
 		}
 	};
+	const debug = function () {
+		try {
+			console.log.apply(console, arguments);
+			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+		} catch (e) {
+			alert(e);
+		}
+	};
 
-	ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn };
+	var defineScopedTracing = function (source, debugging, onTrace) {
+		var scopedLog = new function () {
+			var d = function () {
+				ns.logger && ns.logger.log.apply(scopedLog, arguments);
+				(onTrace && onTrace({ type: "log", args: arguments }));
+			};
+			d.source = source;
+			return d;
+		};
+		var scopedError = new function () {
+			var d = function () {
+				ns.logger && ns.logger.error.apply(scopedError, arguments);
+				(onTrace && onTrace({ type: "error", args: arguments }));
+			};
+			d.source = source;
+			return d;
+		};
+		var scopedDebug = new function () {
+			var d = function () {
+				if (debugging) {
+					ns.logger && ns.logger.log.apply(scopedDebug, arguments);
+					(onTrace && onTrace({ type: "debug", args: arguments }));
+				}
+			};
+			d.source = source;
+			return d;
+		};
+
+		var scopedWarn = new function () {
+			var d = function () {
+				ns.logger && ns.logger.error.apply(scopedWarn, arguments);
+				(onTrace && onTrace({ type: "warn", args: arguments }));
+			};
+			d.source = source;
+			return d;
+		};
+
+		return {
+			log: scopedLog,
+			error: scopedError,
+			debug: scopedDebug,
+			warn: scopedWarn
+		};
+
+	};
+	ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn, "debug": debug, get: defineScopedTracing };
 	log("logger");
 	ns.$ = $;
 	return ns.logger;

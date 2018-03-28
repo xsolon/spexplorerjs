@@ -1,5 +1,6 @@
 /// TODO: Document
-// v 0.0.1: 208-03-11 - Added loadWeb function
+// v 0.0.2: 2018-03-28 - WebDal
+// v 0.0.1: 2018-03-11 - Added loadWeb function
 import $ from "jquery";
 import "../logger/logger.js";
 import "./sp.base.js";
@@ -82,132 +83,11 @@ import "./sp.base.js";
 
 	};
 
-    var WebDal = function (web) {
-
-        var ctx = null;
-
-        (function init() {
-            var getCtx = function () {
-                var ctx1 = null;
-                try {
-                    ctx1 = new SP.ClientContext();
-                } catch (e) {
-                    ctx1 = SP.ClientContext.get_current();
-                }
-                return ctx1;
-            };
-
-            if (web == null) {
-                ctx = getCtx();
-                web = ctx.get_web();
-            } else if (typeof web == "string") {
-                throw "TODO: string to web";
-            } else if (SP.Web.isInstanceOfType(web)) {
-                ctx = web.get_context();
-            }
-
-        })();
-
-        var reqFailure = function (req, reqargs, from, dfd) { // log context failure
-
-            var msg = 'Request failed ' + reqargs.get_message() + '\n' +
-                reqargs.get_stackTrace();
-
-            error(msg);
-
-            if (dfd)
-                dfd.reject(msg);
-
-        };
-
-        var loadSpElem = function (elem, sptx, caller) {
-
-            sptx = sptx || ctx;
-            return $.Deferred(function (dfd) {
-
-                if (elem.length) {
-                    for (var i = 0; i < elem.length; i++) {
-                        sptx.load(elem[i]);
-                    }
-                } else
-                    sptx.load(elem);
-
-                sptx.executeQueryAsync(function () {
-                    dfd.resolve(elem);
-                },
-                    function (r, a) { debugger; reqFailure(r, a, caller || 'loadSpElem', dfd); });
-
-            }).promise();
-
-        };
-
-        var createField = function (fieldSchema, commit) {
-
-            var createFields = fields.addFieldAsXml(fieldSchema, false, SP.AddFieldOptions.addFieldCheckDisplayName);
-
-            if (commit) {
-                ctx.load(createFields);
-            }
-        };
-
-        var ensureFields = function (fields) {
-            var spFields = web.get_fields();
-            return $.Deferred(function (dfd) {
-
-                loadSpElem(spFields).done(function () {
-
-                    var webFieldsDic = ns.funcs.arrayToDictionary(ns.funcs.collectionToArray(spFields), function (spField) {
-                        return spField.get_internalName();
-                    });
-
-                    for (var i = 0; i < fields.length; i++) {
-                        var field = fields[i];
-                        var internalName = field.InternalName;
-                        var definition = field.Xml;
-
-                        if (webFieldsDic[internalName]) {
-                            log('Field already in web: ' + internalName);
-                        } else {
-                            createField(definition);
-                        }
-                    }
-
-                    loadSpElem(spFields).done(function () {
-                        log('ensureFields.done');
-                        dfd.resolve(spFields, web, ctx);
-                    });
-                });
-            }).promise();
-        };
-
-        var createContentType = function () {
-
-        };
-
-        var ensureContentType = function () {
-
-            var contentTypeCollection = web.get_contentTypes();
-
-            loadSpElem(contentTypeCollection).done(function () {
-
-                var webFieldsDic = ns.funcs.arrayToDictionary(ns.funcs.collectionToArray(spFields), function (spField) {
-                    return spField.get_internalName();
-                });
-            });
-        };
-        var public = {
-            ensureFields: ensureFields
-        };
-
-        return public;
-    };
-
-    ns.webapi = {
-        dal = WebDal,
+	ns.webapi = {
 		webTemplates: webTemplates,
 		createWeb: createWeb,
 		loadWeb: loadWeb,
-		version: "0.1"
+		version: "0.1.2"
 	};
 
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, $);
