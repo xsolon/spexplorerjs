@@ -16,9 +16,8 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 (function (ns, $, template) {
 	var debugging = window.location.href.search(/(localhost|debugtreelight)/) > 0;
 	var tracing = ns.logger.get("treelight", debugging);
-	var log = tracing.log;
-	var debug = tracing.debug;
-	var error = tracing.error;
+	var log = tracing.log, debug = tracing.debug;
+	//var error = tracing.error;
 
 	var xSPTreeLight = function (ui, opts) {
 
@@ -312,154 +311,57 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 			return jTree.data("jstree");
 		})($el.find(".tree"));
 
-		if (true) {
+		var websToProcess = [{ web: ctx.get_web(), parentNode: null }];
 
-			var websToProcess = [{ web: ctx.get_web(), parentNode: null }];
+		var addWebNode = function (curWeb, parentNode, subs) {
+			return $.Deferred(function (dfd) {
+				var id = curWeb.get_id().toString();
+				debug("creating web node: " + id);
 
-			var addWebNode = function (curWeb, parentNode, subs) {
-				return $.Deferred(function (dfd) {
-					var id = curWeb.get_id().toString();
-					debug("creating web node: " + id);
+				tree.create_node(parentNode, {
+					text: curWeb.get_title(), id: id, data: curWeb, icon: "/_layouts/images/sts_web16.gif"
+				}, "last", function () {
 
-					tree.create_node(parentNode, {
-						text: curWeb.get_title(), id: id, data: curWeb, icon: "/_layouts/images/sts_web16.gif"
-					}, "last", function () {
+					debug("web node created");
+					tree.create_node(id, { text: "Lists", children: true, id: id + "_Lists", icon: "/_layouts/15/images/itgen.png?rev=23" });
+					tree.create_node(id, { text: "Webs", id: id + "_Webs", icon: "/_layouts/15/images/siteicon_16x16.png" });
 
-						debug("web node created");
-						tree.create_node(id, { text: "Lists", children: true, id: id + "_Lists", icon: "/_layouts/15/images/itgen.png?rev=23" });
-						tree.create_node(id, { text: "Webs", id: id + "_Webs", icon: "/_layouts/15/images/siteicon_16x16.png" });
+					//if (opts.load["SP.ContentType"]) {
 
-						if (opts.load["SP.ContentType"]) {
+					//}
 
+					var nWeb = tree.get_node(id);
+					debug(nWeb);
+
+					(function doWebs() {
+						var lenum = subs.getEnumerator();
+						var parent = tree.get_node(nWeb.id + "_Webs");
+						while (lenum.moveNext()) {
+							var list = lenum.get_current();
+							websToProcess.push({ web: list, parentNode: parent });
 						}
-
-						var nWeb = tree.get_node(id);
-						debug(nWeb);
-
-						(function doWebs() {
-							var lenum = subs.getEnumerator();
-							var parent = tree.get_node(nWeb.id + "_Webs");
-							while (lenum.moveNext()) {
-								var list = lenum.get_current();
-								websToProcess.push({ web: list, parentNode: parent });
-							}
-							dfd.resolve();
-						})();
-					});
-				}).promise();
-			};
-
-			ns.funcs.processAsQueue(websToProcess, function (iterNode) {
-				return $.Deferred(function (dfd) {
-					var web = iterNode.web;
-
-					ctx.load(web, "Id", "Title", "HasUniqueRoleAssignments", "ServerRelativeUrl");
-					var subs = web.getSubwebsForCurrentUser();
-
-					ns.sp.loadSpElem(subs).done(function () {
-						iterNode.subs = subs;
-						addWebNode(web, iterNode.parentNode, iterNode.subs).done(function () {
-							dfd.resolve();
-						});
-					});
-
-				}).promise();
-			}).done(function () { log("tree loaded"); } );
-		}
-
-		if (false)
-			(function oldloadTree(tree) {
-
-				var processWeb = function (curWeb, args) {
-					log({ processWeb: curWeb });
-					//var path = curWeb.get_path().get_identity().split("|");
-					(function () {
-						var id = curWeb.get_id().toString();
-						debug("creating web node: " + id);
-
-						tree.create_node(args.parentNode, {
-							text: curWeb.get_title(), id: id, data: curWeb, icon: "/_layouts/images/sts_web16.gif"
-						}, "last", function () {
-
-							debug("web node created");
-							tree.create_node(id, {
-								text: "Lists", children: true, id: id + "_Lists", icon: "/_layouts/15/images/itgen.png?rev=23"
-							});
-							tree.create_node(id, {
-								text: "Webs", id: id + "_Webs", icon: "/_layouts/15/images/siteicon_16x16.png"
-							});
-							//tree.create_node(id, {
-							//    text: 'Meta', id: id + "_Meta", icon: 'http://icons.iconarchive.com/icons/fatcow/farm-fresh/16/database-table-icon.png'
-							//});
-							//tree.create_node(id + "_Meta", {
-							//    text: 'Content Types', id: id + "_ContentTypes", data: curWeb.get_contentTypes(), children: true, icon: 'http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/application-icon-large-icon.png'
-							//});
-							//tree.create_node(id + "_Meta", {
-							//    text: 'Fields', id: id + "_Fields", data: curWeb.get_fields(), children: true, icon: 'http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-menu-icon.png'
-							//});
-							//(function loadSecurity() {
-							//    var done = function () {
-							//        if (curWeb.get_hasUniqueRoleAssignments())
-							//            tree.create_node(id, {
-							//                text: 'Security', id: id + "_Security", data: curWeb.get_roleAssignments(), icon: 'http://icons.iconarchive.com/icons/kyo-tux/phuzion/16/Misc-Security-icon.png'
-							//            }
-							//                            );
-							//    };
-							//    if (!curWeb.isPropertyAvailable('HasUniqueRoleAssignments')) {
-							//        ctx.load(curWeb, 'HasUniqueRoleAssignments');
-							//        ctx.executeQueryAsync(done);
-							//    }
-							//    else done();
-							//})();
-							// if (!args.parentNode) {
-							//    tree.create_node(id, {
-							//        text: 'Site Groups', id: "Site_Groups", children: true, icon: 'http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/16/Actions-resource-group-icon.png'
-							//    }
-							//                    );
-							//    tree.create_node(id, {
-							//        text: 'Site Users', id: "Site_Users", children: true, icon: 'http://icons.iconarchive.com/icons/treetog/junior/16/user-group-icon.png'
-							//    }
-							//                    );
-							//    tree.create_node(id, {
-							//        text: 'Snippets', id: "Snippets", children: false, icon: 'http://icons.iconarchive.com/icons/fatcow/farm-fresh/16/script-code-red-icon.png', data: {
-							//            snippet: '5516798471879038457'
-							//        }
-							//    }
-							//                    );
-							//}
-							var nWeb = tree.get_node(id);
-							log(nWeb);
-							//if (!nWeb) {
-
-							//}
-							(function doWebs() {
-								var lenum = args.subs.getEnumerator();
-								var parent = tree.get_node(nWeb.id + "_Webs");
-								while (lenum.moveNext()) {
-									var list = lenum.get_current();
-									queueWeb(list, parent);
-								}
-							})();
-						});
+						dfd.resolve();
 					})();
-				};
-				var queueWeb = function (spWeb, parentNode) {
-					log("queueWeb" + spWeb);
-					ns.webapi.loadWeb(spWeb, null, ctx, function (web) {
-						ctx.load(web, "Id", "Title", "HasUniqueRoleAssignments", "ServerRelativeUrl");
-						var subs = web.getSubwebsForCurrentUser();
-						ctx.load(subs);
-						//var lists = web.get_lists();
-						//ctx.load(lists, 'Include(Id,Title,HasUniqueRoleAssignments,ImageUrl,ItemCount,DefaultViewUrl)');
-						return {
-							subs: subs, parentNode: parentNode
-						};
-					}).done(processWeb).fail(function (e) {
-						log({ loadWebFailed: e });
+				});
+			}).promise();
+		};
+
+		ns.funcs.processAsQueue(websToProcess, function (iterNode) {
+			return $.Deferred(function (dfd) {
+				var web = iterNode.web;
+
+				ctx.load(web, "Id", "Title", "HasUniqueRoleAssignments", "ServerRelativeUrl");
+				var subs = web.getSubwebsForCurrentUser();
+
+				ns.sp.loadSpElem(subs).done(function () {
+					iterNode.subs = subs;
+					addWebNode(web, iterNode.parentNode, iterNode.subs).done(function () {
+						dfd.resolve();
 					});
-				};
-				queueWeb(null, null);
-			})(tree);
+				});
+
+			}).promise();
+		}).done(function () { log("tree loaded"); });
 
 		$(".cc", $el).click(function (event) { // prevent propagation so drop down doesn't close
 			event.preventDefault();

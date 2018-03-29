@@ -1,4 +1,9 @@
 //v 0.1.1 : 2018-03-15: Support for IE
+//v 0.1.2 : 2018-03-28: - Autocomplete tag, highlight matching tag
+//                      - Shortcuts:
+//                          - Alt-f: format
+//                          - Ctrl-J: jump to matching tag
+//                          - Ctrl-Q: collapse/expand tag
 import jQuery from "jquery";
 import "../string/string.js";
 import template from "./xmleditor.template.html";
@@ -7,18 +12,21 @@ import "../../../node_modules/codemirror/lib/codemirror.css";
 import JSHINT from "../../../node_modules/jshint/dist/jshint.js";
 import CodeMirror from "../../../node_modules/codemirror/lib/codemirror.js";
 
-import "../../../node_modules/codemirror/mode/javascript/javascript.js";
-import "../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js";
-import "../../../node_modules/codemirror/mode/xml/xml.js";
 
 import "../../../node_modules/codemirror/addon/lint/lint.css";
 import "../../../node_modules/codemirror/addon/fold/foldgutter.css";
 
+import "../../../node_modules/codemirror/addon/edit/closetag.js";
+import "../../../node_modules/codemirror/addon/edit/matchtags";
+
 //<!-- hint -->
-import "../../../node_modules/codemirror/addon/hint/anyword-hint.js";
-import "../../../node_modules/codemirror/addon/hint/xml-hint.js";
 import "../../../node_modules/codemirror/addon/hint/show-hint.css";
+import "../../../node_modules/codemirror/addon/hint/anyword-hint.js";
+import "../../../node_modules/codemirror/addon/hint/show-hint.js";
+import "../../../node_modules/codemirror/addon/hint/xml-hint.js";
 //<!-- endhint -->
+import "../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js";
+import "../../../node_modules/codemirror/mode/xml/xml.js";
 //<!-- fold-->
 import "../../../node_modules/codemirror/addon/fold/brace-fold.js";
 import "../../../node_modules/codemirror/addon/fold/comment-fold.js";
@@ -30,9 +38,6 @@ import "../../../node_modules/codemirror/addon/fold/xml-fold.js";
 import "../../../node_modules/codemirror/addon/fold/foldgutter.css";
 //< !--end fold-- >
 //< !--lint -->
-//import "https://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js";
-//import "https://rawgithub.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js";
-//import "csslint.js";
 import "../../../node_modules/codemirror/addon/lint/lint.js";
 //import "../../../node_modules/codemirror/addon/lint/coffeescript-lint.js";
 //import "../../../node_modules/codemirror/addon/lint/css-lint.js";
@@ -42,9 +47,11 @@ import "../../../node_modules/codemirror/addon/lint/lint.js";
 //import "../../../node_modules/codemirror/addon/lint/yaml-lint.js";
 import "../../../node_modules/codemirror/addon/lint/lint.css";
 
+import { html_beautify } from "../../../node_modules/js-beautify/js/lib/beautify-html.js";
+
 window.CodeMirror = CodeMirror;
 window.JSHINT = JSHINT.JSHINT;
-(function (ns, $) {
+(function (ns, $, template) {
 
 	var setupXml = function (el) {
 		var editor = el.CodeMirror;
@@ -54,22 +61,31 @@ window.JSHINT = JSHINT.JSHINT;
 
 		editor = CodeMirror.fromTextArea(el,
 			{
-				mode: "xml",
+				matchTags: { bothTags: true },
+				mode: "xml", htmlMode: true,
 				lineNumbers: true,
 				lineWrapping: true,
 				autoCloseTags: true,
 				viewportMargin: Infinity,
-				extraKeys: {
-					//"'>'": function (cm) { cm.closeTag(cm, ">"); },
-					//"'/'": function (cm) { cm.closeTag(cm, "/"); },
-					//"' '": function (cm) { CodeMirror.xmlHint(cm, ' '); },
-					//"'<'": function (cm) { CodeMirror.xmlHint(cm, '<'); },
-					//"Ctrl-Space": function (cm) { CodeMirror.xmlHint(cm, ''); }
-				},
 				foldGutter: {
 					rangeFinder: CodeMirror.fold.xml
-				}, gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"], lint: false
+				}, gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+				lint: true
 			});
+
+		editor.setOption("extraKeys", {
+			"Ctrl-Space": "autocomplete",
+			"Ctrl-Q": function (cm) {
+				cm.foldCode(cm.getCursor());
+			},
+			"Ctrl-J": "toMatchingTag",
+			"Alt-F": function (cm) {
+				cm.setValue(html_beautify(cm.getValue()));
+			},
+			"Enter": function (/*e*/) {
+				editor.replaceSelection("\n", "end");
+			}
+		});
 
 		$(el).data("CodeMirror", editor);
 
@@ -115,20 +131,23 @@ window.JSHINT = JSHINT.JSHINT;
 		$("style").each(function () {
 			// cloneNode doesnt work in IE
 			//head.append(this.cloneNode(true));
-			$("<style type='text/css'>" + $(this).html() + "</style>").appendTo(head);
-
+			var html = $(this).html().trim();
+			if (html.search("CodeMirror") > 0)
+				$("<style type='text/css'>" + html + "</style>").appendTo(head);
 		});
 
 		return ns.widgets.xmleditorinit(iframe.contents().find("textarea")[0]);
 	};
 	ns.widgets.xmleditorinit = function (ell) {
-
 		setupXml(ell);
 
 		// Listen to message from child IFrame window
 		var editor = $(ell).data("CodeMirror");
 
 		return {
+			refresh: function () {
+				editor.refresh();
+			},
 			set: function (data) {
 				editor.setValue(data);
 			}, get: function () {
@@ -157,4 +176,4 @@ window.JSHINT = JSHINT.JSHINT;
 
 		//iframe.contentWindow.document.write('<div>foo</div>');
 	};
-})(window["spexplorerjs"], jQuery);
+})(window["spexplorerjs"], jQuery, template);

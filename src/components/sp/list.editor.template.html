@@ -1,11 +1,24 @@
 ﻿<div>
     <style type="text/css">
-        .nav-tabs > li .close {
+        .xxxnav-tabs > li .close {
             margin: -2px 0 0 10px;
             font-size: 18px;
         }
     </style>
     <div>
+        <div class="form-horizontal">
+            <fieldset>
+                <legend>List Editor</legend>
+                <div class="form-group listSelector">
+                    <label class="col-md-2 control-label" for="textinput">List</label>
+                    <div class="col-md-10 listSelectorFirst">
+                        <div data-widget="xSPTreeLight"></div>
+                        <span class="help-block">Select an existing list.</span>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <br />
         <ul class="nav nav-tabs" style="max-height:40px">
             <li class="active"><a data-toggle="tab" href="#splistinfo">List Info</a></li>
             <li><a data-toggle="tab" href="#splistscripting">Scripting</a></li>
@@ -16,16 +29,6 @@
             <div id="splistinfo" class="tab-pane fade in active">
                 <div class="form-horizontal">
                     <fieldset>
-
-                        <legend>List Editor</legend>
-
-                        <div class="form-group listSelector">
-                            <label class="col-md-2 control-label" for="textinput">List</label>
-                            <div class="col-md-10 listSelectorFirst">
-                                <div data-widget="xSPTreeLight"></div>
-                                <span class="help-block">Select an existing list.</span>
-                            </div>
-                        </div>
 
                         <div class="form-group">
                             <label class="col-md-2 control-label" for="textinput">Title</label>
@@ -38,8 +41,10 @@
                         </div>
                         <div class="form-group">
                             <label class="col-md-2 control-label" for="textarea">Schema</label>
-                            <div class="col-md-10 listschema">
-                                <div data-widget="xxmlmirror"></div>
+                            <div class="col-md-10">
+                                <div class=" listschema">
+                                    <div data-widget="xxmlmirror"></div>
+                                </div>
                             </div>
                         </div>
                     </fieldset>

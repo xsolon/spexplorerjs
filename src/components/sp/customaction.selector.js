@@ -1,3 +1,5 @@
+// v 0.1.5 - 2018/03/28 - change public event from 'selectionchange' to 'ca.selectionchange'
+//                      - layout updates
 import template from "./customaction.selector.template.html";
 import itemtemplate from "./customaction.selector.itemtemplate.html";
 import "../logger/logger.js";
@@ -101,7 +103,9 @@ import "./treelight.js";
 			if (data.length > 0) {
 				field = $(data[0].element).prop("data-field");
 			}
-			$el.trigger("selectionchange", field);
+
+			
+			$el.trigger("ca.selectionchange", field);
 		});
 		bindActionSelect(fieldSel);
 		var onListChange = function (list) {
@@ -227,7 +231,7 @@ import "./treelight.js";
 		})();
 	};
 
-	var widgetInfo = ns.widgets.addWidget("xSPCustomActionSelector", xSPCustomActionSelector, "0.1.4");
+	var widgetInfo = ns.widgets.addWidget("xSPCustomActionSelector", xSPCustomActionSelector, "0.1.5");
 
 	if (window["ExecuteOrDelayUntilScriptLoaded"]) {
 		ExecuteOrDelayUntilScriptLoaded(function () {

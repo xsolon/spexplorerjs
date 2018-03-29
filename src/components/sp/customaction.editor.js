@@ -1,3 +1,4 @@
+// v 0.1.3 - 2018/03/28 - Widget declaration
 // v 0.1.2 - 2018/03/24 - Option to preload local list: use attribute data-ListTitle
 //                      - Working update of basic custom action fields: Title, Src, Sequence, Rights, Xml
 // TODO: Implement all fields
@@ -14,27 +15,16 @@ import "../widget.base.js";
 
 (function (ns, $, template) {
 
-	var debug = window.location.href.search(/[localhost|debugcustomactions]/) > 0;
-	var log = new function () {
-		var d = function () {
-			ns.logger && ns.logger.log.apply(log, arguments);
-			if (debug)
-				SP.UI.Notify.addNotification(arguments[0]);
-		};
-		d.source = "list.selector";
-		return d;
-	};
-	//var error = new function () {
-	//	var d = function () {
-	//		ns.logger && ns.logger.error.apply(log, arguments);
-	//		if (debug)
-	//			SP.UI.Notify.addNotification(arguments[0]);
-	//	};
-	//	d.source = "list.selector";
-	//	return d;
-	//};
+	var debugging = window.location.href.search(/(localhost|debugcustomactions)/) > 0;
+	var tracing = ns.logger.get("customactionEditor", debugging);
+	var log = tracing.log, debug = tracing.debug;
+	//var error = tracing.error;
+
+	debug("customactionEditor.load");
 
 	var CustomActions = function (el, opts) {// constructor
+		log("customactionEditor.init");
+
 		var $el = $(el), me = {};
 		opts = $.extend({
 			showSelector: true,
@@ -50,7 +40,7 @@ import "../widget.base.js";
 		var xmlCtrl = ns.widgets.xxmlmirror.startup($el).data(ns.widgets.xxmlmirror.publicName);
 		var permissionsCtrl = ns.widgets.spPermsSelector.startup($el).data("xwidget");
 
-		actionSelector.on("selectionchange", function (event, ca) {
+		actionSelector.on("ca.selectionchange", function (event, ca) {
 			if (ca) {
 				$("[data-get").each(function () {
 					$(this).val(ca[$(this).attr("data-get")]());
@@ -108,14 +98,17 @@ import "../widget.base.js";
 		return me;
 	};
 
-	var widgetInfo = ns.widgets.addWidget("spCustomActions", CustomActions, "0.1.2");
+	(function register() {
+		var widgetInfo = ns.widgets.addWidget("spCustomActions", CustomActions, "0.1.3");
 
-	if (window["ExecuteOrDelayUntilScriptLoaded"]) {
-		ExecuteOrDelayUntilScriptLoaded(function () {
-			widgetInfo.startup();
-		}, "sp.js");
-		SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () { });
-	}
-	else widgetInfo.startup();
+		if (window["ExecuteOrDelayUntilScriptLoaded"]) {
+			ExecuteOrDelayUntilScriptLoaded(function () {
+				widgetInfo.startup();
+			}, "sp.js");
+			SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () { });
+		}
+		else widgetInfo.startup();
+
+	})();
 
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, $, template);

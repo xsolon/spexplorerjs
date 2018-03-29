@@ -50,5 +50,5 @@ body #s4-leftpanel {
     <div class="spexp">
         <div data-widget="spCustomActions"></div>
     </div>
-    <script type="text/javascript" src="https://spexplorerjsdev.azurewebsites.net/components/sp/list.editor.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/components/sp/customaction.editor.js"></script>
 </asp:Content>

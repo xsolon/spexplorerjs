@@ -1,20 +1,16 @@
-// 0.1.0: 2018/03/23 - pass options to widget constructor
+// 0.1.0: 2018/03/23    - pass options to widget constructor
+// 0.1.1: 2018/03/28    - selector property
+//                      - log from tracing
 import "./logger/logger.js";
 import $ from "jquery";
 
 (function (ns, $) {
 
-	var debug = window.location.href.search(/[localhost|debugcustomactions]/) > 0;
-	var log = new function () {
-		var d = function () {
-			ns.logger && ns.logger.log.apply(log, arguments);
-			if (debug)
-				SP.UI.Notify.addNotification(arguments[0]);
-		};
-		d.source = "widgets";
-		return d;
-	};
+	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
+	var tracing = ns.logger.get("widgets", debugging);
+	var log = tracing.log, debug = tracing.debug;
 
+	log("widgets.register");
 	ns.widgets = ns.widgets || {};
 
 	var defineWidget = function (name, constructor, version) {
@@ -23,13 +19,14 @@ import $ from "jquery";
 			publicName: name,
 			constructor: constructor,
 			version: version,
+			selector: "[data-widget=\"publicName\"]".replace("publicName", name),
 			startup: function (context, opts) {
 
-				log(name + ".startup");
+				debug(name + ".startup");
 				var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
-				log("selector: " + selector);
+				debug("selector: " + selector);
 				var elems = $(selector, context || document);
-				log("Elems: " + elems.length);
+				debug("Elems: " + elems.length);
 				elems[name](opts);
 				return elems;
 			}
@@ -70,6 +67,7 @@ import $ from "jquery";
 		log(widgetInfo.publicName + ".registered");
 
 	};
+
 	var addWidget = function (name, constructor, version) {
 
 		var widgetInfo = defineWidget(name, constructor, version);
@@ -122,31 +120,29 @@ import $ from "jquery";
 
 	// obsolete use processDynamicArrayAsQueue
 	// make sure array doesn't change
-	var processAsQueue = function (arr, action) {
-
-		return $.Deferred(function (dfd) {
-			var step = 0;
-			var doNext = function () {
-				if (arr == null || (step >= (arr.length))) {
-					dfd.resolve();
-				} else {
-					var item = arr[step++];
-					action(item).done(function () {
-						doNext();
-					});
-				}
-			};
-
-			if (typeof arr == "function") {
-				arr().done(function (items) {
-					arr = items;
-					doNext();
-				});
-			} else {
-				doNext();
-			}
-		}).promise();
-	};
+	//var processAsQueue = function (arr, action) {
+	//	return $.Deferred(function (dfd) {
+	//		var step = 0;
+	//		var doNext = function () {
+	//			if (arr == null || (step >= (arr.length))) {
+	//				dfd.resolve();
+	//			} else {
+	//				var item = arr[step++];
+	//				action(item).done(function () {
+	//					doNext();
+	//				});
+	//			}
+	//		};
+	//		if (typeof arr == "function") {
+	//			arr().done(function (items) {
+	//				arr = items;
+	//				doNext();
+	//			});
+	//		} else {
+	//			doNext();
+	//		}
+	//	}).promise();
+	//};
 
 	var enumer = function (values) {
 		var me = {};
@@ -162,4 +158,5 @@ import $ from "jquery";
 		processAsQueue: processDynamicArrayAsQueue,
 		enum: enumer
 	};
+
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, $);

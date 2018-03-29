@@ -1,43 +1,37 @@
+// v 0.0.1 - 2018/03/28     - Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
+//                          - setScript method
+//                          - use Function constructor for code execution
+//                          - refresh method
 import $ from "jquery";
-import "../string/string.js";
 import "./jseditor.js";
 import template from "./jsmirror.template.html";
-//import { debounce } from "rxjs/operator/debounce";
+import "../widget.base.js";
 
 (function (ns, $, template) {
 
-	var error = new function () {
-		var d = function () {
-			ns.logger && ns.logger.error.apply(log, arguments);
-		};
-		d.source = "jsmirror";
-		return d;
-	};
-	var log = new function () {
-		var d = function () {
-			ns.logger && ns.logger.log.apply(log, arguments);
-		};
-		d.source = "jsmirror";
-		return d;
-	};
+	var debugging = window.location.href.search(/(localhost|debugjsmirror)/) > 0;
+	var tracing = ns.logger.get("jsmirror", debugging);
+	var log = tracing.log, debug = tracing.debug, error = tracing.error;
+
 	var xjsmirror = function (ui, opts) {
 
-		log("xjsmirror.init");
+		debug("xjsmirror.init");
 
 		var $el = $(ui);
-		opts.id = opts.id || $(".full").length;
+		opts = $.extend({}, opts);
+
 		$el.html(template.trim());
 		var run = $("button", ui);
 
 		var runScript = function (code) {
 			try {
+				log({ runScript: code });
 				ns.spelem = opts.spelem;
-				var script = ns.string.format("(function(ns){\
-                                            var log = console.log;\
-                                            var clear = console.clear;\
-                                            var spelem = ns.spelem;\
-                                            {0}\r\n})(ns);", code);
-				var res = eval(script);
+				var script = "var log = console.log, clear = console.clear;\r\n\
+                    {0}\r\n".replace("{0}", code);
+
+				var tempFunction = new Function("spelem", script);
+				var res = tempFunction(opts.spelem);
 				if (res) console.log(res);
 			} catch (e) {
 				error(e.message);
@@ -45,117 +39,52 @@ import template from "./jsmirror.template.html";
 			}
 
 		};
+
+		var editor = null;
+
 		(function iframeImplementation() {
+
 			var iframe = $("iframe", ui);
 			iframe[0].contentWindow.document.write("<html><body><textarea></textarea></body></html>");
 
-
+			var head = iframe.contents().find("head");
 			$("style").each(function () {
-				iframe.contents().find("body").append(this.cloneNode(true));
+				// cloneNode doesnt work in IE
+				//head.append(this.cloneNode(true));
+				var html = $(this).html().trim();
+				if (html.search("CodeMirror") > 0)
+					$("<style type='text/css'>" + html + "</style>").appendTo(head);
 			});
 
-			var editor = ns.widgets.jseditorinit(iframe.contents().find("textarea")[0]);
-			run.click(function () {
+			var editorCtrl = iframe.contents().find("textarea")[0];
+			editor = ns.widgets.jseditorinit(editorCtrl);
 
+			$(editorCtrl).on("run", function () {
 				runScript(editor.get());
+			});
 
+			run.click(function () {
+				runScript(editor.get());
 				return false;
-			});
-
-			var src = iframe.attr("src");
-			iframe.attr("src", src + "?id=" + opts.id);
-
-			run.click(function (event) {
-				event.preventDefault();
-
-				iframe[0].contentWindow.postMessage({ action: "get" }, "*");
-				return false;
-			});
-			iframe[0].addEventListener("load", function () {
-				iframe[0].contentWindow.postMessage({ action: "set", data: "log(spelem);" }, "*");
-			});
-			var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
-			var eventer = window[eventMethod];
-			var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
-
-			// Listen to message from child IFrame window
-			eventer(messageEvent, function (e) {
-				var data = JSON.parse(e.data);
-
-				if (data.id == opts.id) {
-					runScript(data.code);
-				}
 			});
 
 		})();
 
-		//if (false)
-		//(function inlineImplementation() {
-		//	var editor = ns.widgets.jseditorinit($("textarea", ui)[0]);
-
-		//	run.click(function () {
-
-		//		runScript(editor.get());
-		//	});
-		//})();
-
 		return {
+			refresh: function () {
+				editor.refresh();
+			},
+			setScript: function (obj) {
+				editor.set(obj);
+			},
 			setScriptingObject: function (obj) {
 				opts.spelem = obj;
 			}
 		};
 	};
 
-	var widgetInfo = {
-		publicName: "xjsmirror",
-		constructor: xjsmirror,
-		version: "0.1.3",
-		startup: function xjsmirrorStartup(context) {
-			log(widgetInfo.publicName + ".startup");
-			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
-			log("selector: " + selector);
-			var elems = $(selector, context || document);
-			log("Elems: " + elems.length);
-			elems[widgetInfo.publicName]({});
-			return elems;
-		}
-	};
-
-	$.fn[widgetInfo.publicName] = function (opts) {
-		var args = arguments;
-		//var lastInstance = null;
-		var result = this.each(function () {
-
-			var $el = $(this);
-
-			var me = $el.data(widgetInfo.publicName);
-
-			if (me) { // object has been initialized before
-
-				if (opts == null) { // request for instance
-					//lastInstance = me;
-				} else
-				if (me[opts]) {
-					if (typeof me[opts] == "function")
-						me[opts].apply(me, Array.prototype.slice.call(args, 1));
-					else
-						me[opts] = args[1];
-				}
-
-			} else {
-
-				var obj = new widgetInfo.constructor(this, opts);
-				$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
-
-			}
-		});
-
-		return result;
-	};
+	var widgetInfo = ns.widgets.addWidget("xjsmirror", xjsmirror, "0.0.1");
 
 	widgetInfo.startup();
-
-	(ns.widget = (ns.widgets || {}))[widgetInfo.publicName] = widgetInfo;
-	log(widgetInfo.publicName + ".registered");
 
 })(window["spexplorerjs"], $, template);

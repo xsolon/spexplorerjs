@@ -63290,7 +63290,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					});
 				}).promise();
 			}).done(function () {
-				log('tree loaded');
+				log("tree loaded");
 			});
 		}
 

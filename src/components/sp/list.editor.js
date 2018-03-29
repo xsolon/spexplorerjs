@@ -1,4 +1,6 @@
+
 // v 0.1.2 - 2018/03/28 - Renamed to list.editor (from list.selector)
+//                      - Bug: CodeMirror dimensions
 // v 0.1.1 - 2018/03/24 - Register through widgets.base
 //                      - Sync custom actions control with list selector
 /// TODO: Document
@@ -34,11 +36,12 @@ import template from "./list.editor.template.html";
 		$("#btnAdd", $el).click(function () { });
 
 		var jsWidget = ns.widgets.xjsmirror.startup($el).data("xwidget");
+		jsWidget.setScript("console.log(spelem);// spelem: reference to list");
 		var xmlWidget = ns.widgets.xxmlmirror.startup($(".listschema", $el)).data("xwidget");
-		var fieldSelector = ns.widgets.xSPFieldSelector.startup($el, {showSelector: false});
+		var fieldSelector = ns.widgets.xSPFieldSelector.startup($el, { showSelector: false });
 		var caCtrl = ns.widgets.spCustomActions.startup($el, { showSelector: false }).data("xwidget");
 
-		ns.widgets.xSPTreeLight.startup($(".listSelectorFirst",$el)).on("listchange", function (event, list) {
+		ns.widgets.xSPTreeLight.startup($(".listSelectorFirst", $el)).on("listchange", function (event, list) {
 
 			$("#title", $el).val(list.get_title());
 			jsWidget.setScriptingObject(list);
@@ -58,17 +61,29 @@ import template from "./list.editor.template.html";
 			}
 		});
 
+		// refresh CodeMirrors that may not be visible to address dimension issues
+		$(".nav-tabs a", $el).click(function () {
+			setTimeout(function () {
+				$("iframe.mirror", $el).each(function () {
+					$(this).contents().find("textarea").data("CodeMirror").refresh();
+				});
+			}, 500);
+		});
+
 		return me;
 	};
 
-	var widgetInfo = ns.widgets.addWidget("spListWidget", SPListWidget, "0.1.2");
+	(function register() {
+		var widgetInfo = ns.widgets.addWidget("spListWidget", SPListWidget, "0.1.2");
 
-	if (window["ExecuteOrDelayUntilScriptLoaded"]) {
-		ExecuteOrDelayUntilScriptLoaded(function () {
-			widgetInfo.startup();
-		}, "sp.js");
-		SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () { });
-	}
-	else widgetInfo.startup();
+		if (window["ExecuteOrDelayUntilScriptLoaded"]) {
+			ExecuteOrDelayUntilScriptLoaded(function () {
+				widgetInfo.startup();
+			}, "sp.js");
+			SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () { });
+		}
+		else widgetInfo.startup();
 
+
+	})();
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, $, template);

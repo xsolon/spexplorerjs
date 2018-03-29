@@ -11,16 +11,17 @@ var files = [
     //,"./src/components/logger/logger.js"
     //,"./src/components/datatables/datatables.js"
     //"./src/components/sp/sp.web.js"
-    //, "./src/components/mirrors/jseditor.js"
-    //, "./src/components/mirrors/jsmirror.js"
-    //, "./src/components/mirrors/xmleditor.js"
+    //"./src/components/mirrors/jseditor.js"
+    //,"./src/components/mirrors/jsmirror.js"
+    //"./src/components/mirrors/xmleditor.js"
     //, "./src/components/mirrors/xmlmirror.js"
     //"./src/components/sp/treelight.js"
-    "./src/components/sp/sp.explorer.js",
+    //"./src/components/sp/sp.explorer.js",
     "./src/components/sp/list.editor.js"
+    ,
     //, "./src/components/sp/field.selector.js"
     //, "./src/components/sp/customaction.selector.js"
-    //, "./src/components/sp/customaction.editor.js"
+    "./src/components/sp/customaction.editor.js"
     //, "./src/components/sp/ui.perms.js"
     //"./src/pages/index/index.js"
 ];
@@ -51,7 +52,7 @@ var runWebPack = function (debug, filePath) {
     var HtmlWebpackPlugin = require("html-webpack-plugin");
     //var HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
     var prodPlugins = [
-        // new webpack.optimize.DedupePlugin(),
+        //new webpack.optimize.DedupePlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),
         //new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
         new webpack.LoaderOptionsPlugin({
@@ -64,7 +65,7 @@ var runWebPack = function (debug, filePath) {
         console.log("template:" + template);
         prodPlugins.push(new HtmlWebpackPlugin({
             template: template,
-            inject: true,
+            inject: false,
             inlineSource: ".(js|css)$",
             filename: path.basename(localTemplatePath)
         }));
@@ -80,6 +81,7 @@ var runWebPack = function (debug, filePath) {
     if (!fs.existsSync(entry)) {
         throw "entry not found" + entry;
     }
+
     const compiler = webpack({
         optimization: {
             minimize: debug ? false : true
@@ -166,16 +168,19 @@ var runWebPack = function (debug, filePath) {
             return;
         } else {
 
-            module.localTemplatePath = localTemplatePath;
-            module.filePath = filePath;
-            module.execPath = execPath;
+            if (module.spPage) {
+                module.localTemplatePath = localTemplatePath;
+                module.filePath = filePath;
+                module.execPath = execPath;
 
-            widgetTransforms.createSpPage(module, true);
-            widgetTransforms.createSpPage(module, false);
+                widgetTransforms.createSpPage(module, true);
+                widgetTransforms.createSpPage(module, false);
 
-            var samplePath = localTemplatePath.replace("src", "public");
-            if (fs.existsSync(samplePath)) {
-                //widgetTransforms.createWidget(samplePath, execPath);
+                var samplePath = localTemplatePath.replace("src", "public");
+                if (fs.existsSync(samplePath)) {
+                    //widgetTransforms.createWidget(samplePath, execPath);
+                }
+
             }
 
         }

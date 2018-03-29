@@ -2,7 +2,7 @@ import $ from "jquery";
 import "../string/string.js";
 //import "../../../components/js/vakata/libs/jquery.js";
 //import "https://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.4/jquery-ui.min.js";
-import "../../../node_modules/jquery-ui-dist/jquery-ui.min.js";
+//import "../../../node_modules/jquery-ui-dist/jquery-ui.min.js";
 //import "../../../public/vendor/bootstrap/js/bootstrap.js";
 import "../../../node_modules/codemirror/lib/codemirror.css";
 import JSHINT from "../../../node_modules/jshint/dist/jshint.js";
@@ -35,6 +35,7 @@ import "../../../node_modules/codemirror/addon/fold/markdown-fold.js";
 import "../../../node_modules/codemirror/addon/fold/xml-fold.js";
 import "../../../node_modules/codemirror/addon/fold/foldgutter.css";
 //< !--end fold-- >
+import { js_beautify } from "../../../node_modules/js-beautify/js/lib/beautify.js";
 //< !--lint -->
 //import "https://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js";
 //import "https://rawgithub.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js";
@@ -63,29 +64,30 @@ window.CodeMirror = CodeMirror;
 					mode: "javascript",
 					lineNumbers: true,
 					lineWrapping: true,
-					extraKeys: {
-						"Ctrl-Q": function (cm) {
-							cm.foldCode(cm.getCursor());
-						},
-						"Alt-R": function (/*cm*/) {
-							$("button.xRunScript", $(el).closest("li")).click();
-						},
-						"Alt-F": function (cm) {
-							var editor = cm;
-							var totalLines = editor.lineCount();
-							var totalChars = editor.getTextArea().value.length;
-							editor.autoFormatRange({ line: 0, ch: 0 }, { line: totalLines, ch: totalChars });
-						},
-						"Enter": function (/*e*/) {
-							editor.replaceSelection("\n", "end");
-						}
-					},
 					foldGutter: true,
 					gutters: ["CodeMirror-lint-markers",
 						"CodeMirror-linenumbers",
 						"CodeMirror-foldgutter"],
 					lint: true
 				});
+
+			editor.setOption("extraKeys", {
+				"Ctrl-Q": function (cm) {
+					
+					cm.foldCode(cm.getCursor());
+				},
+				"Alt-R": function (/*cm*/) {
+					$(el).trigger("run");
+				},
+				"Alt-F": function (cm) {
+					
+					cm.setValue(js_beautify(cm.getValue()));
+				},
+				"Enter": function (/*e*/) {
+					editor.replaceSelection("\n", "end");
+				}
+			});
+
 			$(el).data("CodeMirror", editor);
 		};
 
@@ -111,6 +113,10 @@ window.CodeMirror = CodeMirror;
 		});
 
 		return {
+			refresh: function () {
+				
+				editor.refresh();
+			},
 			set: function (data) {
 				editor.setValue(data);
 			}, get: function () {

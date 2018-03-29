@@ -6,4 +6,8 @@ router.get("/", function(req, res, next) {
   res.render("index", { title: "spExplorer", version: "0.0.2" });
 });
 
+router.get("/components", function(req, res, next) {
+  res.render("components", { title: "spExplorer", version: "0.0.2" });
+});
+
 module.exports = router;
