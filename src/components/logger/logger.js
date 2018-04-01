@@ -1,6 +1,41 @@
 // v 0.0.1: 2018-03-28  - debug, get
 import $ from "jquery";
 import "../string/string.js";
+
+(function (global, factory) {
+
+	
+
+	if (typeof module === "object" && typeof module.exports === "object") {
+
+		// For CommonJS and CommonJS-like environments where a proper `window`
+		// is present, execute the factory and get jQuery.
+		// For environments that do not have a `window` with a `document`
+		// (such as Node.js), expose a factory as module.exports.
+		// This accentuates the need for the creation of a real `window`.
+		// e.g. var jQuery = require("jquery")(window);
+		// See ticket #14549 for more info.
+		module.exports = global.document ?
+			factory(global, true) :
+			function (w) {
+				if (!w.document) {
+					throw new Error("jQuery requires a window with a document");
+				}
+				return factory(w);
+			};
+	} else {
+		factory(global);
+	}
+
+	// Pass this if window is not defined yet
+})(typeof window !== "undefined" ? window : this, function (window, noGlobal) {
+
+	if (!noGlobal) {
+		window.jQuery = window.$ = jQuery;
+	}
+
+});
+
 (function (ns, $) {
 
 	const logf = function () {
@@ -114,6 +149,8 @@ import "../string/string.js";
 	log("logger");
 	ns.$ = $;
 	return ns.logger;
+
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, $);
 var logger = window["spexplorerjs"];
-export { logger as default };
+//export default logger;
+//export { logger as default };

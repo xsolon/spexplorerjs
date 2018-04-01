@@ -17,13 +17,15 @@ var files = [
     //, "./src/components/mirrors/xmlmirror.js"
     //"./src/components/sp/treelight.js"
     //"./src/components/sp/sp.explorer.js",
-    "./src/components/sp/list.editor.js"
-    ,
+    //"./src/components/sp/sp.wizard.js"
+    //,
+    //"./src/components/sp/list.editor.js"
+    //,
     //, "./src/components/sp/field.selector.js"
     //, "./src/components/sp/customaction.selector.js"
-    "./src/components/sp/customaction.editor.js"
+    //"./src/components/sp/customaction.editor.js"
     //, "./src/components/sp/ui.perms.js"
-    //"./src/pages/index/index.js"
+    "./src/pages/index/index.js"
 ];
 
 var runWebPack = function (debug, filePath) {
@@ -168,7 +170,7 @@ var runWebPack = function (debug, filePath) {
             return;
         } else {
 
-            if (module.spPage) {
+            if (module && module.spPage) {
                 module.localTemplatePath = localTemplatePath;
                 module.filePath = filePath;
                 module.execPath = execPath;

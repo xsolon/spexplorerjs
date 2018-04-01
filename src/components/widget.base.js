@@ -81,7 +81,6 @@ import $ from "jquery";
 
 (function (ns, $) {
 
-
 	/// Iterate over an expanding array
 	//  Example:
 	//  var arr = [1, 2];

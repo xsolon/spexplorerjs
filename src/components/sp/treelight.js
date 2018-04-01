@@ -364,8 +364,13 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 		}).done(function () { log("tree loaded"); });
 
 		$(".cc", $el).click(function (event) { // prevent propagation so drop down doesn't close
+			debug(".cc.click");
 			event.preventDefault();
 			event.stopPropagation();
+		});
+
+		$("#dropdownMenu1", $el).click(function (event) { // prevent propagation so drop down doesn't close
+			debug("dropdownMenu1.click");
 		});
 
 		return (function () {

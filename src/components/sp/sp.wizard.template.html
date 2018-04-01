@@ -1,0 +1,230 @@
+﻿<div>
+    <div class="spexp">
+        <link data-check='loadOnce' href="//xsolonblog2.appspot.com/css/bootstrap/3.2.0/css/css.css" rel="stylesheet" />
+
+        <style type="text/css">
+            .cuadroA {
+                float: left;
+                padding: 5px;
+            }
+
+            .cuadro_intro_hover {
+                padding: 0px;
+                position: relative;
+                overflow: hidden;
+                height: 200px;
+                width: 200px;
+            }
+
+                .cuadro_intro_hover:hover .caption {
+                    opacity: 1;
+                    transform: translateY(-150px);
+                    -webkit-transform: translateY(-150px);
+                    -moz-transform: translateY(-150px);
+                    -ms-transform: translateY(-150px);
+                    -o-transform: translateY(-150px);
+                }
+
+                .cuadro_intro_hover img {
+                    z-index: 4;
+                }
+
+                .cuadro_intro_hover .caption {
+                    position: absolute;
+                    top: 150px;
+                    -webkit-transition: all 0.3s ease-in-out;
+                    -moz-transition: all 0.3s ease-in-out;
+                    -o-transition: all 0.3s ease-in-out;
+                    -ms-transition: all 0.3s ease-in-out;
+                    transition: all 0.3s ease-in-out;
+                    width: 100%;
+                }
+
+                .cuadro_intro_hover .blur {
+                    background-color: rgba(0,0,0,0.7);
+                    height: 300px;
+                    z-index: 5;
+                    position: absolute;
+                    width: 100%;
+                }
+
+                .cuadro_intro_hover .caption-text {
+                    z-index: 10;
+                    color: #fff;
+                    position: absolute;
+                    height: 300px;
+                    text-align: center;
+                    top: -20px;
+                    width: 100%;
+                }
+        </style>
+
+        <div class="xbootSection">
+            <div class="container">
+                <div class="row">
+                    <h2>Welcome!</h2>
+                    <p>Select an option</p>
+                </div>
+                <div class="row">
+                    <a href="#" onclick="spexplorerjs.widgetClick(this);" data-widget="spListWidget" data-widgetUrl="https://localhost:8443/components/sp/list.editor.js" class="cuadroA">
+                        <div class="cuadro_intro_hover " style="background-color: rgb(204, 204, 204);">
+                            <p style="text-align: center;">
+
+                                <svg style='background-color: #3366FF;' width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <radialGradient fy="50%" fx="50%" r="200%" cy="50%" cx="50%" id="grad2">
+                                            <stop offset="0%" stop-color="rgb(255,255,255)" />
+                                            <stop offset="100%" stop-color="rgb(0,0,0)" />
+                                        </radialGradient>
+                                        <filter id="dropshadow" height="130%">
+                                            <feGaussianBlur in="SourceAlpha" stdDeviation="1" />
+                                            <feOffset dx="1" dy="1" result="offsetblur" />
+                                            <feMerge>
+                                                <feMergeNode />
+                                                <feMergeNode in="SourceGraphic" />
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
+                                    <g>
+                                        <title>Layer 1</title>
+                                        <path d="m83.3322,91.5391c0.7917,-16.625 20.9788,-7.125 20.9788,-7.125c1.584,-4.75 6.729,-4.3542 6.729,-4.3542c-0.998,0.9401 0.792,2.77081 0.792,2.77081c-3.958,0 -5.542,2.7709 -5.542,2.7709c15.834,14.25 2.375,20.5834 2.375,20.5834c-12.6661,-4.75 -18.2078,-9.10429 -25.3328,-14.6459l0,0l0,0zm0,1.9791c7.9167,6.7288 13.4583,9.8958 23.7498,13.8538c0,0 -8.3123,16.625 -20.979,11.875c0,0 -0.603,2.92 -3.1666,1.188c-2.1864,-1.435 0,-3.167 0,-3.167c0,0 -9.8959,-6.333 0.3958,-23.74979l0,0z" stroke-width="0.2" stroke-linejoin="round" id="svg_1" fill="url(#grad2)" filter="url(#dropshadow)" transform='scale(1.8) translate(-40 -50)' />
+                                    </g>
+                                </svg>
+                            </p>
+                            <div class="caption">
+                                <div class="blur"></div>
+                                <div class="caption-text">
+                                    <h3 style="padding: 10px;">Migration Mapper</h3>
+                                    <p>Design hierarchical structures</p>
+                                    <p>Used for migrations and site provisioning</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" onclick="xSolon.widgetClick(this);" data-widget="//xsolonblog2.appspot.com/components/sp/explorer/explorer.sample.html" class="cuadroA">
+                        <div class="cuadro_intro_hover " style="background-color: rgb(204, 204, 204);">
+                            <p style="text-align: center;">
+                                <svg style='background-color: #FF9933;' width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+
+                                    <g>
+                                        <path fill="#000000" fill-opacity="0.403922" stroke-width="0.2" stroke-linejoin="round" d="M 57,19L 57,26L 50,26L 50,19L 57,19 Z M 48,19L 48,26L 41,26L 41,19L 48,19 Z M 39,19L 39,26L 32,26L 32,19L 39,19 Z M 57,28L 57,35L 50,35L 50,28L 57,28 Z M 48,28L 48,35L 41,35L 41,28L 48,28 Z M 39,28L 39,35L 32,35L 32,28L 39,28 Z M 57,37L 57,44L 50,44L 50,37L 57,37 Z M 48,37L 48,44L 41,44L 41,37L 48,37 Z M 39,37L 39,44L 32,44L 32,37L 39,37 Z " transform='scale(2.5) translate(-5 0)' fill="url(#grad2)" />
+                                        <path fill="url(#grad2)" fill-opacity="1" stroke-width="0.2" stroke-linejoin="round" d="M 23.6506,56.2021C 22.5867,57.266 20.8618,57.266 19.7979,56.2021C 18.734,55.1382 18.734,53.4133 19.7979,52.3494L 27.6722,44.4751C 26.6112,42.7338 26,40.6883 26,38.5C 26,32.1487 31.1487,27 37.5,27C 43.8513,27 49,32.1487 49,38.5C 49,44.8513 43.8513,50 37.5,50C 35.3117,50 33.2662,49.3888 31.5249,48.3278L 23.6506,56.2021 Z M 37.5,31C 33.3579,31 30,34.3579 30,38.5C 30,42.6421 33.3579,46 37.5,46C 41.6421,46 45,42.6421 45,38.5C 45,34.3579 41.6421,31 37.5,31 Z " transform='scale(2.0) translate(10 10)' filter="url(#dropshadow)" />
+                                    </g>
+                                </svg>
+                            </p>
+                            <div class="caption">
+                                <div class="blur"></div>
+                                <div class="caption-text">
+                                    <h3 style="padding: 10px;">SP Explorer</h3>
+                                    <p>Inspect site structure</p>
+                                    <p></p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" onclick="xSolon.widgetClick(this);" data-widget="//xsolonblog2.appspot.com/components/spconsole/spconsole.html" class="cuadroA">
+                        <div class="cuadro_intro_hover " style="background-color: rgb(204, 204, 204);">
+                            <p style="text-align: center;">
+                                <svg style='background-color: #47B26B;' width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+
+                                    <g>
+                                        <path fill="url(#grad2)" stroke-width="0.2" stroke-linejoin="round" d="M 17,20L 59,20L 59,56L 17,56L 17,20 Z M 20,26L 20,53L 56,53L 56,26L 20,26 Z M 23.75,31L 28.5,31L 33.25,37.5L 28.5,44L 23.75,44L 28.5,37.5L 23.75,31 Z " transform='scale(2.0) translate(10 5)' filter="url(#dropshadow)" />
+                                    </g>
+                                </svg>
+                            </p>
+                            <div class="caption">
+                                <div class="blur"></div>
+                                <div class="caption-text">
+                                    <h3 style="padding: 10px;">Console</h3>
+                                    <p>Run and share SP scripts</p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" onclick="xSolon.widgetClick(this);" data-widget="//xsolonblog2.appspot.com/components/codemirror/codemirror.html" class="cuadroA">
+                        <div class="cuadro_intro_hover " style="background-color: rgb(204, 204, 204);">
+                            <p style="text-align: center;">
+                                <svg style='background-color: #47B26B;' width="200" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+
+                                    <g>
+                                        <path fill="url(#grad2)" stroke-width="0.2" stroke-linejoin="round" d="M 17,20L 59,20L 59,56L 17,56L 17,20 Z M 20,26L 20,53L 56,53L 56,26L 20,26 Z M 23.75,31L 28.5,31L 33.25,37.5L 28.5,44L 23.75,44L 28.5,37.5L 23.75,31 Z " transform='scale(2.0) translate(10 5)' filter="url(#dropshadow)" />
+                                    </g>
+                                </svg>
+                            </p>
+                            <div class="caption">
+                                <div class="blur"></div>
+                                <div class="caption-text">
+                                    <h3 style="padding: 10px;">Console v2</h3>
+                                    <p>Create and run scripts in the context of your web apps.</p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" onclick="xSolon.widgetClick(this);" data-widget="//xsolonblog2.appspot.com/components/editor/snippet/snippet.widget.min.html" class="cuadroA">
+                        <div class="cuadro_intro_hover " style="background-color: #3366FF;">
+                            <p style="text-align: center;">
+                                <img style="padding-top:30px" src="//icons.iconarchive.com/icons/oxygen-icons.org/oxygen/96/Mimetypes-text-xml-icon.png" />
+                            </p>
+                            <div class="caption">
+                                <div class="blur"></div>
+                                <div class="caption-text">
+                                    <h3 style="padding: 10px;">Snippet Editor</h3>
+                                    <p>Create and run scripts in the context of your web apps.</p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" onclick="xSolon.widgetClick(this);" data-widget="//xsolonblog2.appspot.com/components/editor/indextree/indextree.sample.html" class="cuadroA">
+                        <div class="cuadro_intro_hover " style="background-color: rgb(255, 0, 0);">
+                            <p style="text-align: center;">
+                                <img style="padding-top:30px" src="//icons.iconarchive.com/icons/oxygen-icons.org/oxygen/96/Actions-view-web-browser-dom-tree-icon.png" />
+                            </p>
+                            <div class="caption">
+                                <div class="blur"></div>
+                                <div class="caption-text">
+                                    <h3 style="padding: 10px;">Index Site</h3>
+                                    <p>Create a site index by web crawl.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" onclick="xSolon.widgetClick(this);" data-widget="//xsolonblog2.appspot.com/components/editor/raw/raw.widget.min.html" class="cuadroA">
+                        <div class="cuadro_intro_hover " style="background-color: rgb(255, 216, 0);">
+                            <p style="text-align: center;">
+                                <img style="padding-top:30px" src="//icons.iconarchive.com/icons/oxygen-icons.org/oxygen/96/Apps-accessories-text-editor-icon.png" />
+                            </p>
+                            <div class="caption">
+                                <div class="blur"></div>
+                                <div class="caption-text">
+                                    <h3 style="padding: 10px;">Raw Editor</h3>
+                                    <p>Edit raw content of cloud records.</p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" onclick="xSolon.widgetClick(this);" data-widget="//xsolonblog2.appspot.com/components/editor/splistbackup/splistbackup.widget.min.html" class="cuadroA">
+                        <div class="cuadro_intro_hover " style="background-color: rgb(104, 220, 216);">
+                            <p style="text-align: center;">
+                                <img width="96" style="padding-top:30px" src="//icons.iconarchive.com/icons/visualpharm/icons8-metro-style/128/Data-Data-backup-icon.png" />
+                            </p>
+                            <div class="caption">
+                                <div class="blur"></div>
+                                <div class="caption-text">
+                                    <h3 style="padding: 10px;">List Backup</h3>
+                                    <p>Backup/Restore SharePoint lists</p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <small>images by <a href="http://www.visualpharm.com/">visualpharm</a> | <a href="http://www.oxygen-icons.org">oxygen</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

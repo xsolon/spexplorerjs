@@ -1,8 +1,34 @@
 import $ from "jquery";
 // v 0.1.2: 2018-03-10: brought back htmlEncode/htmlDecode and jQuery dependency
-(function(ns, $) {
-	ns.string = {
-		version: "0.1",
+(function (global, factory) {
+
+	if (typeof module === "object" && typeof module.exports === "object") {
+
+		// For CommonJS and CommonJS-like environments where a proper `window`
+		// is present, execute the factory and get jQuery.
+		// For environments that do not have a `window` with a `document`
+		// (such as Node.js), expose a factory as module.exports.
+		// This accentuates the need for the creation of a real `window`.
+		// e.g. var jQuery = require("jquery")(window);
+		// See ticket #14549 for more info.
+		module.exports = global.document ?
+			factory(global, true) :
+			function (w) {
+				if (!w.document) {
+					throw new Error("jQuery requires a window with a document");
+				}
+				return factory(w);
+			};
+	} else {
+		factory(global);
+	}
+
+	// Pass this if window is not defined yet
+})(typeof window !== "undefined" ? window : this, function (window, noGlobal) {
+
+//----
+	var string = {
+		version: "0.1.1",
 		htmlEncode: function(value) {
 			// create a in-memory div, set it's inner text(which jQuery
 			// automatically encodes)
@@ -54,10 +80,20 @@ import $ from "jquery";
 
 			var res = stringToTrim.replace(reg, "");
 			return res;
-		}, trim: function(stringToTrim, sToRemove, opts) {
+		}, 
+		trim: function(stringToTrim, sToRemove, opts) {
 			stringToTrim = this.trimStart(stringToTrim, sToRemove, opts);
 			stringToTrim = this.trimEnd(stringToTrim, sToRemove, opts);
 			return stringToTrim;
 		}
 	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, $);
+ 
+	//----
+
+	if (!noGlobal) {
+		(window["spexplorerjs"] = window["spexplorerjs"] || {}).string = string;
+		//window.jQuery = window.$ = jQuery;
+	}
+
+	return string;
+});

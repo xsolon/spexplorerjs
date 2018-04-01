@@ -66,116 +66,10 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./index.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./sp.wizard.js");
 /******/ })
 /************************************************************************/
 /******/ ({
-
-/***/ "../../../node_modules/css-loader/index.js!./app1.css":
-/*!*********************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!./app1.css ***!
-  \*********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "../../../node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, "body {\r\n    color: aliceblue;\r\n}", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "../../../node_modules/css-loader/lib/css-base.js":
-/*!**************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
-  \**************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
-
-/***/ }),
 
 /***/ "../../../node_modules/jquery/dist/jquery.js":
 /*!*********************************************************************************!*\
@@ -10565,493 +10459,6 @@ return jQuery;
 
 /***/ }),
 
-/***/ "../../../node_modules/style-loader/lib/addStyles.js":
-/*!*****************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/style-loader/lib/addStyles.js ***!
-  \*****************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-
-var stylesInDom = {};
-
-var	memoize = function (fn) {
-	var memo;
-
-	return function () {
-		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-		return memo;
-	};
-};
-
-var isOldIE = memoize(function () {
-	// Test for IE <= 9 as proposed by Browserhacks
-	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
-	// Tests for existence of standard globals is to allow style-loader
-	// to operate correctly into non-standard environments
-	// @see https://github.com/webpack-contrib/style-loader/issues/177
-	return window && document && document.all && !window.atob;
-});
-
-var getTarget = function (target) {
-  return document.querySelector(target);
-};
-
-var getElement = (function (fn) {
-	var memo = {};
-
-	return function(target) {
-                // If passing function in options, then use it for resolve "head" element.
-                // Useful for Shadow Root style i.e
-                // {
-                //   insertInto: function () { return document.querySelector("#foo").shadowRoot }
-                // }
-                if (typeof target === 'function') {
-                        return target();
-                }
-                if (typeof memo[target] === "undefined") {
-			var styleTarget = getTarget.call(this, target);
-			// Special case to return head of iframe instead of iframe itself
-			if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
-				try {
-					// This will throw an exception if access to iframe is blocked
-					// due to cross-origin restrictions
-					styleTarget = styleTarget.contentDocument.head;
-				} catch(e) {
-					styleTarget = null;
-				}
-			}
-			memo[target] = styleTarget;
-		}
-		return memo[target]
-	};
-})();
-
-var singleton = null;
-var	singletonCounter = 0;
-var	stylesInsertedAtTop = [];
-
-var	fixUrls = __webpack_require__(/*! ./urls */ "../../../node_modules/style-loader/lib/urls.js");
-
-module.exports = function(list, options) {
-	if (typeof DEBUG !== "undefined" && DEBUG) {
-		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-	}
-
-	options = options || {};
-
-	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
-
-	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-	// tags it will allow on a page
-	if (!options.singleton && typeof options.singleton !== "boolean") options.singleton = isOldIE();
-
-	// By default, add <style> tags to the <head> element
-        if (!options.insertInto) options.insertInto = "head";
-
-	// By default, add <style> tags to the bottom of the target
-	if (!options.insertAt) options.insertAt = "bottom";
-
-	var styles = listToStyles(list, options);
-
-	addStylesToDom(styles, options);
-
-	return function update (newList) {
-		var mayRemove = [];
-
-		for (var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-
-			domStyle.refs--;
-			mayRemove.push(domStyle);
-		}
-
-		if(newList) {
-			var newStyles = listToStyles(newList, options);
-			addStylesToDom(newStyles, options);
-		}
-
-		for (var i = 0; i < mayRemove.length; i++) {
-			var domStyle = mayRemove[i];
-
-			if(domStyle.refs === 0) {
-				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
-
-				delete stylesInDom[domStyle.id];
-			}
-		}
-	};
-};
-
-function addStylesToDom (styles, options) {
-	for (var i = 0; i < styles.length; i++) {
-		var item = styles[i];
-		var domStyle = stylesInDom[item.id];
-
-		if(domStyle) {
-			domStyle.refs++;
-
-			for(var j = 0; j < domStyle.parts.length; j++) {
-				domStyle.parts[j](item.parts[j]);
-			}
-
-			for(; j < item.parts.length; j++) {
-				domStyle.parts.push(addStyle(item.parts[j], options));
-			}
-		} else {
-			var parts = [];
-
-			for(var j = 0; j < item.parts.length; j++) {
-				parts.push(addStyle(item.parts[j], options));
-			}
-
-			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-		}
-	}
-}
-
-function listToStyles (list, options) {
-	var styles = [];
-	var newStyles = {};
-
-	for (var i = 0; i < list.length; i++) {
-		var item = list[i];
-		var id = options.base ? item[0] + options.base : item[0];
-		var css = item[1];
-		var media = item[2];
-		var sourceMap = item[3];
-		var part = {css: css, media: media, sourceMap: sourceMap};
-
-		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
-		else newStyles[id].parts.push(part);
-	}
-
-	return styles;
-}
-
-function insertStyleElement (options, style) {
-	var target = getElement(options.insertInto)
-
-	if (!target) {
-		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
-	}
-
-	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
-
-	if (options.insertAt === "top") {
-		if (!lastStyleElementInsertedAtTop) {
-			target.insertBefore(style, target.firstChild);
-		} else if (lastStyleElementInsertedAtTop.nextSibling) {
-			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
-		} else {
-			target.appendChild(style);
-		}
-		stylesInsertedAtTop.push(style);
-	} else if (options.insertAt === "bottom") {
-		target.appendChild(style);
-	} else if (typeof options.insertAt === "object" && options.insertAt.before) {
-		var nextSibling = getElement(options.insertInto + " " + options.insertAt.before);
-		target.insertBefore(style, nextSibling);
-	} else {
-		throw new Error("[Style Loader]\n\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\n Must be 'top', 'bottom', or Object.\n (https://github.com/webpack-contrib/style-loader#insertat)\n");
-	}
-}
-
-function removeStyleElement (style) {
-	if (style.parentNode === null) return false;
-	style.parentNode.removeChild(style);
-
-	var idx = stylesInsertedAtTop.indexOf(style);
-	if(idx >= 0) {
-		stylesInsertedAtTop.splice(idx, 1);
-	}
-}
-
-function createStyleElement (options) {
-	var style = document.createElement("style");
-
-	options.attrs.type = "text/css";
-
-	addAttrs(style, options.attrs);
-	insertStyleElement(options, style);
-
-	return style;
-}
-
-function createLinkElement (options) {
-	var link = document.createElement("link");
-
-	options.attrs.type = "text/css";
-	options.attrs.rel = "stylesheet";
-
-	addAttrs(link, options.attrs);
-	insertStyleElement(options, link);
-
-	return link;
-}
-
-function addAttrs (el, attrs) {
-	Object.keys(attrs).forEach(function (key) {
-		el.setAttribute(key, attrs[key]);
-	});
-}
-
-function addStyle (obj, options) {
-	var style, update, remove, result;
-
-	// If a transform function was defined, run it on the css
-	if (options.transform && obj.css) {
-	    result = options.transform(obj.css);
-
-	    if (result) {
-	    	// If transform returns a value, use that instead of the original css.
-	    	// This allows running runtime transformations on the css.
-	    	obj.css = result;
-	    } else {
-	    	// If the transform function returns a falsy value, don't add this css.
-	    	// This allows conditional loading of css
-	    	return function() {
-	    		// noop
-	    	};
-	    }
-	}
-
-	if (options.singleton) {
-		var styleIndex = singletonCounter++;
-
-		style = singleton || (singleton = createStyleElement(options));
-
-		update = applyToSingletonTag.bind(null, style, styleIndex, false);
-		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
-
-	} else if (
-		obj.sourceMap &&
-		typeof URL === "function" &&
-		typeof URL.createObjectURL === "function" &&
-		typeof URL.revokeObjectURL === "function" &&
-		typeof Blob === "function" &&
-		typeof btoa === "function"
-	) {
-		style = createLinkElement(options);
-		update = updateLink.bind(null, style, options);
-		remove = function () {
-			removeStyleElement(style);
-
-			if(style.href) URL.revokeObjectURL(style.href);
-		};
-	} else {
-		style = createStyleElement(options);
-		update = applyToTag.bind(null, style);
-		remove = function () {
-			removeStyleElement(style);
-		};
-	}
-
-	update(obj);
-
-	return function updateStyle (newObj) {
-		if (newObj) {
-			if (
-				newObj.css === obj.css &&
-				newObj.media === obj.media &&
-				newObj.sourceMap === obj.sourceMap
-			) {
-				return;
-			}
-
-			update(obj = newObj);
-		} else {
-			remove();
-		}
-	};
-}
-
-var replaceText = (function () {
-	var textStore = [];
-
-	return function (index, replacement) {
-		textStore[index] = replacement;
-
-		return textStore.filter(Boolean).join('\n');
-	};
-})();
-
-function applyToSingletonTag (style, index, remove, obj) {
-	var css = remove ? "" : obj.css;
-
-	if (style.styleSheet) {
-		style.styleSheet.cssText = replaceText(index, css);
-	} else {
-		var cssNode = document.createTextNode(css);
-		var childNodes = style.childNodes;
-
-		if (childNodes[index]) style.removeChild(childNodes[index]);
-
-		if (childNodes.length) {
-			style.insertBefore(cssNode, childNodes[index]);
-		} else {
-			style.appendChild(cssNode);
-		}
-	}
-}
-
-function applyToTag (style, obj) {
-	var css = obj.css;
-	var media = obj.media;
-
-	if(media) {
-		style.setAttribute("media", media)
-	}
-
-	if(style.styleSheet) {
-		style.styleSheet.cssText = css;
-	} else {
-		while(style.firstChild) {
-			style.removeChild(style.firstChild);
-		}
-
-		style.appendChild(document.createTextNode(css));
-	}
-}
-
-function updateLink (link, options, obj) {
-	var css = obj.css;
-	var sourceMap = obj.sourceMap;
-
-	/*
-		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
-		and there is no publicPath defined then lets turn convertToAbsoluteUrls
-		on by default.  Otherwise default to the convertToAbsoluteUrls option
-		directly
-	*/
-	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
-
-	if (options.convertToAbsoluteUrls || autoFixUrls) {
-		css = fixUrls(css);
-	}
-
-	if (sourceMap) {
-		// http://stackoverflow.com/a/26603875
-		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-	}
-
-	var blob = new Blob([css], { type: "text/css" });
-
-	var oldSrc = link.href;
-
-	link.href = URL.createObjectURL(blob);
-
-	if(oldSrc) URL.revokeObjectURL(oldSrc);
-}
-
-
-/***/ }),
-
-/***/ "../../../node_modules/style-loader/lib/urls.js":
-/*!************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/style-loader/lib/urls.js ***!
-  \************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-
-/**
- * When source maps are enabled, `style-loader` uses a link element with a data-uri to
- * embed the css on the page. This breaks all relative urls because now they are relative to a
- * bundle instead of the current page.
- *
- * One solution is to only use full urls, but that may be impossible.
- *
- * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
- *
- * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
- *
- */
-
-module.exports = function (css) {
-  // get current location
-  var location = typeof window !== "undefined" && window.location;
-
-  if (!location) {
-    throw new Error("fixUrls requires window.location");
-  }
-
-	// blank or null?
-	if (!css || typeof css !== "string") {
-	  return css;
-  }
-
-  var baseUrl = location.protocol + "//" + location.host;
-  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
-
-	// convert each url(...)
-	/*
-	This regular expression is just a way to recursively match brackets within
-	a string.
-
-	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
-	   (  = Start a capturing group
-	     (?:  = Start a non-capturing group
-	         [^)(]  = Match anything that isn't a parentheses
-	         |  = OR
-	         \(  = Match a start parentheses
-	             (?:  = Start another non-capturing groups
-	                 [^)(]+  = Match anything that isn't a parentheses
-	                 |  = OR
-	                 \(  = Match a start parentheses
-	                     [^)(]*  = Match anything that isn't a parentheses
-	                 \)  = Match a end parentheses
-	             )  = End Group
-              *\) = Match anything and then a close parens
-          )  = Close non-capturing group
-          *  = Match anything
-       )  = Close capturing group
-	 \)  = Match a close parens
-
-	 /gi  = Get all matches, not the first.  Be case insensitive.
-	 */
-	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
-		// strip quotes (if they exist)
-		var unquotedOrigUrl = origUrl
-			.trim()
-			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
-			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
-
-		// already a full url? no change
-		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/|\s*$)/i.test(unquotedOrigUrl)) {
-		  return fullMatch;
-		}
-
-		// convert the url to a full url
-		var newUrl;
-
-		if (unquotedOrigUrl.indexOf("//") === 0) {
-		  	//TODO: should we add protocol?
-			newUrl = unquotedOrigUrl;
-		} else if (unquotedOrigUrl.indexOf("/") === 0) {
-			// path should be relative to the base url
-			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
-		} else {
-			// path should be relative to current directory
-			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
-		}
-
-		// send back the fixed url(...)
-		return "url(" + JSON.stringify(newUrl) + ")";
-	});
-
-	// send back the fixed css
-	return fixedCss;
-};
-
-
-/***/ }),
-
 /***/ "../../../node_modules/webpack/buildin/global.js":
 /*!***********************************!*\
   !*** (webpack)/buildin/global.js ***!
@@ -11083,220 +10490,155 @@ module.exports = g;
 
 /***/ }),
 
-/***/ "../../../node_modules/webpack/buildin/module.js":
-/*!***********************************!*\
-  !*** (webpack)/buildin/module.js ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = function(module) {
-	if (!module.webpackPolyfill) {
-		module.deprecate = function() {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-
-/***/ }),
-
-/***/ "../../components/logger/logger.js":
-/*!******************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/src/components/logger/logger.js ***!
-  \******************************************************************************/
+/***/ "../logger/logger.js":
+/*!***************************!*\
+  !*** ../logger/logger.js ***!
+  \***************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(module) {
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; // v 0.0.1: 2018-03-28  - debug, get
 
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.default = undefined;
 
 var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
-__webpack_require__(/*! ../string/string.js */ "../../components/string/string.js");
+__webpack_require__(/*! ../string/string.js */ "../string/string.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-(function (global, factory) {
-
-    "use strict";
-
-    if (( false ? undefined : _typeof(module)) === "object" && _typeof(module.exports) === "object") {
-
-        // For CommonJS and CommonJS-like environments where a proper `window`
-        // is present, execute the factory and get jQuery.
-        // For environments that do not have a `window` with a `document`
-        // (such as Node.js), expose a factory as module.exports.
-        // This accentuates the need for the creation of a real `window`.
-        // e.g. var jQuery = require("jquery")(window);
-        // See ticket #14549 for more info.
-        module.exports = global.document ? factory(global, true) : function (w) {
-            if (!w.document) {
-                throw new Error("jQuery requires a window with a document");
-            }
-            return factory(w);
-        };
-    } else {
-        factory(global);
-    }
-
-    // Pass this if window is not defined yet
-})(typeof window !== "undefined" ? window : undefined, function (window, noGlobal) {
-
-    if (!noGlobal) {
-        window.jQuery = window.$ = jQuery;
-    }
-});
-
+// v 0.0.1: 2018-03-28  - debug, get
 (function (ns, $) {
 
-    var logf = function logf() {
-        var msg = ns.string.format.apply(ns.string.format, arguments);
-        if (this && this.source) {
-            msg = this.source + ": " + msg;
-        }
-        console && console.log.apply(console, [msg]);
-    };
-    var log = function log() {
-        try {
-            if (this && this.source) {
-                if (arguments.length === 1 && typeof arguments[0] == "string") {
-                    logf("{0}: {1}", this.source, arguments[0]);
-                } else {
-                    var obj = {};
-                    obj[this.source] = arguments;
-                    if (arguments.length === 1) obj[this.source] = arguments[0];
-                    console.log.apply(console, [obj]);
-                }
-            }
-            //if (this && this.source && arguments.length === 1 && typeof arguments[0] == "string") {
-            //	let s = this.source + ": "; for (let i = 0; i < arguments.length; i++) {
-            //		s += `{${i}} `;
-            //	}
-            //	var msg = logf(s, arguments[0]);
-            //	console.log.apply(console, [msg]);
-            //	var obj = {};
-            //	obj[this.source] = arguments;
-            //	console.log.apply(console, [obj]);
-            //         }
-            else console.log.apply(console, arguments);
-            //jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-        } catch (e) {
-            alert(e);
-        }
-    };
-    var error = function error() {
-        try {
-            console.error.apply(console, arguments);
-            $("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-        } catch (e) {
-            alert(e);
-        }
-    };
-    var warn = function warn() {
-        try {
-            console.warn.apply(console, arguments);
-            $("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-        } catch (e) {
-            alert(e);
-        }
-    };
-    var debug = function debug() {
-        try {
-            console.log.apply(console, arguments);
-            $("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-        } catch (e) {
-            alert(e);
-        }
-    };
+	var logf = function logf() {
+		var msg = ns.string.format.apply(ns.string.format, arguments);
+		if (this && this.source) {
+			msg = this.source + ": " + msg;
+		}
+		console && console.log.apply(console, [msg]);
+	};
+	var log = function log() {
+		try {
+			if (this && this.source) {
+				if (arguments.length === 1 && typeof arguments[0] == "string") {
+					logf("{0}: {1}", this.source, arguments[0]);
+				} else {
+					var obj = {};
+					obj[this.source] = arguments;
+					if (arguments.length === 1) obj[this.source] = arguments[0];
+					console.log.apply(console, [obj]);
+				}
+			}
+			//if (this && this.source && arguments.length === 1 && typeof arguments[0] == "string") {
+			//	let s = this.source + ": "; for (let i = 0; i < arguments.length; i++) {
+			//		s += `{${i}} `;
+			//	}
+			//	var msg = logf(s, arguments[0]);
+			//	console.log.apply(console, [msg]);
+			//	var obj = {};
+			//	obj[this.source] = arguments;
+			//	console.log.apply(console, [obj]);
+			//         }
+			else console.log.apply(console, arguments);
+			//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+		} catch (e) {
+			alert(e);
+		}
+	};
+	var error = function error() {
+		try {
+			console.error.apply(console, arguments);
+			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+		} catch (e) {
+			alert(e);
+		}
+	};
+	var warn = function warn() {
+		try {
+			console.warn.apply(console, arguments);
+			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+		} catch (e) {
+			alert(e);
+		}
+	};
+	var debug = function debug() {
+		try {
+			console.log.apply(console, arguments);
+			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+		} catch (e) {
+			alert(e);
+		}
+	};
 
-    var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
-        var scopedLog = new function () {
-            var d = function d() {
-                ns.logger && ns.logger.log.apply(scopedLog, arguments);
-                onTrace && onTrace({ type: "log", args: arguments });
-            };
-            d.source = source;
-            return d;
-        }();
-        var scopedError = new function () {
-            var d = function d() {
-                ns.logger && ns.logger.error.apply(scopedError, arguments);
-                onTrace && onTrace({ type: "error", args: arguments });
-            };
-            d.source = source;
-            return d;
-        }();
-        var scopedDebug = new function () {
-            var d = function d() {
-                if (debugging) {
-                    ns.logger && ns.logger.log.apply(scopedDebug, arguments);
-                    onTrace && onTrace({ type: "debug", args: arguments });
-                }
-            };
-            d.source = source;
-            return d;
-        }();
+	var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
+		var scopedLog = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.log.apply(scopedLog, arguments);
+				onTrace && onTrace({ type: "log", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedError = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.error.apply(scopedError, arguments);
+				onTrace && onTrace({ type: "error", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedDebug = new function () {
+			var d = function d() {
+				if (debugging) {
+					ns.logger && ns.logger.log.apply(scopedDebug, arguments);
+					onTrace && onTrace({ type: "debug", args: arguments });
+				}
+			};
+			d.source = source;
+			return d;
+		}();
 
-        var scopedWarn = new function () {
-            var d = function d() {
-                ns.logger && ns.logger.error.apply(scopedWarn, arguments);
-                onTrace && onTrace({ type: "warn", args: arguments });
-            };
-            d.source = source;
-            return d;
-        }();
+		var scopedWarn = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.error.apply(scopedWarn, arguments);
+				onTrace && onTrace({ type: "warn", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
 
-        return {
-            log: scopedLog,
-            error: scopedError,
-            debug: scopedDebug,
-            warn: scopedWarn
-        };
-    };
-    ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn, "debug": debug, get: defineScopedTracing };
-    log("logger");
-    ns.$ = $;
-    return ns.logger;
+		return {
+			log: scopedLog,
+			error: scopedError,
+			debug: scopedDebug,
+			warn: scopedWarn
+		};
+	};
+	ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn, "debug": debug, get: defineScopedTracing };
+	log("logger");
+	ns.$ = $;
+	return ns.logger;
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 var logger = window["spexplorerjs"];
-//export default logger;
-//export { logger as default };
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../node_modules/webpack/buildin/module.js */ "../../../node_modules/webpack/buildin/module.js")(module)))
+exports.default = logger;
 
 /***/ }),
 
-/***/ "../../components/string/string.js":
-/*!******************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/src/components/string/string.js ***!
-  \******************************************************************************/
+/***/ "../string/string.js":
+/*!***************************!*\
+  !*** ../string/string.js ***!
+  \***************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(module) {
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
 
@@ -11305,42 +10647,18 @@ var _jquery2 = _interopRequireDefault(_jquery);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // v 0.1.2: 2018-03-10: brought back htmlEncode/htmlDecode and jQuery dependency
-(function (global, factory) {
-
-	if (( false ? undefined : _typeof(module)) === "object" && _typeof(module.exports) === "object") {
-
-		// For CommonJS and CommonJS-like environments where a proper `window`
-		// is present, execute the factory and get jQuery.
-		// For environments that do not have a `window` with a `document`
-		// (such as Node.js), expose a factory as module.exports.
-		// This accentuates the need for the creation of a real `window`.
-		// e.g. var jQuery = require("jquery")(window);
-		// See ticket #14549 for more info.
-		module.exports = global.document ? factory(global, true) : function (w) {
-			if (!w.document) {
-				throw new Error("jQuery requires a window with a document");
-			}
-			return factory(w);
-		};
-	} else {
-		factory(global);
-	}
-
-	// Pass this if window is not defined yet
-})(typeof window !== "undefined" ? window : undefined, function (window, noGlobal) {
-
-	//----
-	var string = {
-		version: "0.1.1",
+(function (ns, $) {
+	ns.string = {
+		version: "0.1",
 		htmlEncode: function htmlEncode(value) {
 			// create a in-memory div, set it's inner text(which jQuery
 			// automatically encodes)
 			// then grab the encoded contents back out. The div never exists on
 			// the page.
-			return (0, _jquery2.default)("<div/>").text(value).html();
+			return $("<div/>").text(value).html();
 		},
 		htmlDecode: function htmlDecode(value) {
-			return (0, _jquery2.default)("<div/>").html(value).text();
+			return $("<div/>").html(value).text();
 		},
 		format: function format() {
 			/// TODO: unit test, breaks in some cases
@@ -11382,61 +10700,194 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 			var res = stringToTrim.replace(reg, "");
 			return res;
-		},
-		trim: function trim(stringToTrim, sToRemove, opts) {
+		}, trim: function trim(stringToTrim, sToRemove, opts) {
 			stringToTrim = this.trimStart(stringToTrim, sToRemove, opts);
 			stringToTrim = this.trimEnd(stringToTrim, sToRemove, opts);
 			return stringToTrim;
 		}
 	};
-
-	//----
-
-	if (!noGlobal) {
-		(window["spexplorerjs"] = window["spexplorerjs"] || {}).string = string;
-		//window.jQuery = window.$ = jQuery;
-	}
-
-	return string;
-});
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../node_modules/webpack/buildin/module.js */ "../../../node_modules/webpack/buildin/module.js")(module)))
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 
 /***/ }),
 
-/***/ "./app1.css":
-/*!******************!*\
-  !*** ./app1.css ***!
-  \******************/
+/***/ "../widget.base.js":
+/*!*************************!*\
+  !*** ../widget.base.js ***!
+  \*************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!./app1.css */ "../../../node_modules/css-loader/index.js!./app1.css");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
+"use strict";
 
 
+__webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
 
-var options = {"hmr":true}
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
 
-options.transform = transform
-options.insertInto = undefined;
+var _jquery2 = _interopRequireDefault(_jquery);
 
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "../../../node_modules/style-loader/lib/addStyles.js")(content, options);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-if(content.locals) module.exports = content.locals;
+// 0.1.0: 2018/03/23    - pass options to widget constructor
+// 0.1.1: 2018/03/28    - selector property
+//                      - log from tracing
+(function (ns, $) {
 
-if(false) {}
+	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
+	var tracing = ns.logger.get("widgets", debugging);
+	var log = tracing.log,
+	    debug = tracing.debug;
+
+	log("widgets.register");
+	ns.widgets = ns.widgets || {};
+
+	var defineWidget = function defineWidget(name, constructor, version) {
+
+		return {
+			publicName: name,
+			constructor: constructor,
+			version: version,
+			selector: "[data-widget=\"publicName\"]".replace("publicName", name),
+			startup: function startup(context, opts) {
+
+				debug(name + ".startup");
+				var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
+				debug("selector: " + selector);
+				var elems = $(selector, context || document);
+				debug("Elems: " + elems.length);
+				elems[name](opts);
+				return elems;
+			}
+		};
+	};
+	var registerWidget = function registerWidget(widgetInfo) {
+
+		$.fn[widgetInfo.publicName] = function (opts) {
+			var args = arguments;
+			var result = this.each(function () {
+
+				var $el = $(this);
+
+				var me = $el.data(widgetInfo.publicName);
+
+				if (me) {
+					// object has been initialized before
+
+					if (opts == null) {// request for instance
+					} else if (me[opts]) {
+						if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
+					}
+				} else {
+					var obj = new widgetInfo.constructor(this, opts);
+					$(".version:first", this).html(widgetInfo.version);
+					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
+				}
+			});
+
+			return result;
+		};
+
+		ns.widgets[widgetInfo.publicName] = widgetInfo;
+		log(widgetInfo.publicName + ".registered");
+	};
+
+	var addWidget = function addWidget(name, constructor, version) {
+
+		var widgetInfo = defineWidget(name, constructor, version);
+		registerWidget(widgetInfo);
+		return widgetInfo;
+	};
+
+	ns.widgets.addWidget = addWidget;
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+
+(function (ns, $) {
+
+	/// Iterate over an expanding array
+	//  Example:
+	//  var arr = [1, 2];
+	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
+	//    if (item == 1) {
+	//        arr.push(3);
+	//    }
+	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
+	//});
+	/// arr: array to process
+	/// action: promise (argument: item removed from array)
+	var processDynamicArrayAsQueue = function processDynamicArrayAsQueue(arr, action) {
+		return $.Deferred(function (dfd) {
+			var doNext = function doNext() {
+				if (arr == null || arr.length == 0) {
+					dfd.resolve();
+				} else {
+					var item = arr.shift();
+					action(item).done(function () {
+						doNext();
+					});
+				}
+			};
+
+			if (typeof arr == "function") {
+				arr().done(function (items) {
+					arr = items;
+					doNext();
+				});
+			} else {
+				doNext();
+			}
+		}).promise();
+	};
+
+	// obsolete use processDynamicArrayAsQueue
+	// make sure array doesn't change
+	//var processAsQueue = function (arr, action) {
+	//	return $.Deferred(function (dfd) {
+	//		var step = 0;
+	//		var doNext = function () {
+	//			if (arr == null || (step >= (arr.length))) {
+	//				dfd.resolve();
+	//			} else {
+	//				var item = arr[step++];
+	//				action(item).done(function () {
+	//					doNext();
+	//				});
+	//			}
+	//		};
+	//		if (typeof arr == "function") {
+	//			arr().done(function (items) {
+	//				arr = items;
+	//				doNext();
+	//			});
+	//		} else {
+	//			doNext();
+	//		}
+	//	}).promise();
+	//};
+
+	var enumer = function enumer(values) {
+		var me = {};
+		for (var i = 0; i < values.length; i++) {
+			me[values[i]] = 1;
+		}
+		if (Object.freeze) {
+			me = Object.freeze(me);
+		}
+
+		return me;
+	};
+
+	ns.funcs = {
+		processAsQueue: processDynamicArrayAsQueue,
+		enum: enumer
+	};
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 
 /***/ }),
 
-/***/ "./index.js":
-/*!******************!*\
-  !*** ./index.js ***!
-  \******************/
+/***/ "./sp.base.js":
+/*!********************!*\
+  !*** ./sp.base.js ***!
+  \********************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11447,26 +10898,303 @@ var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/di
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
-__webpack_require__(/*! ../../components/logger/logger.js */ "../../components/logger/logger.js");
+__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// v 0.0.1 : 2018-03-11 - loadSpElem
+(function (ns, $) {
+
+	var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "sp";
+		return d;
+	}();
+	var error = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.error.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "sp";
+		return d;
+	}();
+
+	ns.sp = {};
+	ns.sp.collectionToArray = function (spCollection) {
+
+		var result = [];
+
+		if (spCollection) {
+			var le = spCollection.getEnumerator();
+			while (le.moveNext()) {
+				var li = le.get_current();
+				result.push(li);
+			}
+		}
+
+		return result;
+	};
+	ns.sp.loadSpElem = function (elem, sptx, caller) {
+
+		sptx = sptx || SP.ClientContext.get_current();
+		return $.Deferred(function (dfd) {
+
+			if (elem.length) {
+				for (var i = 0; i < elem.length; i++) {
+					sptx.load(elem[i]);
+				}
+			} else sptx.load(elem);
+
+			sptx.executeQueryAsync(function () {
+				dfd.resolve(elem);
+			}, function (r, a) {
+				ns.sp.reqFailure(r, a, caller || "loadSpElem", dfd);
+			});
+		}).promise();
+	};
+
+	ns.sp.reqFailure = function (req, reqargs, from, dfd) {
+		// log context failure
+
+		var msg = from + " Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
+
+		if (dfd) dfd.reject(msg);else {
+			// if there is no promise log at this level
+			error(msg);
+		}
+	};
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+
+/***/ }),
+
+/***/ "./sp.web.js":
+/*!*******************!*\
+  !*** ./sp.web.js ***!
+  \*******************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
+
+__webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (ns, $) {
+	var debug = window.location.href.search(/[localhost|webapi]/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "webapi";
+		return d;
+	}();
+	/// TODO: Document
+	var createWeb = function createWeb(parentWeb, title, url, template, inheritPermissions) {
+		return $.Deferred(function (dfd) {
+			var ctx = SP.ClientContext.get_current();
+			parentWeb = parentWeb || ctx.get_web();
+			var wci = new SP.WebCreationInformation();
+			wci.set_webTemplate(template);
+			wci.set_title(title);
+			wci.set_url(url);
+			wci.set_language(1033);
+			wci.set_useSamePermissionsAsParentSite(inheritPermissions);
+			parentWeb.get_webs().add(wci);
+			parentWeb.update();
+			ctx.load(parentWeb);
+			ctx.executeQueryAsync(function () {
+				dfd.resolve((parentWeb.get_serverRelativeUrl() + "/" + url).replace(/\/\/*/g, "/"));
+			}, function onError(sender, args) {
+				dfd.reject("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
+			});
+		}).promise();
+	};
+
+	/**
+     * Load an existing site
+     * fails if site doesn't exist
+     * @param {string} url - site relative url of web
+     * @param {spsite} site- site reference, if null will load from current context
+     * @param {ClientContext} ctx - SharePoint client context, if null the current context will be used
+     * @param {function} loadFunc - function run before the web is loaded (web will be passed as argument)
+     */
+	var loadWeb = function loadWeb(url, site, ctx, loadFunc) {
+		return $.Deferred(function (dfd) {
+
+			ctx = ctx || SP.ClientContext.get_current();
+			site = site || ctx.get_site();
+			var web = url ? typeof url == "string" ? site.openWeb(url) : url : ctx.get_web();
+			var res = loadFunc && loadFunc(web) || ctx.load(web);
+
+			ctx.executeQueryAsync(function (sender, args) {
+				dfd.resolve(web, res, sender, args);
+			}, function onError(sender, args) {
+				dfd.reject({ sender: sender, args: args });
+				//dfd.reject('Request failed ' + args.get_message() + '\n' + args.get_stackTrace());
+			});
+		}).promise();
+	};
+
+	// TODO: Document
+	var webTemplates = function webTemplates(web, ctx) {
+		return $.Deferred(function (dfd) {
+
+			ctx = ctx || SP.ClientContext.get_current();
+			web = web || ctx.get_web();
+			var templates = web.getAvailableWebTemplates(1033, false);ctx.load(templates);ctx.executeQueryAsync(function () {
+				var templateArray = ns.sp.collectionToArray(templates);
+				dfd.resolve(templateArray);
+			}, function onError(sender, args) {
+				dfd.reject({ sender: sender, args: args });
+			});
+		}).promise();
+	};
+
+	ns.webapi = {
+		webTemplates: webTemplates,
+		createWeb: createWeb,
+		loadWeb: loadWeb,
+		version: "0.1.2"
+	};
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default); /// TODO: Document
+// v 0.0.2: 2018-03-28 - WebDal
+// v 0.0.1: 2018-03-11 - Added loadWeb function
+
+/***/ }),
+
+/***/ "./sp.wizard.js":
+/*!**********************!*\
+  !*** ./sp.wizard.js ***!
+  \**********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
+
+__webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
+
+__webpack_require__(/*! ./sp.web.js */ "./sp.web.js");
+
+var _spWizardTemplate = __webpack_require__(/*! ./sp.wizard.template.html */ "./sp.wizard.template.html");
+
+var _spWizardTemplate2 = _interopRequireDefault(_spWizardTemplate);
+
+var _spWizardModaltemplate = __webpack_require__(/*! ./sp.wizard.modaltemplate.html */ "./sp.wizard.modaltemplate.html");
+
+var _spWizardModaltemplate2 = _interopRequireDefault(_spWizardModaltemplate);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (function (ns, $) {
 
-	if (!ns.logger) {
-		var string = __webpack_require__(/*! ../../components/string/string.js */ "../../components/string/string.js");
-		string.format("d");
-		__webpack_require__(/*! ./app1.css */ "./app1.css");
-	}
+	var debugging = window.location.href.search(/(localhost|debugspWizard)/) > 0;
+	var tracing = ns.logger.get("spWizard", debugging);
+	var log = tracing.log,
+	    debug = tracing.debug;
+	//var error = tracing.error;
 
-	//var debugging = window.location.href.search(/(localhost|debugcustomactions)/) > 0;
-	//var tracing = ns.logger.get("customactionEditor", debugging);
-	//var log = tracing.log;//, debug = tracing.debug;
+	log("0.0.1");
 
-	//log("start 0.1.0");
-	//log($.fn.jquery);
-	//logf("{0}:{1}", "jquery", $.fn.jquery);
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+	ns.widgetClick = function (el) {
+
+		var $el = $(el);
+		var url = $el.attr("data-widgetUrl");
+		debug("loading" + url);
+
+		var widgetType = $el.attr("data-widget");
+		var parent = $el.parents(".spexp");
+		parent.html("<div data-widget=\"" + widgetType + "\"/>");
+
+		$.getScript(url, function () {
+			debug("done");
+		});
+	};
+
+	var SpWizard = function SpWizard(el) {
+
+		$(el).html(_spWizardTemplate2.default);
+	};
+
+	var bootDialog = function bootDialog() {
+		$("body").append(_spWizardModaltemplate2.default);
+		$(".modal-body").html(_spWizardTemplate2.default);
+		$("#spExplorerJsWizard").click();
+	};
+
+	var spDialog = function spDialog() {
+
+		var options = SP.UI.$create_DialogOptions();
+
+		options.title = "SpExplorerJs";
+		options.autoSize = true;
+		options.allowMaximize = true;
+
+		var tmp = _spWizardTemplate2.default;
+
+		var dialog = $(tmp).clone();
+
+		options.html = dialog[0];
+		options.showMaximized = false;
+		options.resizable = true;
+
+		SP.UI.ModalDialog.showModalDialog(options);
+	};
+
+	(function register() {
+		var widgetInfo = ns.widgets.addWidget("spWizard", SpWizard, "0.0.1");
+
+		if (window["ExecuteOrDelayUntilScriptLoaded"]) {
+			ExecuteOrDelayUntilScriptLoaded(function () {
+				widgetInfo.startup();
+			}, "sp.js");
+			SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {});
+		} else widgetInfo.startup();
+	})();
+
+	if (false) {}
+})(window.spexplorerjs, _jquery2.default);
+
+/***/ }),
+
+/***/ "./sp.wizard.modaltemplate.html":
+/*!**************************************!*\
+  !*** ./sp.wizard.modaltemplate.html ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .modal-dialog {\r\n            width: 100%;\r\n            height: 100%;\r\n            margin: 0;\r\n            padding: 0;\r\n        }\r\n\r\n        .modal-content {\r\n            height: auto;\r\n            min-height: 100%;\r\n            border-radius: 0;\r\n        }\r\n    </style>\r\n    <div class=\"spexp\">\r\n        <button class=\"btn btn-primary btn-lg\" id=\"spExplorerJsWizard\" data-toggle=\"modal\" data-target=\"#myModal\">\r\n            Open Model\r\n        </button>\r\n\r\n        <!-- Modal -->\r\n        <div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">\r\n            <div class=\"modal-dialog\">\r\n                <div class=\"modal-content\">\r\n                    <div class=\"modal-header\">\r\n                        <button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">Close</span></button>\r\n                        <h4 class=\"modal-title\" id=\"myModalLabel\">Modal title</h4>\r\n                    </div>\r\n                    <div class=\"modal-body\">\r\n                    </div>\r\n                    <div class=\"modal-footer\">\r\n                        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\r\n                        <button type=\"button\" class=\"btn btn-primary\">Save changes</button>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n\r\n";
+
+/***/ }),
+
+/***/ "./sp.wizard.template.html":
+/*!*********************************!*\
+  !*** ./sp.wizard.template.html ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div>\r\n    <div class=\"spexp\">\r\n        <link data-check='loadOnce' href=\"//xsolonblog2.appspot.com/css/bootstrap/3.2.0/css/css.css\" rel=\"stylesheet\" />\r\n\r\n        <style type=\"text/css\">\r\n            .cuadroA {\r\n                float: left;\r\n                padding: 5px;\r\n            }\r\n\r\n            .cuadro_intro_hover {\r\n                padding: 0px;\r\n                position: relative;\r\n                overflow: hidden;\r\n                height: 200px;\r\n                width: 200px;\r\n            }\r\n\r\n                .cuadro_intro_hover:hover .caption {\r\n                    opacity: 1;\r\n                    transform: translateY(-150px);\r\n                    -webkit-transform: translateY(-150px);\r\n                    -moz-transform: translateY(-150px);\r\n                    -ms-transform: translateY(-150px);\r\n                    -o-transform: translateY(-150px);\r\n                }\r\n\r\n                .cuadro_intro_hover img {\r\n                    z-index: 4;\r\n                }\r\n\r\n                .cuadro_intro_hover .caption {\r\n                    position: absolute;\r\n                    top: 150px;\r\n                    -webkit-transition: all 0.3s ease-in-out;\r\n                    -moz-transition: all 0.3s ease-in-out;\r\n                    -o-transition: all 0.3s ease-in-out;\r\n                    -ms-transition: all 0.3s ease-in-out;\r\n                    transition: all 0.3s ease-in-out;\r\n                    width: 100%;\r\n                }\r\n\r\n                .cuadro_intro_hover .blur {\r\n                    background-color: rgba(0,0,0,0.7);\r\n                    height: 300px;\r\n                    z-index: 5;\r\n                    position: absolute;\r\n                    width: 100%;\r\n                }\r\n\r\n                .cuadro_intro_hover .caption-text {\r\n                    z-index: 10;\r\n                    color: #fff;\r\n                    position: absolute;\r\n                    height: 300px;\r\n                    text-align: center;\r\n                    top: -20px;\r\n                    width: 100%;\r\n                }\r\n        </style>\r\n\r\n        <div class=\"xbootSection\">\r\n            \u0001\u0001\u0001\u0001\u0001\u0001<div class=\"container\">\r\n                <div class=\"row\">\r\n                    <h2>Welcome!</h2>\r\n                    <p>Select an option</p>\r\n                </div>\r\n                <div class=\"row\">\r\n                    <a href=\"#\" onclick=\"spexplorerjs.widgetClick(this);\" data-widget=\"spListWidget\" data-widgetUrl=\"https://localhost:8443/components/sp/list.editor.js\" class=\"cuadroA\">\r\n                        <div class=\"cuadro_intro_hover \" style=\"background-color: rgb(204, 204, 204);\">\r\n                            <p style=\"text-align: center;\">\r\n\r\n                                <svg style='background-color: #3366FF;' width=\"200\" height=\"200\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:svg=\"http://www.w3.org/2000/svg\">\r\n                                    <defs>\r\n                                        <radialGradient fy=\"50%\" fx=\"50%\" r=\"200%\" cy=\"50%\" cx=\"50%\" id=\"grad2\">\r\n                                            <stop offset=\"0%\" stop-color=\"rgb(255,255,255)\" />\r\n                                            <stop offset=\"100%\" stop-color=\"rgb(0,0,0)\" />\r\n                                        </radialGradient>\r\n                                        <filter id=\"dropshadow\" height=\"130%\">\r\n                                            <feGaussianBlur in=\"SourceAlpha\" stdDeviation=\"1\" />\r\n                                            <feOffset dx=\"1\" dy=\"1\" result=\"offsetblur\" />\r\n                                            <feMerge>\r\n                                                <feMergeNode />\r\n                                                <feMergeNode in=\"SourceGraphic\" />\r\n                                            </feMerge>\r\n                                        </filter>\r\n                                    </defs>\r\n                                    <g>\r\n                                        <title>Layer 1</title>\r\n                                        <path d=\"m83.3322,91.5391c0.7917,-16.625 20.9788,-7.125 20.9788,-7.125c1.584,-4.75 6.729,-4.3542 6.729,-4.3542c-0.998,0.9401 0.792,2.77081 0.792,2.77081c-3.958,0 -5.542,2.7709 -5.542,2.7709c15.834,14.25 2.375,20.5834 2.375,20.5834c-12.6661,-4.75 -18.2078,-9.10429 -25.3328,-14.6459l0,0l0,0zm0,1.9791c7.9167,6.7288 13.4583,9.8958 23.7498,13.8538c0,0 -8.3123,16.625 -20.979,11.875c0,0 -0.603,2.92 -3.1666,1.188c-2.1864,-1.435 0,-3.167 0,-3.167c0,0 -9.8959,-6.333 0.3958,-23.74979l0,0z\" stroke-width=\"0.2\" stroke-linejoin=\"round\" id=\"svg_1\" fill=\"url(#grad2)\" filter=\"url(#dropshadow)\" transform='scale(1.8) translate(-40 -50)' />\r\n                                    </g>\r\n                                </svg>\r\n                            </p>\r\n                            <div class=\"caption\">\r\n                                <div class=\"blur\"></div>\r\n                                <div class=\"caption-text\">\r\n                                    <h3 style=\"padding: 10px;\">Migration Mapper</h3>\r\n                                    <p>Design hierarchical structures</p>\r\n                                    <p>Used for migrations and site provisioning</p>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                    <a href=\"#\" onclick=\"xSolon.widgetClick(this);\" data-widget=\"//xsolonblog2.appspot.com/components/sp/explorer/explorer.sample.html\" class=\"cuadroA\">\r\n                        <div class=\"cuadro_intro_hover \" style=\"background-color: rgb(204, 204, 204);\">\r\n                            <p style=\"text-align: center;\">\r\n                                <svg style='background-color: #FF9933;' width=\"200\" height=\"200\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:svg=\"http://www.w3.org/2000/svg\">\r\n\r\n                                    <g>\r\n                                        <path fill=\"#000000\" fill-opacity=\"0.403922\" stroke-width=\"0.2\" stroke-linejoin=\"round\" d=\"M 57,19L 57,26L 50,26L 50,19L 57,19 Z M 48,19L 48,26L 41,26L 41,19L 48,19 Z M 39,19L 39,26L 32,26L 32,19L 39,19 Z M 57,28L 57,35L 50,35L 50,28L 57,28 Z M 48,28L 48,35L 41,35L 41,28L 48,28 Z M 39,28L 39,35L 32,35L 32,28L 39,28 Z M 57,37L 57,44L 50,44L 50,37L 57,37 Z M 48,37L 48,44L 41,44L 41,37L 48,37 Z M 39,37L 39,44L 32,44L 32,37L 39,37 Z \" transform='scale(2.5) translate(-5 0)' fill=\"url(#grad2)\" />\r\n                                        <path fill=\"url(#grad2)\" fill-opacity=\"1\" stroke-width=\"0.2\" stroke-linejoin=\"round\" d=\"M 23.6506,56.2021C 22.5867,57.266 20.8618,57.266 19.7979,56.2021C 18.734,55.1382 18.734,53.4133 19.7979,52.3494L 27.6722,44.4751C 26.6112,42.7338 26,40.6883 26,38.5C 26,32.1487 31.1487,27 37.5,27C 43.8513,27 49,32.1487 49,38.5C 49,44.8513 43.8513,50 37.5,50C 35.3117,50 33.2662,49.3888 31.5249,48.3278L 23.6506,56.2021 Z M 37.5,31C 33.3579,31 30,34.3579 30,38.5C 30,42.6421 33.3579,46 37.5,46C 41.6421,46 45,42.6421 45,38.5C 45,34.3579 41.6421,31 37.5,31 Z \" transform='scale(2.0) translate(10 10)' filter=\"url(#dropshadow)\" />\r\n                                    </g>\r\n                                </svg>\r\n                            </p>\r\n                            <div class=\"caption\">\r\n                                <div class=\"blur\"></div>\r\n                                <div class=\"caption-text\">\r\n                                    <h3 style=\"padding: 10px;\">SP Explorer</h3>\r\n                                    <p>Inspect site structure</p>\r\n                                    <p></p>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                    <a href=\"#\" onclick=\"xSolon.widgetClick(this);\" data-widget=\"//xsolonblog2.appspot.com/components/spconsole/spconsole.html\" class=\"cuadroA\">\r\n                        <div class=\"cuadro_intro_hover \" style=\"background-color: rgb(204, 204, 204);\">\r\n                            <p style=\"text-align: center;\">\r\n                                <svg style='background-color: #47B26B;' width=\"200\" height=\"200\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:svg=\"http://www.w3.org/2000/svg\">\r\n\r\n                                    <g>\r\n                                        <path fill=\"url(#grad2)\" stroke-width=\"0.2\" stroke-linejoin=\"round\" d=\"M 17,20L 59,20L 59,56L 17,56L 17,20 Z M 20,26L 20,53L 56,53L 56,26L 20,26 Z M 23.75,31L 28.5,31L 33.25,37.5L 28.5,44L 23.75,44L 28.5,37.5L 23.75,31 Z \" transform='scale(2.0) translate(10 5)' filter=\"url(#dropshadow)\" />\r\n                                    </g>\r\n                                </svg>\r\n                            </p>\r\n                            <div class=\"caption\">\r\n                                <div class=\"blur\"></div>\r\n                                <div class=\"caption-text\">\r\n                                    <h3 style=\"padding: 10px;\">Console</h3>\r\n                                    <p>Run and share SP scripts</p>\r\n\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                    <a href=\"#\" onclick=\"xSolon.widgetClick(this);\" data-widget=\"//xsolonblog2.appspot.com/components/codemirror/codemirror.html\" class=\"cuadroA\">\r\n                        <div class=\"cuadro_intro_hover \" style=\"background-color: rgb(204, 204, 204);\">\r\n                            <p style=\"text-align: center;\">\r\n                                <svg style='background-color: #47B26B;' width=\"200\" height=\"200\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:svg=\"http://www.w3.org/2000/svg\">\r\n\r\n                                    <g>\r\n                                        <path fill=\"url(#grad2)\" stroke-width=\"0.2\" stroke-linejoin=\"round\" d=\"M 17,20L 59,20L 59,56L 17,56L 17,20 Z M 20,26L 20,53L 56,53L 56,26L 20,26 Z M 23.75,31L 28.5,31L 33.25,37.5L 28.5,44L 23.75,44L 28.5,37.5L 23.75,31 Z \" transform='scale(2.0) translate(10 5)' filter=\"url(#dropshadow)\" />\r\n                                    </g>\r\n                                </svg>\r\n                            </p>\r\n                            <div class=\"caption\">\r\n                                <div class=\"blur\"></div>\r\n                                <div class=\"caption-text\">\r\n                                    <h3 style=\"padding: 10px;\">Console v2</h3>\r\n                                    <p>Create and run scripts in the context of your web apps.</p>\r\n\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                    <a href=\"#\" onclick=\"xSolon.widgetClick(this);\" data-widget=\"//xsolonblog2.appspot.com/components/editor/snippet/snippet.widget.min.html\" class=\"cuadroA\">\r\n                        <div class=\"cuadro_intro_hover \" style=\"background-color: #3366FF;\">\r\n                            <p style=\"text-align: center;\">\r\n                                <img style=\"padding-top:30px\" src=\"//icons.iconarchive.com/icons/oxygen-icons.org/oxygen/96/Mimetypes-text-xml-icon.png\" />\r\n                            </p>\r\n                            <div class=\"caption\">\r\n                                <div class=\"blur\"></div>\r\n                                <div class=\"caption-text\">\r\n                                    <h3 style=\"padding: 10px;\">Snippet Editor</h3>\r\n                                    <p>Create and run scripts in the context of your web apps.</p>\r\n\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                    <a href=\"#\" onclick=\"xSolon.widgetClick(this);\" data-widget=\"//xsolonblog2.appspot.com/components/editor/indextree/indextree.sample.html\" class=\"cuadroA\">\r\n                        <div class=\"cuadro_intro_hover \" style=\"background-color: rgb(255, 0, 0);\">\r\n                            <p style=\"text-align: center;\">\r\n                                <img style=\"padding-top:30px\" src=\"//icons.iconarchive.com/icons/oxygen-icons.org/oxygen/96/Actions-view-web-browser-dom-tree-icon.png\" />\r\n                            </p>\r\n                            <div class=\"caption\">\r\n                                <div class=\"blur\"></div>\r\n                                <div class=\"caption-text\">\r\n                                    <h3 style=\"padding: 10px;\">Index Site</h3>\r\n                                    <p>Create a site index by web crawl.</p>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                    <a href=\"#\" onclick=\"xSolon.widgetClick(this);\" data-widget=\"//xsolonblog2.appspot.com/components/editor/raw/raw.widget.min.html\" class=\"cuadroA\">\r\n                        <div class=\"cuadro_intro_hover \" style=\"background-color: rgb(255, 216, 0);\">\r\n                            <p style=\"text-align: center;\">\r\n                                <img style=\"padding-top:30px\" src=\"//icons.iconarchive.com/icons/oxygen-icons.org/oxygen/96/Apps-accessories-text-editor-icon.png\" />\r\n                            </p>\r\n                            <div class=\"caption\">\r\n                                <div class=\"blur\"></div>\r\n                                <div class=\"caption-text\">\r\n                                    <h3 style=\"padding: 10px;\">Raw Editor</h3>\r\n                                    <p>Edit raw content of cloud records.</p>\r\n\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                    <a href=\"#\" onclick=\"xSolon.widgetClick(this);\" data-widget=\"//xsolonblog2.appspot.com/components/editor/splistbackup/splistbackup.widget.min.html\" class=\"cuadroA\">\r\n                        <div class=\"cuadro_intro_hover \" style=\"background-color: rgb(104, 220, 216);\">\r\n                            <p style=\"text-align: center;\">\r\n                                <img width=\"96\" style=\"padding-top:30px\" src=\"//icons.iconarchive.com/icons/visualpharm/icons8-metro-style/128/Data-Data-backup-icon.png\" />\r\n                            </p>\r\n                            <div class=\"caption\">\r\n                                <div class=\"blur\"></div>\r\n                                <div class=\"caption-text\">\r\n                                    <h3 style=\"padding: 10px;\">List Backup</h3>\r\n                                    <p>Backup/Restore SharePoint lists</p>\r\n\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                    <small>images by <a href=\"http://www.visualpharm.com/\">visualpharm</a> | <a href=\"http://www.oxygen-icons.org\">oxygen</a></small>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n\r\n";
 
 /***/ })
 
