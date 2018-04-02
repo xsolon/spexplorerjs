@@ -663,8 +663,7 @@ if (typeof jQuery === "undefined") {
 
 		if (!$.support.transition) return complete.call(this);
 
-		this.$element
-			[dimension](0)
+		this.$element[dimension](0)
 			.one("bsTransitionEnd", $.proxy(complete, this))
 			.emulateTransitionEnd(Collapse.TRANSITION_DURATION);
 	};
@@ -1843,9 +1842,7 @@ if (typeof jQuery === "undefined") {
 		var o  = this.options;
 
 		return $e.attr("data-content")
-      || (typeof o.content == "function" ?
-      	o.content.call($e[0]) :
-      	o.content);
+      || (typeof o.content == "function" ? o.content.call($e[0]) : o.content);
 	};
 
 	Popover.prototype.arrow = function () {

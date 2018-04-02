@@ -25,7 +25,7 @@ var files = [
     //, "./src/components/sp/customaction.selector.js"
     //"./src/components/sp/customaction.editor.js"
     //, "./src/components/sp/ui.perms.js"
-    "./src/pages/index/index.js"
+    "./src/pages/tests/index.js"
 ];
 
 var runWebPack = function (debug, filePath) {
