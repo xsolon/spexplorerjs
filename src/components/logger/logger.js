@@ -104,4 +104,5 @@ import "../string/string.js";
     log("logger");
     return ns.logger;
 
-})(window.spexplorerjs = window["spexplorerjs"] || {}, window.jQuery);
+    // both of these dependencies are resolved in string.js
+})(window.spexplorerjs, window.jQuery);
