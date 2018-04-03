@@ -21,11 +21,11 @@ var files = [
     //,
     //"./src/components/sp/list.editor.js"
     //,
-    //, "./src/components/sp/field.selector.js"
+    "./src/components/sp/field.selector.js"
     //, "./src/components/sp/customaction.selector.js"
     //"./src/components/sp/customaction.editor.js"
     //, "./src/components/sp/ui.perms.js"
-    "./src/pages/tests/index.js"
+    //"./src/pages/tests/index.js"
 ];
 
 var runWebPack = function (debug, filePath) {

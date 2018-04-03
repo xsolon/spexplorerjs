@@ -14,6 +14,7 @@ import "./customaction.editor.js";
 import "../mirrors/jsmirror.js";
 import "../mirrors/xmlmirror.js";
 import template from "./list.editor.template.html";
+import "../widget.base.js";
 
 (function (ns, $, template) {
 

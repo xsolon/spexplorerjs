@@ -1,7 +1,12 @@
+/// <reference path="../logger/logger.js" />
+/// <reference path="../widget.base.js" />
+/* global require */
+
+// v 0.1.5: 2018-04-02 - Probe before loading select2
 // v 0.1.4: 2018-03-15 - Added option to hide list selector
-import $ from "jquery";
-import "../../../public/vendor/select2/js/select2.full.js";
-import "../../../public/vendor/select2/css/select2.css";
+
+//import "../../../public/vendor/select2/js/select2.full.js";
+//import "../../../public/vendor/select2/css/select2.css";
 //import "../../../public/vendor/bootstrap/js/bootstrap.js";
 //import "../../../public/vendor/bootstrap/css/spexpjs.css";
 //import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
@@ -11,20 +16,25 @@ import "./sp.base.js";
 import "../mirrors/xmlmirror.js";
 import template from "./field.selector.template.html";
 import fieldtemplate from "./field.selector.fieldtemplate.html";
-import "./treelight.js";
+import "./treelight.js"; // loads jstree, bootstrap
+import "../widget.base.js";
+import "../mirrors/jsmirror.js";
 
 (function (ns, $) {
 
-	var debug = window.location.href.search(/[localhost|debugfieldsel]/) > 0;
-	var log = new function () {
-		var d = function () {
-			ns.logger && ns.logger.log.apply(log, arguments);
-			if (debug)
-				SP.UI.Notify.addNotification(arguments[0]);
-		};
-		d.source = "field.selector";
-		return d;
-	};
+	var debugging = window.location.href.search(/(localhost|debugfieldsel)/) > 0;
+	var trace = ns.logger.get("fieldEditor", debugging);
+
+	+function loadPublicRefs() {
+
+		if ($.fn.select2) {
+			trace.debug("select2 already loaded");
+		} else {
+			trace.log("loading select2");
+			require("../../../public/vendor/select2/js/select2.full.js");
+			require("../../../public/vendor/select2/css/select2.css");
+		}
+	}();
 
 	var fieldLabel = function (field) {
 		var tmpl = fieldtemplate.trim();
@@ -56,7 +66,7 @@ import "./treelight.js";
 				var fields = list.get_fields();
 				iCtx.load(fields);
 				iCtx.executeQueryAsync(function () {
-					log(list);
+					trace.log(list);
 					var enumer = fields.getEnumerator();
 					var spfields = [];
 					while (enumer.moveNext()) {
@@ -66,7 +76,7 @@ import "./treelight.js";
 					spfields.sort(function (x, y) { return x.get_title().localeCompare(y.get_title()); });
 					dfd.resolve(spfields);
 				}, function onError(sender, args) {
-					log(`Request failed ${args.get_message()}\n${args.get_stackTrace()}`);
+					trace.error(`Request failed ${args.get_message()}\n${args.get_stackTrace()}`);
 					dfd.reject(args);
 				});
 
@@ -88,7 +98,7 @@ import "./treelight.js";
 
 				ctx.load(lists, "Include(Title)");
 				ctx.executeQueryAsync(function () {
-					log(lists);
+					trace.log(lists);
 					var enumer = lists.getEnumerator();
 					var splists = [];
 					while (enumer.moveNext()) {
@@ -97,7 +107,7 @@ import "./treelight.js";
 					}
 					dfd.resolve(splists);
 				}, function onError(sender, args) {
-					log(`Request failed ${args.get_message()}\n${args.get_stackTrace()}`);
+					trace.error(`Request failed ${args.get_message()}\n${args.get_stackTrace()}`);
 				});
 
 			}).promise();
@@ -115,7 +125,7 @@ import "./treelight.js";
 			opt.prop("data-field", field);
 
 			if (excludereadonly && field.get_readOnlyField()) {
-				log("readonly");
+				trace.debug("readonly");
 			}
 			else
 				sel.append(opt);
@@ -149,7 +159,7 @@ import "./treelight.js";
 			weburl: $el.attr("data-siteurl"),
 			listtitle: $el.attr("data-list"),
 			excludereadonly: $el.attr("data-excludereadonly"),
-			showSelector : true
+			showSelector: true
 		}, opts);
 
 		try {
@@ -158,12 +168,15 @@ import "./treelight.js";
 				opts = $.extend(opts, JSON.parse(state.html().trim()));
 			}
 		} catch (e) {
-			log(e);
+			trace.error(e);
 		}
 
 		$el.html(template.trim().replace("[label]", opts.label));
 
 		var xmlMirror = ns.widgets.xxmlmirror.startup($el).data("xwidget");
+		var jsMirror = ns.widgets.xjsmirror.startup($el).data("xwidget");
+
+		jsMirror.setScript("console.log(spelem);// spelem: reference to field");
 
 		var spdal = new SPDAL(opts.weburl);
 		var fieldSel = $(".fieldsDrp", ui).on("change", function () {
@@ -172,7 +185,8 @@ import "./treelight.js";
 
 				var xml = field.get_schemaXml();
 				xmlMirror.setXml(xml);
-				log({ field: field });
+				jsMirror.setScriptingObject(field);
+				trace.log({ field: field });
 			}
 		});
 
@@ -198,7 +212,7 @@ import "./treelight.js";
 					bindFieldSelect(fieldSel, fields, opts.excludereadonly);
 					fieldSel.val(null).trigger("change.select2");
 				}).fail(function (err) {
-					log(err);
+					trace.error(err);
 				}).always(function () { dfd.resolve(); });
 
 			}).promise();
@@ -220,7 +234,7 @@ import "./treelight.js";
 		var loadList = function (listTitle) {
 			return $.Deferred(function (dfd) {
 
-				log(`loading list${listTitle}`);
+				trace.debug(`loading list${listTitle}`);
 
 				spdal.getList(listTitle).done(function (list) {
 					onListChange(list);
@@ -240,7 +254,6 @@ import "./treelight.js";
 			$el.trigger("xwidget.init");
 		}
 
-		$(".widgetinfo", $el).html(widgetInfo.version);
 		return (function register() {
 			var me = {
 				setList: function (list) {
@@ -262,7 +275,7 @@ import "./treelight.js";
 
 				}, state: function (instate) {
 					if (arguments.length > 0) {
-						log({ setstate: instate });
+						trace.log({ setstate: instate });
 						opts.listtitle = instate.listtitle;
 						if (opts.weburl != instate.weburl) {
 
@@ -308,61 +321,6 @@ import "./treelight.js";
 		})();
 	};
 
-	var widgetInfo = {
-		publicName: "xSPFieldSelector",
-		constructor: xSPFieldSelector,
-		version: "v 0.1.4",
-		getSelector: function () {
-			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
-			log(`selector: ${selector}`);
-			return selector;
-		},
-		startup: function (context, opts) {
-			log(widgetInfo.publicName + ".startup");
-			var selector = widgetInfo.getSelector();
-			var elems = $(selector, context || document);
-			log(`Elems: ${elems.length}`);
-			elems[widgetInfo.publicName](opts);
+	ns.widgets.addSpWidget("xSPFieldSelector", xSPFieldSelector, "0.1.5");
 
-			return elems;
-		}
-	};
-
-	$.fn[widgetInfo.publicName] = function (opts) {
-		var args = arguments;
-		//var lastInstance = null;
-		var result = this.each(function () {
-
-			var $el = $(this);
-
-			var me = $el.data(widgetInfo.publicName);
-
-			if (me) { // object has been initialized before
-
-				if (opts == null) { // request for instance
-					//lastInstance = me;
-				} else
-				if (me[opts]) {
-					if (typeof me[opts] == "function")
-						me[opts].apply(me, Array.prototype.slice.call(args, 1));
-					else
-						me[opts] = args[1];
-				}
-
-			} else {
-
-				var obj = new widgetInfo.constructor(this, opts);
-				$el.data(widgetInfo.publicName, obj);
-			}
-		});
-
-		//if (lastInstance && result.length == 1) return lastInstance;
-		return result;
-	};
-
-	(ns.widgets = (ns.widgets || {}))[widgetInfo.publicName] = widgetInfo;
-	log(widgetInfo.publicName + ".registered");
-
-	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
-
-})(spexplorerjs, $);
+})(spexplorerjs, jQuery);

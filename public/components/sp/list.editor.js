@@ -73542,20 +73542,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.default = undefined;
-
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 __webpack_require__(/*! ../string/string.js */ "../string/string.js");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// v 0.0.1: 2018-03-28  - debug, get
 (function (ns, $) {
 
 	var logf = function logf() {
@@ -73563,59 +73551,43 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		if (this && this.source) {
 			msg = this.source + ": " + msg;
 		}
-		console && console.log.apply(console, [msg]);
+		window.console && console.log.apply(console, [msg]);
 	};
 	var log = function log() {
-		try {
-			if (this && this.source) {
-				if (arguments.length === 1 && typeof arguments[0] == "string") {
-					logf("{0}: {1}", this.source, arguments[0]);
-				} else {
-					var obj = {};
-					obj[this.source] = arguments;
-					if (arguments.length === 1) obj[this.source] = arguments[0];
-					console.log.apply(console, [obj]);
-				}
+		if (this && this.source) {
+			if (arguments.length === 1 && typeof arguments[0] == "string") {
+				logf("{0}: {1}", this.source, arguments[0]);
+			} else {
+				var obj = {};
+				obj[this.source] = arguments;
+				if (arguments.length === 1) obj[this.source] = arguments[0];
+				window.console && console.log.apply(console, [obj]);
 			}
-			//if (this && this.source && arguments.length === 1 && typeof arguments[0] == "string") {
-			//	let s = this.source + ": "; for (let i = 0; i < arguments.length; i++) {
-			//		s += `{${i}} `;
-			//	}
-			//	var msg = logf(s, arguments[0]);
-			//	console.log.apply(console, [msg]);
-			//	var obj = {};
-			//	obj[this.source] = arguments;
-			//	console.log.apply(console, [obj]);
-			//         }
-			else console.log.apply(console, arguments);
-			//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
 		}
+		//if (this && this.source && arguments.length === 1 && typeof arguments[0] == "string") {
+		//	let s = this.source + ": "; for (let i = 0; i < arguments.length; i++) {
+		//		s += `{${i}} `;
+		//	}
+		//	var msg = logf(s, arguments[0]);
+		//	console.log.apply(console, [msg]);
+		//	var obj = {};
+		//	obj[this.source] = arguments;
+		//	console.log.apply(console, [obj]);
+		//         }
+		else window.console && console.log.apply(console, arguments);
+		//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 	var error = function error() {
-		try {
-			console.error.apply(console, arguments);
-			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
-		}
+		window.console && console.error.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 	var warn = function warn() {
-		try {
-			console.warn.apply(console, arguments);
-			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
-		}
+		window.console && console.warn.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 	var debug = function debug() {
-		try {
-			console.log.apply(console, arguments);
-			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
-		}
+		window.console && console.log.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 
 	var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
@@ -73662,13 +73634,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			warn: scopedWarn
 		};
 	};
-	ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn, "debug": debug, get: defineScopedTracing };
+
+	ns["logger"] = {
+		"version": "0.0.2",
+		get: defineScopedTracing,
+		/// TODO: this should be private
+		logf: logf, "log": log, "error": error, "warn": warn, "debug": debug
+	};
 	log("logger");
-	ns.$ = $;
 	return ns.logger;
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
-var logger = window["spexplorerjs"];
-exports.default = logger;
+
+	// both of these dependencies are resolved in string.js
+})(window.spexplorerjs, window.jQuery); // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
+// v 0.0.1: 2018-03-28  - debug, get
 
 /***/ }),
 
@@ -74294,16 +74272,15 @@ module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n 
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+/* global require */
+// v 0.1.4: 2018-04-02: - check if already defined, make jQuery global if needed
+//                          The inline check won't work for more complex modules, but it is an easy way to address multiple endpoints that load this.
 // v 0.1.2: 2018-03-10: brought back htmlEncode/htmlDecode and jQuery dependency
+
 (function (ns, $) {
-	ns.string = {
-		version: "0.1",
+
+	return ns.string = ns.string || {
+		version: "0.1.4",
 		htmlEncode: function htmlEncode(value) {
 			// create a in-memory div, set it's inner text(which jQuery
 			// automatically encodes)
@@ -74331,11 +74308,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			}
 
 			return tmpl;
-		}, startsWith: function startsWith(str1, str2) {
+		},
+		startsWith: function startsWith(str1, str2) {
 			return str2.length > 0 && str1.substring(0, str2.length) === str2;
-		}, endsWith: function endsWith(str1, str2) {
+		},
+		endsWith: function endsWith(str1, str2) {
 			return str2.length > 0 && str1 && str1.substring(str1.length - str2.length, str1.length) === str2;
-		}, trimEnd: function trimEnd(stringToTrim, charToRemove) {
+		},
+		trimEnd: function trimEnd(stringToTrim, charToRemove) {
 			var s = stringToTrim || ""; // make sure str1 is not null
 			var c = charToRemove;
 			var lastIndexOf = -1;
@@ -74348,19 +74328,21 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			}
 			if (lastIndexOf > -1) s = s.substring(0, lastIndexOf);
 			return s;
-		}, trimStart: function trimStart(stringToTrim, sToRemove, opts) {
+		},
+		trimStart: function trimStart(stringToTrim, sToRemove, opts) {
 			var exp = "^" + sToRemove + "+";
 			var reg = RegExp(exp, opts || "gi");
 
 			var res = stringToTrim.replace(reg, "");
 			return res;
-		}, trim: function trim(stringToTrim, sToRemove, opts) {
+		},
+		trim: function trim(stringToTrim, sToRemove, opts) {
 			stringToTrim = this.trimStart(stringToTrim, sToRemove, opts);
 			stringToTrim = this.trimEnd(stringToTrim, sToRemove, opts);
 			return stringToTrim;
 		}
 	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+})(window.spexplorerjs = window["spexplorerjs"] || {}, window.jQuery = window["jQuery"] || __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed"));
 
 /***/ }),
 
@@ -74382,158 +74364,141 @@ var _jquery2 = _interopRequireDefault(_jquery);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// 0.1.2: 2018/03/23    - addSpWidget for SharePoint components
 // 0.1.0: 2018/03/23    - pass options to widget constructor
 // 0.1.1: 2018/03/28    - selector property
 //                      - log from tracing
 (function (ns, $) {
 
-	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
-	var tracing = ns.logger.get("widgets", debugging);
-	var log = tracing.log,
-	    debug = tracing.debug;
+    var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
+    var tracing = ns.logger.get("widgets", debugging);
+    var log = tracing.log,
+        debug = tracing.debug;
 
-	log("widgets.register");
-	ns.widgets = ns.widgets || {};
+    log("widgets.register");
+    ns.widgets = ns.widgets || {};
 
-	var defineWidget = function defineWidget(name, constructor, version) {
+    var defineWidget = function defineWidget(name, constructor, version) {
 
-		return {
-			publicName: name,
-			constructor: constructor,
-			version: version,
-			selector: "[data-widget=\"publicName\"]".replace("publicName", name),
-			startup: function startup(context, opts) {
+        return {
+            publicName: name,
+            constructor: constructor,
+            version: version,
+            selector: "[data-widget=\"publicName\"]".replace("publicName", name),
+            startup: function startup(context, opts) {
 
-				debug(name + ".startup");
-				var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
-				debug("selector: " + selector);
-				var elems = $(selector, context || document);
-				debug("Elems: " + elems.length);
-				elems[name](opts);
-				return elems;
-			}
-		};
-	};
-	var registerWidget = function registerWidget(widgetInfo) {
+                debug(name + ".startup");
+                var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
+                debug("selector: " + selector);
+                var elems = $(selector, context || document);
+                debug("Elems: " + elems.length);
+                elems[name](opts);
+                return elems;
+            }
+        };
+    };
+    var registerWidget = function registerWidget(widgetInfo) {
 
-		$.fn[widgetInfo.publicName] = function (opts) {
-			var args = arguments;
-			var result = this.each(function () {
+        $.fn[widgetInfo.publicName] = function (opts) {
+            var args = arguments;
+            var result = this.each(function () {
 
-				var $el = $(this);
+                var $el = $(this);
 
-				var me = $el.data(widgetInfo.publicName);
+                var me = $el.data(widgetInfo.publicName);
 
-				if (me) {
-					// object has been initialized before
+                if (me) {
+                    // object has been initialized before
 
-					if (opts == null) {// request for instance
-					} else if (me[opts]) {
-						if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
-					}
-				} else {
-					var obj = new widgetInfo.constructor(this, opts);
-					$(".version:first", this).html(widgetInfo.version);
-					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
-				}
-			});
+                    if (opts == null) {// request for instance
+                    } else if (me[opts]) {
+                        if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
+                    }
+                } else {
+                    var obj = new widgetInfo.constructor(this, opts);
+                    $(".version:first", this).html(widgetInfo.version);
+                    $el.data(widgetInfo.publicName, obj).data("xwidget", obj);
+                }
+            });
 
-			return result;
-		};
+            return result;
+        };
 
-		ns.widgets[widgetInfo.publicName] = widgetInfo;
-		log(widgetInfo.publicName + ".registered");
-	};
+        ns.widgets[widgetInfo.publicName] = widgetInfo;
+        log(widgetInfo.publicName + ".registered");
+    };
 
-	var addWidget = function addWidget(name, constructor, version) {
+    var addWidget = function addWidget(name, constructor, version) {
 
-		var widgetInfo = defineWidget(name, constructor, version);
-		registerWidget(widgetInfo);
-		return widgetInfo;
-	};
+        var widgetInfo = defineWidget(name, constructor, version);
+        registerWidget(widgetInfo);
+        return widgetInfo;
+    };
 
-	ns.widgets.addWidget = addWidget;
+    ns.widgets.addWidget = addWidget;
+    ns.widgets.addSpWidget = function (name, constructor, version) {
+
+        var widgetInfo = addWidget(name, constructor, version);
+
+        ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
+
+        return widgetInfo;
+    };
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 
 (function (ns, $) {
 
-	/// Iterate over an expanding array
-	//  Example:
-	//  var arr = [1, 2];
-	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
-	//    if (item == 1) {
-	//        arr.push(3);
-	//    }
-	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
-	//});
-	/// arr: array to process
-	/// action: promise (argument: item removed from array)
-	var processDynamicArrayAsQueue = function processDynamicArrayAsQueue(arr, action) {
-		return $.Deferred(function (dfd) {
-			var doNext = function doNext() {
-				if (arr == null || arr.length == 0) {
-					dfd.resolve();
-				} else {
-					var item = arr.shift();
-					action(item).done(function () {
-						doNext();
-					});
-				}
-			};
+    /// Iterate over an expanding array
+    //  Example:
+    //  var arr = [1, 2];
+    //  spexplorerjs.funcs.processAsQueue(arr, function (item) {
+    //    if (item == 1) {
+    //        arr.push(3);
+    //    }
+    //    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
+    //});
+    /// arr: array to process
+    /// action: promise (argument: item removed from array)
+    var processAsQueue = function processAsQueue(arr, action) {
+        return $.Deferred(function (dfd) {
+            var doNext = function doNext() {
+                if (arr == null || arr.length == 0) {
+                    dfd.resolve();
+                } else {
+                    var item = arr.shift();
+                    action(item).done(function () {
+                        doNext();
+                    });
+                }
+            };
 
-			if (typeof arr == "function") {
-				arr().done(function (items) {
-					arr = items;
-					doNext();
-				});
-			} else {
-				doNext();
-			}
-		}).promise();
-	};
+            if (typeof arr == "function") {
+                arr().done(function (items) {
+                    arr = items;
+                    doNext();
+                });
+            } else {
+                doNext();
+            }
+        }).promise();
+    };
 
-	// obsolete use processDynamicArrayAsQueue
-	// make sure array doesn't change
-	//var processAsQueue = function (arr, action) {
-	//	return $.Deferred(function (dfd) {
-	//		var step = 0;
-	//		var doNext = function () {
-	//			if (arr == null || (step >= (arr.length))) {
-	//				dfd.resolve();
-	//			} else {
-	//				var item = arr[step++];
-	//				action(item).done(function () {
-	//					doNext();
-	//				});
-	//			}
-	//		};
-	//		if (typeof arr == "function") {
-	//			arr().done(function (items) {
-	//				arr = items;
-	//				doNext();
-	//			});
-	//		} else {
-	//			doNext();
-	//		}
-	//	}).promise();
-	//};
+    var enumer = function enumer(values) {
+        var me = {};
+        for (var i = 0; i < values.length; i++) {
+            me[values[i]] = 1;
+        }
+        if (Object.freeze) {
+            me = Object.freeze(me);
+        }
 
-	var enumer = function enumer(values) {
-		var me = {};
-		for (var i = 0; i < values.length; i++) {
-			me[values[i]] = 1;
-		}
-		if (Object.freeze) {
-			me = Object.freeze(me);
-		}
+        return me;
+    };
 
-		return me;
-	};
-
-	ns.funcs = {
-		processAsQueue: processDynamicArrayAsQueue,
-		enum: enumer
-	};
+    ns.funcs = {
+        processAsQueue: processDynamicArrayAsQueue,
+        enumeration: enumer
+    };
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 
 /***/ }),
@@ -75203,10 +75168,6 @@ module.exports = "<b>{0}</b>\r\n<ul class='xfieldInfo'>\r\n    <li>Internal Name
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 __webpack_require__(/*! ../../../public/vendor/select2/js/select2.full.js */ "../../../public/vendor/select2/js/select2.full.js");
 
 __webpack_require__(/*! ../../../public/vendor/select2/css/select2.css */ "../../../public/vendor/select2/css/select2.css");
@@ -75227,12 +75188,10 @@ var _fieldSelectorFieldtemplate2 = _interopRequireDefault(_fieldSelectorFieldtem
 
 __webpack_require__(/*! ./treelight.js */ "./treelight.js");
 
+__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//import "../../../public/vendor/bootstrap/js/bootstrap.js";
-//import "../../../public/vendor/bootstrap/css/spexpjs.css";
-//import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
-//import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 (function (ns, $) {
 
 	var debug = window.location.href.search(/[localhost|debugfieldsel]/) > 0;
@@ -75514,59 +75473,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		}();
 	};
 
-	var widgetInfo = {
-		publicName: "xSPFieldSelector",
-		constructor: xSPFieldSelector,
-		version: "v 0.1.4",
-		getSelector: function getSelector() {
-			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
-			log("selector: " + selector);
-			return selector;
-		},
-		startup: function startup(context, opts) {
-			log(widgetInfo.publicName + ".startup");
-			var selector = widgetInfo.getSelector();
-			var elems = $(selector, context || document);
-			log("Elems: " + elems.length);
-			elems[widgetInfo.publicName](opts);
-
-			return elems;
-		}
-	};
-
-	$.fn[widgetInfo.publicName] = function (opts) {
-		var args = arguments;
-		//var lastInstance = null;
-		var result = this.each(function () {
-
-			var $el = $(this);
-
-			var me = $el.data(widgetInfo.publicName);
-
-			if (me) {
-				// object has been initialized before
-
-				if (opts == null) {// request for instance
-					//lastInstance = me;
-				} else if (me[opts]) {
-					if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
-				}
-			} else {
-
-				var obj = new widgetInfo.constructor(this, opts);
-				$el.data(widgetInfo.publicName, obj);
-			}
-		});
-
-		//if (lastInstance && result.length == 1) return lastInstance;
-		return result;
-	};
-
-	(ns.widgets = ns.widgets || {})[widgetInfo.publicName] = widgetInfo;
-	log(widgetInfo.publicName + ".registered");
-
-	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
-})(spexplorerjs, _jquery2.default); // v 0.1.4: 2018-03-15 - Added option to hide list selector
+	ns.widgets.addSpWidget("xSPFieldSelector", SPListWidget, "0.1.4");
+})(spexplorerjs, jQuery);
+//import "../../../public/vendor/bootstrap/js/bootstrap.js";
+//import "../../../public/vendor/bootstrap/css/spexpjs.css";
+//import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
+//import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
+// v 0.1.4: 2018-03-15 - Added option to hide list selector
 
 /***/ }),
 
@@ -75615,13 +75528,10 @@ var _listEditorTemplate = __webpack_require__(/*! ./list.editor.template.html */
 
 var _listEditorTemplate2 = _interopRequireDefault(_listEditorTemplate);
 
+__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// v 0.1.2 - 2018/03/28 - Renamed to list.editor (from list.selector)
-//                      - Bug: CodeMirror dimensions
-// v 0.1.1 - 2018/03/24 - Register through widgets.base
-//                      - Sync custom actions control with list selector
-/// TODO: Document
 (function (ns, $, template) {
 
 	var debug = window.location.href.search(/[localhost|debuglisteditor]/) > 0;
@@ -75692,6 +75602,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		} else widgetInfo.startup();
 	})();
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _listEditorTemplate2.default);
+// v 0.1.2 - 2018/03/28 - Renamed to list.editor (from list.selector)
+//                      - Bug: CodeMirror dimensions
+// v 0.1.1 - 2018/03/24 - Register through widgets.base
+//                      - Sync custom actions control with list selector
+/// TODO: Document
 
 /***/ }),
 

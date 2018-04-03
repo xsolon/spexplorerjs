@@ -71,10 +71,267 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "../../../node_modules/codemirror/addon/edit/closetag.js":
+/*!*********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/edit/closetag.js ***!
+  \*********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+/**
+ * Tag-closer extension for CodeMirror.
+ *
+ * This extension adds an "autoCloseTags" option that can be set to
+ * either true to get the default behavior, or an object to further
+ * configure its behavior.
+ *
+ * These are supported options:
+ *
+ * `whenClosing` (default true)
+ *   Whether to autoclose when the '/' of a closing tag is typed.
+ * `whenOpening` (default true)
+ *   Whether to autoclose the tag when the final '>' of an opening
+ *   tag is typed.
+ * `dontCloseTags` (default is empty tags for HTML, none for XML)
+ *   An array of tag names that should not be autoclosed.
+ * `indentTags` (default is block tags for HTML, none for XML)
+ *   An array of tag names that should, when opened, cause a
+ *   blank line to be added inside the tag, and the blank line and
+ *   closing line to be indented.
+ *
+ * See demos/closetag.html for a usage example.
+ */
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ../fold/xml-fold */ "../../../node_modules/codemirror/addon/fold/xml-fold.js"));
+  else {}
+})(function(CodeMirror) {
+  CodeMirror.defineOption("autoCloseTags", false, function(cm, val, old) {
+    if (old != CodeMirror.Init && old)
+      cm.removeKeyMap("autoCloseTags");
+    if (!val) return;
+    var map = {name: "autoCloseTags"};
+    if (typeof val != "object" || val.whenClosing)
+      map["'/'"] = function(cm) { return autoCloseSlash(cm); };
+    if (typeof val != "object" || val.whenOpening)
+      map["'>'"] = function(cm) { return autoCloseGT(cm); };
+    cm.addKeyMap(map);
+  });
+
+  var htmlDontClose = ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param",
+                       "source", "track", "wbr"];
+  var htmlIndent = ["applet", "blockquote", "body", "button", "div", "dl", "fieldset", "form", "frameset", "h1", "h2", "h3", "h4",
+                    "h5", "h6", "head", "html", "iframe", "layer", "legend", "object", "ol", "p", "select", "table", "ul"];
+
+  function autoCloseGT(cm) {
+    if (cm.getOption("disableInput")) return CodeMirror.Pass;
+    var ranges = cm.listSelections(), replacements = [];
+    var opt = cm.getOption("autoCloseTags");
+    for (var i = 0; i < ranges.length; i++) {
+      if (!ranges[i].empty()) return CodeMirror.Pass;
+      var pos = ranges[i].head, tok = cm.getTokenAt(pos);
+      var inner = CodeMirror.innerMode(cm.getMode(), tok.state), state = inner.state;
+      if (inner.mode.name != "xml" || !state.tagName) return CodeMirror.Pass;
+
+      var html = inner.mode.configuration == "html";
+      var dontCloseTags = (typeof opt == "object" && opt.dontCloseTags) || (html && htmlDontClose);
+      var indentTags = (typeof opt == "object" && opt.indentTags) || (html && htmlIndent);
+
+      var tagName = state.tagName;
+      if (tok.end > pos.ch) tagName = tagName.slice(0, tagName.length - tok.end + pos.ch);
+      var lowerTagName = tagName.toLowerCase();
+      // Don't process the '>' at the end of an end-tag or self-closing tag
+      if (!tagName ||
+          tok.type == "string" && (tok.end != pos.ch || !/[\"\']/.test(tok.string.charAt(tok.string.length - 1)) || tok.string.length == 1) ||
+          tok.type == "tag" && state.type == "closeTag" ||
+          tok.string.indexOf("/") == (tok.string.length - 1) || // match something like <someTagName />
+          dontCloseTags && indexOf(dontCloseTags, lowerTagName) > -1 ||
+          closingTagExists(cm, tagName, pos, state, true))
+        return CodeMirror.Pass;
+
+      var indent = indentTags && indexOf(indentTags, lowerTagName) > -1;
+      replacements[i] = {indent: indent,
+                         text: ">" + (indent ? "\n\n" : "") + "</" + tagName + ">",
+                         newPos: indent ? CodeMirror.Pos(pos.line + 1, 0) : CodeMirror.Pos(pos.line, pos.ch + 1)};
+    }
+
+    var dontIndentOnAutoClose = (typeof opt == "object" && opt.dontIndentOnAutoClose);
+    for (var i = ranges.length - 1; i >= 0; i--) {
+      var info = replacements[i];
+      cm.replaceRange(info.text, ranges[i].head, ranges[i].anchor, "+insert");
+      var sel = cm.listSelections().slice(0);
+      sel[i] = {head: info.newPos, anchor: info.newPos};
+      cm.setSelections(sel);
+      if (!dontIndentOnAutoClose && info.indent) {
+        cm.indentLine(info.newPos.line, null, true);
+        cm.indentLine(info.newPos.line + 1, null, true);
+      }
+    }
+  }
+
+  function autoCloseCurrent(cm, typingSlash) {
+    var ranges = cm.listSelections(), replacements = [];
+    var head = typingSlash ? "/" : "</";
+    var opt = cm.getOption("autoCloseTags");
+    var dontIndentOnAutoClose = (typeof opt == "object" && opt.dontIndentOnSlash);
+    for (var i = 0; i < ranges.length; i++) {
+      if (!ranges[i].empty()) return CodeMirror.Pass;
+      var pos = ranges[i].head, tok = cm.getTokenAt(pos);
+      var inner = CodeMirror.innerMode(cm.getMode(), tok.state), state = inner.state;
+      if (typingSlash && (tok.type == "string" || tok.string.charAt(0) != "<" ||
+                          tok.start != pos.ch - 1))
+        return CodeMirror.Pass;
+      // Kludge to get around the fact that we are not in XML mode
+      // when completing in JS/CSS snippet in htmlmixed mode. Does not
+      // work for other XML embedded languages (there is no general
+      // way to go from a mixed mode to its current XML state).
+      var replacement;
+      if (inner.mode.name != "xml") {
+        if (cm.getMode().name == "htmlmixed" && inner.mode.name == "javascript")
+          replacement = head + "script";
+        else if (cm.getMode().name == "htmlmixed" && inner.mode.name == "css")
+          replacement = head + "style";
+        else
+          return CodeMirror.Pass;
+      } else {
+        if (!state.context || !state.context.tagName ||
+            closingTagExists(cm, state.context.tagName, pos, state))
+          return CodeMirror.Pass;
+        replacement = head + state.context.tagName;
+      }
+      if (cm.getLine(pos.line).charAt(tok.end) != ">") replacement += ">";
+      replacements[i] = replacement;
+    }
+    cm.replaceSelections(replacements);
+    ranges = cm.listSelections();
+    if (!dontIndentOnAutoClose) {
+        for (var i = 0; i < ranges.length; i++)
+            if (i == ranges.length - 1 || ranges[i].head.line < ranges[i + 1].head.line)
+                cm.indentLine(ranges[i].head.line);
+    }
+  }
+
+  function autoCloseSlash(cm) {
+    if (cm.getOption("disableInput")) return CodeMirror.Pass;
+    return autoCloseCurrent(cm, true);
+  }
+
+  CodeMirror.commands.closeTag = function(cm) { return autoCloseCurrent(cm); };
+
+  function indexOf(collection, elt) {
+    if (collection.indexOf) return collection.indexOf(elt);
+    for (var i = 0, e = collection.length; i < e; ++i)
+      if (collection[i] == elt) return i;
+    return -1;
+  }
+
+  // If xml-fold is loaded, we use its functionality to try and verify
+  // whether a given tag is actually unclosed.
+  function closingTagExists(cm, tagName, pos, state, newTag) {
+    if (!CodeMirror.scanForClosingTag) return false;
+    var end = Math.min(cm.lastLine() + 1, pos.line + 500);
+    var nextClose = CodeMirror.scanForClosingTag(cm, pos, null, end);
+    if (!nextClose || nextClose.tag != tagName) return false;
+    var cx = state.context;
+    // If the immediate wrapping context contains onCx instances of
+    // the same tag, a closing tag only exists if there are at least
+    // that many closing tags of that type following.
+    for (var onCx = newTag ? 1 : 0; cx && cx.tagName == tagName; cx = cx.prev) ++onCx;
+    pos = nextClose.to;
+    for (var i = 1; i < onCx; i++) {
+      var next = CodeMirror.scanForClosingTag(cm, pos, null, end);
+      if (!next || next.tag != tagName) return false;
+      pos = next.to;
+    }
+    return true;
+  }
+});
+
+
+/***/ }),
+
+/***/ "../../../node_modules/codemirror/addon/edit/matchtags.js":
+/*!**********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/edit/matchtags.js ***!
+  \**********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ../fold/xml-fold */ "../../../node_modules/codemirror/addon/fold/xml-fold.js"));
+  else {}
+})(function(CodeMirror) {
+  "use strict";
+
+  CodeMirror.defineOption("matchTags", false, function(cm, val, old) {
+    if (old && old != CodeMirror.Init) {
+      cm.off("cursorActivity", doMatchTags);
+      cm.off("viewportChange", maybeUpdateMatch);
+      clear(cm);
+    }
+    if (val) {
+      cm.state.matchBothTags = typeof val == "object" && val.bothTags;
+      cm.on("cursorActivity", doMatchTags);
+      cm.on("viewportChange", maybeUpdateMatch);
+      doMatchTags(cm);
+    }
+  });
+
+  function clear(cm) {
+    if (cm.state.tagHit) cm.state.tagHit.clear();
+    if (cm.state.tagOther) cm.state.tagOther.clear();
+    cm.state.tagHit = cm.state.tagOther = null;
+  }
+
+  function doMatchTags(cm) {
+    cm.state.failedTagMatch = false;
+    cm.operation(function() {
+      clear(cm);
+      if (cm.somethingSelected()) return;
+      var cur = cm.getCursor(), range = cm.getViewport();
+      range.from = Math.min(range.from, cur.line); range.to = Math.max(cur.line + 1, range.to);
+      var match = CodeMirror.findMatchingTag(cm, cur, range);
+      if (!match) return;
+      if (cm.state.matchBothTags) {
+        var hit = match.at == "open" ? match.open : match.close;
+        if (hit) cm.state.tagHit = cm.markText(hit.from, hit.to, {className: "CodeMirror-matchingtag"});
+      }
+      var other = match.at == "close" ? match.open : match.close;
+      if (other)
+        cm.state.tagOther = cm.markText(other.from, other.to, {className: "CodeMirror-matchingtag"});
+      else
+        cm.state.failedTagMatch = true;
+    });
+  }
+
+  function maybeUpdateMatch(cm) {
+    if (cm.state.failedTagMatch) doMatchTags(cm);
+  }
+
+  CodeMirror.commands.toMatchingTag = function(cm) {
+    var found = CodeMirror.findMatchingTag(cm, cm.getCursor());
+    if (found) {
+      var other = found.at == "close" ? found.open : found.close;
+      if (other) cm.extendSelection(other.to, other.from);
+    }
+  };
+});
+
+
+/***/ }),
+
 /***/ "../../../node_modules/codemirror/addon/fold/brace-fold.js":
-/*!****************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/fold/brace-fold.js ***!
-  \****************************************************************************************/
+/*!***********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/brace-fold.js ***!
+  \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -185,9 +442,9 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/comment-fold.js":
-/*!******************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/fold/comment-fold.js ***!
-  \******************************************************************************************/
+/*!*************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/comment-fold.js ***!
+  \*************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -252,9 +509,9 @@ CodeMirror.registerGlobalHelper("fold", "comment", function(mode) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/foldcode.js":
-/*!**************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/fold/foldcode.js ***!
-  \**************************************************************************************/
+/*!*********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/foldcode.js ***!
+  \*********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -412,9 +669,9 @@ CodeMirror.registerGlobalHelper("fold", "comment", function(mode) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/foldgutter.css":
-/*!*****************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
-  \*****************************************************************************************/
+/*!************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
+  \************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -442,9 +699,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/foldgutter.js":
-/*!****************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.js ***!
-  \****************************************************************************************/
+/*!***********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.js ***!
+  \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -596,9 +853,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/indent-fold.js":
-/*!*****************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/fold/indent-fold.js ***!
-  \*****************************************************************************************/
+/*!************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/indent-fold.js ***!
+  \************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -652,9 +909,9 @@ CodeMirror.registerHelper("fold", "indent", function(cm, start) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/markdown-fold.js":
-/*!*******************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/fold/markdown-fold.js ***!
-  \*******************************************************************************************/
+/*!**************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/markdown-fold.js ***!
+  \**************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -709,9 +966,9 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/xml-fold.js":
-/*!**************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/fold/xml-fold.js ***!
-  \**************************************************************************************/
+/*!*********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/xml-fold.js ***!
+  \*********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -899,9 +1156,9 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/hint/anyword-hint.js":
-/*!******************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/hint/anyword-hint.js ***!
-  \******************************************************************************************/
+/*!*************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/anyword-hint.js ***!
+  \*************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -947,10 +1204,597 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 
 /***/ }),
 
+/***/ "../../../node_modules/codemirror/addon/hint/css-hint.js":
+/*!*********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/css-hint.js ***!
+  \*********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ../../mode/css/css */ "../../../node_modules/codemirror/mode/css/css.js"));
+  else {}
+})(function(CodeMirror) {
+  "use strict";
+
+  var pseudoClasses = {link: 1, visited: 1, active: 1, hover: 1, focus: 1,
+                       "first-letter": 1, "first-line": 1, "first-child": 1,
+                       before: 1, after: 1, lang: 1};
+
+  CodeMirror.registerHelper("hint", "css", function(cm) {
+    var cur = cm.getCursor(), token = cm.getTokenAt(cur);
+    var inner = CodeMirror.innerMode(cm.getMode(), token.state);
+    if (inner.mode.name != "css") return;
+
+    if (token.type == "keyword" && "!important".indexOf(token.string) == 0)
+      return {list: ["!important"], from: CodeMirror.Pos(cur.line, token.start),
+              to: CodeMirror.Pos(cur.line, token.end)};
+
+    var start = token.start, end = cur.ch, word = token.string.slice(0, end - start);
+    if (/[^\w$_-]/.test(word)) {
+      word = ""; start = end = cur.ch;
+    }
+
+    var spec = CodeMirror.resolveMode("text/css");
+
+    var result = [];
+    function add(keywords) {
+      for (var name in keywords)
+        if (!word || name.lastIndexOf(word, 0) == 0)
+          result.push(name);
+    }
+
+    var st = inner.state.state;
+    if (st == "pseudo" || token.type == "variable-3") {
+      add(pseudoClasses);
+    } else if (st == "block" || st == "maybeprop") {
+      add(spec.propertyKeywords);
+    } else if (st == "prop" || st == "parens" || st == "at" || st == "params") {
+      add(spec.valueKeywords);
+      add(spec.colorKeywords);
+    } else if (st == "media" || st == "media_parens") {
+      add(spec.mediaTypes);
+      add(spec.mediaFeatures);
+    }
+
+    if (result.length) return {
+      list: result,
+      from: CodeMirror.Pos(cur.line, start),
+      to: CodeMirror.Pos(cur.line, end)
+    };
+  });
+});
+
+
+/***/ }),
+
+/***/ "../../../node_modules/codemirror/addon/hint/html-hint.js":
+/*!**********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/html-hint.js ***!
+  \**********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ./xml-hint */ "../../../node_modules/codemirror/addon/hint/xml-hint.js"));
+  else {}
+})(function(CodeMirror) {
+  "use strict";
+
+  var langs = "ab aa af ak sq am ar an hy as av ae ay az bm ba eu be bn bh bi bs br bg my ca ch ce ny zh cv kw co cr hr cs da dv nl dz en eo et ee fo fj fi fr ff gl ka de el gn gu ht ha he hz hi ho hu ia id ie ga ig ik io is it iu ja jv kl kn kr ks kk km ki rw ky kv kg ko ku kj la lb lg li ln lo lt lu lv gv mk mg ms ml mt mi mr mh mn na nv nb nd ne ng nn no ii nr oc oj cu om or os pa pi fa pl ps pt qu rm rn ro ru sa sc sd se sm sg sr gd sn si sk sl so st es su sw ss sv ta te tg th ti bo tk tl tn to tr ts tt tw ty ug uk ur uz ve vi vo wa cy wo fy xh yi yo za zu".split(" ");
+  var targets = ["_blank", "_self", "_top", "_parent"];
+  var charsets = ["ascii", "utf-8", "utf-16", "latin1", "latin1"];
+  var methods = ["get", "post", "put", "delete"];
+  var encs = ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"];
+  var media = ["all", "screen", "print", "embossed", "braille", "handheld", "print", "projection", "screen", "tty", "tv", "speech",
+               "3d-glasses", "resolution [>][<][=] [X]", "device-aspect-ratio: X/Y", "orientation:portrait",
+               "orientation:landscape", "device-height: [X]", "device-width: [X]"];
+  var s = { attrs: {} }; // Simple tag, reused for a whole lot of tags
+
+  var data = {
+    a: {
+      attrs: {
+        href: null, ping: null, type: null,
+        media: media,
+        target: targets,
+        hreflang: langs
+      }
+    },
+    abbr: s,
+    acronym: s,
+    address: s,
+    applet: s,
+    area: {
+      attrs: {
+        alt: null, coords: null, href: null, target: null, ping: null,
+        media: media, hreflang: langs, type: null,
+        shape: ["default", "rect", "circle", "poly"]
+      }
+    },
+    article: s,
+    aside: s,
+    audio: {
+      attrs: {
+        src: null, mediagroup: null,
+        crossorigin: ["anonymous", "use-credentials"],
+        preload: ["none", "metadata", "auto"],
+        autoplay: ["", "autoplay"],
+        loop: ["", "loop"],
+        controls: ["", "controls"]
+      }
+    },
+    b: s,
+    base: { attrs: { href: null, target: targets } },
+    basefont: s,
+    bdi: s,
+    bdo: s,
+    big: s,
+    blockquote: { attrs: { cite: null } },
+    body: s,
+    br: s,
+    button: {
+      attrs: {
+        form: null, formaction: null, name: null, value: null,
+        autofocus: ["", "autofocus"],
+        disabled: ["", "autofocus"],
+        formenctype: encs,
+        formmethod: methods,
+        formnovalidate: ["", "novalidate"],
+        formtarget: targets,
+        type: ["submit", "reset", "button"]
+      }
+    },
+    canvas: { attrs: { width: null, height: null } },
+    caption: s,
+    center: s,
+    cite: s,
+    code: s,
+    col: { attrs: { span: null } },
+    colgroup: { attrs: { span: null } },
+    command: {
+      attrs: {
+        type: ["command", "checkbox", "radio"],
+        label: null, icon: null, radiogroup: null, command: null, title: null,
+        disabled: ["", "disabled"],
+        checked: ["", "checked"]
+      }
+    },
+    data: { attrs: { value: null } },
+    datagrid: { attrs: { disabled: ["", "disabled"], multiple: ["", "multiple"] } },
+    datalist: { attrs: { data: null } },
+    dd: s,
+    del: { attrs: { cite: null, datetime: null } },
+    details: { attrs: { open: ["", "open"] } },
+    dfn: s,
+    dir: s,
+    div: s,
+    dl: s,
+    dt: s,
+    em: s,
+    embed: { attrs: { src: null, type: null, width: null, height: null } },
+    eventsource: { attrs: { src: null } },
+    fieldset: { attrs: { disabled: ["", "disabled"], form: null, name: null } },
+    figcaption: s,
+    figure: s,
+    font: s,
+    footer: s,
+    form: {
+      attrs: {
+        action: null, name: null,
+        "accept-charset": charsets,
+        autocomplete: ["on", "off"],
+        enctype: encs,
+        method: methods,
+        novalidate: ["", "novalidate"],
+        target: targets
+      }
+    },
+    frame: s,
+    frameset: s,
+    h1: s, h2: s, h3: s, h4: s, h5: s, h6: s,
+    head: {
+      attrs: {},
+      children: ["title", "base", "link", "style", "meta", "script", "noscript", "command"]
+    },
+    header: s,
+    hgroup: s,
+    hr: s,
+    html: {
+      attrs: { manifest: null },
+      children: ["head", "body"]
+    },
+    i: s,
+    iframe: {
+      attrs: {
+        src: null, srcdoc: null, name: null, width: null, height: null,
+        sandbox: ["allow-top-navigation", "allow-same-origin", "allow-forms", "allow-scripts"],
+        seamless: ["", "seamless"]
+      }
+    },
+    img: {
+      attrs: {
+        alt: null, src: null, ismap: null, usemap: null, width: null, height: null,
+        crossorigin: ["anonymous", "use-credentials"]
+      }
+    },
+    input: {
+      attrs: {
+        alt: null, dirname: null, form: null, formaction: null,
+        height: null, list: null, max: null, maxlength: null, min: null,
+        name: null, pattern: null, placeholder: null, size: null, src: null,
+        step: null, value: null, width: null,
+        accept: ["audio/*", "video/*", "image/*"],
+        autocomplete: ["on", "off"],
+        autofocus: ["", "autofocus"],
+        checked: ["", "checked"],
+        disabled: ["", "disabled"],
+        formenctype: encs,
+        formmethod: methods,
+        formnovalidate: ["", "novalidate"],
+        formtarget: targets,
+        multiple: ["", "multiple"],
+        readonly: ["", "readonly"],
+        required: ["", "required"],
+        type: ["hidden", "text", "search", "tel", "url", "email", "password", "datetime", "date", "month",
+               "week", "time", "datetime-local", "number", "range", "color", "checkbox", "radio",
+               "file", "submit", "image", "reset", "button"]
+      }
+    },
+    ins: { attrs: { cite: null, datetime: null } },
+    kbd: s,
+    keygen: {
+      attrs: {
+        challenge: null, form: null, name: null,
+        autofocus: ["", "autofocus"],
+        disabled: ["", "disabled"],
+        keytype: ["RSA"]
+      }
+    },
+    label: { attrs: { "for": null, form: null } },
+    legend: s,
+    li: { attrs: { value: null } },
+    link: {
+      attrs: {
+        href: null, type: null,
+        hreflang: langs,
+        media: media,
+        sizes: ["all", "16x16", "16x16 32x32", "16x16 32x32 64x64"]
+      }
+    },
+    map: { attrs: { name: null } },
+    mark: s,
+    menu: { attrs: { label: null, type: ["list", "context", "toolbar"] } },
+    meta: {
+      attrs: {
+        content: null,
+        charset: charsets,
+        name: ["viewport", "application-name", "author", "description", "generator", "keywords"],
+        "http-equiv": ["content-language", "content-type", "default-style", "refresh"]
+      }
+    },
+    meter: { attrs: { value: null, min: null, low: null, high: null, max: null, optimum: null } },
+    nav: s,
+    noframes: s,
+    noscript: s,
+    object: {
+      attrs: {
+        data: null, type: null, name: null, usemap: null, form: null, width: null, height: null,
+        typemustmatch: ["", "typemustmatch"]
+      }
+    },
+    ol: { attrs: { reversed: ["", "reversed"], start: null, type: ["1", "a", "A", "i", "I"] } },
+    optgroup: { attrs: { disabled: ["", "disabled"], label: null } },
+    option: { attrs: { disabled: ["", "disabled"], label: null, selected: ["", "selected"], value: null } },
+    output: { attrs: { "for": null, form: null, name: null } },
+    p: s,
+    param: { attrs: { name: null, value: null } },
+    pre: s,
+    progress: { attrs: { value: null, max: null } },
+    q: { attrs: { cite: null } },
+    rp: s,
+    rt: s,
+    ruby: s,
+    s: s,
+    samp: s,
+    script: {
+      attrs: {
+        type: ["text/javascript"],
+        src: null,
+        async: ["", "async"],
+        defer: ["", "defer"],
+        charset: charsets
+      }
+    },
+    section: s,
+    select: {
+      attrs: {
+        form: null, name: null, size: null,
+        autofocus: ["", "autofocus"],
+        disabled: ["", "disabled"],
+        multiple: ["", "multiple"]
+      }
+    },
+    small: s,
+    source: { attrs: { src: null, type: null, media: null } },
+    span: s,
+    strike: s,
+    strong: s,
+    style: {
+      attrs: {
+        type: ["text/css"],
+        media: media,
+        scoped: null
+      }
+    },
+    sub: s,
+    summary: s,
+    sup: s,
+    table: s,
+    tbody: s,
+    td: { attrs: { colspan: null, rowspan: null, headers: null } },
+    textarea: {
+      attrs: {
+        dirname: null, form: null, maxlength: null, name: null, placeholder: null,
+        rows: null, cols: null,
+        autofocus: ["", "autofocus"],
+        disabled: ["", "disabled"],
+        readonly: ["", "readonly"],
+        required: ["", "required"],
+        wrap: ["soft", "hard"]
+      }
+    },
+    tfoot: s,
+    th: { attrs: { colspan: null, rowspan: null, headers: null, scope: ["row", "col", "rowgroup", "colgroup"] } },
+    thead: s,
+    time: { attrs: { datetime: null } },
+    title: s,
+    tr: s,
+    track: {
+      attrs: {
+        src: null, label: null, "default": null,
+        kind: ["subtitles", "captions", "descriptions", "chapters", "metadata"],
+        srclang: langs
+      }
+    },
+    tt: s,
+    u: s,
+    ul: s,
+    "var": s,
+    video: {
+      attrs: {
+        src: null, poster: null, width: null, height: null,
+        crossorigin: ["anonymous", "use-credentials"],
+        preload: ["auto", "metadata", "none"],
+        autoplay: ["", "autoplay"],
+        mediagroup: ["movie"],
+        muted: ["", "muted"],
+        controls: ["", "controls"]
+      }
+    },
+    wbr: s
+  };
+
+  var globalAttrs = {
+    accesskey: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    "class": null,
+    contenteditable: ["true", "false"],
+    contextmenu: null,
+    dir: ["ltr", "rtl", "auto"],
+    draggable: ["true", "false", "auto"],
+    dropzone: ["copy", "move", "link", "string:", "file:"],
+    hidden: ["hidden"],
+    id: null,
+    inert: ["inert"],
+    itemid: null,
+    itemprop: null,
+    itemref: null,
+    itemscope: ["itemscope"],
+    itemtype: null,
+    lang: ["en", "es"],
+    spellcheck: ["true", "false"],
+    style: null,
+    tabindex: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    title: null,
+    translate: ["yes", "no"],
+    onclick: null,
+    rel: ["stylesheet", "alternate", "author", "bookmark", "help", "license", "next", "nofollow", "noreferrer", "prefetch", "prev", "search", "tag"]
+  };
+  function populate(obj) {
+    for (var attr in globalAttrs) if (globalAttrs.hasOwnProperty(attr))
+      obj.attrs[attr] = globalAttrs[attr];
+  }
+
+  populate(s);
+  for (var tag in data) if (data.hasOwnProperty(tag) && data[tag] != s)
+    populate(data[tag]);
+
+  CodeMirror.htmlSchema = data;
+  function htmlHint(cm, options) {
+    var local = {schemaInfo: data};
+    if (options) for (var opt in options) local[opt] = options[opt];
+    return CodeMirror.hint.xml(cm, local);
+  }
+  CodeMirror.registerHelper("hint", "html", htmlHint);
+});
+
+
+/***/ }),
+
+/***/ "../../../node_modules/codemirror/addon/hint/javascript-hint.js":
+/*!****************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/javascript-hint.js ***!
+  \****************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+  else {}
+})(function(CodeMirror) {
+  var Pos = CodeMirror.Pos;
+
+  function forEach(arr, f) {
+    for (var i = 0, e = arr.length; i < e; ++i) f(arr[i]);
+  }
+
+  function arrayContains(arr, item) {
+    if (!Array.prototype.indexOf) {
+      var i = arr.length;
+      while (i--) {
+        if (arr[i] === item) {
+          return true;
+        }
+      }
+      return false;
+    }
+    return arr.indexOf(item) != -1;
+  }
+
+  function scriptHint(editor, keywords, getToken, options) {
+    // Find the token at the cursor
+    var cur = editor.getCursor(), token = getToken(editor, cur);
+    if (/\b(?:string|comment)\b/.test(token.type)) return;
+    token.state = CodeMirror.innerMode(editor.getMode(), token.state).state;
+
+    // If it's not a 'word-style' token, ignore the token.
+    if (!/^[\w$_]*$/.test(token.string)) {
+      token = {start: cur.ch, end: cur.ch, string: "", state: token.state,
+               type: token.string == "." ? "property" : null};
+    } else if (token.end > cur.ch) {
+      token.end = cur.ch;
+      token.string = token.string.slice(0, cur.ch - token.start);
+    }
+
+    var tprop = token;
+    // If it is a property, find out what it is a property of.
+    while (tprop.type == "property") {
+      tprop = getToken(editor, Pos(cur.line, tprop.start));
+      if (tprop.string != ".") return;
+      tprop = getToken(editor, Pos(cur.line, tprop.start));
+      if (!context) var context = [];
+      context.push(tprop);
+    }
+    return {list: getCompletions(token, context, keywords, options),
+            from: Pos(cur.line, token.start),
+            to: Pos(cur.line, token.end)};
+  }
+
+  function javascriptHint(editor, options) {
+    return scriptHint(editor, javascriptKeywords,
+                      function (e, cur) {return e.getTokenAt(cur);},
+                      options);
+  };
+  CodeMirror.registerHelper("hint", "javascript", javascriptHint);
+
+  function getCoffeeScriptToken(editor, cur) {
+  // This getToken, it is for coffeescript, imitates the behavior of
+  // getTokenAt method in javascript.js, that is, returning "property"
+  // type and treat "." as indepenent token.
+    var token = editor.getTokenAt(cur);
+    if (cur.ch == token.start + 1 && token.string.charAt(0) == '.') {
+      token.end = token.start;
+      token.string = '.';
+      token.type = "property";
+    }
+    else if (/^\.[\w$_]*$/.test(token.string)) {
+      token.type = "property";
+      token.start++;
+      token.string = token.string.replace(/\./, '');
+    }
+    return token;
+  }
+
+  function coffeescriptHint(editor, options) {
+    return scriptHint(editor, coffeescriptKeywords, getCoffeeScriptToken, options);
+  }
+  CodeMirror.registerHelper("hint", "coffeescript", coffeescriptHint);
+
+  var stringProps = ("charAt charCodeAt indexOf lastIndexOf substring substr slice trim trimLeft trimRight " +
+                     "toUpperCase toLowerCase split concat match replace search").split(" ");
+  var arrayProps = ("length concat join splice push pop shift unshift slice reverse sort indexOf " +
+                    "lastIndexOf every some filter forEach map reduce reduceRight ").split(" ");
+  var funcProps = "prototype apply call bind".split(" ");
+  var javascriptKeywords = ("break case catch class const continue debugger default delete do else export extends false finally for function " +
+                  "if in import instanceof new null return super switch this throw true try typeof var void while with yield").split(" ");
+  var coffeescriptKeywords = ("and break catch class continue delete do else extends false finally for " +
+                  "if in instanceof isnt new no not null of off on or return switch then throw true try typeof until void while with yes").split(" ");
+
+  function forAllProps(obj, callback) {
+    if (!Object.getOwnPropertyNames || !Object.getPrototypeOf) {
+      for (var name in obj) callback(name)
+    } else {
+      for (var o = obj; o; o = Object.getPrototypeOf(o))
+        Object.getOwnPropertyNames(o).forEach(callback)
+    }
+  }
+
+  function getCompletions(token, context, keywords, options) {
+    var found = [], start = token.string, global = options && options.globalScope || window;
+    function maybeAdd(str) {
+      if (str.lastIndexOf(start, 0) == 0 && !arrayContains(found, str)) found.push(str);
+    }
+    function gatherCompletions(obj) {
+      if (typeof obj == "string") forEach(stringProps, maybeAdd);
+      else if (obj instanceof Array) forEach(arrayProps, maybeAdd);
+      else if (obj instanceof Function) forEach(funcProps, maybeAdd);
+      forAllProps(obj, maybeAdd)
+    }
+
+    if (context && context.length) {
+      // If this is a property, see if it belongs to some object we can
+      // find in the current environment.
+      var obj = context.pop(), base;
+      if (obj.type && obj.type.indexOf("variable") === 0) {
+        if (options && options.additionalContext)
+          base = options.additionalContext[obj.string];
+        if (!options || options.useGlobalScope !== false)
+          base = base || global[obj.string];
+      } else if (obj.type == "string") {
+        base = "";
+      } else if (obj.type == "atom") {
+        base = 1;
+      } else if (obj.type == "function") {
+        if (global.jQuery != null && (obj.string == '$' || obj.string == 'jQuery') &&
+            (typeof global.jQuery == 'function'))
+          base = global.jQuery();
+        else if (global._ != null && (obj.string == '_') && (typeof global._ == 'function'))
+          base = global._();
+      }
+      while (base != null && context.length)
+        base = base[context.pop().string];
+      if (base != null) gatherCompletions(base);
+    } else {
+      // If not, just look in the global object and any local scope
+      // (reading into JS mode internals to get at the local and global variables)
+      for (var v = token.state.localVars; v; v = v.next) maybeAdd(v.name);
+      for (var v = token.state.globalVars; v; v = v.next) maybeAdd(v.name);
+      if (!options || options.useGlobalScope !== false)
+        gatherCompletions(global);
+      forEach(keywords, maybeAdd);
+    }
+    return found;
+  }
+});
+
+
+/***/ }),
+
 /***/ "../../../node_modules/codemirror/addon/hint/show-hint.css":
-/*!****************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
-  \****************************************************************************************/
+/*!***********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
+  \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -977,10 +1821,744 @@ if(false) {}
 
 /***/ }),
 
+/***/ "../../../node_modules/codemirror/addon/hint/show-hint.js":
+/*!**********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.js ***!
+  \**********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+  else {}
+})(function(CodeMirror) {
+  "use strict";
+
+  var HINT_ELEMENT_CLASS        = "CodeMirror-hint";
+  var ACTIVE_HINT_ELEMENT_CLASS = "CodeMirror-hint-active";
+
+  // This is the old interface, kept around for now to stay
+  // backwards-compatible.
+  CodeMirror.showHint = function(cm, getHints, options) {
+    if (!getHints) return cm.showHint(options);
+    if (options && options.async) getHints.async = true;
+    var newOpts = {hint: getHints};
+    if (options) for (var prop in options) newOpts[prop] = options[prop];
+    return cm.showHint(newOpts);
+  };
+
+  CodeMirror.defineExtension("showHint", function(options) {
+    options = parseOptions(this, this.getCursor("start"), options);
+    var selections = this.listSelections()
+    if (selections.length > 1) return;
+    // By default, don't allow completion when something is selected.
+    // A hint function can have a `supportsSelection` property to
+    // indicate that it can handle selections.
+    if (this.somethingSelected()) {
+      if (!options.hint.supportsSelection) return;
+      // Don't try with cross-line selections
+      for (var i = 0; i < selections.length; i++)
+        if (selections[i].head.line != selections[i].anchor.line) return;
+    }
+
+    if (this.state.completionActive) this.state.completionActive.close();
+    var completion = this.state.completionActive = new Completion(this, options);
+    if (!completion.options.hint) return;
+
+    CodeMirror.signal(this, "startCompletion", this);
+    completion.update(true);
+  });
+
+  function Completion(cm, options) {
+    this.cm = cm;
+    this.options = options;
+    this.widget = null;
+    this.debounce = 0;
+    this.tick = 0;
+    this.startPos = this.cm.getCursor("start");
+    this.startLen = this.cm.getLine(this.startPos.line).length - this.cm.getSelection().length;
+
+    var self = this;
+    cm.on("cursorActivity", this.activityFunc = function() { self.cursorActivity(); });
+  }
+
+  var requestAnimationFrame = window.requestAnimationFrame || function(fn) {
+    return setTimeout(fn, 1000/60);
+  };
+  var cancelAnimationFrame = window.cancelAnimationFrame || clearTimeout;
+
+  Completion.prototype = {
+    close: function() {
+      if (!this.active()) return;
+      this.cm.state.completionActive = null;
+      this.tick = null;
+      this.cm.off("cursorActivity", this.activityFunc);
+
+      if (this.widget && this.data) CodeMirror.signal(this.data, "close");
+      if (this.widget) this.widget.close();
+      CodeMirror.signal(this.cm, "endCompletion", this.cm);
+    },
+
+    active: function() {
+      return this.cm.state.completionActive == this;
+    },
+
+    pick: function(data, i) {
+      var completion = data.list[i];
+      if (completion.hint) completion.hint(this.cm, data, completion);
+      else this.cm.replaceRange(getText(completion), completion.from || data.from,
+                                completion.to || data.to, "complete");
+      CodeMirror.signal(data, "pick", completion);
+      this.close();
+    },
+
+    cursorActivity: function() {
+      if (this.debounce) {
+        cancelAnimationFrame(this.debounce);
+        this.debounce = 0;
+      }
+
+      var pos = this.cm.getCursor(), line = this.cm.getLine(pos.line);
+      if (pos.line != this.startPos.line || line.length - pos.ch != this.startLen - this.startPos.ch ||
+          pos.ch < this.startPos.ch || this.cm.somethingSelected() ||
+          (pos.ch && this.options.closeCharacters.test(line.charAt(pos.ch - 1)))) {
+        this.close();
+      } else {
+        var self = this;
+        this.debounce = requestAnimationFrame(function() {self.update();});
+        if (this.widget) this.widget.disable();
+      }
+    },
+
+    update: function(first) {
+      if (this.tick == null) return
+      var self = this, myTick = ++this.tick
+      fetchHints(this.options.hint, this.cm, this.options, function(data) {
+        if (self.tick == myTick) self.finishUpdate(data, first)
+      })
+    },
+
+    finishUpdate: function(data, first) {
+      if (this.data) CodeMirror.signal(this.data, "update");
+
+      var picked = (this.widget && this.widget.picked) || (first && this.options.completeSingle);
+      if (this.widget) this.widget.close();
+
+      this.data = data;
+
+      if (data && data.list.length) {
+        if (picked && data.list.length == 1) {
+          this.pick(data, 0);
+        } else {
+          this.widget = new Widget(this, data);
+          CodeMirror.signal(data, "shown");
+        }
+      }
+    }
+  };
+
+  function parseOptions(cm, pos, options) {
+    var editor = cm.options.hintOptions;
+    var out = {};
+    for (var prop in defaultOptions) out[prop] = defaultOptions[prop];
+    if (editor) for (var prop in editor)
+      if (editor[prop] !== undefined) out[prop] = editor[prop];
+    if (options) for (var prop in options)
+      if (options[prop] !== undefined) out[prop] = options[prop];
+    if (out.hint.resolve) out.hint = out.hint.resolve(cm, pos)
+    return out;
+  }
+
+  function getText(completion) {
+    if (typeof completion == "string") return completion;
+    else return completion.text;
+  }
+
+  function buildKeyMap(completion, handle) {
+    var baseMap = {
+      Up: function() {handle.moveFocus(-1);},
+      Down: function() {handle.moveFocus(1);},
+      PageUp: function() {handle.moveFocus(-handle.menuSize() + 1, true);},
+      PageDown: function() {handle.moveFocus(handle.menuSize() - 1, true);},
+      Home: function() {handle.setFocus(0);},
+      End: function() {handle.setFocus(handle.length - 1);},
+      Enter: handle.pick,
+      Tab: handle.pick,
+      Esc: handle.close
+    };
+    var custom = completion.options.customKeys;
+    var ourMap = custom ? {} : baseMap;
+    function addBinding(key, val) {
+      var bound;
+      if (typeof val != "string")
+        bound = function(cm) { return val(cm, handle); };
+      // This mechanism is deprecated
+      else if (baseMap.hasOwnProperty(val))
+        bound = baseMap[val];
+      else
+        bound = val;
+      ourMap[key] = bound;
+    }
+    if (custom)
+      for (var key in custom) if (custom.hasOwnProperty(key))
+        addBinding(key, custom[key]);
+    var extra = completion.options.extraKeys;
+    if (extra)
+      for (var key in extra) if (extra.hasOwnProperty(key))
+        addBinding(key, extra[key]);
+    return ourMap;
+  }
+
+  function getHintElement(hintsElement, el) {
+    while (el && el != hintsElement) {
+      if (el.nodeName.toUpperCase() === "LI" && el.parentNode == hintsElement) return el;
+      el = el.parentNode;
+    }
+  }
+
+  function Widget(completion, data) {
+    this.completion = completion;
+    this.data = data;
+    this.picked = false;
+    var widget = this, cm = completion.cm;
+
+    var hints = this.hints = document.createElement("ul");
+    hints.className = "CodeMirror-hints";
+    this.selectedHint = data.selectedHint || 0;
+
+    var completions = data.list;
+    for (var i = 0; i < completions.length; ++i) {
+      var elt = hints.appendChild(document.createElement("li")), cur = completions[i];
+      var className = HINT_ELEMENT_CLASS + (i != this.selectedHint ? "" : " " + ACTIVE_HINT_ELEMENT_CLASS);
+      if (cur.className != null) className = cur.className + " " + className;
+      elt.className = className;
+      if (cur.render) cur.render(elt, data, cur);
+      else elt.appendChild(document.createTextNode(cur.displayText || getText(cur)));
+      elt.hintId = i;
+    }
+
+    var pos = cm.cursorCoords(completion.options.alignWithWord ? data.from : null);
+    var left = pos.left, top = pos.bottom, below = true;
+    hints.style.left = left + "px";
+    hints.style.top = top + "px";
+    // If we're at the edge of the screen, then we want the menu to appear on the left of the cursor.
+    var winW = window.innerWidth || Math.max(document.body.offsetWidth, document.documentElement.offsetWidth);
+    var winH = window.innerHeight || Math.max(document.body.offsetHeight, document.documentElement.offsetHeight);
+    (completion.options.container || document.body).appendChild(hints);
+    var box = hints.getBoundingClientRect(), overlapY = box.bottom - winH;
+    var scrolls = hints.scrollHeight > hints.clientHeight + 1
+    var startScroll = cm.getScrollInfo();
+
+    if (overlapY > 0) {
+      var height = box.bottom - box.top, curTop = pos.top - (pos.bottom - box.top);
+      if (curTop - height > 0) { // Fits above cursor
+        hints.style.top = (top = pos.top - height) + "px";
+        below = false;
+      } else if (height > winH) {
+        hints.style.height = (winH - 5) + "px";
+        hints.style.top = (top = pos.bottom - box.top) + "px";
+        var cursor = cm.getCursor();
+        if (data.from.ch != cursor.ch) {
+          pos = cm.cursorCoords(cursor);
+          hints.style.left = (left = pos.left) + "px";
+          box = hints.getBoundingClientRect();
+        }
+      }
+    }
+    var overlapX = box.right - winW;
+    if (overlapX > 0) {
+      if (box.right - box.left > winW) {
+        hints.style.width = (winW - 5) + "px";
+        overlapX -= (box.right - box.left) - winW;
+      }
+      hints.style.left = (left = pos.left - overlapX) + "px";
+    }
+    if (scrolls) for (var node = hints.firstChild; node; node = node.nextSibling)
+      node.style.paddingRight = cm.display.nativeBarWidth + "px"
+
+    cm.addKeyMap(this.keyMap = buildKeyMap(completion, {
+      moveFocus: function(n, avoidWrap) { widget.changeActive(widget.selectedHint + n, avoidWrap); },
+      setFocus: function(n) { widget.changeActive(n); },
+      menuSize: function() { return widget.screenAmount(); },
+      length: completions.length,
+      close: function() { completion.close(); },
+      pick: function() { widget.pick(); },
+      data: data
+    }));
+
+    if (completion.options.closeOnUnfocus) {
+      var closingOnBlur;
+      cm.on("blur", this.onBlur = function() { closingOnBlur = setTimeout(function() { completion.close(); }, 100); });
+      cm.on("focus", this.onFocus = function() { clearTimeout(closingOnBlur); });
+    }
+
+    cm.on("scroll", this.onScroll = function() {
+      var curScroll = cm.getScrollInfo(), editor = cm.getWrapperElement().getBoundingClientRect();
+      var newTop = top + startScroll.top - curScroll.top;
+      var point = newTop - (window.pageYOffset || (document.documentElement || document.body).scrollTop);
+      if (!below) point += hints.offsetHeight;
+      if (point <= editor.top || point >= editor.bottom) return completion.close();
+      hints.style.top = newTop + "px";
+      hints.style.left = (left + startScroll.left - curScroll.left) + "px";
+    });
+
+    CodeMirror.on(hints, "dblclick", function(e) {
+      var t = getHintElement(hints, e.target || e.srcElement);
+      if (t && t.hintId != null) {widget.changeActive(t.hintId); widget.pick();}
+    });
+
+    CodeMirror.on(hints, "click", function(e) {
+      var t = getHintElement(hints, e.target || e.srcElement);
+      if (t && t.hintId != null) {
+        widget.changeActive(t.hintId);
+        if (completion.options.completeOnSingleClick) widget.pick();
+      }
+    });
+
+    CodeMirror.on(hints, "mousedown", function() {
+      setTimeout(function(){cm.focus();}, 20);
+    });
+
+    CodeMirror.signal(data, "select", completions[this.selectedHint], hints.childNodes[this.selectedHint]);
+    return true;
+  }
+
+  Widget.prototype = {
+    close: function() {
+      if (this.completion.widget != this) return;
+      this.completion.widget = null;
+      this.hints.parentNode.removeChild(this.hints);
+      this.completion.cm.removeKeyMap(this.keyMap);
+
+      var cm = this.completion.cm;
+      if (this.completion.options.closeOnUnfocus) {
+        cm.off("blur", this.onBlur);
+        cm.off("focus", this.onFocus);
+      }
+      cm.off("scroll", this.onScroll);
+    },
+
+    disable: function() {
+      this.completion.cm.removeKeyMap(this.keyMap);
+      var widget = this;
+      this.keyMap = {Enter: function() { widget.picked = true; }};
+      this.completion.cm.addKeyMap(this.keyMap);
+    },
+
+    pick: function() {
+      this.completion.pick(this.data, this.selectedHint);
+    },
+
+    changeActive: function(i, avoidWrap) {
+      if (i >= this.data.list.length)
+        i = avoidWrap ? this.data.list.length - 1 : 0;
+      else if (i < 0)
+        i = avoidWrap ? 0  : this.data.list.length - 1;
+      if (this.selectedHint == i) return;
+      var node = this.hints.childNodes[this.selectedHint];
+      node.className = node.className.replace(" " + ACTIVE_HINT_ELEMENT_CLASS, "");
+      node = this.hints.childNodes[this.selectedHint = i];
+      node.className += " " + ACTIVE_HINT_ELEMENT_CLASS;
+      if (node.offsetTop < this.hints.scrollTop)
+        this.hints.scrollTop = node.offsetTop - 3;
+      else if (node.offsetTop + node.offsetHeight > this.hints.scrollTop + this.hints.clientHeight)
+        this.hints.scrollTop = node.offsetTop + node.offsetHeight - this.hints.clientHeight + 3;
+      CodeMirror.signal(this.data, "select", this.data.list[this.selectedHint], node);
+    },
+
+    screenAmount: function() {
+      return Math.floor(this.hints.clientHeight / this.hints.firstChild.offsetHeight) || 1;
+    }
+  };
+
+  function applicableHelpers(cm, helpers) {
+    if (!cm.somethingSelected()) return helpers
+    var result = []
+    for (var i = 0; i < helpers.length; i++)
+      if (helpers[i].supportsSelection) result.push(helpers[i])
+    return result
+  }
+
+  function fetchHints(hint, cm, options, callback) {
+    if (hint.async) {
+      hint(cm, callback, options)
+    } else {
+      var result = hint(cm, options)
+      if (result && result.then) result.then(callback)
+      else callback(result)
+    }
+  }
+
+  function resolveAutoHints(cm, pos) {
+    var helpers = cm.getHelpers(pos, "hint"), words
+    if (helpers.length) {
+      var resolved = function(cm, callback, options) {
+        var app = applicableHelpers(cm, helpers);
+        function run(i) {
+          if (i == app.length) return callback(null)
+          fetchHints(app[i], cm, options, function(result) {
+            if (result && result.list.length > 0) callback(result)
+            else run(i + 1)
+          })
+        }
+        run(0)
+      }
+      resolved.async = true
+      resolved.supportsSelection = true
+      return resolved
+    } else if (words = cm.getHelper(cm.getCursor(), "hintWords")) {
+      return function(cm) { return CodeMirror.hint.fromList(cm, {words: words}) }
+    } else if (CodeMirror.hint.anyword) {
+      return function(cm, options) { return CodeMirror.hint.anyword(cm, options) }
+    } else {
+      return function() {}
+    }
+  }
+
+  CodeMirror.registerHelper("hint", "auto", {
+    resolve: resolveAutoHints
+  });
+
+  CodeMirror.registerHelper("hint", "fromList", function(cm, options) {
+    var cur = cm.getCursor(), token = cm.getTokenAt(cur);
+    var to = CodeMirror.Pos(cur.line, token.end);
+    if (token.string && /\w/.test(token.string[token.string.length - 1])) {
+      var term = token.string, from = CodeMirror.Pos(cur.line, token.start);
+    } else {
+      var term = "", from = to;
+    }
+    var found = [];
+    for (var i = 0; i < options.words.length; i++) {
+      var word = options.words[i];
+      if (word.slice(0, term.length) == term)
+        found.push(word);
+    }
+
+    if (found.length) return {list: found, from: from, to: to};
+  });
+
+  CodeMirror.commands.autocomplete = CodeMirror.showHint;
+
+  var defaultOptions = {
+    hint: CodeMirror.hint.auto,
+    completeSingle: true,
+    alignWithWord: true,
+    closeCharacters: /[\s()\[\]{};:>,]/,
+    closeOnUnfocus: true,
+    completeOnSingleClick: true,
+    container: null,
+    customKeys: null,
+    extraKeys: null
+  };
+
+  CodeMirror.defineOption("hintOptions", null);
+});
+
+
+/***/ }),
+
+/***/ "../../../node_modules/codemirror/addon/hint/sql-hint.js":
+/*!*********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/sql-hint.js ***!
+  \*********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ../../mode/sql/sql */ "../../../node_modules/codemirror/mode/sql/sql.js"));
+  else {}
+})(function(CodeMirror) {
+  "use strict";
+
+  var tables;
+  var defaultTable;
+  var keywords;
+  var identifierQuote;
+  var CONS = {
+    QUERY_DIV: ";",
+    ALIAS_KEYWORD: "AS"
+  };
+  var Pos = CodeMirror.Pos, cmpPos = CodeMirror.cmpPos;
+
+  function isArray(val) { return Object.prototype.toString.call(val) == "[object Array]" }
+
+  function getKeywords(editor) {
+    var mode = editor.doc.modeOption;
+    if (mode === "sql") mode = "text/x-sql";
+    return CodeMirror.resolveMode(mode).keywords;
+  }
+
+  function getIdentifierQuote(editor) {
+    var mode = editor.doc.modeOption;
+    if (mode === "sql") mode = "text/x-sql";
+    return CodeMirror.resolveMode(mode).identifierQuote || "`";
+  }
+
+  function getText(item) {
+    return typeof item == "string" ? item : item.text;
+  }
+
+  function wrapTable(name, value) {
+    if (isArray(value)) value = {columns: value}
+    if (!value.text) value.text = name
+    return value
+  }
+
+  function parseTables(input) {
+    var result = {}
+    if (isArray(input)) {
+      for (var i = input.length - 1; i >= 0; i--) {
+        var item = input[i]
+        result[getText(item).toUpperCase()] = wrapTable(getText(item), item)
+      }
+    } else if (input) {
+      for (var name in input)
+        result[name.toUpperCase()] = wrapTable(name, input[name])
+    }
+    return result
+  }
+
+  function getTable(name) {
+    return tables[name.toUpperCase()]
+  }
+
+  function shallowClone(object) {
+    var result = {};
+    for (var key in object) if (object.hasOwnProperty(key))
+      result[key] = object[key];
+    return result;
+  }
+
+  function match(string, word) {
+    var len = string.length;
+    var sub = getText(word).substr(0, len);
+    return string.toUpperCase() === sub.toUpperCase();
+  }
+
+  function addMatches(result, search, wordlist, formatter) {
+    if (isArray(wordlist)) {
+      for (var i = 0; i < wordlist.length; i++)
+        if (match(search, wordlist[i])) result.push(formatter(wordlist[i]))
+    } else {
+      for (var word in wordlist) if (wordlist.hasOwnProperty(word)) {
+        var val = wordlist[word]
+        if (!val || val === true)
+          val = word
+        else
+          val = val.displayText ? {text: val.text, displayText: val.displayText} : val.text
+        if (match(search, val)) result.push(formatter(val))
+      }
+    }
+  }
+
+  function cleanName(name) {
+    // Get rid name from identifierQuote and preceding dot(.)
+    if (name.charAt(0) == ".") {
+      name = name.substr(1);
+    }
+    // replace doublicated identifierQuotes with single identifierQuotes
+    // and remove single identifierQuotes
+    var nameParts = name.split(identifierQuote+identifierQuote);
+    for (var i = 0; i < nameParts.length; i++)
+      nameParts[i] = nameParts[i].replace(new RegExp(identifierQuote,"g"), "");
+    return nameParts.join(identifierQuote);
+  }
+
+  function insertIdentifierQuotes(name) {
+    var nameParts = getText(name).split(".");
+    for (var i = 0; i < nameParts.length; i++)
+      nameParts[i] = identifierQuote +
+        // doublicate identifierQuotes
+        nameParts[i].replace(new RegExp(identifierQuote,"g"), identifierQuote+identifierQuote) +
+        identifierQuote;
+    var escaped = nameParts.join(".");
+    if (typeof name == "string") return escaped;
+    name = shallowClone(name);
+    name.text = escaped;
+    return name;
+  }
+
+  function nameCompletion(cur, token, result, editor) {
+    // Try to complete table, column names and return start position of completion
+    var useIdentifierQuotes = false;
+    var nameParts = [];
+    var start = token.start;
+    var cont = true;
+    while (cont) {
+      cont = (token.string.charAt(0) == ".");
+      useIdentifierQuotes = useIdentifierQuotes || (token.string.charAt(0) == identifierQuote);
+
+      start = token.start;
+      nameParts.unshift(cleanName(token.string));
+
+      token = editor.getTokenAt(Pos(cur.line, token.start));
+      if (token.string == ".") {
+        cont = true;
+        token = editor.getTokenAt(Pos(cur.line, token.start));
+      }
+    }
+
+    // Try to complete table names
+    var string = nameParts.join(".");
+    addMatches(result, string, tables, function(w) {
+      return useIdentifierQuotes ? insertIdentifierQuotes(w) : w;
+    });
+
+    // Try to complete columns from defaultTable
+    addMatches(result, string, defaultTable, function(w) {
+      return useIdentifierQuotes ? insertIdentifierQuotes(w) : w;
+    });
+
+    // Try to complete columns
+    string = nameParts.pop();
+    var table = nameParts.join(".");
+
+    var alias = false;
+    var aliasTable = table;
+    // Check if table is available. If not, find table by Alias
+    if (!getTable(table)) {
+      var oldTable = table;
+      table = findTableByAlias(table, editor);
+      if (table !== oldTable) alias = true;
+    }
+
+    var columns = getTable(table);
+    if (columns && columns.columns)
+      columns = columns.columns;
+
+    if (columns) {
+      addMatches(result, string, columns, function(w) {
+        var tableInsert = table;
+        if (alias == true) tableInsert = aliasTable;
+        if (typeof w == "string") {
+          w = tableInsert + "." + w;
+        } else {
+          w = shallowClone(w);
+          w.text = tableInsert + "." + w.text;
+        }
+        return useIdentifierQuotes ? insertIdentifierQuotes(w) : w;
+      });
+    }
+
+    return start;
+  }
+
+  function eachWord(lineText, f) {
+    var words = lineText.split(/\s+/)
+    for (var i = 0; i < words.length; i++)
+      if (words[i]) f(words[i].replace(/[,;]/g, ''))
+  }
+
+  function findTableByAlias(alias, editor) {
+    var doc = editor.doc;
+    var fullQuery = doc.getValue();
+    var aliasUpperCase = alias.toUpperCase();
+    var previousWord = "";
+    var table = "";
+    var separator = [];
+    var validRange = {
+      start: Pos(0, 0),
+      end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
+    };
+
+    //add separator
+    var indexOfSeparator = fullQuery.indexOf(CONS.QUERY_DIV);
+    while(indexOfSeparator != -1) {
+      separator.push(doc.posFromIndex(indexOfSeparator));
+      indexOfSeparator = fullQuery.indexOf(CONS.QUERY_DIV, indexOfSeparator+1);
+    }
+    separator.unshift(Pos(0, 0));
+    separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
+
+    //find valid range
+    var prevItem = null;
+    var current = editor.getCursor()
+    for (var i = 0; i < separator.length; i++) {
+      if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
+        validRange = {start: prevItem, end: separator[i]};
+        break;
+      }
+      prevItem = separator[i];
+    }
+
+    if (validRange.start) {
+      var query = doc.getRange(validRange.start, validRange.end, false);
+
+      for (var i = 0; i < query.length; i++) {
+        var lineText = query[i];
+        eachWord(lineText, function(word) {
+          var wordUpperCase = word.toUpperCase();
+          if (wordUpperCase === aliasUpperCase && getTable(previousWord))
+            table = previousWord;
+          if (wordUpperCase !== CONS.ALIAS_KEYWORD)
+            previousWord = word;
+        });
+        if (table) break;
+      }
+    }
+    return table;
+  }
+
+  CodeMirror.registerHelper("hint", "sql", function(editor, options) {
+    tables = parseTables(options && options.tables)
+    var defaultTableName = options && options.defaultTable;
+    var disableKeywords = options && options.disableKeywords;
+    defaultTable = defaultTableName && getTable(defaultTableName);
+    keywords = getKeywords(editor);
+    identifierQuote = getIdentifierQuote(editor);
+
+    if (defaultTableName && !defaultTable)
+      defaultTable = findTableByAlias(defaultTableName, editor);
+
+    defaultTable = defaultTable || [];
+
+    if (defaultTable.columns)
+      defaultTable = defaultTable.columns;
+
+    var cur = editor.getCursor();
+    var result = [];
+    var token = editor.getTokenAt(cur), start, end, search;
+    if (token.end > cur.ch) {
+      token.end = cur.ch;
+      token.string = token.string.slice(0, cur.ch - token.start);
+    }
+
+    if (token.string.match(/^[.`"\w@]\w*$/)) {
+      search = token.string;
+      start = token.start;
+      end = token.end;
+    } else {
+      start = end = cur.ch;
+      search = "";
+    }
+    if (search.charAt(0) == "." || search.charAt(0) == identifierQuote) {
+      start = nameCompletion(cur, token, result, editor);
+    } else {
+      addMatches(result, search, defaultTable, function(w) {return w;});
+      addMatches(result, search, tables, function(w) {return w;});
+      if (!disableKeywords)
+        addMatches(result, search, keywords, function(w) {return w.toUpperCase();});
+    }
+
+    return {list: result, from: Pos(cur.line, start), to: Pos(cur.line, end)};
+  });
+});
+
+
+/***/ }),
+
 /***/ "../../../node_modules/codemirror/addon/hint/xml-hint.js":
-/*!**************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/hint/xml-hint.js ***!
-  \**************************************************************************************/
+/*!*********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/xml-hint.js ***!
+  \*********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1095,10 +2673,81 @@ if(false) {}
 
 /***/ }),
 
+/***/ "../../../node_modules/codemirror/addon/lint/javascript-lint.js":
+/*!****************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/lint/javascript-lint.js ***!
+  \****************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+  else {}
+})(function(CodeMirror) {
+  "use strict";
+  // declare global: JSHINT
+
+  function validator(text, options) {
+    if (!window.JSHINT) {
+      if (window.console) {
+        window.console.error("Error: window.JSHINT not defined, CodeMirror JavaScript linting cannot run.");
+      }
+      return [];
+    }
+    if (!options.indent) // JSHint error.character actually is a column index, this fixes underlining on lines using tabs for indentation
+      options.indent = 1; // JSHint default value is 4
+    JSHINT(text, options, options.globals);
+    var errors = JSHINT.data().errors, result = [];
+    if (errors) parseErrors(errors, result);
+    return result;
+  }
+
+  CodeMirror.registerHelper("lint", "javascript", validator);
+
+  function parseErrors(errors, output) {
+    for ( var i = 0; i < errors.length; i++) {
+      var error = errors[i];
+      if (error) {
+        if (error.line <= 0) {
+          if (window.console) {
+            window.console.warn("Cannot display JSHint error (invalid line " + error.line + ")", error);
+          }
+          continue;
+        }
+
+        var start = error.character - 1, end = start + 1;
+        if (error.evidence) {
+          var index = error.evidence.substring(start).search(/.\b/);
+          if (index > -1) {
+            end += index;
+          }
+        }
+
+        // Convert to format expected by validation service
+        var hint = {
+          message: error.reason,
+          severity: error.code ? (error.code.startsWith('W') ? "warning" : "error") : "error",
+          from: CodeMirror.Pos(error.line - 1, start),
+          to: CodeMirror.Pos(error.line - 1, end)
+        };
+
+        output.push(hint);
+      }
+    }
+  }
+});
+
+
+/***/ }),
+
 /***/ "../../../node_modules/codemirror/addon/lint/lint.css":
-/*!***********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
-  \***********************************************************************************/
+/*!******************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1126,9 +2775,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/lint/lint.js":
-/*!**********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/lint/lint.js ***!
-  \**********************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1386,9 +3035,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/lib/codemirror.css":
-/*!**********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
-  \**********************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1416,9 +3065,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/lib/codemirror.js":
-/*!*********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/lib/codemirror.js ***!
-  \*********************************************************************************/
+/*!****************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/lib/codemirror.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11098,9 +12747,9 @@ return CodeMirror$1;
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/mode/css/css.js":
-/*!*******************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/mode/css/css.js ***!
-  \*******************************************************************************/
+/*!**************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/mode/css/css.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11938,9 +13587,9 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js":
-/*!*******************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/mode/htmlmixed/htmlmixed.js ***!
-  \*******************************************************************************************/
+/*!**************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/mode/htmlmixed/htmlmixed.js ***!
+  \**************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -12098,9 +13747,9 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/mode/javascript/javascript.js":
-/*!*********************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/mode/javascript/javascript.js ***!
-  \*********************************************************************************************/
+/*!****************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/mode/javascript/javascript.js ***!
+  \****************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -12973,10 +14622,508 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 
 /***/ }),
 
+/***/ "../../../node_modules/codemirror/mode/sql/sql.js":
+/*!**************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/mode/sql/sql.js ***!
+  \**************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+  else {}
+})(function(CodeMirror) {
+"use strict";
+
+CodeMirror.defineMode("sql", function(config, parserConfig) {
+  "use strict";
+
+  var client         = parserConfig.client || {},
+      atoms          = parserConfig.atoms || {"false": true, "true": true, "null": true},
+      builtin        = parserConfig.builtin || {},
+      keywords       = parserConfig.keywords || {},
+      operatorChars  = parserConfig.operatorChars || /^[*+\-%<>!=&|~^]/,
+      support        = parserConfig.support || {},
+      hooks          = parserConfig.hooks || {},
+      dateSQL        = parserConfig.dateSQL || {"date" : true, "time" : true, "timestamp" : true},
+      backslashStringEscapes = parserConfig.backslashStringEscapes !== false
+
+  function tokenBase(stream, state) {
+    var ch = stream.next();
+
+    // call hooks from the mime type
+    if (hooks[ch]) {
+      var result = hooks[ch](stream, state);
+      if (result !== false) return result;
+    }
+
+    if (support.hexNumber &&
+      ((ch == "0" && stream.match(/^[xX][0-9a-fA-F]+/))
+      || (ch == "x" || ch == "X") && stream.match(/^'[0-9a-fA-F]+'/))) {
+      // hex
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/hexadecimal-literals.html
+      return "number";
+    } else if (support.binaryNumber &&
+      (((ch == "b" || ch == "B") && stream.match(/^'[01]+'/))
+      || (ch == "0" && stream.match(/^b[01]+/)))) {
+      // bitstring
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/bit-field-literals.html
+      return "number";
+    } else if (ch.charCodeAt(0) > 47 && ch.charCodeAt(0) < 58) {
+      // numbers
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/number-literals.html
+      stream.match(/^[0-9]*(\.[0-9]+)?([eE][-+]?[0-9]+)?/);
+      support.decimallessFloat && stream.match(/^\.(?!\.)/);
+      return "number";
+    } else if (ch == "?" && (stream.eatSpace() || stream.eol() || stream.eat(";"))) {
+      // placeholders
+      return "variable-3";
+    } else if (ch == "'" || (ch == '"' && support.doubleQuote)) {
+      // strings
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/string-literals.html
+      state.tokenize = tokenLiteral(ch);
+      return state.tokenize(stream, state);
+    } else if ((((support.nCharCast && (ch == "n" || ch == "N"))
+        || (support.charsetCast && ch == "_" && stream.match(/[a-z][a-z0-9]*/i)))
+        && (stream.peek() == "'" || stream.peek() == '"'))) {
+      // charset casting: _utf8'str', N'str', n'str'
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/string-literals.html
+      return "keyword";
+    } else if (/^[\(\),\;\[\]]/.test(ch)) {
+      // no highlighting
+      return null;
+    } else if (support.commentSlashSlash && ch == "/" && stream.eat("/")) {
+      // 1-line comment
+      stream.skipToEnd();
+      return "comment";
+    } else if ((support.commentHash && ch == "#")
+        || (ch == "-" && stream.eat("-") && (!support.commentSpaceRequired || stream.eat(" ")))) {
+      // 1-line comments
+      // ref: https://kb.askmonty.org/en/comment-syntax/
+      stream.skipToEnd();
+      return "comment";
+    } else if (ch == "/" && stream.eat("*")) {
+      // multi-line comments
+      // ref: https://kb.askmonty.org/en/comment-syntax/
+      state.tokenize = tokenComment(1);
+      return state.tokenize(stream, state);
+    } else if (ch == ".") {
+      // .1 for 0.1
+      if (support.zerolessFloat && stream.match(/^(?:\d+(?:e[+-]?\d+)?)/i))
+        return "number";
+      if (stream.match(/^\.+/))
+        return null
+      // .table_name (ODBC)
+      // // ref: http://dev.mysql.com/doc/refman/5.6/en/identifier-qualifiers.html
+      if (support.ODBCdotTable && stream.match(/^[\w\d_]+/))
+        return "variable-2";
+    } else if (operatorChars.test(ch)) {
+      // operators
+      stream.eatWhile(operatorChars);
+      return null;
+    } else if (ch == '{' &&
+        (stream.match(/^( )*(d|D|t|T|ts|TS)( )*'[^']*'( )*}/) || stream.match(/^( )*(d|D|t|T|ts|TS)( )*"[^"]*"( )*}/))) {
+      // dates (weird ODBC syntax)
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/date-and-time-literals.html
+      return "number";
+    } else {
+      stream.eatWhile(/^[_\w\d]/);
+      var word = stream.current().toLowerCase();
+      // dates (standard SQL syntax)
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/date-and-time-literals.html
+      if (dateSQL.hasOwnProperty(word) && (stream.match(/^( )+'[^']*'/) || stream.match(/^( )+"[^"]*"/)))
+        return "number";
+      if (atoms.hasOwnProperty(word)) return "atom";
+      if (builtin.hasOwnProperty(word)) return "builtin";
+      if (keywords.hasOwnProperty(word)) return "keyword";
+      if (client.hasOwnProperty(word)) return "string-2";
+      return null;
+    }
+  }
+
+  // 'string', with char specified in quote escaped by '\'
+  function tokenLiteral(quote) {
+    return function(stream, state) {
+      var escaped = false, ch;
+      while ((ch = stream.next()) != null) {
+        if (ch == quote && !escaped) {
+          state.tokenize = tokenBase;
+          break;
+        }
+        escaped = backslashStringEscapes && !escaped && ch == "\\";
+      }
+      return "string";
+    };
+  }
+  function tokenComment(depth) {
+    return function(stream, state) {
+      var m = stream.match(/^.*?(\/\*|\*\/)/)
+      if (!m) stream.skipToEnd()
+      else if (m[1] == "/*") state.tokenize = tokenComment(depth + 1)
+      else if (depth > 1) state.tokenize = tokenComment(depth - 1)
+      else state.tokenize = tokenBase
+      return "comment"
+    }
+  }
+
+  function pushContext(stream, state, type) {
+    state.context = {
+      prev: state.context,
+      indent: stream.indentation(),
+      col: stream.column(),
+      type: type
+    };
+  }
+
+  function popContext(state) {
+    state.indent = state.context.indent;
+    state.context = state.context.prev;
+  }
+
+  return {
+    startState: function() {
+      return {tokenize: tokenBase, context: null};
+    },
+
+    token: function(stream, state) {
+      if (stream.sol()) {
+        if (state.context && state.context.align == null)
+          state.context.align = false;
+      }
+      if (state.tokenize == tokenBase && stream.eatSpace()) return null;
+
+      var style = state.tokenize(stream, state);
+      if (style == "comment") return style;
+
+      if (state.context && state.context.align == null)
+        state.context.align = true;
+
+      var tok = stream.current();
+      if (tok == "(")
+        pushContext(stream, state, ")");
+      else if (tok == "[")
+        pushContext(stream, state, "]");
+      else if (state.context && state.context.type == tok)
+        popContext(state);
+      return style;
+    },
+
+    indent: function(state, textAfter) {
+      var cx = state.context;
+      if (!cx) return CodeMirror.Pass;
+      var closing = textAfter.charAt(0) == cx.type;
+      if (cx.align) return cx.col + (closing ? 0 : 1);
+      else return cx.indent + (closing ? 0 : config.indentUnit);
+    },
+
+    blockCommentStart: "/*",
+    blockCommentEnd: "*/",
+    lineComment: support.commentSlashSlash ? "//" : support.commentHash ? "#" : "--"
+  };
+});
+
+(function() {
+  "use strict";
+
+  // `identifier`
+  function hookIdentifier(stream) {
+    // MySQL/MariaDB identifiers
+    // ref: http://dev.mysql.com/doc/refman/5.6/en/identifier-qualifiers.html
+    var ch;
+    while ((ch = stream.next()) != null) {
+      if (ch == "`" && !stream.eat("`")) return "variable-2";
+    }
+    stream.backUp(stream.current().length - 1);
+    return stream.eatWhile(/\w/) ? "variable-2" : null;
+  }
+
+  // "identifier"
+  function hookIdentifierDoublequote(stream) {
+    // Standard SQL /SQLite identifiers
+    // ref: http://web.archive.org/web/20160813185132/http://savage.net.au/SQL/sql-99.bnf.html#delimited%20identifier
+    // ref: http://sqlite.org/lang_keywords.html
+    var ch;
+    while ((ch = stream.next()) != null) {
+      if (ch == "\"" && !stream.eat("\"")) return "variable-2";
+    }
+    stream.backUp(stream.current().length - 1);
+    return stream.eatWhile(/\w/) ? "variable-2" : null;
+  }
+
+  // variable token
+  function hookVar(stream) {
+    // variables
+    // @@prefix.varName @varName
+    // varName can be quoted with ` or ' or "
+    // ref: http://dev.mysql.com/doc/refman/5.5/en/user-variables.html
+    if (stream.eat("@")) {
+      stream.match(/^session\./);
+      stream.match(/^local\./);
+      stream.match(/^global\./);
+    }
+
+    if (stream.eat("'")) {
+      stream.match(/^.*'/);
+      return "variable-2";
+    } else if (stream.eat('"')) {
+      stream.match(/^.*"/);
+      return "variable-2";
+    } else if (stream.eat("`")) {
+      stream.match(/^.*`/);
+      return "variable-2";
+    } else if (stream.match(/^[0-9a-zA-Z$\.\_]+/)) {
+      return "variable-2";
+    }
+    return null;
+  };
+
+  // short client keyword token
+  function hookClient(stream) {
+    // \N means NULL
+    // ref: http://dev.mysql.com/doc/refman/5.5/en/null-values.html
+    if (stream.eat("N")) {
+        return "atom";
+    }
+    // \g, etc
+    // ref: http://dev.mysql.com/doc/refman/5.5/en/mysql-commands.html
+    return stream.match(/^[a-zA-Z.#!?]/) ? "variable-2" : null;
+  }
+
+  // these keywords are used by all SQL dialects (however, a mode can still overwrite it)
+  var sqlKeywords = "alter and as asc between by count create delete desc distinct drop from group having in insert into is join like not on or order select set table union update values where limit ";
+
+  // turn a space-separated list into an array
+  function set(str) {
+    var obj = {}, words = str.split(" ");
+    for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
+    return obj;
+  }
+
+  // A generic SQL Mode. It's not a standard, it just try to support what is generally supported
+  CodeMirror.defineMIME("text/x-sql", {
+    name: "sql",
+    keywords: set(sqlKeywords + "begin"),
+    builtin: set("bool boolean bit blob enum long longblob longtext medium mediumblob mediumint mediumtext time timestamp tinyblob tinyint tinytext text bigint int int1 int2 int3 int4 int8 integer float float4 float8 double char varbinary varchar varcharacter precision real date datetime year unsigned signed decimal numeric"),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=]/,
+    dateSQL: set("date time timestamp"),
+    support: set("ODBCdotTable doubleQuote binaryNumber hexNumber")
+  });
+
+  CodeMirror.defineMIME("text/x-mssql", {
+    name: "sql",
+    client: set("charset clear connect edit ego exit go help nopager notee nowarning pager print prompt quit rehash source status system tee"),
+    keywords: set(sqlKeywords + "begin trigger proc view index for add constraint key primary foreign collate clustered nonclustered declare exec"),
+    builtin: set("bigint numeric bit smallint decimal smallmoney int tinyint money float real char varchar text nchar nvarchar ntext binary varbinary image cursor timestamp hierarchyid uniqueidentifier sql_variant xml table "),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=]/,
+    backslashStringEscapes: false,
+    dateSQL: set("date datetimeoffset datetime2 smalldatetime datetime time"),
+    hooks: {
+      "@":   hookVar
+    }
+  });
+
+  CodeMirror.defineMIME("text/x-mysql", {
+    name: "sql",
+    client: set("charset clear connect edit ego exit go help nopager notee nowarning pager print prompt quit rehash source status system tee"),
+    keywords: set(sqlKeywords + "accessible action add after algorithm all analyze asensitive at authors auto_increment autocommit avg avg_row_length before binary binlog both btree cache call cascade cascaded case catalog_name chain change changed character check checkpoint checksum class_origin client_statistics close coalesce code collate collation collations column columns comment commit committed completion concurrent condition connection consistent constraint contains continue contributors convert cross current current_date current_time current_timestamp current_user cursor data database databases day_hour day_microsecond day_minute day_second deallocate dec declare default delay_key_write delayed delimiter des_key_file describe deterministic dev_pop dev_samp deviance diagnostics directory disable discard distinctrow div dual dumpfile each elseif enable enclosed end ends engine engines enum errors escape escaped even event events every execute exists exit explain extended fast fetch field fields first flush for force foreign found_rows full fulltext function general get global grant grants group group_concat handler hash help high_priority hosts hour_microsecond hour_minute hour_second if ignore ignore_server_ids import index index_statistics infile inner innodb inout insensitive insert_method install interval invoker isolation iterate key keys kill language last leading leave left level limit linear lines list load local localtime localtimestamp lock logs low_priority master master_heartbeat_period master_ssl_verify_server_cert masters match max max_rows maxvalue message_text middleint migrate min min_rows minute_microsecond minute_second mod mode modifies modify mutex mysql_errno natural next no no_write_to_binlog offline offset one online open optimize option optionally out outer outfile pack_keys parser partition partitions password phase plugin plugins prepare preserve prev primary privileges procedure processlist profile profiles purge query quick range read read_write reads real rebuild recover references regexp relaylog release remove rename reorganize repair repeatable replace require resignal restrict resume return returns revoke right rlike rollback rollup row row_format rtree savepoint schedule schema schema_name schemas second_microsecond security sensitive separator serializable server session share show signal slave slow smallint snapshot soname spatial specific sql sql_big_result sql_buffer_result sql_cache sql_calc_found_rows sql_no_cache sql_small_result sqlexception sqlstate sqlwarning ssl start starting starts status std stddev stddev_pop stddev_samp storage straight_join subclass_origin sum suspend table_name table_statistics tables tablespace temporary terminated to trailing transaction trigger triggers truncate uncommitted undo uninstall unique unlock upgrade usage use use_frm user user_resources user_statistics using utc_date utc_time utc_timestamp value variables varying view views warnings when while with work write xa xor year_month zerofill begin do then else loop repeat"),
+    builtin: set("bool boolean bit blob decimal double float long longblob longtext medium mediumblob mediumint mediumtext time timestamp tinyblob tinyint tinytext text bigint int int1 int2 int3 int4 int8 integer float float4 float8 double char varbinary varchar varcharacter precision date datetime year unsigned signed numeric"),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=&|^]/,
+    dateSQL: set("date time timestamp"),
+    support: set("ODBCdotTable decimallessFloat zerolessFloat binaryNumber hexNumber doubleQuote nCharCast charsetCast commentHash commentSpaceRequired"),
+    hooks: {
+      "@":   hookVar,
+      "`":   hookIdentifier,
+      "\\":  hookClient
+    }
+  });
+
+  CodeMirror.defineMIME("text/x-mariadb", {
+    name: "sql",
+    client: set("charset clear connect edit ego exit go help nopager notee nowarning pager print prompt quit rehash source status system tee"),
+    keywords: set(sqlKeywords + "accessible action add after algorithm all always analyze asensitive at authors auto_increment autocommit avg avg_row_length before binary binlog both btree cache call cascade cascaded case catalog_name chain change changed character check checkpoint checksum class_origin client_statistics close coalesce code collate collation collations column columns comment commit committed completion concurrent condition connection consistent constraint contains continue contributors convert cross current current_date current_time current_timestamp current_user cursor data database databases day_hour day_microsecond day_minute day_second deallocate dec declare default delay_key_write delayed delimiter des_key_file describe deterministic dev_pop dev_samp deviance diagnostics directory disable discard distinctrow div dual dumpfile each elseif enable enclosed end ends engine engines enum errors escape escaped even event events every execute exists exit explain extended fast fetch field fields first flush for force foreign found_rows full fulltext function general generated get global grant grants group groupby_concat handler hard hash help high_priority hosts hour_microsecond hour_minute hour_second if ignore ignore_server_ids import index index_statistics infile inner innodb inout insensitive insert_method install interval invoker isolation iterate key keys kill language last leading leave left level limit linear lines list load local localtime localtimestamp lock logs low_priority master master_heartbeat_period master_ssl_verify_server_cert masters match max max_rows maxvalue message_text middleint migrate min min_rows minute_microsecond minute_second mod mode modifies modify mutex mysql_errno natural next no no_write_to_binlog offline offset one online open optimize option optionally out outer outfile pack_keys parser partition partitions password persistent phase plugin plugins prepare preserve prev primary privileges procedure processlist profile profiles purge query quick range read read_write reads real rebuild recover references regexp relaylog release remove rename reorganize repair repeatable replace require resignal restrict resume return returns revoke right rlike rollback rollup row row_format rtree savepoint schedule schema schema_name schemas second_microsecond security sensitive separator serializable server session share show shutdown signal slave slow smallint snapshot soft soname spatial specific sql sql_big_result sql_buffer_result sql_cache sql_calc_found_rows sql_no_cache sql_small_result sqlexception sqlstate sqlwarning ssl start starting starts status std stddev stddev_pop stddev_samp storage straight_join subclass_origin sum suspend table_name table_statistics tables tablespace temporary terminated to trailing transaction trigger triggers truncate uncommitted undo uninstall unique unlock upgrade usage use use_frm user user_resources user_statistics using utc_date utc_time utc_timestamp value variables varying view views virtual warnings when while with work write xa xor year_month zerofill begin do then else loop repeat"),
+    builtin: set("bool boolean bit blob decimal double float long longblob longtext medium mediumblob mediumint mediumtext time timestamp tinyblob tinyint tinytext text bigint int int1 int2 int3 int4 int8 integer float float4 float8 double char varbinary varchar varcharacter precision date datetime year unsigned signed numeric"),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=&|^]/,
+    dateSQL: set("date time timestamp"),
+    support: set("ODBCdotTable decimallessFloat zerolessFloat binaryNumber hexNumber doubleQuote nCharCast charsetCast commentHash commentSpaceRequired"),
+    hooks: {
+      "@":   hookVar,
+      "`":   hookIdentifier,
+      "\\":  hookClient
+    }
+  });
+
+  // provided by the phpLiteAdmin project - phpliteadmin.org
+  CodeMirror.defineMIME("text/x-sqlite", {
+    name: "sql",
+    // commands of the official SQLite client, ref: https://www.sqlite.org/cli.html#dotcmd
+    client: set("auth backup bail binary changes check clone databases dbinfo dump echo eqp exit explain fullschema headers help import imposter indexes iotrace limit lint load log mode nullvalue once open output print prompt quit read restore save scanstats schema separator session shell show stats system tables testcase timeout timer trace vfsinfo vfslist vfsname width"),
+    // ref: http://sqlite.org/lang_keywords.html
+    keywords: set(sqlKeywords + "abort action add after all analyze attach autoincrement before begin cascade case cast check collate column commit conflict constraint cross current_date current_time current_timestamp database default deferrable deferred detach each else end escape except exclusive exists explain fail for foreign full glob if ignore immediate index indexed initially inner instead intersect isnull key left limit match natural no notnull null of offset outer plan pragma primary query raise recursive references regexp reindex release rename replace restrict right rollback row savepoint temp temporary then to transaction trigger unique using vacuum view virtual when with without"),
+    // SQLite is weakly typed, ref: http://sqlite.org/datatype3.html. This is just a list of some common types.
+    builtin: set("bool boolean bit blob decimal double float long longblob longtext medium mediumblob mediumint mediumtext time timestamp tinyblob tinyint tinytext text clob bigint int int2 int8 integer float double char varchar date datetime year unsigned signed numeric real"),
+    // ref: http://sqlite.org/syntax/literal-value.html
+    atoms: set("null current_date current_time current_timestamp"),
+    // ref: http://sqlite.org/lang_expr.html#binaryops
+    operatorChars: /^[*+\-%<>!=&|/~]/,
+    // SQLite is weakly typed, ref: http://sqlite.org/datatype3.html. This is just a list of some common types.
+    dateSQL: set("date time timestamp datetime"),
+    support: set("decimallessFloat zerolessFloat"),
+    identifierQuote: "\"",  //ref: http://sqlite.org/lang_keywords.html
+    hooks: {
+      // bind-parameters ref:http://sqlite.org/lang_expr.html#varparam
+      "@":   hookVar,
+      ":":   hookVar,
+      "?":   hookVar,
+      "$":   hookVar,
+      // The preferred way to escape Identifiers is using double quotes, ref: http://sqlite.org/lang_keywords.html
+      "\"":   hookIdentifierDoublequote,
+      // there is also support for backtics, ref: http://sqlite.org/lang_keywords.html
+      "`":   hookIdentifier
+    }
+  });
+
+  // the query language used by Apache Cassandra is called CQL, but this mime type
+  // is called Cassandra to avoid confusion with Contextual Query Language
+  CodeMirror.defineMIME("text/x-cassandra", {
+    name: "sql",
+    client: { },
+    keywords: set("add all allow alter and any apply as asc authorize batch begin by clustering columnfamily compact consistency count create custom delete desc distinct drop each_quorum exists filtering from grant if in index insert into key keyspace keyspaces level limit local_one local_quorum modify nan norecursive nosuperuser not of on one order password permission permissions primary quorum rename revoke schema select set storage superuser table three to token truncate ttl two type unlogged update use user users using values where with writetime"),
+    builtin: set("ascii bigint blob boolean counter decimal double float frozen inet int list map static text timestamp timeuuid tuple uuid varchar varint"),
+    atoms: set("false true infinity NaN"),
+    operatorChars: /^[<>=]/,
+    dateSQL: { },
+    support: set("commentSlashSlash decimallessFloat"),
+    hooks: { }
+  });
+
+  // this is based on Peter Raganitsch's 'plsql' mode
+  CodeMirror.defineMIME("text/x-plsql", {
+    name:       "sql",
+    client:     set("appinfo arraysize autocommit autoprint autorecovery autotrace blockterminator break btitle cmdsep colsep compatibility compute concat copycommit copytypecheck define describe echo editfile embedded escape exec execute feedback flagger flush heading headsep instance linesize lno loboffset logsource long longchunksize markup native newpage numformat numwidth pagesize pause pno recsep recsepchar release repfooter repheader serveroutput shiftinout show showmode size spool sqlblanklines sqlcase sqlcode sqlcontinue sqlnumber sqlpluscompatibility sqlprefix sqlprompt sqlterminator suffix tab term termout time timing trimout trimspool ttitle underline verify version wrap"),
+    keywords:   set("abort accept access add all alter and any array arraylen as asc assert assign at attributes audit authorization avg base_table begin between binary_integer body boolean by case cast char char_base check close cluster clusters colauth column comment commit compress connect connected constant constraint crash create current currval cursor data_base database date dba deallocate debugoff debugon decimal declare default definition delay delete desc digits dispose distinct do drop else elseif elsif enable end entry escape exception exception_init exchange exclusive exists exit external fast fetch file for force form from function generic goto grant group having identified if immediate in increment index indexes indicator initial initrans insert interface intersect into is key level library like limited local lock log logging long loop master maxextents maxtrans member minextents minus mislabel mode modify multiset new next no noaudit nocompress nologging noparallel not nowait number_base object of off offline on online only open option or order out package parallel partition pctfree pctincrease pctused pls_integer positive positiven pragma primary prior private privileges procedure public raise range raw read rebuild record ref references refresh release rename replace resource restrict return returning returns reverse revoke rollback row rowid rowlabel rownum rows run savepoint schema segment select separate session set share snapshot some space split sql start statement storage subtype successful synonym tabauth table tables tablespace task terminate then to trigger truncate type union unique unlimited unrecoverable unusable update use using validate value values variable view views when whenever where while with work"),
+    builtin:    set("abs acos add_months ascii asin atan atan2 average bfile bfilename bigserial bit blob ceil character chartorowid chr clob concat convert cos cosh count dec decode deref dual dump dup_val_on_index empty error exp false float floor found glb greatest hextoraw initcap instr instrb int integer isopen last_day least length lengthb ln lower lpad ltrim lub make_ref max min mlslabel mod months_between natural naturaln nchar nclob new_time next_day nextval nls_charset_decl_len nls_charset_id nls_charset_name nls_initcap nls_lower nls_sort nls_upper nlssort no_data_found notfound null number numeric nvarchar2 nvl others power rawtohex real reftohex round rowcount rowidtochar rowtype rpad rtrim serial sign signtype sin sinh smallint soundex sqlcode sqlerrm sqrt stddev string substr substrb sum sysdate tan tanh to_char text to_date to_label to_multi_byte to_number to_single_byte translate true trunc uid unlogged upper user userenv varchar varchar2 variance varying vsize xml"),
+    operatorChars: /^[*+\-%<>!=~]/,
+    dateSQL:    set("date time timestamp"),
+    support:    set("doubleQuote nCharCast zerolessFloat binaryNumber hexNumber")
+  });
+
+  // Created to support specific hive keywords
+  CodeMirror.defineMIME("text/x-hive", {
+    name: "sql",
+    keywords: set("select alter $elem$ $key$ $value$ add after all analyze and archive as asc before between binary both bucket buckets by cascade case cast change cluster clustered clusterstatus collection column columns comment compute concatenate continue create cross cursor data database databases dbproperties deferred delete delimited desc describe directory disable distinct distribute drop else enable end escaped exclusive exists explain export extended external false fetch fields fileformat first format formatted from full function functions grant group having hold_ddltime idxproperties if import in index indexes inpath inputdriver inputformat insert intersect into is items join keys lateral left like limit lines load local location lock locks mapjoin materialized minus msck no_drop nocompress not of offline on option or order out outer outputdriver outputformat overwrite partition partitioned partitions percent plus preserve procedure purge range rcfile read readonly reads rebuild recordreader recordwriter recover reduce regexp rename repair replace restrict revoke right rlike row schema schemas semi sequencefile serde serdeproperties set shared show show_database sort sorted ssl statistics stored streamtable table tables tablesample tblproperties temporary terminated textfile then tmp to touch transform trigger true unarchive undo union uniquejoin unlock update use using utc utc_tmestamp view when where while with"),
+    builtin: set("bool boolean long timestamp tinyint smallint bigint int float double date datetime unsigned string array struct map uniontype"),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=]/,
+    dateSQL: set("date timestamp"),
+    support: set("ODBCdotTable doubleQuote binaryNumber hexNumber")
+  });
+
+  CodeMirror.defineMIME("text/x-pgsql", {
+    name: "sql",
+    client: set("source"),
+    // https://www.postgresql.org/docs/10/static/sql-keywords-appendix.html
+    keywords: set(sqlKeywords + "a abort abs absent absolute access according action ada add admin after aggregate all allocate also always analyse analyze any are array array_agg array_max_cardinality asensitive assertion assignment asymmetric at atomic attribute attributes authorization avg backward base64 before begin begin_frame begin_partition bernoulli binary bit_length blob blocked bom both breadth c cache call called cardinality cascade cascaded case cast catalog catalog_name ceil ceiling chain characteristics characters character_length character_set_catalog character_set_name character_set_schema char_length check checkpoint class class_origin clob close cluster coalesce cobol collate collation collation_catalog collation_name collation_schema collect column columns column_name command_function command_function_code comment comments commit committed concurrently condition condition_number configuration conflict connect connection connection_name constraint constraints constraint_catalog constraint_name constraint_schema constructor contains content continue control conversion convert copy corr corresponding cost covar_pop covar_samp cross csv cube cume_dist current current_catalog current_date current_default_transform_group current_path current_role current_row current_schema current_time current_timestamp current_transform_group_for_type current_user cursor cursor_name cycle data database datalink datetime_interval_code datetime_interval_precision day db deallocate dec declare default defaults deferrable deferred defined definer degree delimiter delimiters dense_rank depth deref derived describe descriptor deterministic diagnostics dictionary disable discard disconnect dispatch dlnewcopy dlpreviouscopy dlurlcomplete dlurlcompleteonly dlurlcompletewrite dlurlpath dlurlpathonly dlurlpathwrite dlurlscheme dlurlserver dlvalue do document domain dynamic dynamic_function dynamic_function_code each element else empty enable encoding encrypted end end-exec end_frame end_partition enforced enum equals escape event every except exception exclude excluding exclusive exec execute exists exp explain expression extension external extract false family fetch file filter final first first_value flag float floor following for force foreign fortran forward found frame_row free freeze fs full function functions fusion g general generated get global go goto grant granted greatest grouping groups handler header hex hierarchy hold hour id identity if ignore ilike immediate immediately immutable implementation implicit import including increment indent index indexes indicator inherit inherits initially inline inner inout input insensitive instance instantiable instead integrity intersect intersection invoker isnull isolation k key key_member key_type label lag language large last last_value lateral lc_collate lc_ctype lead leading leakproof least left length level library like_regex link listen ln load local localtime localtimestamp location locator lock locked logged lower m map mapping match matched materialized max maxvalue max_cardinality member merge message_length message_octet_length message_text method min minute minvalue mod mode modifies module month more move multiset mumps name names namespace national natural nchar nclob nesting new next nfc nfd nfkc nfkd nil no none normalize normalized nothing notify notnull nowait nth_value ntile null nullable nullif nulls number object occurrences_regex octets octet_length of off offset oids old only open operator option options ordering ordinality others out outer output over overlaps overlay overriding owned owner p pad parallel parameter parameter_mode parameter_name parameter_ordinal_position parameter_specific_catalog parameter_specific_name parameter_specific_schema parser partial partition pascal passing passthrough password percent percentile_cont percentile_disc percent_rank period permission placing plans pli policy portion position position_regex power precedes preceding prepare prepared preserve primary prior privileges procedural procedure program public quote range rank read reads reassign recheck recovery recursive ref references referencing refresh regr_avgx regr_avgy regr_count regr_intercept regr_r2 regr_slope regr_sxx regr_sxy regr_syy reindex relative release rename repeatable replace replica requiring reset respect restart restore restrict restricted result return returned_cardinality returned_length returned_octet_length returned_sqlstate returning returns revoke right role rollback rollup routine routine_catalog routine_name routine_schema row rows row_count row_number rule savepoint scale schema schema_name scope scope_catalog scope_name scope_schema scroll search second section security selective self sensitive sequence sequences serializable server server_name session session_user setof sets share show similar simple size skip snapshot some source space specific specifictype specific_name sql sqlcode sqlerror sqlexception sqlstate sqlwarning sqrt stable standalone start state statement static statistics stddev_pop stddev_samp stdin stdout storage strict strip structure style subclass_origin submultiset substring substring_regex succeeds sum symmetric sysid system system_time system_user t tables tablesample tablespace table_name temp template temporary then ties timezone_hour timezone_minute to token top_level_count trailing transaction transactions_committed transactions_rolled_back transaction_active transform transforms translate translate_regex translation treat trigger trigger_catalog trigger_name trigger_schema trim trim_array true truncate trusted type types uescape unbounded uncommitted under unencrypted unique unknown unlink unlisten unlogged unnamed unnest until untyped upper uri usage user user_defined_type_catalog user_defined_type_code user_defined_type_name user_defined_type_schema using vacuum valid validate validator value value_of varbinary variadic var_pop var_samp verbose version versioning view views volatile when whenever whitespace width_bucket window within work wrapper write xmlagg xmlattributes xmlbinary xmlcast xmlcomment xmlconcat xmldeclaration xmldocument xmlelement xmlexists xmlforest xmliterate xmlnamespaces xmlparse xmlpi xmlquery xmlroot xmlschema xmlserialize xmltable xmltext xmlvalidate year yes loop repeat attach path depends detach zone"),
+    // https://www.postgresql.org/docs/10/static/datatype.html
+    builtin: set("bigint int8 bigserial serial8 bit varying varbit boolean bool box bytea character char varchar cidr circle date double precision float8 inet integer int int4 interval json jsonb line lseg macaddr macaddr8 money numeric decimal path pg_lsn point polygon real float4 smallint int2 smallserial serial2 serial serial4 text time without zone with timetz timestamp timestamptz tsquery tsvector txid_snapshot uuid xml"),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=&|^\/#@?~]/,
+    dateSQL: set("date time timestamp"),
+    support: set("ODBCdotTable decimallessFloat zerolessFloat binaryNumber hexNumber nCharCast charsetCast")
+  });
+
+  // Google's SQL-like query language, GQL
+  CodeMirror.defineMIME("text/x-gql", {
+    name: "sql",
+    keywords: set("ancestor and asc by contains desc descendant distinct from group has in is limit offset on order select superset where"),
+    atoms: set("false true"),
+    builtin: set("blob datetime first key __key__ string integer double boolean null"),
+    operatorChars: /^[*+\-%<>!=]/
+  });
+
+  // Greenplum
+  CodeMirror.defineMIME("text/x-gpsql", {
+    name: "sql",
+    client: set("source"),
+    //https://github.com/greenplum-db/gpdb/blob/master/src/include/parser/kwlist.h
+    keywords: set("abort absolute access action active add admin after aggregate all also alter always analyse analyze and any array as asc assertion assignment asymmetric at authorization backward before begin between bigint binary bit boolean both by cache called cascade cascaded case cast chain char character characteristics check checkpoint class close cluster coalesce codegen collate column comment commit committed concurrency concurrently configuration connection constraint constraints contains content continue conversion copy cost cpu_rate_limit create createdb createexttable createrole createuser cross csv cube current current_catalog current_date current_role current_schema current_time current_timestamp current_user cursor cycle data database day deallocate dec decimal declare decode default defaults deferrable deferred definer delete delimiter delimiters deny desc dictionary disable discard distinct distributed do document domain double drop dxl each else enable encoding encrypted end enum errors escape every except exchange exclude excluding exclusive execute exists explain extension external extract false family fetch fields filespace fill filter first float following for force foreign format forward freeze from full function global grant granted greatest group group_id grouping handler hash having header hold host hour identity if ignore ilike immediate immutable implicit in including inclusive increment index indexes inherit inherits initially inline inner inout input insensitive insert instead int integer intersect interval into invoker is isnull isolation join key language large last leading least left level like limit list listen load local localtime localtimestamp location lock log login mapping master match maxvalue median merge minute minvalue missing mode modifies modify month move name names national natural nchar new newline next no nocreatedb nocreateexttable nocreaterole nocreateuser noinherit nologin none noovercommit nosuperuser not nothing notify notnull nowait null nullif nulls numeric object of off offset oids old on only operator option options or order ordered others out outer over overcommit overlaps overlay owned owner parser partial partition partitions passing password percent percentile_cont percentile_disc placing plans position preceding precision prepare prepared preserve primary prior privileges procedural procedure protocol queue quote randomly range read readable reads real reassign recheck recursive ref references reindex reject relative release rename repeatable replace replica reset resource restart restrict returning returns revoke right role rollback rollup rootpartition row rows rule savepoint scatter schema scroll search second security segment select sequence serializable session session_user set setof sets share show similar simple smallint some split sql stable standalone start statement statistics stdin stdout storage strict strip subpartition subpartitions substring superuser symmetric sysid system table tablespace temp template temporary text then threshold ties time timestamp to trailing transaction treat trigger trim true truncate trusted type unbounded uncommitted unencrypted union unique unknown unlisten until update user using vacuum valid validation validator value values varchar variadic varying verbose version view volatile web when where whitespace window with within without work writable write xml xmlattributes xmlconcat xmlelement xmlexists xmlforest xmlparse xmlpi xmlroot xmlserialize year yes zone"),
+    builtin: set("bigint int8 bigserial serial8 bit varying varbit boolean bool box bytea character char varchar cidr circle date double precision float float8 inet integer int int4 interval json jsonb line lseg macaddr macaddr8 money numeric decimal path pg_lsn point polygon real float4 smallint int2 smallserial serial2 serial serial4 text time without zone with timetz timestamp timestamptz tsquery tsvector txid_snapshot uuid xml"),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=&|^\/#@?~]/,
+    dateSQL: set("date time timestamp"),
+    support: set("ODBCdotTable decimallessFloat zerolessFloat binaryNumber hexNumber nCharCast charsetCast")
+  });
+
+  // Spark SQL
+  CodeMirror.defineMIME("text/x-sparksql", {
+    name: "sql",
+    keywords: set("add after all alter analyze and anti archive array as asc at between bucket buckets by cache cascade case cast change clear cluster clustered codegen collection column columns comment commit compact compactions compute concatenate cost create cross cube current current_date current_timestamp database databases datata dbproperties defined delete delimited desc describe dfs directories distinct distribute drop else end escaped except exchange exists explain export extended external false fields fileformat first following for format formatted from full function functions global grant group grouping having if ignore import in index indexes inner inpath inputformat insert intersect interval into is items join keys last lateral lazy left like limit lines list load local location lock locks logical macro map minus msck natural no not null nulls of on option options or order out outer outputformat over overwrite partition partitioned partitions percent preceding principals purge range recordreader recordwriter recover reduce refresh regexp rename repair replace reset restrict revoke right rlike role roles rollback rollup row rows schema schemas select semi separated serde serdeproperties set sets show skewed sort sorted start statistics stored stratify struct table tables tablesample tblproperties temp temporary terminated then to touch transaction transactions transform true truncate unarchive unbounded uncache union unlock unset use using values view when where window with"),
+    builtin: set("tinyint smallint int bigint boolean float double string binary timestamp decimal array map struct uniontype delimited serde sequencefile textfile rcfile inputformat outputformat"),
+    atoms: set("false true null"),
+    operatorChars: /^[*+\-%<>!=~&|^]/,
+    dateSQL: set("date time timestamp"),
+    support: set("ODBCdotTable doubleQuote zerolessFloat")
+  });
+
+  // Esper
+  CodeMirror.defineMIME("text/x-esper", {
+    name: "sql",
+    client: set("source"),
+    // http://www.espertech.com/esper/release-5.5.0/esper-reference/html/appendix_keywords.html
+    keywords: set("alter and as asc between by count create delete desc distinct drop from group having in insert into is join like not on or order select set table union update values where limit after all and as at asc avedev avg between by case cast coalesce count create current_timestamp day days delete define desc distinct else end escape events every exists false first from full group having hour hours in inner insert instanceof into irstream is istream join last lastweekday left limit like max match_recognize matches median measures metadatasql min minute minutes msec millisecond milliseconds not null offset on or order outer output partition pattern prev prior regexp retain-union retain-intersection right rstream sec second seconds select set some snapshot sql stddev sum then true unidirectional until update variable weekday when where window"),
+    builtin: {},
+    atoms: set("false true null"),
+    operatorChars: /^[*+\-%<>!=&|^\/#@?~]/,
+    dateSQL: set("time"),
+    support: set("decimallessFloat zerolessFloat binaryNumber hexNumber")
+  });
+}());
+
+});
+
+/*
+  How Properties of Mime Types are used by SQL Mode
+  =================================================
+
+  keywords:
+    A list of keywords you want to be highlighted.
+  builtin:
+    A list of builtin types you want to be highlighted (if you want types to be of class "builtin" instead of "keyword").
+  operatorChars:
+    All characters that must be handled as operators.
+  client:
+    Commands parsed and executed by the client (not the server).
+  support:
+    A list of supported syntaxes which are not common, but are supported by more than 1 DBMS.
+    * ODBCdotTable: .tableName
+    * zerolessFloat: .1
+    * doubleQuote
+    * nCharCast: N'string'
+    * charsetCast: _utf8'string'
+    * commentHash: use # char for comments
+    * commentSlashSlash: use // for comments
+    * commentSpaceRequired: require a space after -- for comments
+  atoms:
+    Keywords that must be highlighted as atoms,. Some DBMS's support more atoms than others:
+    UNKNOWN, INFINITY, UNDERFLOW, NaN...
+  dateSQL:
+    Used for date/time SQL standard syntax, because not all DBMS's support same temporal types.
+*/
+
+
+/***/ }),
+
 /***/ "../../../node_modules/codemirror/mode/xml/xml.js":
-/*!*******************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/mode/xml/xml.js ***!
-  \*******************************************************************************/
+/*!**************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/mode/xml/xml.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13383,9 +15530,9 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/fold/foldgutter.css":
-/*!*************************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/css-loader!F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
-  \*************************************************************************************************************************************************/
+/*!***************************************************************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
+  \***************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13402,9 +15549,9 @@ exports.push([module.i, ".CodeMirror-foldmarker {\n  color: blue;\n  text-shadow
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/hint/show-hint.css":
-/*!************************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/css-loader!F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
-  \************************************************************************************************************************************************/
+/*!**************************************************************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
+  \**************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13421,9 +15568,9 @@ exports.push([module.i, ".CodeMirror-hints {\n  position: absolute;\n  z-index: 
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/lint/lint.css":
-/*!*******************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/css-loader!F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
-  \*******************************************************************************************************************************************/
+/*!*********************************************************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
+  \*********************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13440,9 +15587,9 @@ exports.push([module.i, "/* The lint marker gutter */\n.CodeMirror-lint-markers 
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/lib/codemirror.css":
-/*!******************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/css-loader!F:/sc/spexplorerjs/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
-  \******************************************************************************************************************************************/
+/*!********************************************************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
+  \********************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13459,9 +15606,9 @@ exports.push([module.i, "/* BASICS */\n\n.CodeMirror {\n  /* Set height, width, 
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../node_modules/jstree/dist/themes/default/style.min.css":
-/*!*****************************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/css-loader!F:/sc/spexplorerjs/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
-  \*****************************************************************************************************************************************************/
+/*!*******************************************************************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
+  \*******************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13479,9 +15626,9 @@ exports.push([module.i, ".jstree-node,.jstree-children,.jstree-container-ul{disp
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../public/vendor/bootstrap/3.3.7/css/spexp.css":
-/*!*******************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/css-loader!F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
-  \*******************************************************************************************************************************************/
+/*!*********************************************************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
+  \*********************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13499,9 +15646,9 @@ exports.push([module.i, ".spexp {\r\n  /*!\r\n * Bootstrap v3.3.7 (http://getboo
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../public/vendor/select2/css/select2.css":
-/*!*************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/css-loader!F:/sc/spexplorerjs/spexplorerjs/public/vendor/select2/css/select2.css ***!
-  \*************************************************************************************************************************************/
+/*!***************************************************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
+  \***************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13518,9 +15665,9 @@ exports.push([module.i, ".select2-container {\r\n  box-sizing: border-box;\r\n  
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/lib/css-base.js":
-/*!*******************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
-  \*******************************************************************************/
+/*!**************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -13605,9 +15752,9 @@ function toComment(sourceMap) {
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/lib/url/escape.js":
-/*!*********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/css-loader/lib/url/escape.js ***!
-  \*********************************************************************************/
+/*!****************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader/lib/url/escape.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -13632,9 +15779,9 @@ module.exports = function escape(url) {
 /***/ }),
 
 /***/ "../../../node_modules/jquery/dist/jquery.js":
-/*!**************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
-  \**************************************************************************/
+/*!*********************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -24008,9 +26155,9 @@ return jQuery;
 /***/ }),
 
 /***/ "../../../node_modules/jquery/dist/jquery.js-exposed":
-/*!**********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
-  \**********************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -24019,10 +26166,5269 @@ return jQuery;
 
 /***/ }),
 
+/***/ "../../../node_modules/js-beautify/js/lib/beautify-css.js":
+/*!**********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify-css.js ***!
+  \**********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*jshint curly:false, eqeqeq:true, laxbreak:true, noempty:false */
+/* AUTO-GENERATED. DO NOT MODIFY. */
+/*
+
+  The MIT License (MIT)
+
+  Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+
+ CSS Beautifier
+---------------
+
+    Written by Harutyun Amirjanyan, (amirjanyan@gmail.com)
+
+    Based on code initially developed by: Einar Lielmanis, <einar@jsbeautifier.org>
+        http://jsbeautifier.org/
+
+    Usage:
+        css_beautify(source_text);
+        css_beautify(source_text, options);
+
+    The options are (default in brackets):
+        indent_size (4)                         — indentation size,
+        indent_char (space)                     — character to indent with,
+        selector_separator_newline (true)       - separate selectors with newline or
+                                                  not (e.g. "a,\nbr" or "a, br")
+        end_with_newline (false)                - end with a newline
+        newline_between_rules (true)            - add a new line after every css rule
+        space_around_selector_separator (false) - ensure space around selector separators:
+                                                  '>', '+', '~' (e.g. "a>b" -> "a > b")
+    e.g
+
+    css_beautify(css_source_text, {
+      'indent_size': 1,
+      'indent_char': '\t',
+      'selector_separator': ' ',
+      'end_with_newline': false,
+      'newline_between_rules': true,
+      'space_around_selector_separator': true
+    });
+*/
+
+// http://www.w3.org/TR/CSS21/syndata.html#tokenization
+// http://www.w3.org/TR/css3-syntax/
+
+(function() {
+var legacy_beautify_css =
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// identity function for calling harmony imports with the correct context
+/******/ 	__webpack_require__.i = function(value) { return value; };
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+  The MIT License (MIT)
+
+  Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+*/
+
+var mergeOpts = __webpack_require__(2).mergeOpts;
+var acorn = __webpack_require__(1);
+var Output = __webpack_require__(3).Output;
+
+
+var lineBreak = acorn.lineBreak;
+var allLineBreaks = acorn.allLineBreaks;
+
+function Beautifier(source_text, options) {
+    options = options || {};
+
+    // Allow the setting of language/file-type specific options
+    // with inheritance of overall settings
+    options = mergeOpts(options, 'css');
+
+    source_text = source_text || '';
+
+    var newlinesFromLastWSEat = 0;
+    var indentSize = options.indent_size ? parseInt(options.indent_size, 10) : 4;
+    var indentCharacter = options.indent_char || ' ';
+    var preserve_newlines = (options.preserve_newlines === undefined) ? false : options.preserve_newlines;
+    var selectorSeparatorNewline = (options.selector_separator_newline === undefined) ? true : options.selector_separator_newline;
+    var end_with_newline = (options.end_with_newline === undefined) ? false : options.end_with_newline;
+    var newline_between_rules = (options.newline_between_rules === undefined) ? true : options.newline_between_rules;
+    var space_around_combinator = (options.space_around_combinator === undefined) ? false : options.space_around_combinator;
+    space_around_combinator = space_around_combinator || ((options.space_around_selector_separator === undefined) ? false : options.space_around_selector_separator);
+    var eol = options.eol ? options.eol : 'auto';
+
+    if (options.indent_with_tabs) {
+        indentCharacter = '\t';
+        indentSize = 1;
+    }
+
+    if (eol === 'auto') {
+        eol = '\n';
+        if (source_text && lineBreak.test(source_text || '')) {
+            eol = source_text.match(lineBreak)[0];
+        }
+    }
+
+    eol = eol.replace(/\\r/, '\r').replace(/\\n/, '\n');
+
+    // HACK: newline parsing inconsistent. This brute force normalizes the input.
+    source_text = source_text.replace(allLineBreaks, '\n');
+
+    // tokenizer
+    var whiteRe = /^\s+$/;
+
+    var pos = -1,
+        ch;
+    var parenLevel = 0;
+
+    function next() {
+        ch = source_text.charAt(++pos);
+        return ch || '';
+    }
+
+    function peek(skipWhitespace) {
+        var result = '';
+        var prev_pos = pos;
+        if (skipWhitespace) {
+            eatWhitespace();
+        }
+        result = source_text.charAt(pos + 1) || '';
+        pos = prev_pos - 1;
+        next();
+        return result;
+    }
+
+    function eatString(endChars) {
+        var start = pos;
+        while (next()) {
+            if (ch === "\\") {
+                next();
+            } else if (endChars.indexOf(ch) !== -1) {
+                break;
+            } else if (ch === "\n") {
+                break;
+            }
+        }
+        return source_text.substring(start, pos + 1);
+    }
+
+    function peekString(endChar) {
+        var prev_pos = pos;
+        var str = eatString(endChar);
+        pos = prev_pos - 1;
+        next();
+        return str;
+    }
+
+    function eatWhitespace(preserve_newlines_local) {
+        var result = 0;
+        while (whiteRe.test(peek())) {
+            next();
+            if (ch === '\n' && preserve_newlines_local && preserve_newlines) {
+                output.add_new_line(true);
+                result++;
+            }
+        }
+        newlinesFromLastWSEat = result;
+        return result;
+    }
+
+    function skipWhitespace() {
+        var result = '';
+        if (ch && whiteRe.test(ch)) {
+            result = ch;
+        }
+        while (whiteRe.test(next())) {
+            result += ch;
+        }
+        return result;
+    }
+
+    function eatComment() {
+        var start = pos;
+        var singleLine = peek() === "/";
+        next();
+        while (next()) {
+            if (!singleLine && ch === "*" && peek() === "/") {
+                next();
+                break;
+            } else if (singleLine && ch === "\n") {
+                return source_text.substring(start, pos);
+            }
+        }
+
+        return source_text.substring(start, pos) + ch;
+    }
+
+
+    function lookBack(str) {
+        return source_text.substring(pos - str.length, pos).toLowerCase() ===
+            str;
+    }
+
+    // Nested pseudo-class if we are insideRule
+    // and the next special character found opens
+    // a new block
+    function foundNestedPseudoClass() {
+        var openParen = 0;
+        for (var i = pos + 1; i < source_text.length; i++) {
+            var ch = source_text.charAt(i);
+            if (ch === "{") {
+                return true;
+            } else if (ch === '(') {
+                // pseudoclasses can contain ()
+                openParen += 1;
+            } else if (ch === ')') {
+                if (openParen === 0) {
+                    return false;
+                }
+                openParen -= 1;
+            } else if (ch === ";" || ch === "}") {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    // printer
+    var baseIndentString = '';
+    var preindent_index = 0;
+    if (source_text && source_text.length) {
+        while ((source_text.charAt(preindent_index) === ' ' ||
+                source_text.charAt(preindent_index) === '\t')) {
+            preindent_index += 1;
+        }
+        baseIndentString = source_text.substring(0, preindent_index);
+        source_text = source_text.substring(preindent_index);
+    }
+
+
+    var singleIndent = new Array(indentSize + 1).join(indentCharacter);
+    var indentLevel;
+    var nestedLevel;
+    var output;
+
+    function print_string(output_string) {
+        if (output.just_added_newline()) {
+            output.set_indent(indentLevel);
+        }
+        output.add_token(output_string);
+    }
+
+    function preserveSingleSpace(isAfterSpace) {
+        if (isAfterSpace) {
+            output.space_before_token = true;
+        }
+    }
+
+    function indent() {
+        indentLevel++;
+    }
+
+    function outdent() {
+        if (indentLevel > 0) {
+            indentLevel--;
+        }
+    }
+
+    /*_____________________--------------------_____________________*/
+
+    this.beautify = function() {
+        // reset
+        output = new Output(singleIndent, baseIndentString);
+        indentLevel = 0;
+        nestedLevel = 0;
+
+        pos = -1;
+        ch = null;
+        parenLevel = 0;
+
+        var insideRule = false;
+        var insidePropertyValue = false;
+        var enteringConditionalGroup = false;
+        var top_ch = '';
+        var last_top_ch = '';
+
+        while (true) {
+            var whitespace = skipWhitespace();
+            var isAfterSpace = whitespace !== '';
+            var isAfterNewline = whitespace.indexOf('\n') !== -1;
+            last_top_ch = top_ch;
+            top_ch = ch;
+
+            if (!ch) {
+                break;
+            } else if (ch === '/' && peek() === '*') { /* css comment */
+                var header = indentLevel === 0;
+
+                if (isAfterNewline || header) {
+                    output.add_new_line();
+                }
+
+                print_string(eatComment());
+                output.add_new_line();
+                if (header) {
+                    output.add_new_line(true);
+                }
+            } else if (ch === '/' && peek() === '/') { // single line comment
+                if (!isAfterNewline && last_top_ch !== '{') {
+                    output.trim(true);
+                }
+                output.space_before_token = true;
+                print_string(eatComment());
+                output.add_new_line();
+            } else if (ch === '@') {
+                preserveSingleSpace(isAfterSpace);
+
+                // deal with less propery mixins @{...}
+                if (peek() === '{') {
+                    print_string(eatString('}'));
+                } else {
+                    print_string(ch);
+
+                    // strip trailing space, if present, for hash property checks
+                    var variableOrRule = peekString(": ,;{}()[]/='\"");
+
+                    if (variableOrRule.match(/[ :]$/)) {
+                        // we have a variable or pseudo-class, add it and insert one space before continuing
+                        next();
+                        variableOrRule = eatString(": ").replace(/\s$/, '');
+                        print_string(variableOrRule);
+                        output.space_before_token = true;
+                    }
+
+                    variableOrRule = variableOrRule.replace(/\s$/, '');
+
+                    // might be a nesting at-rule
+                    if (variableOrRule in this.NESTED_AT_RULE) {
+                        nestedLevel += 1;
+                        if (variableOrRule in this.CONDITIONAL_GROUP_RULE) {
+                            enteringConditionalGroup = true;
+                        }
+                    }
+                }
+            } else if (ch === '#' && peek() === '{') {
+                preserveSingleSpace(isAfterSpace);
+                print_string(eatString('}'));
+            } else if (ch === '{') {
+                if (peek(true) === '}') {
+                    eatWhitespace();
+                    next();
+                    output.space_before_token = true;
+                    print_string("{}");
+                    if (!eatWhitespace(true)) {
+                        output.add_new_line();
+                    }
+
+                    if (newlinesFromLastWSEat < 2 && newline_between_rules && indentLevel === 0) {
+                        output.add_new_line(true);
+                    }
+                } else {
+                    indent();
+                    output.space_before_token = true;
+                    print_string(ch);
+                    if (!eatWhitespace(true)) {
+                        output.add_new_line();
+                    }
+
+                    // when entering conditional groups, only rulesets are allowed
+                    if (enteringConditionalGroup) {
+                        enteringConditionalGroup = false;
+                        insideRule = (indentLevel > nestedLevel);
+                    } else {
+                        // otherwise, declarations are also allowed
+                        insideRule = (indentLevel >= nestedLevel);
+                    }
+                }
+            } else if (ch === '}') {
+                outdent();
+                output.add_new_line();
+                print_string(ch);
+                insideRule = false;
+                insidePropertyValue = false;
+                if (nestedLevel) {
+                    nestedLevel--;
+                }
+
+                if (!eatWhitespace(true)) {
+                    output.add_new_line();
+                }
+
+                if (newlinesFromLastWSEat < 2 && newline_between_rules && indentLevel === 0) {
+                    output.add_new_line(true);
+                }
+            } else if (ch === ":") {
+                eatWhitespace();
+                if ((insideRule || enteringConditionalGroup) &&
+                    !(lookBack("&") || foundNestedPseudoClass()) &&
+                    !lookBack("(")) {
+                    // 'property: value' delimiter
+                    // which could be in a conditional group query
+                    print_string(':');
+                    if (!insidePropertyValue) {
+                        insidePropertyValue = true;
+                        output.space_before_token = true;
+                    }
+                } else {
+                    // sass/less parent reference don't use a space
+                    // sass nested pseudo-class don't use a space
+
+                    // preserve space before pseudoclasses/pseudoelements, as it means "in any child"
+                    if (lookBack(" ")) {
+                        output.space_before_token = true;
+                    }
+                    if (peek() === ":") {
+                        // pseudo-element
+                        next();
+                        print_string("::");
+                    } else {
+                        // pseudo-class
+                        print_string(':');
+                    }
+                }
+            } else if (ch === '"' || ch === '\'') {
+                preserveSingleSpace(isAfterSpace);
+                print_string(eatString(ch));
+            } else if (ch === ';') {
+                insidePropertyValue = false;
+                print_string(ch);
+                if (!eatWhitespace(true)) {
+                    output.add_new_line();
+                }
+            } else if (ch === '(') { // may be a url
+                if (lookBack("url")) {
+                    print_string(ch);
+                    eatWhitespace();
+                    if (next()) {
+                        if (ch !== ')' && ch !== '"' && ch !== '\'') {
+                            print_string(eatString(')'));
+                        } else {
+                            pos--;
+                        }
+                    }
+                } else {
+                    parenLevel++;
+                    preserveSingleSpace(isAfterSpace);
+                    print_string(ch);
+                    eatWhitespace();
+                }
+            } else if (ch === ')') {
+                print_string(ch);
+                parenLevel--;
+            } else if (ch === ',') {
+                print_string(ch);
+                if (!eatWhitespace(true) && selectorSeparatorNewline && !insidePropertyValue && parenLevel < 1) {
+                    output.add_new_line();
+                } else {
+                    output.space_before_token = true;
+                }
+            } else if ((ch === '>' || ch === '+' || ch === '~') &&
+                !insidePropertyValue && parenLevel < 1) {
+                //handle combinator spacing
+                if (space_around_combinator) {
+                    output.space_before_token = true;
+                    print_string(ch);
+                    output.space_before_token = true;
+                } else {
+                    print_string(ch);
+                    eatWhitespace();
+                    // squash extra whitespace
+                    if (ch && whiteRe.test(ch)) {
+                        ch = '';
+                    }
+                }
+            } else if (ch === ']') {
+                print_string(ch);
+            } else if (ch === '[') {
+                preserveSingleSpace(isAfterSpace);
+                print_string(ch);
+            } else if (ch === '=') { // no whitespace before or after
+                eatWhitespace();
+                print_string('=');
+                if (whiteRe.test(ch)) {
+                    ch = '';
+                }
+            } else if (ch === '!') { // !important
+                print_string(' ');
+                print_string(ch);
+            } else {
+                preserveSingleSpace(isAfterSpace);
+                print_string(ch);
+            }
+        }
+
+        var sweetCode = output.get_code(end_with_newline, eol);
+
+        return sweetCode;
+    };
+
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
+    this.NESTED_AT_RULE = {
+        "@page": true,
+        "@font-face": true,
+        "@keyframes": true,
+        // also in CONDITIONAL_GROUP_RULE below
+        "@media": true,
+        "@supports": true,
+        "@document": true
+    };
+    this.CONDITIONAL_GROUP_RULE = {
+        "@media": true,
+        "@supports": true,
+        "@document": true
+    };
+}
+
+module.exports.Beautifier = Beautifier;
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
+/* jshint curly: false */
+// This section of code is taken from acorn.
+//
+// Acorn was written by Marijn Haverbeke and released under an MIT
+// license. The Unicode regexps (for identifiers and whitespace) were
+// taken from [Esprima](http://esprima.org) by Ariya Hidayat.
+//
+// Git repositories for Acorn are available at
+//
+//     http://marijnhaverbeke.nl/git/acorn
+//     https://github.com/marijnh/acorn.git
+
+// ## Character categories
+
+// Big ugly regular expressions that match characters in the
+// whitespace, identifier, and identifier-start categories. These
+// are only applied when a character is found to actually have a
+// code point above 128.
+
+var nonASCIIwhitespace = /[\u1680\u180e\u2000-\u200a\u202f\u205f\u3000\ufeff]/; // jshint ignore:line
+var nonASCIIidentifierStartChars = "\xaa\xb5\xba\xc0-\xd6\xd8-\xf6\xf8-\u02c1\u02c6-\u02d1\u02e0-\u02e4\u02ec\u02ee\u0370-\u0374\u0376\u0377\u037a-\u037d\u0386\u0388-\u038a\u038c\u038e-\u03a1\u03a3-\u03f5\u03f7-\u0481\u048a-\u0527\u0531-\u0556\u0559\u0561-\u0587\u05d0-\u05ea\u05f0-\u05f2\u0620-\u064a\u066e\u066f\u0671-\u06d3\u06d5\u06e5\u06e6\u06ee\u06ef\u06fa-\u06fc\u06ff\u0710\u0712-\u072f\u074d-\u07a5\u07b1\u07ca-\u07ea\u07f4\u07f5\u07fa\u0800-\u0815\u081a\u0824\u0828\u0840-\u0858\u08a0\u08a2-\u08ac\u0904-\u0939\u093d\u0950\u0958-\u0961\u0971-\u0977\u0979-\u097f\u0985-\u098c\u098f\u0990\u0993-\u09a8\u09aa-\u09b0\u09b2\u09b6-\u09b9\u09bd\u09ce\u09dc\u09dd\u09df-\u09e1\u09f0\u09f1\u0a05-\u0a0a\u0a0f\u0a10\u0a13-\u0a28\u0a2a-\u0a30\u0a32\u0a33\u0a35\u0a36\u0a38\u0a39\u0a59-\u0a5c\u0a5e\u0a72-\u0a74\u0a85-\u0a8d\u0a8f-\u0a91\u0a93-\u0aa8\u0aaa-\u0ab0\u0ab2\u0ab3\u0ab5-\u0ab9\u0abd\u0ad0\u0ae0\u0ae1\u0b05-\u0b0c\u0b0f\u0b10\u0b13-\u0b28\u0b2a-\u0b30\u0b32\u0b33\u0b35-\u0b39\u0b3d\u0b5c\u0b5d\u0b5f-\u0b61\u0b71\u0b83\u0b85-\u0b8a\u0b8e-\u0b90\u0b92-\u0b95\u0b99\u0b9a\u0b9c\u0b9e\u0b9f\u0ba3\u0ba4\u0ba8-\u0baa\u0bae-\u0bb9\u0bd0\u0c05-\u0c0c\u0c0e-\u0c10\u0c12-\u0c28\u0c2a-\u0c33\u0c35-\u0c39\u0c3d\u0c58\u0c59\u0c60\u0c61\u0c85-\u0c8c\u0c8e-\u0c90\u0c92-\u0ca8\u0caa-\u0cb3\u0cb5-\u0cb9\u0cbd\u0cde\u0ce0\u0ce1\u0cf1\u0cf2\u0d05-\u0d0c\u0d0e-\u0d10\u0d12-\u0d3a\u0d3d\u0d4e\u0d60\u0d61\u0d7a-\u0d7f\u0d85-\u0d96\u0d9a-\u0db1\u0db3-\u0dbb\u0dbd\u0dc0-\u0dc6\u0e01-\u0e30\u0e32\u0e33\u0e40-\u0e46\u0e81\u0e82\u0e84\u0e87\u0e88\u0e8a\u0e8d\u0e94-\u0e97\u0e99-\u0e9f\u0ea1-\u0ea3\u0ea5\u0ea7\u0eaa\u0eab\u0ead-\u0eb0\u0eb2\u0eb3\u0ebd\u0ec0-\u0ec4\u0ec6\u0edc-\u0edf\u0f00\u0f40-\u0f47\u0f49-\u0f6c\u0f88-\u0f8c\u1000-\u102a\u103f\u1050-\u1055\u105a-\u105d\u1061\u1065\u1066\u106e-\u1070\u1075-\u1081\u108e\u10a0-\u10c5\u10c7\u10cd\u10d0-\u10fa\u10fc-\u1248\u124a-\u124d\u1250-\u1256\u1258\u125a-\u125d\u1260-\u1288\u128a-\u128d\u1290-\u12b0\u12b2-\u12b5\u12b8-\u12be\u12c0\u12c2-\u12c5\u12c8-\u12d6\u12d8-\u1310\u1312-\u1315\u1318-\u135a\u1380-\u138f\u13a0-\u13f4\u1401-\u166c\u166f-\u167f\u1681-\u169a\u16a0-\u16ea\u16ee-\u16f0\u1700-\u170c\u170e-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176c\u176e-\u1770\u1780-\u17b3\u17d7\u17dc\u1820-\u1877\u1880-\u18a8\u18aa\u18b0-\u18f5\u1900-\u191c\u1950-\u196d\u1970-\u1974\u1980-\u19ab\u19c1-\u19c7\u1a00-\u1a16\u1a20-\u1a54\u1aa7\u1b05-\u1b33\u1b45-\u1b4b\u1b83-\u1ba0\u1bae\u1baf\u1bba-\u1be5\u1c00-\u1c23\u1c4d-\u1c4f\u1c5a-\u1c7d\u1ce9-\u1cec\u1cee-\u1cf1\u1cf5\u1cf6\u1d00-\u1dbf\u1e00-\u1f15\u1f18-\u1f1d\u1f20-\u1f45\u1f48-\u1f4d\u1f50-\u1f57\u1f59\u1f5b\u1f5d\u1f5f-\u1f7d\u1f80-\u1fb4\u1fb6-\u1fbc\u1fbe\u1fc2-\u1fc4\u1fc6-\u1fcc\u1fd0-\u1fd3\u1fd6-\u1fdb\u1fe0-\u1fec\u1ff2-\u1ff4\u1ff6-\u1ffc\u2071\u207f\u2090-\u209c\u2102\u2107\u210a-\u2113\u2115\u2119-\u211d\u2124\u2126\u2128\u212a-\u212d\u212f-\u2139\u213c-\u213f\u2145-\u2149\u214e\u2160-\u2188\u2c00-\u2c2e\u2c30-\u2c5e\u2c60-\u2ce4\u2ceb-\u2cee\u2cf2\u2cf3\u2d00-\u2d25\u2d27\u2d2d\u2d30-\u2d67\u2d6f\u2d80-\u2d96\u2da0-\u2da6\u2da8-\u2dae\u2db0-\u2db6\u2db8-\u2dbe\u2dc0-\u2dc6\u2dc8-\u2dce\u2dd0-\u2dd6\u2dd8-\u2dde\u2e2f\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303c\u3041-\u3096\u309d-\u309f\u30a1-\u30fa\u30fc-\u30ff\u3105-\u312d\u3131-\u318e\u31a0-\u31ba\u31f0-\u31ff\u3400-\u4db5\u4e00-\u9fcc\ua000-\ua48c\ua4d0-\ua4fd\ua500-\ua60c\ua610-\ua61f\ua62a\ua62b\ua640-\ua66e\ua67f-\ua697\ua6a0-\ua6ef\ua717-\ua71f\ua722-\ua788\ua78b-\ua78e\ua790-\ua793\ua7a0-\ua7aa\ua7f8-\ua801\ua803-\ua805\ua807-\ua80a\ua80c-\ua822\ua840-\ua873\ua882-\ua8b3\ua8f2-\ua8f7\ua8fb\ua90a-\ua925\ua930-\ua946\ua960-\ua97c\ua984-\ua9b2\ua9cf\uaa00-\uaa28\uaa40-\uaa42\uaa44-\uaa4b\uaa60-\uaa76\uaa7a\uaa80-\uaaaf\uaab1\uaab5\uaab6\uaab9-\uaabd\uaac0\uaac2\uaadb-\uaadd\uaae0-\uaaea\uaaf2-\uaaf4\uab01-\uab06\uab09-\uab0e\uab11-\uab16\uab20-\uab26\uab28-\uab2e\uabc0-\uabe2\uac00-\ud7a3\ud7b0-\ud7c6\ud7cb-\ud7fb\uf900-\ufa6d\ufa70-\ufad9\ufb00-\ufb06\ufb13-\ufb17\ufb1d\ufb1f-\ufb28\ufb2a-\ufb36\ufb38-\ufb3c\ufb3e\ufb40\ufb41\ufb43\ufb44\ufb46-\ufbb1\ufbd3-\ufd3d\ufd50-\ufd8f\ufd92-\ufdc7\ufdf0-\ufdfb\ufe70-\ufe74\ufe76-\ufefc\uff21-\uff3a\uff41-\uff5a\uff66-\uffbe\uffc2-\uffc7\uffca-\uffcf\uffd2-\uffd7\uffda-\uffdc";
+var nonASCIIidentifierChars = "\u0300-\u036f\u0483-\u0487\u0591-\u05bd\u05bf\u05c1\u05c2\u05c4\u05c5\u05c7\u0610-\u061a\u0620-\u0649\u0672-\u06d3\u06e7-\u06e8\u06fb-\u06fc\u0730-\u074a\u0800-\u0814\u081b-\u0823\u0825-\u0827\u0829-\u082d\u0840-\u0857\u08e4-\u08fe\u0900-\u0903\u093a-\u093c\u093e-\u094f\u0951-\u0957\u0962-\u0963\u0966-\u096f\u0981-\u0983\u09bc\u09be-\u09c4\u09c7\u09c8\u09d7\u09df-\u09e0\u0a01-\u0a03\u0a3c\u0a3e-\u0a42\u0a47\u0a48\u0a4b-\u0a4d\u0a51\u0a66-\u0a71\u0a75\u0a81-\u0a83\u0abc\u0abe-\u0ac5\u0ac7-\u0ac9\u0acb-\u0acd\u0ae2-\u0ae3\u0ae6-\u0aef\u0b01-\u0b03\u0b3c\u0b3e-\u0b44\u0b47\u0b48\u0b4b-\u0b4d\u0b56\u0b57\u0b5f-\u0b60\u0b66-\u0b6f\u0b82\u0bbe-\u0bc2\u0bc6-\u0bc8\u0bca-\u0bcd\u0bd7\u0be6-\u0bef\u0c01-\u0c03\u0c46-\u0c48\u0c4a-\u0c4d\u0c55\u0c56\u0c62-\u0c63\u0c66-\u0c6f\u0c82\u0c83\u0cbc\u0cbe-\u0cc4\u0cc6-\u0cc8\u0cca-\u0ccd\u0cd5\u0cd6\u0ce2-\u0ce3\u0ce6-\u0cef\u0d02\u0d03\u0d46-\u0d48\u0d57\u0d62-\u0d63\u0d66-\u0d6f\u0d82\u0d83\u0dca\u0dcf-\u0dd4\u0dd6\u0dd8-\u0ddf\u0df2\u0df3\u0e34-\u0e3a\u0e40-\u0e45\u0e50-\u0e59\u0eb4-\u0eb9\u0ec8-\u0ecd\u0ed0-\u0ed9\u0f18\u0f19\u0f20-\u0f29\u0f35\u0f37\u0f39\u0f41-\u0f47\u0f71-\u0f84\u0f86-\u0f87\u0f8d-\u0f97\u0f99-\u0fbc\u0fc6\u1000-\u1029\u1040-\u1049\u1067-\u106d\u1071-\u1074\u1082-\u108d\u108f-\u109d\u135d-\u135f\u170e-\u1710\u1720-\u1730\u1740-\u1750\u1772\u1773\u1780-\u17b2\u17dd\u17e0-\u17e9\u180b-\u180d\u1810-\u1819\u1920-\u192b\u1930-\u193b\u1951-\u196d\u19b0-\u19c0\u19c8-\u19c9\u19d0-\u19d9\u1a00-\u1a15\u1a20-\u1a53\u1a60-\u1a7c\u1a7f-\u1a89\u1a90-\u1a99\u1b46-\u1b4b\u1b50-\u1b59\u1b6b-\u1b73\u1bb0-\u1bb9\u1be6-\u1bf3\u1c00-\u1c22\u1c40-\u1c49\u1c5b-\u1c7d\u1cd0-\u1cd2\u1d00-\u1dbe\u1e01-\u1f15\u200c\u200d\u203f\u2040\u2054\u20d0-\u20dc\u20e1\u20e5-\u20f0\u2d81-\u2d96\u2de0-\u2dff\u3021-\u3028\u3099\u309a\ua640-\ua66d\ua674-\ua67d\ua69f\ua6f0-\ua6f1\ua7f8-\ua800\ua806\ua80b\ua823-\ua827\ua880-\ua881\ua8b4-\ua8c4\ua8d0-\ua8d9\ua8f3-\ua8f7\ua900-\ua909\ua926-\ua92d\ua930-\ua945\ua980-\ua983\ua9b3-\ua9c0\uaa00-\uaa27\uaa40-\uaa41\uaa4c-\uaa4d\uaa50-\uaa59\uaa7b\uaae0-\uaae9\uaaf2-\uaaf3\uabc0-\uabe1\uabec\uabed\uabf0-\uabf9\ufb20-\ufb28\ufe00-\ufe0f\ufe20-\ufe26\ufe33\ufe34\ufe4d-\ufe4f\uff10-\uff19\uff3f";
+var nonASCIIidentifierStart = new RegExp("[" + nonASCIIidentifierStartChars + "]");
+var nonASCIIidentifier = new RegExp("[" + nonASCIIidentifierStartChars + nonASCIIidentifierChars + "]");
+
+// Whether a single character denotes a newline.
+
+exports.newline = /[\n\r\u2028\u2029]/;
+
+// Matches a whole line break (where CRLF is considered a single
+// line break). Used to count lines.
+
+// in javascript, these two differ
+// in python they are the same, different methods are called on them
+exports.lineBreak = new RegExp('\r\n|' + exports.newline.source);
+exports.allLineBreaks = new RegExp(exports.lineBreak.source, 'g');
+
+
+// Test whether a given character code starts an identifier.
+
+exports.isIdentifierStart = function(code) {
+    // permit $ (36) and @ (64). @ is used in ES7 decorators.
+    if (code < 65) return code === 36 || code === 64;
+    // 65 through 91 are uppercase letters.
+    if (code < 91) return true;
+    // permit _ (95).
+    if (code < 97) return code === 95;
+    // 97 through 123 are lowercase letters.
+    if (code < 123) return true;
+    return code >= 0xaa && nonASCIIidentifierStart.test(String.fromCharCode(code));
+};
+
+// Test whether a given character is part of an identifier.
+
+exports.isIdentifierChar = function(code) {
+    if (code < 48) return code === 36;
+    if (code < 58) return true;
+    if (code < 65) return false;
+    if (code < 91) return true;
+    if (code < 97) return code === 95;
+    if (code < 123) return true;
+    return code >= 0xaa && nonASCIIidentifier.test(String.fromCharCode(code));
+};
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+    The MIT License (MIT)
+
+    Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation files
+    (the "Software"), to deal in the Software without restriction,
+    including without limitation the rights to use, copy, modify, merge,
+    publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+    BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+function mergeOpts(allOptions, targetType) {
+    var finalOpts = {};
+    var name;
+
+    for (name in allOptions) {
+        if (name !== targetType) {
+            finalOpts[name] = allOptions[name];
+        }
+    }
+
+    //merge in the per type settings for the targetType
+    if (targetType in allOptions) {
+        for (name in allOptions[targetType]) {
+            finalOpts[name] = allOptions[targetType][name];
+        }
+    }
+    return finalOpts;
+}
+
+module.exports.mergeOpts = mergeOpts;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+  The MIT License (MIT)
+
+  Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+*/
+
+function OutputLine(parent) {
+    var _character_count = 0;
+    // use indent_count as a marker for lines that have preserved indentation
+    var _indent_count = -1;
+
+    var _items = [];
+    var _empty = true;
+
+    this.set_indent = function(level) {
+        _character_count = parent.baseIndentLength + level * parent.indent_length;
+        _indent_count = level;
+    };
+
+    this.get_character_count = function() {
+        return _character_count;
+    };
+
+    this.is_empty = function() {
+        return _empty;
+    };
+
+    this.last = function() {
+        if (!this._empty) {
+            return _items[_items.length - 1];
+        } else {
+            return null;
+        }
+    };
+
+    this.push = function(input) {
+        _items.push(input);
+        _character_count += input.length;
+        _empty = false;
+    };
+
+    this.pop = function() {
+        var item = null;
+        if (!_empty) {
+            item = _items.pop();
+            _character_count -= item.length;
+            _empty = _items.length === 0;
+        }
+        return item;
+    };
+
+    this.remove_indent = function() {
+        if (_indent_count > 0) {
+            _indent_count -= 1;
+            _character_count -= parent.indent_length;
+        }
+    };
+
+    this.trim = function() {
+        while (this.last() === ' ') {
+            _items.pop();
+            _character_count -= 1;
+        }
+        _empty = _items.length === 0;
+    };
+
+    this.toString = function() {
+        var result = '';
+        if (!this._empty) {
+            if (_indent_count >= 0) {
+                result = parent.indent_cache[_indent_count];
+            }
+            result += _items.join('');
+        }
+        return result;
+    };
+}
+
+function Output(indent_string, baseIndentString) {
+    baseIndentString = baseIndentString || '';
+    this.indent_cache = [baseIndentString];
+    this.baseIndentLength = baseIndentString.length;
+    this.indent_length = indent_string.length;
+    this.raw = false;
+
+    var lines = [];
+    this.baseIndentString = baseIndentString;
+    this.indent_string = indent_string;
+    this.previous_line = null;
+    this.current_line = null;
+    this.space_before_token = false;
+
+    this.add_outputline = function() {
+        this.previous_line = this.current_line;
+        this.current_line = new OutputLine(this);
+        lines.push(this.current_line);
+    };
+
+    // initialize
+    this.add_outputline();
+
+
+    this.get_line_number = function() {
+        return lines.length;
+    };
+
+    // Using object instead of string to allow for later expansion of info about each line
+    this.add_new_line = function(force_newline) {
+        if (this.get_line_number() === 1 && this.just_added_newline()) {
+            return false; // no newline on start of file
+        }
+
+        if (force_newline || !this.just_added_newline()) {
+            if (!this.raw) {
+                this.add_outputline();
+            }
+            return true;
+        }
+
+        return false;
+    };
+
+    this.get_code = function(end_with_newline, eol) {
+        var sweet_code = lines.join('\n').replace(/[\r\n\t ]+$/, '');
+
+        if (end_with_newline) {
+            sweet_code += '\n';
+        }
+
+        if (eol !== '\n') {
+            sweet_code = sweet_code.replace(/[\n]/g, eol);
+        }
+
+        return sweet_code;
+    };
+
+    this.set_indent = function(level) {
+        // Never indent your first output indent at the start of the file
+        if (lines.length > 1) {
+            while (level >= this.indent_cache.length) {
+                this.indent_cache.push(this.indent_cache[this.indent_cache.length - 1] + this.indent_string);
+            }
+
+            this.current_line.set_indent(level);
+            return true;
+        }
+        this.current_line.set_indent(0);
+        return false;
+    };
+
+    this.add_raw_token = function(token) {
+        for (var x = 0; x < token.newlines; x++) {
+            this.add_outputline();
+        }
+        this.current_line.push(token.whitespace_before);
+        this.current_line.push(token.text);
+        this.space_before_token = false;
+    };
+
+    this.add_token = function(printable_token) {
+        this.add_space_before_token();
+        this.current_line.push(printable_token);
+    };
+
+    this.add_space_before_token = function() {
+        if (this.space_before_token && !this.just_added_newline()) {
+            this.current_line.push(' ');
+        }
+        this.space_before_token = false;
+    };
+
+    this.remove_indent = function(index) {
+        var output_length = lines.length;
+        while (index < output_length) {
+            lines[index].remove_indent();
+            index++;
+        }
+    };
+
+    this.trim = function(eat_newlines) {
+        eat_newlines = (eat_newlines === undefined) ? false : eat_newlines;
+
+        this.current_line.trim(indent_string, baseIndentString);
+
+        while (eat_newlines && lines.length > 1 &&
+            this.current_line.is_empty()) {
+            lines.pop();
+            this.current_line = lines[lines.length - 1];
+            this.current_line.trim();
+        }
+
+        this.previous_line = lines.length > 1 ? lines[lines.length - 2] : null;
+    };
+
+    this.just_added_newline = function() {
+        return this.current_line.is_empty();
+    };
+
+    this.just_added_blankline = function() {
+        if (this.just_added_newline()) {
+            if (lines.length === 1) {
+                return true; // start of the file and newline = blank
+            }
+
+            var line = lines[lines.length - 2];
+            return line.is_empty();
+        }
+        return false;
+    };
+}
+
+module.exports.Output = Output;
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+    The MIT License (MIT)
+
+    Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation files
+    (the "Software"), to deal in the Software without restriction,
+    including without limitation the rights to use, copy, modify, merge,
+    publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+    BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+var Beautifier = __webpack_require__(0).Beautifier;
+
+function css_beautify(source_text, options) {
+    var beautifier = new Beautifier(source_text, options);
+    return beautifier.beautify();
+}
+
+module.exports = css_beautify;
+
+/***/ })
+/******/ ]);
+var css_beautify = legacy_beautify_css;
+/* Footer */
+if (true) {
+    // Add support for AMD ( https://github.com/amdjs/amdjs-api/wiki/AMD#defineamd-property- )
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function() {
+        return {
+            css_beautify: css_beautify
+        };
+    }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {}
+
+}());
+
+
+/***/ }),
+
+/***/ "../../../node_modules/js-beautify/js/lib/beautify-html.js":
+/*!***********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify-html.js ***!
+  \***********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*jshint curly:false, eqeqeq:true, laxbreak:true, noempty:false */
+/* AUTO-GENERATED. DO NOT MODIFY. */
+/*
+
+  The MIT License (MIT)
+
+  Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+
+ Style HTML
+---------------
+
+  Written by Nochum Sossonko, (nsossonko@hotmail.com)
+
+  Based on code initially developed by: Einar Lielmanis, <einar@jsbeautifier.org>
+    http://jsbeautifier.org/
+
+  Usage:
+    style_html(html_source);
+
+    style_html(html_source, options);
+
+  The options are:
+    indent_inner_html (default false)  — indent <head> and <body> sections,
+    indent_size (default 4)          — indentation size,
+    indent_char (default space)      — character to indent with,
+    wrap_line_length (default 250)            -  maximum amount of characters per line (0 = disable)
+    brace_style (default "collapse") - "collapse" | "expand" | "end-expand" | "none"
+            put braces on the same line as control statements (default), or put braces on own line (Allman / ANSI style), or just put end braces on own line, or attempt to keep them where they are.
+    unformatted (defaults to inline tags) - list of tags, that shouldn't be reformatted
+    content_unformatted (defaults to pre tag) - list of tags, whose content shouldn't be reformatted
+    indent_scripts (default normal)  - "keep"|"separate"|"normal"
+    preserve_newlines (default true) - whether existing line breaks before elements should be preserved
+                                        Only works before elements, not inside tags or for text.
+    max_preserve_newlines (default unlimited) - maximum number of line breaks to be preserved in one chunk
+    indent_handlebars (default false) - format and indent {{#foo}} and {{/foo}}
+    end_with_newline (false)          - end with a newline
+    extra_liners (default [head,body,/html]) -List of tags that should have an extra newline before them.
+
+    e.g.
+
+    style_html(html_source, {
+      'indent_inner_html': false,
+      'indent_size': 2,
+      'indent_char': ' ',
+      'wrap_line_length': 78,
+      'brace_style': 'expand',
+      'preserve_newlines': true,
+      'max_preserve_newlines': 5,
+      'indent_handlebars': false,
+      'extra_liners': ['/html']
+    });
+*/
+
+(function() {
+var legacy_beautify_html =
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// identity function for calling harmony imports with the correct context
+/******/ 	__webpack_require__.i = function(value) { return value; };
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+  The MIT License (MIT)
+
+  Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+*/
+
+var mergeOpts = __webpack_require__(2).mergeOpts;
+var acorn = __webpack_require__(1);
+
+
+var lineBreak = acorn.lineBreak;
+var allLineBreaks = acorn.allLineBreaks;
+
+// function trim(s) {
+//     return s.replace(/^\s+|\s+$/g, '');
+// }
+
+function ltrim(s) {
+    return s.replace(/^\s+/g, '');
+}
+
+function rtrim(s) {
+    return s.replace(/\s+$/g, '');
+}
+
+function Beautifier(html_source, options, js_beautify, css_beautify) {
+    //Wrapper function to invoke all the necessary constructors and deal with the output.
+    html_source = html_source || '';
+
+    var multi_parser,
+        indent_inner_html,
+        indent_body_inner_html,
+        indent_head_inner_html,
+        indent_size,
+        indent_character,
+        wrap_line_length,
+        brace_style,
+        unformatted,
+        content_unformatted,
+        preserve_newlines,
+        max_preserve_newlines,
+        indent_handlebars,
+        wrap_attributes,
+        wrap_attributes_indent_size,
+        is_wrap_attributes_force,
+        is_wrap_attributes_force_expand_multiline,
+        is_wrap_attributes_force_aligned,
+        end_with_newline,
+        extra_liners,
+        eol;
+
+    options = options || {};
+
+    // Allow the setting of language/file-type specific options
+    // with inheritance of overall settings
+    options = mergeOpts(options, 'html');
+
+    // backwards compatibility to 1.3.4
+    if ((options.wrap_line_length === undefined || parseInt(options.wrap_line_length, 10) === 0) &&
+        (options.max_char !== undefined && parseInt(options.max_char, 10) !== 0)) {
+        options.wrap_line_length = options.max_char;
+    }
+
+    indent_inner_html = (options.indent_inner_html === undefined) ? false : options.indent_inner_html;
+    indent_body_inner_html = (options.indent_body_inner_html === undefined) ? true : options.indent_body_inner_html;
+    indent_head_inner_html = (options.indent_head_inner_html === undefined) ? true : options.indent_head_inner_html;
+    indent_size = (options.indent_size === undefined) ? 4 : parseInt(options.indent_size, 10);
+    indent_character = (options.indent_char === undefined) ? ' ' : options.indent_char;
+    brace_style = (options.brace_style === undefined) ? 'collapse' : options.brace_style;
+    wrap_line_length = parseInt(options.wrap_line_length, 10) === 0 ? 32786 : parseInt(options.wrap_line_length || 250, 10);
+    unformatted = options.unformatted || [
+        // https://www.w3.org/TR/html5/dom.html#phrasing-content
+        'a', 'abbr', 'area', 'audio', 'b', 'bdi', 'bdo', 'br', 'button', 'canvas', 'cite',
+        'code', 'data', 'datalist', 'del', 'dfn', 'em', 'embed', 'i', 'iframe', 'img',
+        'input', 'ins', 'kbd', 'keygen', 'label', 'map', 'mark', 'math', 'meter', 'noscript',
+        'object', 'output', 'progress', 'q', 'ruby', 's', 'samp', /* 'script', */ 'select', 'small',
+        'span', 'strong', 'sub', 'sup', 'svg', 'template', 'textarea', 'time', 'u', 'var',
+        'video', 'wbr', 'text',
+        // prexisting - not sure of full effect of removing, leaving in
+        'acronym', 'address', 'big', 'dt', 'ins', 'strike', 'tt',
+    ];
+    content_unformatted = options.content_unformatted || [
+        'pre',
+    ];
+    preserve_newlines = (options.preserve_newlines === undefined) ? true : options.preserve_newlines;
+    max_preserve_newlines = preserve_newlines ?
+        (isNaN(parseInt(options.max_preserve_newlines, 10)) ? 32786 : parseInt(options.max_preserve_newlines, 10)) :
+        0;
+    indent_handlebars = (options.indent_handlebars === undefined) ? false : options.indent_handlebars;
+    wrap_attributes = (options.wrap_attributes === undefined) ? 'auto' : options.wrap_attributes;
+    wrap_attributes_indent_size = (isNaN(parseInt(options.wrap_attributes_indent_size, 10))) ? indent_size : parseInt(options.wrap_attributes_indent_size, 10);
+    is_wrap_attributes_force = wrap_attributes.substr(0, 'force'.length) === 'force';
+    is_wrap_attributes_force_expand_multiline = (wrap_attributes === 'force-expand-multiline');
+    is_wrap_attributes_force_aligned = (wrap_attributes === 'force-aligned');
+    end_with_newline = (options.end_with_newline === undefined) ? false : options.end_with_newline;
+    extra_liners = (typeof options.extra_liners === 'object') && options.extra_liners ?
+        options.extra_liners.concat() : (typeof options.extra_liners === 'string') ?
+        options.extra_liners.split(',') : 'head,body,/html'.split(',');
+    eol = options.eol ? options.eol : 'auto';
+
+    if (options.indent_with_tabs) {
+        indent_character = '\t';
+        indent_size = 1;
+    }
+
+    if (eol === 'auto') {
+        eol = '\n';
+        if (html_source && lineBreak.test(html_source || '')) {
+            eol = html_source.match(lineBreak)[0];
+        }
+    }
+
+    eol = eol.replace(/\\r/, '\r').replace(/\\n/, '\n');
+
+    // HACK: newline parsing inconsistent. This brute force normalizes the input.
+    html_source = html_source.replace(allLineBreaks, '\n');
+
+    function Parser() {
+
+        this.pos = 0; //Parser position
+        this.token = '';
+        this.current_mode = 'CONTENT'; //reflects the current Parser mode: TAG/CONTENT
+        this.tags = { //An object to hold tags, their position, and their parent-tags, initiated with default values
+            parent: 'parent1',
+            parentcount: 1,
+            parent1: ''
+        };
+        this.tag_type = '';
+        this.token_text = this.last_token = this.last_text = this.token_type = '';
+        this.newlines = 0;
+        this.indent_content = indent_inner_html;
+        this.indent_body_inner_html = indent_body_inner_html;
+        this.indent_head_inner_html = indent_head_inner_html;
+
+        this.Utils = { //Uilities made available to the various functions
+            whitespace: "\n\r\t ".split(''),
+
+            single_token: options.void_elements || [
+                // HTLM void elements - aka self-closing tags - aka singletons
+                // https://www.w3.org/html/wg/drafts/html/master/syntax.html#void-elements
+                'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen',
+                'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr',
+                // NOTE: Optional tags - are not understood.
+                // https://www.w3.org/TR/html5/syntax.html#optional-tags
+                // The rules for optional tags are too complex for a simple list
+                // Also, the content of these tags should still be indented in many cases.
+                // 'li' is a good exmple.
+
+                // Doctype and xml elements
+                '!doctype', '?xml',
+                // ?php tag
+                '?php',
+                // other tags that were in this list, keeping just in case
+                'basefont', 'isindex'
+            ],
+            extra_liners: extra_liners, //for tags that need a line of whitespace before them
+            in_array: function(what, arr) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (what === arr[i]) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+
+        // Return true if the given text is composed entirely of whitespace.
+        this.is_whitespace = function(text) {
+            for (var n = 0; n < text.length; n++) {
+                if (!this.Utils.in_array(text.charAt(n), this.Utils.whitespace)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        this.traverse_whitespace = function() {
+            var input_char = '';
+
+            input_char = this.input.charAt(this.pos);
+            if (this.Utils.in_array(input_char, this.Utils.whitespace)) {
+                this.newlines = 0;
+                while (this.Utils.in_array(input_char, this.Utils.whitespace)) {
+                    if (preserve_newlines && input_char === '\n' && this.newlines <= max_preserve_newlines) {
+                        this.newlines += 1;
+                    }
+
+                    this.pos++;
+                    input_char = this.input.charAt(this.pos);
+                }
+                return true;
+            }
+            return false;
+        };
+
+        // Append a space to the given content (string array) or, if we are
+        // at the wrap_line_length, append a newline/indentation.
+        // return true if a newline was added, false if a space was added
+        this.space_or_wrap = function(content) {
+            if (this.line_char_count >= this.wrap_line_length) { //insert a line when the wrap_line_length is reached
+                this.print_newline(false, content);
+                this.print_indentation(content);
+                return true;
+            } else {
+                this.line_char_count++;
+                content.push(' ');
+                return false;
+            }
+        };
+
+        this.get_content = function() { //function to capture regular content between tags
+            var input_char = '',
+                content = [],
+                handlebarsStarted = 0;
+
+            while (this.input.charAt(this.pos) !== '<' || handlebarsStarted === 2) {
+                if (this.pos >= this.input.length) {
+                    return content.length ? content.join('') : ['', 'TK_EOF'];
+                }
+
+                if (handlebarsStarted < 2 && this.traverse_whitespace()) {
+                    this.space_or_wrap(content);
+                    continue;
+                }
+
+                input_char = this.input.charAt(this.pos);
+
+                if (indent_handlebars) {
+                    if (input_char === '{') {
+                        handlebarsStarted += 1;
+                    } else if (handlebarsStarted < 2) {
+                        handlebarsStarted = 0;
+                    }
+
+                    if (input_char === '}' && handlebarsStarted > 0) {
+                        if (handlebarsStarted-- === 0) {
+                            break;
+                        }
+                    }
+                    // Handlebars parsing is complicated.
+                    // {{#foo}} and {{/foo}} are formatted tags.
+                    // {{something}} should get treated as content, except:
+                    // {{else}} specifically behaves like {{#if}} and {{/if}}
+                    var peek3 = this.input.substr(this.pos, 3);
+                    if (peek3 === '{{#' || peek3 === '{{/') {
+                        // These are tags and not content.
+                        break;
+                    } else if (peek3 === '{{!') {
+                        return [this.get_tag(), 'TK_TAG_HANDLEBARS_COMMENT'];
+                    } else if (this.input.substr(this.pos, 2) === '{{') {
+                        if (this.get_tag(true) === '{{else}}') {
+                            break;
+                        }
+                    }
+                }
+
+                this.pos++;
+                this.line_char_count++;
+                content.push(input_char); //letter at-a-time (or string) inserted to an array
+            }
+            return content.length ? content.join('') : '';
+        };
+
+        this.get_contents_to = function(name) { //get the full content of a script or style to pass to js_beautify
+            if (this.pos === this.input.length) {
+                return ['', 'TK_EOF'];
+            }
+            var content = '';
+            var reg_match = new RegExp('</' + name + '\\s*>', 'igm');
+            reg_match.lastIndex = this.pos;
+            var reg_array = reg_match.exec(this.input);
+            var end_script = reg_array ? reg_array.index : this.input.length; //absolute end of script
+            if (this.pos < end_script) { //get everything in between the script tags
+                content = this.input.substring(this.pos, end_script);
+                this.pos = end_script;
+            }
+            return content;
+        };
+
+        this.record_tag = function(tag) { //function to record a tag and its parent in this.tags Object
+            if (this.tags[tag + 'count']) { //check for the existence of this tag type
+                this.tags[tag + 'count']++;
+                this.tags[tag + this.tags[tag + 'count']] = this.indent_level; //and record the present indent level
+            } else { //otherwise initialize this tag type
+                this.tags[tag + 'count'] = 1;
+                this.tags[tag + this.tags[tag + 'count']] = this.indent_level; //and record the present indent level
+            }
+            this.tags[tag + this.tags[tag + 'count'] + 'parent'] = this.tags.parent; //set the parent (i.e. in the case of a div this.tags.div1parent)
+            this.tags.parent = tag + this.tags[tag + 'count']; //and make this the current parent (i.e. in the case of a div 'div1')
+        };
+
+        this.retrieve_tag = function(tag) { //function to retrieve the opening tag to the corresponding closer
+            if (this.tags[tag + 'count']) { //if the openener is not in the Object we ignore it
+                var temp_parent = this.tags.parent; //check to see if it's a closable tag.
+                while (temp_parent) { //till we reach '' (the initial value);
+                    if (tag + this.tags[tag + 'count'] === temp_parent) { //if this is it use it
+                        break;
+                    }
+                    temp_parent = this.tags[temp_parent + 'parent']; //otherwise keep on climbing up the DOM Tree
+                }
+                if (temp_parent) { //if we caught something
+                    this.indent_level = this.tags[tag + this.tags[tag + 'count']]; //set the indent_level accordingly
+                    this.tags.parent = this.tags[temp_parent + 'parent']; //and set the current parent
+                }
+                delete this.tags[tag + this.tags[tag + 'count'] + 'parent']; //delete the closed tags parent reference...
+                delete this.tags[tag + this.tags[tag + 'count']]; //...and the tag itself
+                if (this.tags[tag + 'count'] === 1) {
+                    delete this.tags[tag + 'count'];
+                } else {
+                    this.tags[tag + 'count']--;
+                }
+            }
+        };
+
+        this.indent_to_tag = function(tag) {
+            // Match the indentation level to the last use of this tag, but don't remove it.
+            if (!this.tags[tag + 'count']) {
+                return;
+            }
+            var temp_parent = this.tags.parent;
+            while (temp_parent) {
+                if (tag + this.tags[tag + 'count'] === temp_parent) {
+                    break;
+                }
+                temp_parent = this.tags[temp_parent + 'parent'];
+            }
+            if (temp_parent) {
+                this.indent_level = this.tags[tag + this.tags[tag + 'count']];
+            }
+        };
+
+        this.get_tag = function(peek) { //function to get a full tag and parse its type
+            var input_char = '',
+                content = [],
+                comment = '',
+                space = false,
+                first_attr = true,
+                has_wrapped_attrs = false,
+                tag_start, tag_end,
+                tag_start_char,
+                orig_pos = this.pos,
+                orig_line_char_count = this.line_char_count,
+                is_tag_closed = false,
+                tail;
+
+            peek = peek !== undefined ? peek : false;
+
+            do {
+                if (this.pos >= this.input.length) {
+                    if (peek) {
+                        this.pos = orig_pos;
+                        this.line_char_count = orig_line_char_count;
+                    }
+                    return content.length ? content.join('') : ['', 'TK_EOF'];
+                }
+
+                input_char = this.input.charAt(this.pos);
+                this.pos++;
+
+                if (this.Utils.in_array(input_char, this.Utils.whitespace)) { //don't want to insert unnecessary space
+                    space = true;
+                    continue;
+                }
+
+                if (input_char === "'" || input_char === '"') {
+                    input_char += this.get_unformatted(input_char);
+                    space = true;
+                }
+
+                if (input_char === '=') { //no space before =
+                    space = false;
+                }
+                tail = this.input.substr(this.pos - 1);
+                if (is_wrap_attributes_force_expand_multiline && has_wrapped_attrs && !is_tag_closed && (input_char === '>' || input_char === '/')) {
+                    if (tail.match(/^\/?\s*>/)) {
+                        space = false;
+                        is_tag_closed = true;
+                        this.print_newline(false, content);
+                        this.print_indentation(content);
+                    }
+                }
+                if (content.length && content[content.length - 1] !== '=' && input_char !== '>' && space) {
+                    //no space after = or before >
+                    var wrapped = this.space_or_wrap(content);
+                    var indentAttrs = wrapped && input_char !== '/' && !is_wrap_attributes_force;
+                    space = false;
+
+                    if (is_wrap_attributes_force && input_char !== '/') {
+                        var force_first_attr_wrap = false;
+                        if (is_wrap_attributes_force_expand_multiline && first_attr) {
+                            var is_only_attribute = tail.match(/^\S*(="([^"]|\\")*")?\s*\/?\s*>/) !== null;
+                            force_first_attr_wrap = !is_only_attribute;
+                        }
+                        if (!first_attr || force_first_attr_wrap) {
+                            this.print_newline(false, content);
+                            this.print_indentation(content);
+                            indentAttrs = true;
+                        }
+                    }
+                    if (indentAttrs) {
+                        has_wrapped_attrs = true;
+
+                        //indent attributes an auto, forced, or forced-align line-wrap
+                        var alignment_size = wrap_attributes_indent_size;
+                        if (is_wrap_attributes_force_aligned) {
+                            alignment_size = content.indexOf(' ') + 1;
+                        }
+
+                        for (var count = 0; count < alignment_size; count++) {
+                            // only ever further indent with spaces since we're trying to align characters
+                            content.push(' ');
+                        }
+                    }
+                    if (first_attr) {
+                        for (var i = 0; i < content.length; i++) {
+                            if (content[i] === ' ') {
+                                first_attr = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (indent_handlebars && tag_start_char === '<') {
+                    // When inside an angle-bracket tag, put spaces around
+                    // handlebars not inside of strings.
+                    if ((input_char + this.input.charAt(this.pos)) === '{{') {
+                        input_char += this.get_unformatted('}}');
+                        if (content.length && content[content.length - 1] !== ' ' && content[content.length - 1] !== '<') {
+                            input_char = ' ' + input_char;
+                        }
+                        space = true;
+                    }
+                }
+
+                if (input_char === '<' && !tag_start_char) {
+                    tag_start = this.pos - 1;
+                    tag_start_char = '<';
+                }
+
+                if (indent_handlebars && !tag_start_char) {
+                    if (content.length >= 2 && content[content.length - 1] === '{' && content[content.length - 2] === '{') {
+                        if (input_char === '#' || input_char === '/' || input_char === '!') {
+                            tag_start = this.pos - 3;
+                        } else {
+                            tag_start = this.pos - 2;
+                        }
+                        tag_start_char = '{';
+                    }
+                }
+
+                this.line_char_count++;
+                content.push(input_char); //inserts character at-a-time (or string)
+
+                if (content[1] && (content[1] === '!' || content[1] === '?' || content[1] === '%')) { //if we're in a comment, do something special
+                    // We treat all comments as literals, even more than preformatted tags
+                    // we just look for the appropriate close tag
+                    content = [this.get_comment(tag_start)];
+                    break;
+                }
+
+                if (indent_handlebars && content[1] && content[1] === '{' && content[2] && content[2] === '!') { //if we're in a comment, do something special
+                    // We treat all comments as literals, even more than preformatted tags
+                    // we just look for the appropriate close tag
+                    content = [this.get_comment(tag_start)];
+                    break;
+                }
+
+                if (indent_handlebars && tag_start_char === '{' && content.length > 2 && content[content.length - 2] === '}' && content[content.length - 1] === '}') {
+                    break;
+                }
+            } while (input_char !== '>');
+
+            var tag_complete = content.join('');
+            var tag_index;
+            var tag_offset;
+
+            // must check for space first otherwise the tag could have the first attribute included, and
+            // then not un-indent correctly
+            if (tag_complete.indexOf(' ') !== -1) { //if there's whitespace, thats where the tag name ends
+                tag_index = tag_complete.indexOf(' ');
+            } else if (tag_complete.indexOf('\n') !== -1) { //if there's a line break, thats where the tag name ends
+                tag_index = tag_complete.indexOf('\n');
+            } else if (tag_complete.charAt(0) === '{') {
+                tag_index = tag_complete.indexOf('}');
+            } else { //otherwise go with the tag ending
+                tag_index = tag_complete.indexOf('>');
+            }
+            if (tag_complete.charAt(0) === '<' || !indent_handlebars) {
+                tag_offset = 1;
+            } else {
+                tag_offset = tag_complete.charAt(2) === '#' ? 3 : 2;
+            }
+            var tag_check = tag_complete.substring(tag_offset, tag_index).toLowerCase();
+            if (tag_complete.charAt(tag_complete.length - 2) === '/' ||
+                this.Utils.in_array(tag_check, this.Utils.single_token)) { //if this tag name is a single tag type (either in the list or has a closing /)
+                if (!peek) {
+                    this.tag_type = 'SINGLE';
+                }
+            } else if (indent_handlebars && tag_complete.charAt(0) === '{' && tag_check === 'else') {
+                if (!peek) {
+                    this.indent_to_tag('if');
+                    this.tag_type = 'HANDLEBARS_ELSE';
+                    this.indent_content = true;
+                    this.traverse_whitespace();
+                }
+            } else if (this.is_unformatted(tag_check, unformatted) ||
+                this.is_unformatted(tag_check, content_unformatted)) {
+                // do not reformat the "unformatted" or "content_unformatted" tags
+                comment = this.get_unformatted('</' + tag_check + '>', tag_complete); //...delegate to get_unformatted function
+                content.push(comment);
+                tag_end = this.pos - 1;
+                this.tag_type = 'SINGLE';
+            } else if (tag_check === 'script' &&
+                (tag_complete.search('type') === -1 ||
+                    (tag_complete.search('type') > -1 &&
+                        tag_complete.search(/\b(text|application|dojo)\/(x-)?(javascript|ecmascript|jscript|livescript|(ld\+)?json|method|aspect)/) > -1))) {
+                if (!peek) {
+                    this.record_tag(tag_check);
+                    this.tag_type = 'SCRIPT';
+                }
+            } else if (tag_check === 'style' &&
+                (tag_complete.search('type') === -1 ||
+                    (tag_complete.search('type') > -1 && tag_complete.search('text/css') > -1))) {
+                if (!peek) {
+                    this.record_tag(tag_check);
+                    this.tag_type = 'STYLE';
+                }
+            } else if (tag_check.charAt(0) === '!') { //peek for <! comment
+                // for comments content is already correct.
+                if (!peek) {
+                    this.tag_type = 'SINGLE';
+                    this.traverse_whitespace();
+                }
+            } else if (!peek) {
+                if (tag_check.charAt(0) === '/') { //this tag is a double tag so check for tag-ending
+                    this.retrieve_tag(tag_check.substring(1)); //remove it and all ancestors
+                    this.tag_type = 'END';
+                } else { //otherwise it's a start-tag
+                    this.record_tag(tag_check); //push it on the tag stack
+                    if (tag_check.toLowerCase() !== 'html') {
+                        this.indent_content = true;
+                    }
+                    this.tag_type = 'START';
+                }
+
+                // Allow preserving of newlines after a start or end tag
+                if (this.traverse_whitespace()) {
+                    this.space_or_wrap(content);
+                }
+
+                if (this.Utils.in_array(tag_check, this.Utils.extra_liners)) { //check if this double needs an extra line
+                    this.print_newline(false, this.output);
+                    if (this.output.length && this.output[this.output.length - 2] !== '\n') {
+                        this.print_newline(true, this.output);
+                    }
+                }
+            }
+
+            if (peek) {
+                this.pos = orig_pos;
+                this.line_char_count = orig_line_char_count;
+            }
+
+            return content.join(''); //returns fully formatted tag
+        };
+
+        this.get_comment = function(start_pos) { //function to return comment content in its entirety
+            // this is will have very poor perf, but will work for now.
+            var comment = '',
+                delimiter = '>',
+                matched = false;
+
+            this.pos = start_pos;
+            var input_char = this.input.charAt(this.pos);
+            this.pos++;
+
+            while (this.pos <= this.input.length) {
+                comment += input_char;
+
+                // only need to check for the delimiter if the last chars match
+                if (comment.charAt(comment.length - 1) === delimiter.charAt(delimiter.length - 1) &&
+                    comment.indexOf(delimiter) !== -1) {
+                    break;
+                }
+
+                // only need to search for custom delimiter for the first few characters
+                if (!matched && comment.length < 10) {
+                    if (comment.indexOf('<![if') === 0) { //peek for <![if conditional comment
+                        delimiter = '<![endif]>';
+                        matched = true;
+                    } else if (comment.indexOf('<![cdata[') === 0) { //if it's a <[cdata[ comment...
+                        delimiter = ']]>';
+                        matched = true;
+                    } else if (comment.indexOf('<![') === 0) { // some other ![ comment? ...
+                        delimiter = ']>';
+                        matched = true;
+                    } else if (comment.indexOf('<!--') === 0) { // <!-- comment ...
+                        delimiter = '-->';
+                        matched = true;
+                    } else if (comment.indexOf('{{!--') === 0) { // {{!-- handlebars comment
+                        delimiter = '--}}';
+                        matched = true;
+                    } else if (comment.indexOf('{{!') === 0) { // {{! handlebars comment
+                        if (comment.length === 5 && comment.indexOf('{{!--') === -1) {
+                            delimiter = '}}';
+                            matched = true;
+                        }
+                    } else if (comment.indexOf('<?') === 0) { // {{! handlebars comment
+                        delimiter = '?>';
+                        matched = true;
+                    } else if (comment.indexOf('<%') === 0) { // {{! handlebars comment
+                        delimiter = '%>';
+                        matched = true;
+                    }
+                }
+
+                input_char = this.input.charAt(this.pos);
+                this.pos++;
+            }
+
+            return comment;
+        };
+
+        function tokenMatcher(delimiter) {
+            var token = '';
+
+            var add = function(str) {
+                var newToken = token + str.toLowerCase();
+                token = newToken.length <= delimiter.length ? newToken : newToken.substr(newToken.length - delimiter.length, delimiter.length);
+            };
+
+            var doesNotMatch = function() {
+                return token.indexOf(delimiter) === -1;
+            };
+
+            return {
+                add: add,
+                doesNotMatch: doesNotMatch
+            };
+        }
+
+        this.get_unformatted = function(delimiter, orig_tag) { //function to return unformatted content in its entirety
+            if (orig_tag && orig_tag.toLowerCase().indexOf(delimiter) !== -1) {
+                return '';
+            }
+            var input_char = '';
+            var content = '';
+            var space = true;
+
+            var delimiterMatcher = tokenMatcher(delimiter);
+
+            do {
+
+                if (this.pos >= this.input.length) {
+                    return content;
+                }
+
+                input_char = this.input.charAt(this.pos);
+                this.pos++;
+
+                if (this.Utils.in_array(input_char, this.Utils.whitespace)) {
+                    if (!space) {
+                        this.line_char_count--;
+                        continue;
+                    }
+                    if (input_char === '\n' || input_char === '\r') {
+                        content += '\n';
+                        /*  Don't change tab indention for unformatted blocks.  If using code for html editing, this will greatly affect <pre> tags if they are specified in the 'unformatted array'
+            for (var i=0; i<this.indent_level; i++) {
+              content += this.indent_string;
+            }
+            space = false; //...and make sure other indentation is erased
+            */
+                        this.line_char_count = 0;
+                        continue;
+                    }
+                }
+                content += input_char;
+                delimiterMatcher.add(input_char);
+                this.line_char_count++;
+                space = true;
+
+                if (indent_handlebars && input_char === '{' && content.length && content.charAt(content.length - 2) === '{') {
+                    // Handlebars expressions in strings should also be unformatted.
+                    content += this.get_unformatted('}}');
+                    // Don't consider when stopping for delimiters.
+                }
+            } while (delimiterMatcher.doesNotMatch());
+
+            return content;
+        };
+
+        this.get_token = function() { //initial handler for token-retrieval
+            var token;
+
+            if (this.last_token === 'TK_TAG_SCRIPT' || this.last_token === 'TK_TAG_STYLE') { //check if we need to format javascript
+                var type = this.last_token.substr(7);
+                token = this.get_contents_to(type);
+                if (typeof token !== 'string') {
+                    return token;
+                }
+                return [token, 'TK_' + type];
+            }
+            if (this.current_mode === 'CONTENT') {
+                token = this.get_content();
+                if (typeof token !== 'string') {
+                    return token;
+                } else {
+                    return [token, 'TK_CONTENT'];
+                }
+            }
+
+            if (this.current_mode === 'TAG') {
+                token = this.get_tag();
+                if (typeof token !== 'string') {
+                    return token;
+                } else {
+                    var tag_name_type = 'TK_TAG_' + this.tag_type;
+                    return [token, tag_name_type];
+                }
+            }
+        };
+
+        this.get_full_indent = function(level) {
+            level = this.indent_level + level || 0;
+            if (level < 1) {
+                return '';
+            }
+
+            return Array(level + 1).join(this.indent_string);
+        };
+
+        this.is_unformatted = function(tag_check, unformatted) {
+            //is this an HTML5 block-level link?
+            if (!this.Utils.in_array(tag_check, unformatted)) {
+                return false;
+            }
+
+            if (tag_check.toLowerCase() !== 'a' || !this.Utils.in_array('a', unformatted)) {
+                return true;
+            }
+
+            //at this point we have an  tag; is its first child something we want to remain
+            //unformatted?
+            var next_tag = this.get_tag(true /* peek. */ );
+
+            // test next_tag to see if it is just html tag (no external content)
+            var tag = (next_tag || "").match(/^\s*<\s*\/?([a-z]*)\s*[^>]*>\s*$/);
+
+            // if next_tag comes back but is not an isolated tag, then
+            // let's treat the 'a' tag as having content
+            // and respect the unformatted option
+            if (!tag || this.Utils.in_array(tag[1], unformatted)) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        this.printer = function(js_source, indent_character, indent_size, wrap_line_length, brace_style) { //handles input/output and some other printing functions
+
+            this.input = js_source || ''; //gets the input for the Parser
+
+            // HACK: newline parsing inconsistent. This brute force normalizes the input.
+            this.input = this.input.replace(/\r\n|[\r\u2028\u2029]/g, '\n');
+
+            this.output = [];
+            this.indent_character = indent_character;
+            this.indent_string = '';
+            this.indent_size = indent_size;
+            this.brace_style = brace_style;
+            this.indent_level = 0;
+            this.wrap_line_length = wrap_line_length;
+            this.line_char_count = 0; //count to see if wrap_line_length was exceeded
+
+            for (var i = 0; i < this.indent_size; i++) {
+                this.indent_string += this.indent_character;
+            }
+
+            this.print_newline = function(force, arr) {
+                this.line_char_count = 0;
+                if (!arr || !arr.length) {
+                    return;
+                }
+                if (force || (arr[arr.length - 1] !== '\n')) { //we might want the extra line
+                    if ((arr[arr.length - 1] !== '\n')) {
+                        arr[arr.length - 1] = rtrim(arr[arr.length - 1]);
+                    }
+                    arr.push('\n');
+                }
+            };
+
+            this.print_indentation = function(arr) {
+                for (var i = 0; i < this.indent_level; i++) {
+                    arr.push(this.indent_string);
+                    this.line_char_count += this.indent_string.length;
+                }
+            };
+
+            this.print_token = function(text) {
+                // Avoid printing initial whitespace.
+                if (this.is_whitespace(text) && !this.output.length) {
+                    return;
+                }
+                if (text || text !== '') {
+                    if (this.output.length && this.output[this.output.length - 1] === '\n') {
+                        this.print_indentation(this.output);
+                        text = ltrim(text);
+                    }
+                }
+                this.print_token_raw(text);
+            };
+
+            this.print_token_raw = function(text) {
+                // If we are going to print newlines, truncate trailing
+                // whitespace, as the newlines will represent the space.
+                if (this.newlines > 0) {
+                    text = rtrim(text);
+                }
+
+                if (text && text !== '') {
+                    if (text.length > 1 && text.charAt(text.length - 1) === '\n') {
+                        // unformatted tags can grab newlines as their last character
+                        this.output.push(text.slice(0, -1));
+                        this.print_newline(false, this.output);
+                    } else {
+                        this.output.push(text);
+                    }
+                }
+
+                for (var n = 0; n < this.newlines; n++) {
+                    this.print_newline(n > 0, this.output);
+                }
+                this.newlines = 0;
+            };
+
+            this.indent = function() {
+                this.indent_level++;
+            };
+
+            this.unindent = function() {
+                if (this.indent_level > 0) {
+                    this.indent_level--;
+                }
+            };
+        };
+        return this;
+    }
+
+    /*_____________________--------------------_____________________*/
+
+    this.beautify = function() {
+        multi_parser = new Parser(); //wrapping functions Parser
+        multi_parser.printer(html_source, indent_character, indent_size, wrap_line_length, brace_style); //initialize starting values
+        while (true) {
+            var t = multi_parser.get_token();
+            multi_parser.token_text = t[0];
+            multi_parser.token_type = t[1];
+
+            if (multi_parser.token_type === 'TK_EOF') {
+                break;
+            }
+
+            switch (multi_parser.token_type) {
+                case 'TK_TAG_START':
+                    multi_parser.print_newline(false, multi_parser.output);
+                    multi_parser.print_token(multi_parser.token_text);
+                    if (multi_parser.indent_content) {
+                        if ((multi_parser.indent_body_inner_html || !multi_parser.token_text.match(/<body(?:.*)>/)) &&
+                            (multi_parser.indent_head_inner_html || !multi_parser.token_text.match(/<head(?:.*)>/))) {
+
+                            multi_parser.indent();
+                        }
+
+                        multi_parser.indent_content = false;
+                    }
+                    multi_parser.current_mode = 'CONTENT';
+                    break;
+                case 'TK_TAG_STYLE':
+                case 'TK_TAG_SCRIPT':
+                    multi_parser.print_newline(false, multi_parser.output);
+                    multi_parser.print_token(multi_parser.token_text);
+                    multi_parser.current_mode = 'CONTENT';
+                    break;
+                case 'TK_TAG_END':
+                    //Print new line only if the tag has no content and has child
+                    if (multi_parser.last_token === 'TK_CONTENT' && multi_parser.last_text === '') {
+                        var tag_name = (multi_parser.token_text.match(/\w+/) || [])[0];
+                        var tag_extracted_from_last_output = null;
+                        if (multi_parser.output.length) {
+                            tag_extracted_from_last_output = multi_parser.output[multi_parser.output.length - 1].match(/(?:<|{{#)\s*(\w+)/);
+                        }
+                        if (tag_extracted_from_last_output === null ||
+                            (tag_extracted_from_last_output[1] !== tag_name && !multi_parser.Utils.in_array(tag_extracted_from_last_output[1], unformatted))) {
+                            multi_parser.print_newline(false, multi_parser.output);
+                        }
+                    }
+                    multi_parser.print_token(multi_parser.token_text);
+                    multi_parser.current_mode = 'CONTENT';
+                    break;
+                case 'TK_TAG_SINGLE':
+                    // Don't add a newline before elements that should remain unformatted.
+                    var tag_check = multi_parser.token_text.match(/^\s*<([a-z-]+)/i);
+                    if (!tag_check || !multi_parser.Utils.in_array(tag_check[1], unformatted)) {
+                        multi_parser.print_newline(false, multi_parser.output);
+                    }
+                    multi_parser.print_token(multi_parser.token_text);
+                    multi_parser.current_mode = 'CONTENT';
+                    break;
+                case 'TK_TAG_HANDLEBARS_ELSE':
+                    // Don't add a newline if opening {{#if}} tag is on the current line
+                    var foundIfOnCurrentLine = false;
+                    for (var lastCheckedOutput = multi_parser.output.length - 1; lastCheckedOutput >= 0; lastCheckedOutput--) {
+                        if (multi_parser.output[lastCheckedOutput] === '\n') {
+                            break;
+                        } else {
+                            if (multi_parser.output[lastCheckedOutput].match(/{{#if/)) {
+                                foundIfOnCurrentLine = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!foundIfOnCurrentLine) {
+                        multi_parser.print_newline(false, multi_parser.output);
+                    }
+                    multi_parser.print_token(multi_parser.token_text);
+                    if (multi_parser.indent_content) {
+                        multi_parser.indent();
+                        multi_parser.indent_content = false;
+                    }
+                    multi_parser.current_mode = 'CONTENT';
+                    break;
+                case 'TK_TAG_HANDLEBARS_COMMENT':
+                    multi_parser.print_token(multi_parser.token_text);
+                    multi_parser.current_mode = 'TAG';
+                    break;
+                case 'TK_CONTENT':
+                    multi_parser.print_token(multi_parser.token_text);
+                    multi_parser.current_mode = 'TAG';
+                    break;
+                case 'TK_STYLE':
+                case 'TK_SCRIPT':
+                    if (multi_parser.token_text !== '') {
+                        multi_parser.print_newline(false, multi_parser.output);
+                        var text = multi_parser.token_text,
+                            _beautifier,
+                            script_indent_level = 1;
+                        if (multi_parser.token_type === 'TK_SCRIPT') {
+                            _beautifier = typeof js_beautify === 'function' && js_beautify;
+                        } else if (multi_parser.token_type === 'TK_STYLE') {
+                            _beautifier = typeof css_beautify === 'function' && css_beautify;
+                        }
+
+                        if (options.indent_scripts === "keep") {
+                            script_indent_level = 0;
+                        } else if (options.indent_scripts === "separate") {
+                            script_indent_level = -multi_parser.indent_level;
+                        }
+
+                        var indentation = multi_parser.get_full_indent(script_indent_level);
+                        if (_beautifier) {
+
+                            // call the Beautifier if avaliable
+                            var Child_options = function() {
+                                this.eol = '\n';
+                            };
+                            Child_options.prototype = options;
+                            var child_options = new Child_options();
+                            text = _beautifier(text.replace(/^\s*/, indentation), child_options);
+                        } else {
+                            // simply indent the string otherwise
+                            var white = text.match(/^\s*/)[0];
+                            var _level = white.match(/[^\n\r]*$/)[0].split(multi_parser.indent_string).length - 1;
+                            var reindent = multi_parser.get_full_indent(script_indent_level - _level);
+                            text = text.replace(/^\s*/, indentation)
+                                .replace(/\r\n|\r|\n/g, '\n' + reindent)
+                                .replace(/\s+$/, '');
+                        }
+                        if (text) {
+                            multi_parser.print_token_raw(text);
+                            multi_parser.print_newline(true, multi_parser.output);
+                        }
+                    }
+                    multi_parser.current_mode = 'TAG';
+                    break;
+                default:
+                    // We should not be getting here but we don't want to drop input on the floor
+                    // Just output the text and move on
+                    if (multi_parser.token_text !== '') {
+                        multi_parser.print_token(multi_parser.token_text);
+                    }
+                    break;
+            }
+            multi_parser.last_token = multi_parser.token_type;
+            multi_parser.last_text = multi_parser.token_text;
+        }
+        var sweet_code = multi_parser.output.join('').replace(/[\r\n\t ]+$/, '');
+
+        // establish end_with_newline
+        if (end_with_newline) {
+            sweet_code += '\n';
+        }
+
+        if (eol !== '\n') {
+            sweet_code = sweet_code.replace(/[\n]/g, eol);
+        }
+
+        return sweet_code;
+    };
+}
+
+module.exports.Beautifier = Beautifier;
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
+/* jshint curly: false */
+// This section of code is taken from acorn.
+//
+// Acorn was written by Marijn Haverbeke and released under an MIT
+// license. The Unicode regexps (for identifiers and whitespace) were
+// taken from [Esprima](http://esprima.org) by Ariya Hidayat.
+//
+// Git repositories for Acorn are available at
+//
+//     http://marijnhaverbeke.nl/git/acorn
+//     https://github.com/marijnh/acorn.git
+
+// ## Character categories
+
+// Big ugly regular expressions that match characters in the
+// whitespace, identifier, and identifier-start categories. These
+// are only applied when a character is found to actually have a
+// code point above 128.
+
+var nonASCIIwhitespace = /[\u1680\u180e\u2000-\u200a\u202f\u205f\u3000\ufeff]/; // jshint ignore:line
+var nonASCIIidentifierStartChars = "\xaa\xb5\xba\xc0-\xd6\xd8-\xf6\xf8-\u02c1\u02c6-\u02d1\u02e0-\u02e4\u02ec\u02ee\u0370-\u0374\u0376\u0377\u037a-\u037d\u0386\u0388-\u038a\u038c\u038e-\u03a1\u03a3-\u03f5\u03f7-\u0481\u048a-\u0527\u0531-\u0556\u0559\u0561-\u0587\u05d0-\u05ea\u05f0-\u05f2\u0620-\u064a\u066e\u066f\u0671-\u06d3\u06d5\u06e5\u06e6\u06ee\u06ef\u06fa-\u06fc\u06ff\u0710\u0712-\u072f\u074d-\u07a5\u07b1\u07ca-\u07ea\u07f4\u07f5\u07fa\u0800-\u0815\u081a\u0824\u0828\u0840-\u0858\u08a0\u08a2-\u08ac\u0904-\u0939\u093d\u0950\u0958-\u0961\u0971-\u0977\u0979-\u097f\u0985-\u098c\u098f\u0990\u0993-\u09a8\u09aa-\u09b0\u09b2\u09b6-\u09b9\u09bd\u09ce\u09dc\u09dd\u09df-\u09e1\u09f0\u09f1\u0a05-\u0a0a\u0a0f\u0a10\u0a13-\u0a28\u0a2a-\u0a30\u0a32\u0a33\u0a35\u0a36\u0a38\u0a39\u0a59-\u0a5c\u0a5e\u0a72-\u0a74\u0a85-\u0a8d\u0a8f-\u0a91\u0a93-\u0aa8\u0aaa-\u0ab0\u0ab2\u0ab3\u0ab5-\u0ab9\u0abd\u0ad0\u0ae0\u0ae1\u0b05-\u0b0c\u0b0f\u0b10\u0b13-\u0b28\u0b2a-\u0b30\u0b32\u0b33\u0b35-\u0b39\u0b3d\u0b5c\u0b5d\u0b5f-\u0b61\u0b71\u0b83\u0b85-\u0b8a\u0b8e-\u0b90\u0b92-\u0b95\u0b99\u0b9a\u0b9c\u0b9e\u0b9f\u0ba3\u0ba4\u0ba8-\u0baa\u0bae-\u0bb9\u0bd0\u0c05-\u0c0c\u0c0e-\u0c10\u0c12-\u0c28\u0c2a-\u0c33\u0c35-\u0c39\u0c3d\u0c58\u0c59\u0c60\u0c61\u0c85-\u0c8c\u0c8e-\u0c90\u0c92-\u0ca8\u0caa-\u0cb3\u0cb5-\u0cb9\u0cbd\u0cde\u0ce0\u0ce1\u0cf1\u0cf2\u0d05-\u0d0c\u0d0e-\u0d10\u0d12-\u0d3a\u0d3d\u0d4e\u0d60\u0d61\u0d7a-\u0d7f\u0d85-\u0d96\u0d9a-\u0db1\u0db3-\u0dbb\u0dbd\u0dc0-\u0dc6\u0e01-\u0e30\u0e32\u0e33\u0e40-\u0e46\u0e81\u0e82\u0e84\u0e87\u0e88\u0e8a\u0e8d\u0e94-\u0e97\u0e99-\u0e9f\u0ea1-\u0ea3\u0ea5\u0ea7\u0eaa\u0eab\u0ead-\u0eb0\u0eb2\u0eb3\u0ebd\u0ec0-\u0ec4\u0ec6\u0edc-\u0edf\u0f00\u0f40-\u0f47\u0f49-\u0f6c\u0f88-\u0f8c\u1000-\u102a\u103f\u1050-\u1055\u105a-\u105d\u1061\u1065\u1066\u106e-\u1070\u1075-\u1081\u108e\u10a0-\u10c5\u10c7\u10cd\u10d0-\u10fa\u10fc-\u1248\u124a-\u124d\u1250-\u1256\u1258\u125a-\u125d\u1260-\u1288\u128a-\u128d\u1290-\u12b0\u12b2-\u12b5\u12b8-\u12be\u12c0\u12c2-\u12c5\u12c8-\u12d6\u12d8-\u1310\u1312-\u1315\u1318-\u135a\u1380-\u138f\u13a0-\u13f4\u1401-\u166c\u166f-\u167f\u1681-\u169a\u16a0-\u16ea\u16ee-\u16f0\u1700-\u170c\u170e-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176c\u176e-\u1770\u1780-\u17b3\u17d7\u17dc\u1820-\u1877\u1880-\u18a8\u18aa\u18b0-\u18f5\u1900-\u191c\u1950-\u196d\u1970-\u1974\u1980-\u19ab\u19c1-\u19c7\u1a00-\u1a16\u1a20-\u1a54\u1aa7\u1b05-\u1b33\u1b45-\u1b4b\u1b83-\u1ba0\u1bae\u1baf\u1bba-\u1be5\u1c00-\u1c23\u1c4d-\u1c4f\u1c5a-\u1c7d\u1ce9-\u1cec\u1cee-\u1cf1\u1cf5\u1cf6\u1d00-\u1dbf\u1e00-\u1f15\u1f18-\u1f1d\u1f20-\u1f45\u1f48-\u1f4d\u1f50-\u1f57\u1f59\u1f5b\u1f5d\u1f5f-\u1f7d\u1f80-\u1fb4\u1fb6-\u1fbc\u1fbe\u1fc2-\u1fc4\u1fc6-\u1fcc\u1fd0-\u1fd3\u1fd6-\u1fdb\u1fe0-\u1fec\u1ff2-\u1ff4\u1ff6-\u1ffc\u2071\u207f\u2090-\u209c\u2102\u2107\u210a-\u2113\u2115\u2119-\u211d\u2124\u2126\u2128\u212a-\u212d\u212f-\u2139\u213c-\u213f\u2145-\u2149\u214e\u2160-\u2188\u2c00-\u2c2e\u2c30-\u2c5e\u2c60-\u2ce4\u2ceb-\u2cee\u2cf2\u2cf3\u2d00-\u2d25\u2d27\u2d2d\u2d30-\u2d67\u2d6f\u2d80-\u2d96\u2da0-\u2da6\u2da8-\u2dae\u2db0-\u2db6\u2db8-\u2dbe\u2dc0-\u2dc6\u2dc8-\u2dce\u2dd0-\u2dd6\u2dd8-\u2dde\u2e2f\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303c\u3041-\u3096\u309d-\u309f\u30a1-\u30fa\u30fc-\u30ff\u3105-\u312d\u3131-\u318e\u31a0-\u31ba\u31f0-\u31ff\u3400-\u4db5\u4e00-\u9fcc\ua000-\ua48c\ua4d0-\ua4fd\ua500-\ua60c\ua610-\ua61f\ua62a\ua62b\ua640-\ua66e\ua67f-\ua697\ua6a0-\ua6ef\ua717-\ua71f\ua722-\ua788\ua78b-\ua78e\ua790-\ua793\ua7a0-\ua7aa\ua7f8-\ua801\ua803-\ua805\ua807-\ua80a\ua80c-\ua822\ua840-\ua873\ua882-\ua8b3\ua8f2-\ua8f7\ua8fb\ua90a-\ua925\ua930-\ua946\ua960-\ua97c\ua984-\ua9b2\ua9cf\uaa00-\uaa28\uaa40-\uaa42\uaa44-\uaa4b\uaa60-\uaa76\uaa7a\uaa80-\uaaaf\uaab1\uaab5\uaab6\uaab9-\uaabd\uaac0\uaac2\uaadb-\uaadd\uaae0-\uaaea\uaaf2-\uaaf4\uab01-\uab06\uab09-\uab0e\uab11-\uab16\uab20-\uab26\uab28-\uab2e\uabc0-\uabe2\uac00-\ud7a3\ud7b0-\ud7c6\ud7cb-\ud7fb\uf900-\ufa6d\ufa70-\ufad9\ufb00-\ufb06\ufb13-\ufb17\ufb1d\ufb1f-\ufb28\ufb2a-\ufb36\ufb38-\ufb3c\ufb3e\ufb40\ufb41\ufb43\ufb44\ufb46-\ufbb1\ufbd3-\ufd3d\ufd50-\ufd8f\ufd92-\ufdc7\ufdf0-\ufdfb\ufe70-\ufe74\ufe76-\ufefc\uff21-\uff3a\uff41-\uff5a\uff66-\uffbe\uffc2-\uffc7\uffca-\uffcf\uffd2-\uffd7\uffda-\uffdc";
+var nonASCIIidentifierChars = "\u0300-\u036f\u0483-\u0487\u0591-\u05bd\u05bf\u05c1\u05c2\u05c4\u05c5\u05c7\u0610-\u061a\u0620-\u0649\u0672-\u06d3\u06e7-\u06e8\u06fb-\u06fc\u0730-\u074a\u0800-\u0814\u081b-\u0823\u0825-\u0827\u0829-\u082d\u0840-\u0857\u08e4-\u08fe\u0900-\u0903\u093a-\u093c\u093e-\u094f\u0951-\u0957\u0962-\u0963\u0966-\u096f\u0981-\u0983\u09bc\u09be-\u09c4\u09c7\u09c8\u09d7\u09df-\u09e0\u0a01-\u0a03\u0a3c\u0a3e-\u0a42\u0a47\u0a48\u0a4b-\u0a4d\u0a51\u0a66-\u0a71\u0a75\u0a81-\u0a83\u0abc\u0abe-\u0ac5\u0ac7-\u0ac9\u0acb-\u0acd\u0ae2-\u0ae3\u0ae6-\u0aef\u0b01-\u0b03\u0b3c\u0b3e-\u0b44\u0b47\u0b48\u0b4b-\u0b4d\u0b56\u0b57\u0b5f-\u0b60\u0b66-\u0b6f\u0b82\u0bbe-\u0bc2\u0bc6-\u0bc8\u0bca-\u0bcd\u0bd7\u0be6-\u0bef\u0c01-\u0c03\u0c46-\u0c48\u0c4a-\u0c4d\u0c55\u0c56\u0c62-\u0c63\u0c66-\u0c6f\u0c82\u0c83\u0cbc\u0cbe-\u0cc4\u0cc6-\u0cc8\u0cca-\u0ccd\u0cd5\u0cd6\u0ce2-\u0ce3\u0ce6-\u0cef\u0d02\u0d03\u0d46-\u0d48\u0d57\u0d62-\u0d63\u0d66-\u0d6f\u0d82\u0d83\u0dca\u0dcf-\u0dd4\u0dd6\u0dd8-\u0ddf\u0df2\u0df3\u0e34-\u0e3a\u0e40-\u0e45\u0e50-\u0e59\u0eb4-\u0eb9\u0ec8-\u0ecd\u0ed0-\u0ed9\u0f18\u0f19\u0f20-\u0f29\u0f35\u0f37\u0f39\u0f41-\u0f47\u0f71-\u0f84\u0f86-\u0f87\u0f8d-\u0f97\u0f99-\u0fbc\u0fc6\u1000-\u1029\u1040-\u1049\u1067-\u106d\u1071-\u1074\u1082-\u108d\u108f-\u109d\u135d-\u135f\u170e-\u1710\u1720-\u1730\u1740-\u1750\u1772\u1773\u1780-\u17b2\u17dd\u17e0-\u17e9\u180b-\u180d\u1810-\u1819\u1920-\u192b\u1930-\u193b\u1951-\u196d\u19b0-\u19c0\u19c8-\u19c9\u19d0-\u19d9\u1a00-\u1a15\u1a20-\u1a53\u1a60-\u1a7c\u1a7f-\u1a89\u1a90-\u1a99\u1b46-\u1b4b\u1b50-\u1b59\u1b6b-\u1b73\u1bb0-\u1bb9\u1be6-\u1bf3\u1c00-\u1c22\u1c40-\u1c49\u1c5b-\u1c7d\u1cd0-\u1cd2\u1d00-\u1dbe\u1e01-\u1f15\u200c\u200d\u203f\u2040\u2054\u20d0-\u20dc\u20e1\u20e5-\u20f0\u2d81-\u2d96\u2de0-\u2dff\u3021-\u3028\u3099\u309a\ua640-\ua66d\ua674-\ua67d\ua69f\ua6f0-\ua6f1\ua7f8-\ua800\ua806\ua80b\ua823-\ua827\ua880-\ua881\ua8b4-\ua8c4\ua8d0-\ua8d9\ua8f3-\ua8f7\ua900-\ua909\ua926-\ua92d\ua930-\ua945\ua980-\ua983\ua9b3-\ua9c0\uaa00-\uaa27\uaa40-\uaa41\uaa4c-\uaa4d\uaa50-\uaa59\uaa7b\uaae0-\uaae9\uaaf2-\uaaf3\uabc0-\uabe1\uabec\uabed\uabf0-\uabf9\ufb20-\ufb28\ufe00-\ufe0f\ufe20-\ufe26\ufe33\ufe34\ufe4d-\ufe4f\uff10-\uff19\uff3f";
+var nonASCIIidentifierStart = new RegExp("[" + nonASCIIidentifierStartChars + "]");
+var nonASCIIidentifier = new RegExp("[" + nonASCIIidentifierStartChars + nonASCIIidentifierChars + "]");
+
+// Whether a single character denotes a newline.
+
+exports.newline = /[\n\r\u2028\u2029]/;
+
+// Matches a whole line break (where CRLF is considered a single
+// line break). Used to count lines.
+
+// in javascript, these two differ
+// in python they are the same, different methods are called on them
+exports.lineBreak = new RegExp('\r\n|' + exports.newline.source);
+exports.allLineBreaks = new RegExp(exports.lineBreak.source, 'g');
+
+
+// Test whether a given character code starts an identifier.
+
+exports.isIdentifierStart = function(code) {
+    // permit $ (36) and @ (64). @ is used in ES7 decorators.
+    if (code < 65) return code === 36 || code === 64;
+    // 65 through 91 are uppercase letters.
+    if (code < 91) return true;
+    // permit _ (95).
+    if (code < 97) return code === 95;
+    // 97 through 123 are lowercase letters.
+    if (code < 123) return true;
+    return code >= 0xaa && nonASCIIidentifierStart.test(String.fromCharCode(code));
+};
+
+// Test whether a given character is part of an identifier.
+
+exports.isIdentifierChar = function(code) {
+    if (code < 48) return code === 36;
+    if (code < 58) return true;
+    if (code < 65) return false;
+    if (code < 91) return true;
+    if (code < 97) return code === 95;
+    if (code < 123) return true;
+    return code >= 0xaa && nonASCIIidentifier.test(String.fromCharCode(code));
+};
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+    The MIT License (MIT)
+
+    Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation files
+    (the "Software"), to deal in the Software without restriction,
+    including without limitation the rights to use, copy, modify, merge,
+    publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+    BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+function mergeOpts(allOptions, targetType) {
+    var finalOpts = {};
+    var name;
+
+    for (name in allOptions) {
+        if (name !== targetType) {
+            finalOpts[name] = allOptions[name];
+        }
+    }
+
+    //merge in the per type settings for the targetType
+    if (targetType in allOptions) {
+        for (name in allOptions[targetType]) {
+            finalOpts[name] = allOptions[targetType][name];
+        }
+    }
+    return finalOpts;
+}
+
+module.exports.mergeOpts = mergeOpts;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+    The MIT License (MIT)
+
+    Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation files
+    (the "Software"), to deal in the Software without restriction,
+    including without limitation the rights to use, copy, modify, merge,
+    publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+    BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+var Beautifier = __webpack_require__(0).Beautifier;
+
+function style_html(html_source, options, js_beautify, css_beautify) {
+    var beautifier = new Beautifier(html_source, options, js_beautify, css_beautify);
+    return beautifier.beautify();
+}
+
+module.exports = style_html;
+
+/***/ })
+/******/ ]);
+var style_html = legacy_beautify_html;
+/* Footer */
+if (true) {
+    // Add support for AMD ( https://github.com/amdjs/amdjs-api/wiki/AMD#defineamd-property- )
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, __webpack_require__(/*! ./beautify */ "../../../node_modules/js-beautify/js/lib/beautify.js"), __webpack_require__(/*! ./beautify-css */ "../../../node_modules/js-beautify/js/lib/beautify-css.js")], __WEBPACK_AMD_DEFINE_RESULT__ = (function(requireamd) {
+        var js_beautify = __webpack_require__(/*! ./beautify */ "../../../node_modules/js-beautify/js/lib/beautify.js");
+        var css_beautify = __webpack_require__(/*! ./beautify-css */ "../../../node_modules/js-beautify/js/lib/beautify-css.js");
+
+        return {
+            html_beautify: function(html_source, options) {
+                return style_html(html_source, options, js_beautify.js_beautify, css_beautify.css_beautify);
+            }
+        };
+    }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else { var css_beautify, js_beautify; }
+
+}());
+
+
+/***/ }),
+
+/***/ "../../../node_modules/js-beautify/js/lib/beautify.js":
+/*!******************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify.js ***!
+  \******************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*jshint curly:false, eqeqeq:true, laxbreak:true, noempty:false */
+/* AUTO-GENERATED. DO NOT MODIFY. */
+/* see js/src/javascript/index.js */
+/*
+
+  The MIT License (MIT)
+
+  Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+ JS Beautifier
+---------------
+
+
+  Written by Einar Lielmanis, <einar@jsbeautifier.org>
+      http://jsbeautifier.org/
+
+  Originally converted to javascript by Vital, <vital76@gmail.com>
+  "End braces on own line" added by Chris J. Shull, <chrisjshull@gmail.com>
+  Parsing improvements for brace-less statements by Liam Newman <bitwiseman@gmail.com>
+
+
+  Usage:
+    js_beautify(js_source_text);
+    js_beautify(js_source_text, options);
+
+  The options are:
+    indent_size (default 4)          - indentation size,
+    indent_char (default space)      - character to indent with,
+    preserve_newlines (default true) - whether existing line breaks should be preserved,
+    max_preserve_newlines (default unlimited) - maximum number of line breaks to be preserved in one chunk,
+
+    jslint_happy (default false) - if true, then jslint-stricter mode is enforced.
+
+            jslint_happy        !jslint_happy
+            ---------------------------------
+            function ()         function()
+
+            switch () {         switch() {
+            case 1:               case 1:
+              break;                break;
+            }                   }
+
+    space_after_anon_function (default false) - should the space before an anonymous function's parens be added, "function()" vs "function ()",
+          NOTE: This option is overriden by jslint_happy (i.e. if jslint_happy is true, space_after_anon_function is true by design)
+
+    brace_style (default "collapse") - "collapse" | "expand" | "end-expand" | "none" | any of the former + ",preserve-inline"
+            put braces on the same line as control statements (default), or put braces on own line (Allman / ANSI style), or just put end braces on own line, or attempt to keep them where they are.
+            preserve-inline will try to preserve inline blocks of curly braces
+
+    space_before_conditional (default true) - should the space before conditional statement be added, "if(true)" vs "if (true)",
+
+    unescape_strings (default false) - should printable characters in strings encoded in \xNN notation be unescaped, "example" vs "\x65\x78\x61\x6d\x70\x6c\x65"
+
+    wrap_line_length (default unlimited) - lines should wrap at next opportunity after this number of characters.
+          NOTE: This is not a hard limit. Lines will continue until a point where a newline would
+                be preserved if it were present.
+
+    end_with_newline (default false)  - end output with a newline
+
+
+    e.g
+
+    js_beautify(js_source_text, {
+      'indent_size': 1,
+      'indent_char': '\t'
+    });
+
+*/
+
+(function() {
+var legacy_beautify_js =
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// identity function for calling harmony imports with the correct context
+/******/ 	__webpack_require__.i = function(value) { return value; };
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports) {
+
+/* jshint curly: false */
+// This section of code is taken from acorn.
+//
+// Acorn was written by Marijn Haverbeke and released under an MIT
+// license. The Unicode regexps (for identifiers and whitespace) were
+// taken from [Esprima](http://esprima.org) by Ariya Hidayat.
+//
+// Git repositories for Acorn are available at
+//
+//     http://marijnhaverbeke.nl/git/acorn
+//     https://github.com/marijnh/acorn.git
+
+// ## Character categories
+
+// Big ugly regular expressions that match characters in the
+// whitespace, identifier, and identifier-start categories. These
+// are only applied when a character is found to actually have a
+// code point above 128.
+
+var nonASCIIwhitespace = /[\u1680\u180e\u2000-\u200a\u202f\u205f\u3000\ufeff]/; // jshint ignore:line
+var nonASCIIidentifierStartChars = "\xaa\xb5\xba\xc0-\xd6\xd8-\xf6\xf8-\u02c1\u02c6-\u02d1\u02e0-\u02e4\u02ec\u02ee\u0370-\u0374\u0376\u0377\u037a-\u037d\u0386\u0388-\u038a\u038c\u038e-\u03a1\u03a3-\u03f5\u03f7-\u0481\u048a-\u0527\u0531-\u0556\u0559\u0561-\u0587\u05d0-\u05ea\u05f0-\u05f2\u0620-\u064a\u066e\u066f\u0671-\u06d3\u06d5\u06e5\u06e6\u06ee\u06ef\u06fa-\u06fc\u06ff\u0710\u0712-\u072f\u074d-\u07a5\u07b1\u07ca-\u07ea\u07f4\u07f5\u07fa\u0800-\u0815\u081a\u0824\u0828\u0840-\u0858\u08a0\u08a2-\u08ac\u0904-\u0939\u093d\u0950\u0958-\u0961\u0971-\u0977\u0979-\u097f\u0985-\u098c\u098f\u0990\u0993-\u09a8\u09aa-\u09b0\u09b2\u09b6-\u09b9\u09bd\u09ce\u09dc\u09dd\u09df-\u09e1\u09f0\u09f1\u0a05-\u0a0a\u0a0f\u0a10\u0a13-\u0a28\u0a2a-\u0a30\u0a32\u0a33\u0a35\u0a36\u0a38\u0a39\u0a59-\u0a5c\u0a5e\u0a72-\u0a74\u0a85-\u0a8d\u0a8f-\u0a91\u0a93-\u0aa8\u0aaa-\u0ab0\u0ab2\u0ab3\u0ab5-\u0ab9\u0abd\u0ad0\u0ae0\u0ae1\u0b05-\u0b0c\u0b0f\u0b10\u0b13-\u0b28\u0b2a-\u0b30\u0b32\u0b33\u0b35-\u0b39\u0b3d\u0b5c\u0b5d\u0b5f-\u0b61\u0b71\u0b83\u0b85-\u0b8a\u0b8e-\u0b90\u0b92-\u0b95\u0b99\u0b9a\u0b9c\u0b9e\u0b9f\u0ba3\u0ba4\u0ba8-\u0baa\u0bae-\u0bb9\u0bd0\u0c05-\u0c0c\u0c0e-\u0c10\u0c12-\u0c28\u0c2a-\u0c33\u0c35-\u0c39\u0c3d\u0c58\u0c59\u0c60\u0c61\u0c85-\u0c8c\u0c8e-\u0c90\u0c92-\u0ca8\u0caa-\u0cb3\u0cb5-\u0cb9\u0cbd\u0cde\u0ce0\u0ce1\u0cf1\u0cf2\u0d05-\u0d0c\u0d0e-\u0d10\u0d12-\u0d3a\u0d3d\u0d4e\u0d60\u0d61\u0d7a-\u0d7f\u0d85-\u0d96\u0d9a-\u0db1\u0db3-\u0dbb\u0dbd\u0dc0-\u0dc6\u0e01-\u0e30\u0e32\u0e33\u0e40-\u0e46\u0e81\u0e82\u0e84\u0e87\u0e88\u0e8a\u0e8d\u0e94-\u0e97\u0e99-\u0e9f\u0ea1-\u0ea3\u0ea5\u0ea7\u0eaa\u0eab\u0ead-\u0eb0\u0eb2\u0eb3\u0ebd\u0ec0-\u0ec4\u0ec6\u0edc-\u0edf\u0f00\u0f40-\u0f47\u0f49-\u0f6c\u0f88-\u0f8c\u1000-\u102a\u103f\u1050-\u1055\u105a-\u105d\u1061\u1065\u1066\u106e-\u1070\u1075-\u1081\u108e\u10a0-\u10c5\u10c7\u10cd\u10d0-\u10fa\u10fc-\u1248\u124a-\u124d\u1250-\u1256\u1258\u125a-\u125d\u1260-\u1288\u128a-\u128d\u1290-\u12b0\u12b2-\u12b5\u12b8-\u12be\u12c0\u12c2-\u12c5\u12c8-\u12d6\u12d8-\u1310\u1312-\u1315\u1318-\u135a\u1380-\u138f\u13a0-\u13f4\u1401-\u166c\u166f-\u167f\u1681-\u169a\u16a0-\u16ea\u16ee-\u16f0\u1700-\u170c\u170e-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176c\u176e-\u1770\u1780-\u17b3\u17d7\u17dc\u1820-\u1877\u1880-\u18a8\u18aa\u18b0-\u18f5\u1900-\u191c\u1950-\u196d\u1970-\u1974\u1980-\u19ab\u19c1-\u19c7\u1a00-\u1a16\u1a20-\u1a54\u1aa7\u1b05-\u1b33\u1b45-\u1b4b\u1b83-\u1ba0\u1bae\u1baf\u1bba-\u1be5\u1c00-\u1c23\u1c4d-\u1c4f\u1c5a-\u1c7d\u1ce9-\u1cec\u1cee-\u1cf1\u1cf5\u1cf6\u1d00-\u1dbf\u1e00-\u1f15\u1f18-\u1f1d\u1f20-\u1f45\u1f48-\u1f4d\u1f50-\u1f57\u1f59\u1f5b\u1f5d\u1f5f-\u1f7d\u1f80-\u1fb4\u1fb6-\u1fbc\u1fbe\u1fc2-\u1fc4\u1fc6-\u1fcc\u1fd0-\u1fd3\u1fd6-\u1fdb\u1fe0-\u1fec\u1ff2-\u1ff4\u1ff6-\u1ffc\u2071\u207f\u2090-\u209c\u2102\u2107\u210a-\u2113\u2115\u2119-\u211d\u2124\u2126\u2128\u212a-\u212d\u212f-\u2139\u213c-\u213f\u2145-\u2149\u214e\u2160-\u2188\u2c00-\u2c2e\u2c30-\u2c5e\u2c60-\u2ce4\u2ceb-\u2cee\u2cf2\u2cf3\u2d00-\u2d25\u2d27\u2d2d\u2d30-\u2d67\u2d6f\u2d80-\u2d96\u2da0-\u2da6\u2da8-\u2dae\u2db0-\u2db6\u2db8-\u2dbe\u2dc0-\u2dc6\u2dc8-\u2dce\u2dd0-\u2dd6\u2dd8-\u2dde\u2e2f\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303c\u3041-\u3096\u309d-\u309f\u30a1-\u30fa\u30fc-\u30ff\u3105-\u312d\u3131-\u318e\u31a0-\u31ba\u31f0-\u31ff\u3400-\u4db5\u4e00-\u9fcc\ua000-\ua48c\ua4d0-\ua4fd\ua500-\ua60c\ua610-\ua61f\ua62a\ua62b\ua640-\ua66e\ua67f-\ua697\ua6a0-\ua6ef\ua717-\ua71f\ua722-\ua788\ua78b-\ua78e\ua790-\ua793\ua7a0-\ua7aa\ua7f8-\ua801\ua803-\ua805\ua807-\ua80a\ua80c-\ua822\ua840-\ua873\ua882-\ua8b3\ua8f2-\ua8f7\ua8fb\ua90a-\ua925\ua930-\ua946\ua960-\ua97c\ua984-\ua9b2\ua9cf\uaa00-\uaa28\uaa40-\uaa42\uaa44-\uaa4b\uaa60-\uaa76\uaa7a\uaa80-\uaaaf\uaab1\uaab5\uaab6\uaab9-\uaabd\uaac0\uaac2\uaadb-\uaadd\uaae0-\uaaea\uaaf2-\uaaf4\uab01-\uab06\uab09-\uab0e\uab11-\uab16\uab20-\uab26\uab28-\uab2e\uabc0-\uabe2\uac00-\ud7a3\ud7b0-\ud7c6\ud7cb-\ud7fb\uf900-\ufa6d\ufa70-\ufad9\ufb00-\ufb06\ufb13-\ufb17\ufb1d\ufb1f-\ufb28\ufb2a-\ufb36\ufb38-\ufb3c\ufb3e\ufb40\ufb41\ufb43\ufb44\ufb46-\ufbb1\ufbd3-\ufd3d\ufd50-\ufd8f\ufd92-\ufdc7\ufdf0-\ufdfb\ufe70-\ufe74\ufe76-\ufefc\uff21-\uff3a\uff41-\uff5a\uff66-\uffbe\uffc2-\uffc7\uffca-\uffcf\uffd2-\uffd7\uffda-\uffdc";
+var nonASCIIidentifierChars = "\u0300-\u036f\u0483-\u0487\u0591-\u05bd\u05bf\u05c1\u05c2\u05c4\u05c5\u05c7\u0610-\u061a\u0620-\u0649\u0672-\u06d3\u06e7-\u06e8\u06fb-\u06fc\u0730-\u074a\u0800-\u0814\u081b-\u0823\u0825-\u0827\u0829-\u082d\u0840-\u0857\u08e4-\u08fe\u0900-\u0903\u093a-\u093c\u093e-\u094f\u0951-\u0957\u0962-\u0963\u0966-\u096f\u0981-\u0983\u09bc\u09be-\u09c4\u09c7\u09c8\u09d7\u09df-\u09e0\u0a01-\u0a03\u0a3c\u0a3e-\u0a42\u0a47\u0a48\u0a4b-\u0a4d\u0a51\u0a66-\u0a71\u0a75\u0a81-\u0a83\u0abc\u0abe-\u0ac5\u0ac7-\u0ac9\u0acb-\u0acd\u0ae2-\u0ae3\u0ae6-\u0aef\u0b01-\u0b03\u0b3c\u0b3e-\u0b44\u0b47\u0b48\u0b4b-\u0b4d\u0b56\u0b57\u0b5f-\u0b60\u0b66-\u0b6f\u0b82\u0bbe-\u0bc2\u0bc6-\u0bc8\u0bca-\u0bcd\u0bd7\u0be6-\u0bef\u0c01-\u0c03\u0c46-\u0c48\u0c4a-\u0c4d\u0c55\u0c56\u0c62-\u0c63\u0c66-\u0c6f\u0c82\u0c83\u0cbc\u0cbe-\u0cc4\u0cc6-\u0cc8\u0cca-\u0ccd\u0cd5\u0cd6\u0ce2-\u0ce3\u0ce6-\u0cef\u0d02\u0d03\u0d46-\u0d48\u0d57\u0d62-\u0d63\u0d66-\u0d6f\u0d82\u0d83\u0dca\u0dcf-\u0dd4\u0dd6\u0dd8-\u0ddf\u0df2\u0df3\u0e34-\u0e3a\u0e40-\u0e45\u0e50-\u0e59\u0eb4-\u0eb9\u0ec8-\u0ecd\u0ed0-\u0ed9\u0f18\u0f19\u0f20-\u0f29\u0f35\u0f37\u0f39\u0f41-\u0f47\u0f71-\u0f84\u0f86-\u0f87\u0f8d-\u0f97\u0f99-\u0fbc\u0fc6\u1000-\u1029\u1040-\u1049\u1067-\u106d\u1071-\u1074\u1082-\u108d\u108f-\u109d\u135d-\u135f\u170e-\u1710\u1720-\u1730\u1740-\u1750\u1772\u1773\u1780-\u17b2\u17dd\u17e0-\u17e9\u180b-\u180d\u1810-\u1819\u1920-\u192b\u1930-\u193b\u1951-\u196d\u19b0-\u19c0\u19c8-\u19c9\u19d0-\u19d9\u1a00-\u1a15\u1a20-\u1a53\u1a60-\u1a7c\u1a7f-\u1a89\u1a90-\u1a99\u1b46-\u1b4b\u1b50-\u1b59\u1b6b-\u1b73\u1bb0-\u1bb9\u1be6-\u1bf3\u1c00-\u1c22\u1c40-\u1c49\u1c5b-\u1c7d\u1cd0-\u1cd2\u1d00-\u1dbe\u1e01-\u1f15\u200c\u200d\u203f\u2040\u2054\u20d0-\u20dc\u20e1\u20e5-\u20f0\u2d81-\u2d96\u2de0-\u2dff\u3021-\u3028\u3099\u309a\ua640-\ua66d\ua674-\ua67d\ua69f\ua6f0-\ua6f1\ua7f8-\ua800\ua806\ua80b\ua823-\ua827\ua880-\ua881\ua8b4-\ua8c4\ua8d0-\ua8d9\ua8f3-\ua8f7\ua900-\ua909\ua926-\ua92d\ua930-\ua945\ua980-\ua983\ua9b3-\ua9c0\uaa00-\uaa27\uaa40-\uaa41\uaa4c-\uaa4d\uaa50-\uaa59\uaa7b\uaae0-\uaae9\uaaf2-\uaaf3\uabc0-\uabe1\uabec\uabed\uabf0-\uabf9\ufb20-\ufb28\ufe00-\ufe0f\ufe20-\ufe26\ufe33\ufe34\ufe4d-\ufe4f\uff10-\uff19\uff3f";
+var nonASCIIidentifierStart = new RegExp("[" + nonASCIIidentifierStartChars + "]");
+var nonASCIIidentifier = new RegExp("[" + nonASCIIidentifierStartChars + nonASCIIidentifierChars + "]");
+
+// Whether a single character denotes a newline.
+
+exports.newline = /[\n\r\u2028\u2029]/;
+
+// Matches a whole line break (where CRLF is considered a single
+// line break). Used to count lines.
+
+// in javascript, these two differ
+// in python they are the same, different methods are called on them
+exports.lineBreak = new RegExp('\r\n|' + exports.newline.source);
+exports.allLineBreaks = new RegExp(exports.lineBreak.source, 'g');
+
+
+// Test whether a given character code starts an identifier.
+
+exports.isIdentifierStart = function(code) {
+    // permit $ (36) and @ (64). @ is used in ES7 decorators.
+    if (code < 65) return code === 36 || code === 64;
+    // 65 through 91 are uppercase letters.
+    if (code < 91) return true;
+    // permit _ (95).
+    if (code < 97) return code === 95;
+    // 97 through 123 are lowercase letters.
+    if (code < 123) return true;
+    return code >= 0xaa && nonASCIIidentifierStart.test(String.fromCharCode(code));
+};
+
+// Test whether a given character is part of an identifier.
+
+exports.isIdentifierChar = function(code) {
+    if (code < 48) return code === 36;
+    if (code < 58) return true;
+    if (code < 65) return false;
+    if (code < 91) return true;
+    if (code < 97) return code === 95;
+    if (code < 123) return true;
+    return code >= 0xaa && nonASCIIidentifier.test(String.fromCharCode(code));
+};
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+    The MIT License (MIT)
+
+    Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation files
+    (the "Software"), to deal in the Software without restriction,
+    including without limitation the rights to use, copy, modify, merge,
+    publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+    BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+var mergeOpts = __webpack_require__(3).mergeOpts;
+var acorn = __webpack_require__(0);
+var Output = __webpack_require__(4).Output;
+var Tokenizer = __webpack_require__(7).Tokenizer;
+
+function remove_redundant_indentation(output, frame) {
+    // This implementation is effective but has some issues:
+    //     - can cause line wrap to happen too soon due to indent removal
+    //           after wrap points are calculated
+    // These issues are minor compared to ugly indentation.
+
+    if (frame.multiline_frame ||
+        frame.mode === MODE.ForInitializer ||
+        frame.mode === MODE.Conditional) {
+        return;
+    }
+
+    // remove one indent from each line inside this section
+    var start_index = frame.start_line_index;
+
+    output.remove_indent(start_index);
+}
+
+function in_array(what, arr) {
+    for (var i = 0; i < arr.length; i += 1) {
+        if (arr[i] === what) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function trim(s) {
+    return s.replace(/^\s+|\s+$/g, '');
+}
+
+function ltrim(s) {
+    return s.replace(/^\s+/g, '');
+}
+
+// function rtrim(s) {
+//     return s.replace(/\s+$/g, '');
+// }
+
+
+function generateMapFromStrings(list) {
+    var result = {};
+    for (var x = 0; x < list.length; x++) {
+        // make the mapped names underscored instead of dash
+        result[list[x].replace(/-/g, '_')] = list[x];
+    }
+    return result;
+}
+
+function sanitizeOperatorPosition(opPosition) {
+    opPosition = opPosition || OPERATOR_POSITION.before_newline;
+
+    if (!in_array(opPosition, validPositionValues)) {
+        throw new Error("Invalid Option Value: The option 'operator_position' must be one of the following values\n" +
+            validPositionValues +
+            "\nYou passed in: '" + opPosition + "'");
+    }
+
+    return opPosition;
+}
+
+var validPositionValues = ['before-newline', 'after-newline', 'preserve-newline'];
+
+// Generate map from array
+var OPERATOR_POSITION = generateMapFromStrings(validPositionValues);
+
+var OPERATOR_POSITION_BEFORE_OR_PRESERVE = [OPERATOR_POSITION.before_newline, OPERATOR_POSITION.preserve_newline];
+
+var MODE = {
+    BlockStatement: 'BlockStatement', // 'BLOCK'
+    Statement: 'Statement', // 'STATEMENT'
+    ObjectLiteral: 'ObjectLiteral', // 'OBJECT',
+    ArrayLiteral: 'ArrayLiteral', //'[EXPRESSION]',
+    ForInitializer: 'ForInitializer', //'(FOR-EXPRESSION)',
+    Conditional: 'Conditional', //'(COND-EXPRESSION)',
+    Expression: 'Expression' //'(EXPRESSION)'
+};
+
+function Beautifier(js_source_text, options) {
+    "use strict";
+    var output;
+    var tokens = [],
+        token_pos;
+    var tokenizer;
+    var current_token;
+    var last_type, last_last_text, indent_string;
+    var flags, previous_flags, flag_store;
+    var prefix;
+
+    var handlers, opt;
+    var baseIndentString = '';
+
+    handlers = {
+        'TK_START_EXPR': handle_start_expr,
+        'TK_END_EXPR': handle_end_expr,
+        'TK_START_BLOCK': handle_start_block,
+        'TK_END_BLOCK': handle_end_block,
+        'TK_WORD': handle_word,
+        'TK_RESERVED': handle_word,
+        'TK_SEMICOLON': handle_semicolon,
+        'TK_STRING': handle_string,
+        'TK_EQUALS': handle_equals,
+        'TK_OPERATOR': handle_operator,
+        'TK_COMMA': handle_comma,
+        'TK_BLOCK_COMMENT': handle_block_comment,
+        'TK_COMMENT': handle_comment,
+        'TK_DOT': handle_dot,
+        'TK_UNKNOWN': handle_unknown,
+        'TK_EOF': handle_eof
+    };
+
+    function create_flags(flags_base, mode) {
+        var next_indent_level = 0;
+        if (flags_base) {
+            next_indent_level = flags_base.indentation_level;
+            if (!output.just_added_newline() &&
+                flags_base.line_indent_level > next_indent_level) {
+                next_indent_level = flags_base.line_indent_level;
+            }
+        }
+
+        var next_flags = {
+            mode: mode,
+            parent: flags_base,
+            last_text: flags_base ? flags_base.last_text : '', // last token text
+            last_word: flags_base ? flags_base.last_word : '', // last 'TK_WORD' passed
+            declaration_statement: false,
+            declaration_assignment: false,
+            multiline_frame: false,
+            inline_frame: false,
+            if_block: false,
+            else_block: false,
+            do_block: false,
+            do_while: false,
+            import_block: false,
+            in_case_statement: false, // switch(..){ INSIDE HERE }
+            in_case: false, // we're on the exact line with "case 0:"
+            case_body: false, // the indented case-action block
+            indentation_level: next_indent_level,
+            line_indent_level: flags_base ? flags_base.line_indent_level : next_indent_level,
+            start_line_index: output.get_line_number(),
+            ternary_depth: 0
+        };
+        return next_flags;
+    }
+
+    // Some interpreters have unexpected results with foo = baz || bar;
+    options = options ? options : {};
+
+    // Allow the setting of language/file-type specific options
+    // with inheritance of overall settings
+    options = mergeOpts(options, 'js');
+
+    opt = {};
+
+    // compatibility, re
+    if (options.brace_style === "expand-strict") { //graceful handling of deprecated option
+        options.brace_style = "expand";
+    } else if (options.brace_style === "collapse-preserve-inline") { //graceful handling of deprecated option
+        options.brace_style = "collapse,preserve-inline";
+    } else if (options.braces_on_own_line !== undefined) { //graceful handling of deprecated option
+        options.brace_style = options.braces_on_own_line ? "expand" : "collapse";
+    } else if (!options.brace_style) { //Nothing exists to set it
+        options.brace_style = "collapse";
+    }
+
+    //preserve-inline in delimited string will trigger brace_preserve_inline, everything
+    //else is considered a brace_style and the last one only will have an effect
+    var brace_style_split = options.brace_style.split(/[^a-zA-Z0-9_\-]+/);
+    opt.brace_preserve_inline = false; //Defaults in case one or other was not specified in meta-option
+    opt.brace_style = "collapse";
+    for (var bs = 0; bs < brace_style_split.length; bs++) {
+        if (brace_style_split[bs] === "preserve-inline") {
+            opt.brace_preserve_inline = true;
+        } else {
+            opt.brace_style = brace_style_split[bs];
+        }
+    }
+
+    opt.indent_size = options.indent_size ? parseInt(options.indent_size, 10) : 4;
+    opt.indent_char = options.indent_char ? options.indent_char : ' ';
+    opt.eol = options.eol ? options.eol : 'auto';
+    opt.preserve_newlines = (options.preserve_newlines === undefined) ? true : options.preserve_newlines;
+    opt.unindent_chained_methods = (options.unindent_chained_methods === undefined) ? false : options.unindent_chained_methods;
+    opt.break_chained_methods = (options.break_chained_methods === undefined) ? false : options.break_chained_methods;
+    opt.max_preserve_newlines = (options.max_preserve_newlines === undefined) ? 0 : parseInt(options.max_preserve_newlines, 10);
+    opt.space_in_paren = (options.space_in_paren === undefined) ? false : options.space_in_paren;
+    opt.space_in_empty_paren = (options.space_in_empty_paren === undefined) ? false : options.space_in_empty_paren;
+    opt.jslint_happy = (options.jslint_happy === undefined) ? false : options.jslint_happy;
+    opt.space_after_anon_function = (options.space_after_anon_function === undefined) ? false : options.space_after_anon_function;
+    opt.keep_array_indentation = (options.keep_array_indentation === undefined) ? false : options.keep_array_indentation;
+    opt.space_before_conditional = (options.space_before_conditional === undefined) ? true : options.space_before_conditional;
+    opt.unescape_strings = (options.unescape_strings === undefined) ? false : options.unescape_strings;
+    opt.wrap_line_length = (options.wrap_line_length === undefined) ? 0 : parseInt(options.wrap_line_length, 10);
+    opt.e4x = (options.e4x === undefined) ? false : options.e4x;
+    opt.end_with_newline = (options.end_with_newline === undefined) ? false : options.end_with_newline;
+    opt.comma_first = (options.comma_first === undefined) ? false : options.comma_first;
+    opt.operator_position = sanitizeOperatorPosition(options.operator_position);
+
+    // For testing of beautify ignore:start directive
+    opt.test_output_raw = (options.test_output_raw === undefined) ? false : options.test_output_raw;
+
+    // force opt.space_after_anon_function to true if opt.jslint_happy
+    if (opt.jslint_happy) {
+        opt.space_after_anon_function = true;
+    }
+
+    if (options.indent_with_tabs) {
+        opt.indent_char = '\t';
+        opt.indent_size = 1;
+    }
+
+    if (opt.eol === 'auto') {
+        opt.eol = '\n';
+        if (js_source_text && acorn.lineBreak.test(js_source_text || '')) {
+            opt.eol = js_source_text.match(acorn.lineBreak)[0];
+        }
+    }
+
+    opt.eol = opt.eol.replace(/\\r/, '\r').replace(/\\n/, '\n');
+
+    //----------------------------------
+    indent_string = '';
+    while (opt.indent_size > 0) {
+        indent_string += opt.indent_char;
+        opt.indent_size -= 1;
+    }
+
+    var preindent_index = 0;
+    if (js_source_text && js_source_text.length) {
+        while ((js_source_text.charAt(preindent_index) === ' ' ||
+                js_source_text.charAt(preindent_index) === '\t')) {
+            preindent_index += 1;
+        }
+        baseIndentString = js_source_text.substring(0, preindent_index);
+        js_source_text = js_source_text.substring(preindent_index);
+    }
+
+    last_type = 'TK_START_BLOCK'; // last token type
+    last_last_text = ''; // pre-last token text
+    output = new Output(indent_string, baseIndentString);
+
+    // If testing the ignore directive, start with output disable set to true
+    output.raw = opt.test_output_raw;
+
+
+    // Stack of parsing/formatting states, including MODE.
+    // We tokenize, parse, and output in an almost purely a forward-only stream of token input
+    // and formatted output.  This makes the beautifier less accurate than full parsers
+    // but also far more tolerant of syntax errors.
+    //
+    // For example, the default mode is MODE.BlockStatement. If we see a '{' we push a new frame of type
+    // MODE.BlockStatement on the the stack, even though it could be object literal.  If we later
+    // encounter a ":", we'll switch to to MODE.ObjectLiteral.  If we then see a ";",
+    // most full parsers would die, but the beautifier gracefully falls back to
+    // MODE.BlockStatement and continues on.
+    flag_store = [];
+    set_mode(MODE.BlockStatement);
+
+    this.beautify = function() {
+
+        /*jshint onevar:true */
+        var sweet_code;
+        tokenizer = new Tokenizer(js_source_text, opt, indent_string);
+        tokens = tokenizer.tokenize();
+        token_pos = 0;
+
+        current_token = get_token();
+        while (current_token) {
+            handlers[current_token.type]();
+
+            last_last_text = flags.last_text;
+            last_type = current_token.type;
+            flags.last_text = current_token.text;
+
+            token_pos += 1;
+            current_token = get_token();
+        }
+
+        sweet_code = output.get_code(opt.end_with_newline, opt.eol);
+
+        return sweet_code;
+    };
+
+    function handle_whitespace_and_comments(local_token, preserve_statement_flags) {
+        var newlines = local_token.newlines;
+        var keep_whitespace = opt.keep_array_indentation && is_array(flags.mode);
+        var temp_token = current_token;
+
+        for (var h = 0; h < local_token.comments_before.length; h++) {
+            // The cleanest handling of inline comments is to treat them as though they aren't there.
+            // Just continue formatting and the behavior should be logical.
+            // Also ignore unknown tokens.  Again, this should result in better behavior.
+            current_token = local_token.comments_before[h];
+            handle_whitespace_and_comments(current_token, preserve_statement_flags);
+            handlers[current_token.type](preserve_statement_flags);
+        }
+        current_token = temp_token;
+
+        if (keep_whitespace) {
+            for (var i = 0; i < newlines; i += 1) {
+                print_newline(i > 0, preserve_statement_flags);
+            }
+        } else {
+            if (opt.max_preserve_newlines && newlines > opt.max_preserve_newlines) {
+                newlines = opt.max_preserve_newlines;
+            }
+
+            if (opt.preserve_newlines) {
+                if (local_token.newlines > 1) {
+                    print_newline(false, preserve_statement_flags);
+                    for (var j = 1; j < newlines; j += 1) {
+                        print_newline(true, preserve_statement_flags);
+                    }
+                }
+            }
+        }
+
+    }
+
+    // we could use just string.split, but
+    // IE doesn't like returning empty strings
+    function split_linebreaks(s) {
+        //return s.split(/\x0d\x0a|\x0a/);
+
+        s = s.replace(acorn.allLineBreaks, '\n');
+        var out = [],
+            idx = s.indexOf("\n");
+        while (idx !== -1) {
+            out.push(s.substring(0, idx));
+            s = s.substring(idx + 1);
+            idx = s.indexOf("\n");
+        }
+        if (s.length) {
+            out.push(s);
+        }
+        return out;
+    }
+
+    var newline_restricted_tokens = ['break', 'continue', 'return', 'throw', 'yield'];
+
+    function allow_wrap_or_preserved_newline(force_linewrap) {
+        force_linewrap = (force_linewrap === undefined) ? false : force_linewrap;
+
+        // Never wrap the first token on a line
+        if (output.just_added_newline()) {
+            return;
+        }
+
+        var shouldPreserveOrForce = (opt.preserve_newlines && current_token.wanted_newline) || force_linewrap;
+        var operatorLogicApplies = in_array(flags.last_text, tokenizer.positionable_operators) || in_array(current_token.text, tokenizer.positionable_operators);
+
+        if (operatorLogicApplies) {
+            var shouldPrintOperatorNewline = (
+                    in_array(flags.last_text, tokenizer.positionable_operators) &&
+                    in_array(opt.operator_position, OPERATOR_POSITION_BEFORE_OR_PRESERVE)
+                ) ||
+                in_array(current_token.text, tokenizer.positionable_operators);
+            shouldPreserveOrForce = shouldPreserveOrForce && shouldPrintOperatorNewline;
+        }
+
+        if (shouldPreserveOrForce) {
+            print_newline(false, true);
+        } else if (opt.wrap_line_length) {
+            if (last_type === 'TK_RESERVED' && in_array(flags.last_text, newline_restricted_tokens)) {
+                // These tokens should never have a newline inserted
+                // between them and the following expression.
+                return;
+            }
+            var proposed_line_length = output.current_line.get_character_count() + current_token.text.length +
+                (output.space_before_token ? 1 : 0);
+            if (proposed_line_length >= opt.wrap_line_length) {
+                print_newline(false, true);
+            }
+        }
+    }
+
+    function print_newline(force_newline, preserve_statement_flags) {
+        if (!preserve_statement_flags) {
+            if (flags.last_text !== ';' && flags.last_text !== ',' && flags.last_text !== '=' && last_type !== 'TK_OPERATOR') {
+                var next_token = get_token(1);
+                while (flags.mode === MODE.Statement &&
+                    !(flags.if_block && next_token && next_token.type === 'TK_RESERVED' && next_token.text === 'else') &&
+                    !flags.do_block) {
+                    restore_mode();
+                }
+            }
+        }
+
+        if (output.add_new_line(force_newline)) {
+            flags.multiline_frame = true;
+        }
+    }
+
+    function print_token_line_indentation() {
+        if (output.just_added_newline()) {
+            if (opt.keep_array_indentation && is_array(flags.mode) && current_token.wanted_newline) {
+                output.current_line.push(current_token.whitespace_before);
+                output.space_before_token = false;
+            } else if (output.set_indent(flags.indentation_level)) {
+                flags.line_indent_level = flags.indentation_level;
+            }
+        }
+    }
+
+    function print_token(printable_token) {
+        if (output.raw) {
+            output.add_raw_token(current_token);
+            return;
+        }
+
+        if (opt.comma_first && last_type === 'TK_COMMA' &&
+            output.just_added_newline()) {
+            if (output.previous_line.last() === ',') {
+                var popped = output.previous_line.pop();
+                // if the comma was already at the start of the line,
+                // pull back onto that line and reprint the indentation
+                if (output.previous_line.is_empty()) {
+                    output.previous_line.push(popped);
+                    output.trim(true);
+                    output.current_line.pop();
+                    output.trim();
+                }
+
+                // add the comma in front of the next token
+                print_token_line_indentation();
+                output.add_token(',');
+                output.space_before_token = true;
+            }
+        }
+
+        printable_token = printable_token || current_token.text;
+        print_token_line_indentation();
+        output.add_token(printable_token);
+    }
+
+    function indent() {
+        flags.indentation_level += 1;
+    }
+
+    function deindent() {
+        if (flags.indentation_level > 0 &&
+            ((!flags.parent) || flags.indentation_level > flags.parent.indentation_level)) {
+            flags.indentation_level -= 1;
+
+        }
+    }
+
+    function set_mode(mode) {
+        if (flags) {
+            flag_store.push(flags);
+            previous_flags = flags;
+        } else {
+            previous_flags = create_flags(null, mode);
+        }
+
+        flags = create_flags(previous_flags, mode);
+    }
+
+    function is_array(mode) {
+        return mode === MODE.ArrayLiteral;
+    }
+
+    function is_expression(mode) {
+        return in_array(mode, [MODE.Expression, MODE.ForInitializer, MODE.Conditional]);
+    }
+
+    function restore_mode() {
+        if (flag_store.length > 0) {
+            previous_flags = flags;
+            flags = flag_store.pop();
+            if (previous_flags.mode === MODE.Statement && !opt.unindent_chained_methods) {
+                remove_redundant_indentation(output, previous_flags);
+            }
+        }
+    }
+
+    function start_of_object_property() {
+        return flags.parent.mode === MODE.ObjectLiteral && flags.mode === MODE.Statement && (
+            (flags.last_text === ':' && flags.ternary_depth === 0) || (last_type === 'TK_RESERVED' && in_array(flags.last_text, ['get', 'set'])));
+    }
+
+    function start_of_statement() {
+        if (
+            (last_type === 'TK_RESERVED' && in_array(flags.last_text, ['var', 'let', 'const']) && current_token.type === 'TK_WORD') ||
+            (last_type === 'TK_RESERVED' && flags.last_text === 'do') ||
+            (last_type === 'TK_RESERVED' && in_array(flags.last_text, newline_restricted_tokens) && !current_token.wanted_newline) ||
+            (last_type === 'TK_RESERVED' && flags.last_text === 'else' &&
+                !(current_token.type === 'TK_RESERVED' && current_token.text === 'if' && !current_token.comments_before.length)) ||
+            (last_type === 'TK_END_EXPR' && (previous_flags.mode === MODE.ForInitializer || previous_flags.mode === MODE.Conditional)) ||
+            (last_type === 'TK_WORD' && flags.mode === MODE.BlockStatement &&
+                !flags.in_case &&
+                !(current_token.text === '--' || current_token.text === '++') &&
+                last_last_text !== 'function' &&
+                current_token.type !== 'TK_WORD' && current_token.type !== 'TK_RESERVED') ||
+            (flags.mode === MODE.ObjectLiteral && (
+                (flags.last_text === ':' && flags.ternary_depth === 0) || (last_type === 'TK_RESERVED' && in_array(flags.last_text, ['get', 'set']))))
+        ) {
+
+            set_mode(MODE.Statement);
+            if (!opt.unindent_chained_methods) {
+                indent();
+            }
+
+            handle_whitespace_and_comments(current_token, true);
+
+            // Issue #276:
+            // If starting a new statement with [if, for, while, do], push to a new line.
+            // if (a) if (b) if(c) d(); else e(); else f();
+            if (!start_of_object_property()) {
+                allow_wrap_or_preserved_newline(
+                    current_token.type === 'TK_RESERVED' && in_array(current_token.text, ['do', 'for', 'if', 'while']));
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    function all_lines_start_with(lines, c) {
+        for (var i = 0; i < lines.length; i++) {
+            var line = trim(lines[i]);
+            if (line.charAt(0) !== c) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function each_line_matches_indent(lines, indent) {
+        var i = 0,
+            len = lines.length,
+            line;
+        for (; i < len; i++) {
+            line = lines[i];
+            // allow empty lines to pass through
+            if (line && line.indexOf(indent) !== 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function is_special_word(word) {
+        return in_array(word, ['case', 'return', 'do', 'if', 'throw', 'else']);
+    }
+
+    function get_token(offset) {
+        var index = token_pos + (offset || 0);
+        return (index < 0 || index >= tokens.length) ? null : tokens[index];
+    }
+
+    function handle_start_expr() {
+        // The conditional starts the statement if appropriate.
+        if (!start_of_statement()) {
+            handle_whitespace_and_comments(current_token);
+        }
+
+        var next_mode = MODE.Expression;
+        if (current_token.text === '[') {
+
+            if (last_type === 'TK_WORD' || flags.last_text === ')') {
+                // this is array index specifier, break immediately
+                // a[x], fn()[x]
+                if (last_type === 'TK_RESERVED' && in_array(flags.last_text, tokenizer.line_starters)) {
+                    output.space_before_token = true;
+                }
+                set_mode(next_mode);
+                print_token();
+                indent();
+                if (opt.space_in_paren) {
+                    output.space_before_token = true;
+                }
+                return;
+            }
+
+            next_mode = MODE.ArrayLiteral;
+            if (is_array(flags.mode)) {
+                if (flags.last_text === '[' ||
+                    (flags.last_text === ',' && (last_last_text === ']' || last_last_text === '}'))) {
+                    // ], [ goes to new line
+                    // }, [ goes to new line
+                    if (!opt.keep_array_indentation) {
+                        print_newline();
+                    }
+                }
+            }
+
+        } else {
+            if (last_type === 'TK_RESERVED' && flags.last_text === 'for') {
+                next_mode = MODE.ForInitializer;
+            } else if (last_type === 'TK_RESERVED' && in_array(flags.last_text, ['if', 'while'])) {
+                next_mode = MODE.Conditional;
+            } else {
+                // next_mode = MODE.Expression;
+            }
+        }
+
+        if (flags.last_text === ';' || last_type === 'TK_START_BLOCK') {
+            print_newline();
+        } else if (last_type === 'TK_END_EXPR' || last_type === 'TK_START_EXPR' || last_type === 'TK_END_BLOCK' || flags.last_text === '.') {
+            // TODO: Consider whether forcing this is required.  Review failing tests when removed.
+            allow_wrap_or_preserved_newline(current_token.wanted_newline);
+            // do nothing on (( and )( and ][ and ]( and .(
+        } else if (!(last_type === 'TK_RESERVED' && current_token.text === '(') && last_type !== 'TK_WORD' && last_type !== 'TK_OPERATOR') {
+            output.space_before_token = true;
+        } else if ((last_type === 'TK_RESERVED' && (flags.last_word === 'function' || flags.last_word === 'typeof')) ||
+            (flags.last_text === '*' &&
+                (in_array(last_last_text, ['function', 'yield']) ||
+                    (flags.mode === MODE.ObjectLiteral && in_array(last_last_text, ['{', ',']))))) {
+            // function() vs function ()
+            // yield*() vs yield* ()
+            // function*() vs function* ()
+            if (opt.space_after_anon_function) {
+                output.space_before_token = true;
+            }
+        } else if (last_type === 'TK_RESERVED' && (in_array(flags.last_text, tokenizer.line_starters) || flags.last_text === 'catch')) {
+            if (opt.space_before_conditional) {
+                output.space_before_token = true;
+            }
+        }
+
+        // Should be a space between await and an IIFE, or async and an arrow function
+        if (current_token.text === '(' && last_type === 'TK_RESERVED' && in_array(flags.last_word, ['await', 'async'])) {
+            output.space_before_token = true;
+        }
+
+        // Support of this kind of newline preservation.
+        // a = (b &&
+        //     (c || d));
+        if (current_token.text === '(') {
+            if (last_type === 'TK_EQUALS' || last_type === 'TK_OPERATOR') {
+                if (!start_of_object_property()) {
+                    allow_wrap_or_preserved_newline();
+                }
+            }
+        }
+
+        // Support preserving wrapped arrow function expressions
+        // a.b('c',
+        //     () => d.e
+        // )
+        if (current_token.text === '(' && last_type !== 'TK_WORD' && last_type !== 'TK_RESERVED') {
+            allow_wrap_or_preserved_newline();
+        }
+
+        set_mode(next_mode);
+        print_token();
+        if (opt.space_in_paren) {
+            output.space_before_token = true;
+        }
+
+        // In all cases, if we newline while inside an expression it should be indented.
+        indent();
+    }
+
+    function handle_end_expr() {
+        // statements inside expressions are not valid syntax, but...
+        // statements must all be closed when their container closes
+        while (flags.mode === MODE.Statement) {
+            restore_mode();
+        }
+
+        handle_whitespace_and_comments(current_token);
+
+        if (flags.multiline_frame) {
+            allow_wrap_or_preserved_newline(current_token.text === ']' && is_array(flags.mode) && !opt.keep_array_indentation);
+        }
+
+        if (opt.space_in_paren) {
+            if (last_type === 'TK_START_EXPR' && !opt.space_in_empty_paren) {
+                // () [] no inner space in empty parens like these, ever, ref #320
+                output.trim();
+                output.space_before_token = false;
+            } else {
+                output.space_before_token = true;
+            }
+        }
+        if (current_token.text === ']' && opt.keep_array_indentation) {
+            print_token();
+            restore_mode();
+        } else {
+            restore_mode();
+            print_token();
+        }
+        remove_redundant_indentation(output, previous_flags);
+
+        // do {} while () // no statement required after
+        if (flags.do_while && previous_flags.mode === MODE.Conditional) {
+            previous_flags.mode = MODE.Expression;
+            flags.do_block = false;
+            flags.do_while = false;
+
+        }
+    }
+
+    function handle_start_block() {
+        handle_whitespace_and_comments(current_token);
+
+        // Check if this is should be treated as a ObjectLiteral
+        var next_token = get_token(1);
+        var second_token = get_token(2);
+        if (second_token && (
+                (in_array(second_token.text, [':', ',']) && in_array(next_token.type, ['TK_STRING', 'TK_WORD', 'TK_RESERVED'])) ||
+                (in_array(next_token.text, ['get', 'set', '...']) && in_array(second_token.type, ['TK_WORD', 'TK_RESERVED']))
+            )) {
+            // We don't support TypeScript,but we didn't break it for a very long time.
+            // We'll try to keep not breaking it.
+            if (!in_array(last_last_text, ['class', 'interface'])) {
+                set_mode(MODE.ObjectLiteral);
+            } else {
+                set_mode(MODE.BlockStatement);
+            }
+        } else if (last_type === 'TK_OPERATOR' && flags.last_text === '=>') {
+            // arrow function: (param1, paramN) => { statements }
+            set_mode(MODE.BlockStatement);
+        } else if (in_array(last_type, ['TK_EQUALS', 'TK_START_EXPR', 'TK_COMMA', 'TK_OPERATOR']) ||
+            (last_type === 'TK_RESERVED' && in_array(flags.last_text, ['return', 'throw', 'import', 'default']))
+        ) {
+            // Detecting shorthand function syntax is difficult by scanning forward,
+            //     so check the surrounding context.
+            // If the block is being returned, imported, export default, passed as arg,
+            //     assigned with = or assigned in a nested object, treat as an ObjectLiteral.
+            set_mode(MODE.ObjectLiteral);
+        } else {
+            set_mode(MODE.BlockStatement);
+        }
+
+        var empty_braces = !next_token.comments_before.length && next_token.text === '}';
+        var empty_anonymous_function = empty_braces && flags.last_word === 'function' &&
+            last_type === 'TK_END_EXPR';
+
+        if (opt.brace_preserve_inline) // check for inline, set inline_frame if so
+        {
+            // search forward for a newline wanted inside this block
+            var index = 0;
+            var check_token = null;
+            flags.inline_frame = true;
+            do {
+                index += 1;
+                check_token = get_token(index);
+                if (check_token.wanted_newline) {
+                    flags.inline_frame = false;
+                    break;
+                }
+            } while (check_token.type !== 'TK_EOF' &&
+                !(check_token.type === 'TK_END_BLOCK' && check_token.opened === current_token));
+        }
+
+        if ((opt.brace_style === "expand" ||
+                (opt.brace_style === "none" && current_token.wanted_newline)) &&
+            !flags.inline_frame) {
+            if (last_type !== 'TK_OPERATOR' &&
+                (empty_anonymous_function ||
+                    last_type === 'TK_EQUALS' ||
+                    (last_type === 'TK_RESERVED' && is_special_word(flags.last_text) && flags.last_text !== 'else'))) {
+                output.space_before_token = true;
+            } else {
+                print_newline(false, true);
+            }
+        } else { // collapse || inline_frame
+            if (is_array(previous_flags.mode) && (last_type === 'TK_START_EXPR' || last_type === 'TK_COMMA')) {
+                if (last_type === 'TK_COMMA' || opt.space_in_paren) {
+                    output.space_before_token = true;
+                }
+
+                if (last_type === 'TK_COMMA' || (last_type === 'TK_START_EXPR' && flags.inline_frame)) {
+                    allow_wrap_or_preserved_newline();
+                    previous_flags.multiline_frame = previous_flags.multiline_frame || flags.multiline_frame;
+                    flags.multiline_frame = false;
+                }
+            }
+            if (last_type !== 'TK_OPERATOR' && last_type !== 'TK_START_EXPR') {
+                if (last_type === 'TK_START_BLOCK' && !flags.inline_frame) {
+                    print_newline();
+                } else {
+                    output.space_before_token = true;
+                }
+            }
+        }
+        print_token();
+        indent();
+    }
+
+    function handle_end_block() {
+        // statements must all be closed when their container closes
+        handle_whitespace_and_comments(current_token);
+
+        while (flags.mode === MODE.Statement) {
+            restore_mode();
+        }
+
+        var empty_braces = last_type === 'TK_START_BLOCK';
+
+        if (flags.inline_frame && !empty_braces) { // try inline_frame (only set if opt.braces-preserve-inline) first
+            output.space_before_token = true;
+        } else if (opt.brace_style === "expand") {
+            if (!empty_braces) {
+                print_newline();
+            }
+        } else {
+            // skip {}
+            if (!empty_braces) {
+                if (is_array(flags.mode) && opt.keep_array_indentation) {
+                    // we REALLY need a newline here, but newliner would skip that
+                    opt.keep_array_indentation = false;
+                    print_newline();
+                    opt.keep_array_indentation = true;
+
+                } else {
+                    print_newline();
+                }
+            }
+        }
+        restore_mode();
+        print_token();
+    }
+
+    function handle_word() {
+        if (current_token.type === 'TK_RESERVED') {
+            if (in_array(current_token.text, ['set', 'get']) && flags.mode !== MODE.ObjectLiteral) {
+                current_token.type = 'TK_WORD';
+            } else if (in_array(current_token.text, ['as', 'from']) && !flags.import_block) {
+                current_token.type = 'TK_WORD';
+            } else if (flags.mode === MODE.ObjectLiteral) {
+                var next_token = get_token(1);
+                if (next_token.text === ':') {
+                    current_token.type = 'TK_WORD';
+                }
+            }
+        }
+
+        if (start_of_statement()) {
+            // The conditional starts the statement if appropriate.
+            if (last_type === 'TK_RESERVED' && in_array(flags.last_text, ['var', 'let', 'const']) && current_token.type === 'TK_WORD') {
+                flags.declaration_statement = true;
+            }
+        } else if (current_token.wanted_newline && !is_expression(flags.mode) &&
+            (last_type !== 'TK_OPERATOR' || (flags.last_text === '--' || flags.last_text === '++')) &&
+            last_type !== 'TK_EQUALS' &&
+            (opt.preserve_newlines || !(last_type === 'TK_RESERVED' && in_array(flags.last_text, ['var', 'let', 'const', 'set', 'get'])))) {
+            handle_whitespace_and_comments(current_token);
+            print_newline();
+        } else {
+            handle_whitespace_and_comments(current_token);
+        }
+
+        if (flags.do_block && !flags.do_while) {
+            if (current_token.type === 'TK_RESERVED' && current_token.text === 'while') {
+                // do {} ## while ()
+                output.space_before_token = true;
+                print_token();
+                output.space_before_token = true;
+                flags.do_while = true;
+                return;
+            } else {
+                // do {} should always have while as the next word.
+                // if we don't see the expected while, recover
+                print_newline();
+                flags.do_block = false;
+            }
+        }
+
+        // if may be followed by else, or not
+        // Bare/inline ifs are tricky
+        // Need to unwind the modes correctly: if (a) if (b) c(); else d(); else e();
+        if (flags.if_block) {
+            if (!flags.else_block && (current_token.type === 'TK_RESERVED' && current_token.text === 'else')) {
+                flags.else_block = true;
+            } else {
+                while (flags.mode === MODE.Statement) {
+                    restore_mode();
+                }
+                flags.if_block = false;
+                flags.else_block = false;
+            }
+        }
+
+        if (current_token.type === 'TK_RESERVED' && (current_token.text === 'case' || (current_token.text === 'default' && flags.in_case_statement))) {
+            print_newline();
+            if (flags.case_body || opt.jslint_happy) {
+                // switch cases following one another
+                deindent();
+                flags.case_body = false;
+            }
+            print_token();
+            flags.in_case = true;
+            flags.in_case_statement = true;
+            return;
+        }
+
+        if (last_type === 'TK_COMMA' || last_type === 'TK_START_EXPR' || last_type === 'TK_EQUALS' || last_type === 'TK_OPERATOR') {
+            if (!start_of_object_property()) {
+                allow_wrap_or_preserved_newline();
+            }
+        }
+
+        if (current_token.type === 'TK_RESERVED' && current_token.text === 'function') {
+            if (in_array(flags.last_text, ['}', ';']) ||
+                (output.just_added_newline() && !(in_array(flags.last_text, ['(', '[', '{', ':', '=', ',']) || last_type === 'TK_OPERATOR'))) {
+                // make sure there is a nice clean space of at least one blank line
+                // before a new function definition
+                if (!output.just_added_blankline() && !current_token.comments_before.length) {
+                    print_newline();
+                    print_newline(true);
+                }
+            }
+            if (last_type === 'TK_RESERVED' || last_type === 'TK_WORD') {
+                if (last_type === 'TK_RESERVED' && (
+                        in_array(flags.last_text, ['get', 'set', 'new', 'export', 'async']) ||
+                        in_array(flags.last_text, newline_restricted_tokens))) {
+                    output.space_before_token = true;
+                } else if (last_type === 'TK_RESERVED' && flags.last_text === 'default' && last_last_text === 'export') {
+                    output.space_before_token = true;
+                } else {
+                    print_newline();
+                }
+            } else if (last_type === 'TK_OPERATOR' || flags.last_text === '=') {
+                // foo = function
+                output.space_before_token = true;
+            } else if (!flags.multiline_frame && (is_expression(flags.mode) || is_array(flags.mode))) {
+                // (function
+            } else {
+                print_newline();
+            }
+
+            print_token();
+            flags.last_word = current_token.text;
+            return;
+        }
+
+        prefix = 'NONE';
+
+        if (last_type === 'TK_END_BLOCK') {
+
+            if (previous_flags.inline_frame) {
+                prefix = 'SPACE';
+            } else if (!(current_token.type === 'TK_RESERVED' && in_array(current_token.text, ['else', 'catch', 'finally', 'from']))) {
+                prefix = 'NEWLINE';
+            } else {
+                if (opt.brace_style === "expand" ||
+                    opt.brace_style === "end-expand" ||
+                    (opt.brace_style === "none" && current_token.wanted_newline)) {
+                    prefix = 'NEWLINE';
+                } else {
+                    prefix = 'SPACE';
+                    output.space_before_token = true;
+                }
+            }
+        } else if (last_type === 'TK_SEMICOLON' && flags.mode === MODE.BlockStatement) {
+            // TODO: Should this be for STATEMENT as well?
+            prefix = 'NEWLINE';
+        } else if (last_type === 'TK_SEMICOLON' && is_expression(flags.mode)) {
+            prefix = 'SPACE';
+        } else if (last_type === 'TK_STRING') {
+            prefix = 'NEWLINE';
+        } else if (last_type === 'TK_RESERVED' || last_type === 'TK_WORD' ||
+            (flags.last_text === '*' &&
+                (in_array(last_last_text, ['function', 'yield']) ||
+                    (flags.mode === MODE.ObjectLiteral && in_array(last_last_text, ['{', ',']))))) {
+            prefix = 'SPACE';
+        } else if (last_type === 'TK_START_BLOCK') {
+            if (flags.inline_frame) {
+                prefix = 'SPACE';
+            } else {
+                prefix = 'NEWLINE';
+            }
+        } else if (last_type === 'TK_END_EXPR') {
+            output.space_before_token = true;
+            prefix = 'NEWLINE';
+        }
+
+        if (current_token.type === 'TK_RESERVED' && in_array(current_token.text, tokenizer.line_starters) && flags.last_text !== ')') {
+            if (flags.inline_frame || flags.last_text === 'else' || flags.last_text === 'export') {
+                prefix = 'SPACE';
+            } else {
+                prefix = 'NEWLINE';
+            }
+
+        }
+
+        if (current_token.type === 'TK_RESERVED' && in_array(current_token.text, ['else', 'catch', 'finally'])) {
+            if ((!(last_type === 'TK_END_BLOCK' && previous_flags.mode === MODE.BlockStatement) ||
+                    opt.brace_style === "expand" ||
+                    opt.brace_style === "end-expand" ||
+                    (opt.brace_style === "none" && current_token.wanted_newline)) &&
+                !flags.inline_frame) {
+                print_newline();
+            } else {
+                output.trim(true);
+                var line = output.current_line;
+                // If we trimmed and there's something other than a close block before us
+                // put a newline back in.  Handles '} // comment' scenario.
+                if (line.last() !== '}') {
+                    print_newline();
+                }
+                output.space_before_token = true;
+            }
+        } else if (prefix === 'NEWLINE') {
+            if (last_type === 'TK_RESERVED' && is_special_word(flags.last_text)) {
+                // no newline between 'return nnn'
+                output.space_before_token = true;
+            } else if (last_type !== 'TK_END_EXPR') {
+                if ((last_type !== 'TK_START_EXPR' || !(current_token.type === 'TK_RESERVED' && in_array(current_token.text, ['var', 'let', 'const']))) && flags.last_text !== ':') {
+                    // no need to force newline on 'var': for (var x = 0...)
+                    if (current_token.type === 'TK_RESERVED' && current_token.text === 'if' && flags.last_text === 'else') {
+                        // no newline for } else if {
+                        output.space_before_token = true;
+                    } else {
+                        print_newline();
+                    }
+                }
+            } else if (current_token.type === 'TK_RESERVED' && in_array(current_token.text, tokenizer.line_starters) && flags.last_text !== ')') {
+                print_newline();
+            }
+        } else if (flags.multiline_frame && is_array(flags.mode) && flags.last_text === ',' && last_last_text === '}') {
+            print_newline(); // }, in lists get a newline treatment
+        } else if (prefix === 'SPACE') {
+            output.space_before_token = true;
+        }
+        print_token();
+        flags.last_word = current_token.text;
+
+        if (current_token.type === 'TK_RESERVED') {
+            if (current_token.text === 'do') {
+                flags.do_block = true;
+            } else if (current_token.text === 'if') {
+                flags.if_block = true;
+            } else if (current_token.text === 'import') {
+                flags.import_block = true;
+            } else if (flags.import_block && current_token.type === 'TK_RESERVED' && current_token.text === 'from') {
+                flags.import_block = false;
+            }
+        }
+    }
+
+    function handle_semicolon() {
+        if (start_of_statement()) {
+            // The conditional starts the statement if appropriate.
+            // Semicolon can be the start (and end) of a statement
+            output.space_before_token = false;
+        } else {
+            handle_whitespace_and_comments(current_token);
+        }
+
+        var next_token = get_token(1);
+        while (flags.mode === MODE.Statement &&
+            !(flags.if_block && next_token && next_token.type === 'TK_RESERVED' && next_token.text === 'else') &&
+            !flags.do_block) {
+            restore_mode();
+        }
+
+        // hacky but effective for the moment
+        if (flags.import_block) {
+            flags.import_block = false;
+        }
+        print_token();
+    }
+
+    function handle_string() {
+        if (start_of_statement()) {
+            // The conditional starts the statement if appropriate.
+            // One difference - strings want at least a space before
+            output.space_before_token = true;
+        } else {
+            handle_whitespace_and_comments(current_token);
+            if (last_type === 'TK_RESERVED' || last_type === 'TK_WORD' || flags.inline_frame) {
+                output.space_before_token = true;
+            } else if (last_type === 'TK_COMMA' || last_type === 'TK_START_EXPR' || last_type === 'TK_EQUALS' || last_type === 'TK_OPERATOR') {
+                if (!start_of_object_property()) {
+                    allow_wrap_or_preserved_newline();
+                }
+            } else {
+                print_newline();
+            }
+        }
+        print_token();
+    }
+
+    function handle_equals() {
+        if (start_of_statement()) {
+            // The conditional starts the statement if appropriate.
+        } else {
+            handle_whitespace_and_comments(current_token);
+        }
+
+        if (flags.declaration_statement) {
+            // just got an '=' in a var-line, different formatting/line-breaking, etc will now be done
+            flags.declaration_assignment = true;
+        }
+        output.space_before_token = true;
+        print_token();
+        output.space_before_token = true;
+    }
+
+    function handle_comma() {
+        handle_whitespace_and_comments(current_token, true);
+
+        print_token();
+        output.space_before_token = true;
+        if (flags.declaration_statement) {
+            if (is_expression(flags.parent.mode)) {
+                // do not break on comma, for(var a = 1, b = 2)
+                flags.declaration_assignment = false;
+            }
+
+            if (flags.declaration_assignment) {
+                flags.declaration_assignment = false;
+                print_newline(false, true);
+            } else if (opt.comma_first) {
+                // for comma-first, we want to allow a newline before the comma
+                // to turn into a newline after the comma, which we will fixup later
+                allow_wrap_or_preserved_newline();
+            }
+        } else if (flags.mode === MODE.ObjectLiteral ||
+            (flags.mode === MODE.Statement && flags.parent.mode === MODE.ObjectLiteral)) {
+            if (flags.mode === MODE.Statement) {
+                restore_mode();
+            }
+
+            if (!flags.inline_frame) {
+                print_newline();
+            }
+        } else if (opt.comma_first) {
+            // EXPR or DO_BLOCK
+            // for comma-first, we want to allow a newline before the comma
+            // to turn into a newline after the comma, which we will fixup later
+            allow_wrap_or_preserved_newline();
+        }
+    }
+
+    function handle_operator() {
+        var isGeneratorAsterisk = current_token.text === '*' &&
+            ((last_type === 'TK_RESERVED' && in_array(flags.last_text, ['function', 'yield'])) ||
+                (in_array(last_type, ['TK_START_BLOCK', 'TK_COMMA', 'TK_END_BLOCK', 'TK_SEMICOLON']))
+            );
+        var isUnary = in_array(current_token.text, ['-', '+']) && (
+            in_array(last_type, ['TK_START_BLOCK', 'TK_START_EXPR', 'TK_EQUALS', 'TK_OPERATOR']) ||
+            in_array(flags.last_text, tokenizer.line_starters) ||
+            flags.last_text === ','
+        );
+
+        if (start_of_statement()) {
+            // The conditional starts the statement if appropriate.
+        } else {
+            var preserve_statement_flags = !isGeneratorAsterisk;
+            handle_whitespace_and_comments(current_token, preserve_statement_flags);
+        }
+
+        if (last_type === 'TK_RESERVED' && is_special_word(flags.last_text)) {
+            // "return" had a special handling in TK_WORD. Now we need to return the favor
+            output.space_before_token = true;
+            print_token();
+            return;
+        }
+
+        // hack for actionscript's import .*;
+        if (current_token.text === '*' && last_type === 'TK_DOT') {
+            print_token();
+            return;
+        }
+
+        if (current_token.text === '::') {
+            // no spaces around exotic namespacing syntax operator
+            print_token();
+            return;
+        }
+
+        // Allow line wrapping between operators when operator_position is
+        //   set to before or preserve
+        if (last_type === 'TK_OPERATOR' && in_array(opt.operator_position, OPERATOR_POSITION_BEFORE_OR_PRESERVE)) {
+            allow_wrap_or_preserved_newline();
+        }
+
+        if (current_token.text === ':' && flags.in_case) {
+            flags.case_body = true;
+            indent();
+            print_token();
+            print_newline();
+            flags.in_case = false;
+            return;
+        }
+
+        var space_before = true;
+        var space_after = true;
+        var in_ternary = false;
+        if (current_token.text === ':') {
+            if (flags.ternary_depth === 0) {
+                // Colon is invalid javascript outside of ternary and object, but do our best to guess what was meant.
+                space_before = false;
+            } else {
+                flags.ternary_depth -= 1;
+                in_ternary = true;
+            }
+        } else if (current_token.text === '?') {
+            flags.ternary_depth += 1;
+        }
+
+        // let's handle the operator_position option prior to any conflicting logic
+        if (!isUnary && !isGeneratorAsterisk && opt.preserve_newlines && in_array(current_token.text, tokenizer.positionable_operators)) {
+            var isColon = current_token.text === ':';
+            var isTernaryColon = (isColon && in_ternary);
+            var isOtherColon = (isColon && !in_ternary);
+
+            switch (opt.operator_position) {
+                case OPERATOR_POSITION.before_newline:
+                    // if the current token is : and it's not a ternary statement then we set space_before to false
+                    output.space_before_token = !isOtherColon;
+
+                    print_token();
+
+                    if (!isColon || isTernaryColon) {
+                        allow_wrap_or_preserved_newline();
+                    }
+
+                    output.space_before_token = true;
+                    return;
+
+                case OPERATOR_POSITION.after_newline:
+                    // if the current token is anything but colon, or (via deduction) it's a colon and in a ternary statement,
+                    //   then print a newline.
+
+                    output.space_before_token = true;
+
+                    if (!isColon || isTernaryColon) {
+                        if (get_token(1).wanted_newline) {
+                            print_newline(false, true);
+                        } else {
+                            allow_wrap_or_preserved_newline();
+                        }
+                    } else {
+                        output.space_before_token = false;
+                    }
+
+                    print_token();
+
+                    output.space_before_token = true;
+                    return;
+
+                case OPERATOR_POSITION.preserve_newline:
+                    if (!isOtherColon) {
+                        allow_wrap_or_preserved_newline();
+                    }
+
+                    // if we just added a newline, or the current token is : and it's not a ternary statement,
+                    //   then we set space_before to false
+                    space_before = !(output.just_added_newline() || isOtherColon);
+
+                    output.space_before_token = space_before;
+                    print_token();
+                    output.space_before_token = true;
+                    return;
+            }
+        }
+
+        if (isGeneratorAsterisk) {
+            allow_wrap_or_preserved_newline();
+            space_before = false;
+            var next_token = get_token(1);
+            space_after = next_token && in_array(next_token.type, ['TK_WORD', 'TK_RESERVED']);
+        } else if (current_token.text === '...') {
+            allow_wrap_or_preserved_newline();
+            space_before = last_type === 'TK_START_BLOCK';
+            space_after = false;
+        } else if (in_array(current_token.text, ['--', '++', '!', '~']) || isUnary) {
+            // unary operators (and binary +/- pretending to be unary) special cases
+
+            space_before = false;
+            space_after = false;
+
+            // http://www.ecma-international.org/ecma-262/5.1/#sec-7.9.1
+            // if there is a newline between -- or ++ and anything else we should preserve it.
+            if (current_token.wanted_newline && (current_token.text === '--' || current_token.text === '++')) {
+                print_newline(false, true);
+            }
+
+            if (flags.last_text === ';' && is_expression(flags.mode)) {
+                // for (;; ++i)
+                //        ^^^
+                space_before = true;
+            }
+
+            if (last_type === 'TK_RESERVED') {
+                space_before = true;
+            } else if (last_type === 'TK_END_EXPR') {
+                space_before = !(flags.last_text === ']' && (current_token.text === '--' || current_token.text === '++'));
+            } else if (last_type === 'TK_OPERATOR') {
+                // a++ + ++b;
+                // a - -b
+                space_before = in_array(current_token.text, ['--', '-', '++', '+']) && in_array(flags.last_text, ['--', '-', '++', '+']);
+                // + and - are not unary when preceeded by -- or ++ operator
+                // a-- + b
+                // a * +b
+                // a - -b
+                if (in_array(current_token.text, ['+', '-']) && in_array(flags.last_text, ['--', '++'])) {
+                    space_after = true;
+                }
+            }
+
+
+            if (((flags.mode === MODE.BlockStatement && !flags.inline_frame) || flags.mode === MODE.Statement) &&
+                (flags.last_text === '{' || flags.last_text === ';')) {
+                // { foo; --i }
+                // foo(); --bar;
+                print_newline();
+            }
+        }
+
+        output.space_before_token = output.space_before_token || space_before;
+        print_token();
+        output.space_before_token = space_after;
+    }
+
+    function handle_block_comment(preserve_statement_flags) {
+        if (output.raw) {
+            output.add_raw_token(current_token);
+            if (current_token.directives && current_token.directives.preserve === 'end') {
+                // If we're testing the raw output behavior, do not allow a directive to turn it off.
+                output.raw = opt.test_output_raw;
+            }
+            return;
+        }
+
+        if (current_token.directives) {
+            print_newline(false, preserve_statement_flags);
+            print_token();
+            if (current_token.directives.preserve === 'start') {
+                output.raw = true;
+            }
+            print_newline(false, true);
+            return;
+        }
+
+        // inline block
+        if (!acorn.newline.test(current_token.text) && !current_token.wanted_newline) {
+            output.space_before_token = true;
+            print_token();
+            output.space_before_token = true;
+            return;
+        }
+
+        var lines = split_linebreaks(current_token.text);
+        var j; // iterator for this case
+        var javadoc = false;
+        var starless = false;
+        var lastIndent = current_token.whitespace_before;
+        var lastIndentLength = lastIndent.length;
+
+        // block comment starts with a new line
+        print_newline(false, preserve_statement_flags);
+        if (lines.length > 1) {
+            javadoc = all_lines_start_with(lines.slice(1), '*');
+            starless = each_line_matches_indent(lines.slice(1), lastIndent);
+        }
+
+        // first line always indented
+        print_token(lines[0]);
+        for (j = 1; j < lines.length; j++) {
+            print_newline(false, true);
+            if (javadoc) {
+                // javadoc: reformat and re-indent
+                print_token(' ' + ltrim(lines[j]));
+            } else if (starless && lines[j].length > lastIndentLength) {
+                // starless: re-indent non-empty content, avoiding trim
+                print_token(lines[j].substring(lastIndentLength));
+            } else {
+                // normal comments output raw
+                output.add_token(lines[j]);
+            }
+        }
+
+        // for comments of more than one line, make sure there's a new line after
+        print_newline(false, preserve_statement_flags);
+    }
+
+    function handle_comment(preserve_statement_flags) {
+        if (current_token.wanted_newline) {
+            print_newline(false, preserve_statement_flags);
+        } else {
+            output.trim(true);
+        }
+
+        output.space_before_token = true;
+        print_token();
+        print_newline(false, preserve_statement_flags);
+    }
+
+    function handle_dot() {
+        if (start_of_statement()) {
+            // The conditional starts the statement if appropriate.
+        } else {
+            handle_whitespace_and_comments(current_token, true);
+        }
+
+        if (last_type === 'TK_RESERVED' && is_special_word(flags.last_text)) {
+            output.space_before_token = true;
+        } else {
+            // allow preserved newlines before dots in general
+            // force newlines on dots after close paren when break_chained - for bar().baz()
+            allow_wrap_or_preserved_newline(flags.last_text === ')' && opt.break_chained_methods);
+        }
+
+        print_token();
+    }
+
+    function handle_unknown(preserve_statement_flags) {
+        print_token();
+
+        if (current_token.text[current_token.text.length - 1] === '\n') {
+            print_newline(false, preserve_statement_flags);
+        }
+    }
+
+    function handle_eof() {
+        // Unwind any open statements
+        while (flags.mode === MODE.Statement) {
+            restore_mode();
+        }
+        handle_whitespace_and_comments(current_token);
+    }
+}
+
+module.exports.Beautifier = Beautifier;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+  The MIT License (MIT)
+
+  Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+*/
+
+function InputScanner(input) {
+    var _input = input;
+    var _input_length = _input.length;
+    var _position = 0;
+
+    this.back = function() {
+        _position -= 1;
+    };
+
+    this.hasNext = function() {
+        return _position < _input_length;
+    };
+
+    this.next = function() {
+        var val = null;
+        if (this.hasNext()) {
+            val = _input.charAt(_position);
+            _position += 1;
+        }
+        return val;
+    };
+
+    this.peek = function(index) {
+        var val = null;
+        index = index || 0;
+        index += _position;
+        if (index >= 0 && index < _input_length) {
+            val = _input.charAt(index);
+        }
+        return val;
+    };
+
+    this.peekCharCode = function(index) {
+        var val = 0;
+        index = index || 0;
+        index += _position;
+        if (index >= 0 && index < _input_length) {
+            val = _input.charCodeAt(index);
+        }
+        return val;
+    };
+
+    this.test = function(pattern, index) {
+        index = index || 0;
+        pattern.lastIndex = _position + index;
+        return pattern.test(_input);
+    };
+
+    this.testChar = function(pattern, index) {
+        var val = this.peek(index);
+        return val !== null && pattern.test(val);
+    };
+
+    this.match = function(pattern) {
+        pattern.lastIndex = _position;
+        var pattern_match = pattern.exec(_input);
+        if (pattern_match && pattern_match.index === _position) {
+            _position += pattern_match[0].length;
+        } else {
+            pattern_match = null;
+        }
+        return pattern_match;
+    };
+}
+
+
+module.exports.InputScanner = InputScanner;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+    The MIT License (MIT)
+
+    Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation files
+    (the "Software"), to deal in the Software without restriction,
+    including without limitation the rights to use, copy, modify, merge,
+    publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+    BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+function mergeOpts(allOptions, targetType) {
+    var finalOpts = {};
+    var name;
+
+    for (name in allOptions) {
+        if (name !== targetType) {
+            finalOpts[name] = allOptions[name];
+        }
+    }
+
+    //merge in the per type settings for the targetType
+    if (targetType in allOptions) {
+        for (name in allOptions[targetType]) {
+            finalOpts[name] = allOptions[targetType][name];
+        }
+    }
+    return finalOpts;
+}
+
+module.exports.mergeOpts = mergeOpts;
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+  The MIT License (MIT)
+
+  Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+*/
+
+function OutputLine(parent) {
+    var _character_count = 0;
+    // use indent_count as a marker for lines that have preserved indentation
+    var _indent_count = -1;
+
+    var _items = [];
+    var _empty = true;
+
+    this.set_indent = function(level) {
+        _character_count = parent.baseIndentLength + level * parent.indent_length;
+        _indent_count = level;
+    };
+
+    this.get_character_count = function() {
+        return _character_count;
+    };
+
+    this.is_empty = function() {
+        return _empty;
+    };
+
+    this.last = function() {
+        if (!this._empty) {
+            return _items[_items.length - 1];
+        } else {
+            return null;
+        }
+    };
+
+    this.push = function(input) {
+        _items.push(input);
+        _character_count += input.length;
+        _empty = false;
+    };
+
+    this.pop = function() {
+        var item = null;
+        if (!_empty) {
+            item = _items.pop();
+            _character_count -= item.length;
+            _empty = _items.length === 0;
+        }
+        return item;
+    };
+
+    this.remove_indent = function() {
+        if (_indent_count > 0) {
+            _indent_count -= 1;
+            _character_count -= parent.indent_length;
+        }
+    };
+
+    this.trim = function() {
+        while (this.last() === ' ') {
+            _items.pop();
+            _character_count -= 1;
+        }
+        _empty = _items.length === 0;
+    };
+
+    this.toString = function() {
+        var result = '';
+        if (!this._empty) {
+            if (_indent_count >= 0) {
+                result = parent.indent_cache[_indent_count];
+            }
+            result += _items.join('');
+        }
+        return result;
+    };
+}
+
+function Output(indent_string, baseIndentString) {
+    baseIndentString = baseIndentString || '';
+    this.indent_cache = [baseIndentString];
+    this.baseIndentLength = baseIndentString.length;
+    this.indent_length = indent_string.length;
+    this.raw = false;
+
+    var lines = [];
+    this.baseIndentString = baseIndentString;
+    this.indent_string = indent_string;
+    this.previous_line = null;
+    this.current_line = null;
+    this.space_before_token = false;
+
+    this.add_outputline = function() {
+        this.previous_line = this.current_line;
+        this.current_line = new OutputLine(this);
+        lines.push(this.current_line);
+    };
+
+    // initialize
+    this.add_outputline();
+
+
+    this.get_line_number = function() {
+        return lines.length;
+    };
+
+    // Using object instead of string to allow for later expansion of info about each line
+    this.add_new_line = function(force_newline) {
+        if (this.get_line_number() === 1 && this.just_added_newline()) {
+            return false; // no newline on start of file
+        }
+
+        if (force_newline || !this.just_added_newline()) {
+            if (!this.raw) {
+                this.add_outputline();
+            }
+            return true;
+        }
+
+        return false;
+    };
+
+    this.get_code = function(end_with_newline, eol) {
+        var sweet_code = lines.join('\n').replace(/[\r\n\t ]+$/, '');
+
+        if (end_with_newline) {
+            sweet_code += '\n';
+        }
+
+        if (eol !== '\n') {
+            sweet_code = sweet_code.replace(/[\n]/g, eol);
+        }
+
+        return sweet_code;
+    };
+
+    this.set_indent = function(level) {
+        // Never indent your first output indent at the start of the file
+        if (lines.length > 1) {
+            while (level >= this.indent_cache.length) {
+                this.indent_cache.push(this.indent_cache[this.indent_cache.length - 1] + this.indent_string);
+            }
+
+            this.current_line.set_indent(level);
+            return true;
+        }
+        this.current_line.set_indent(0);
+        return false;
+    };
+
+    this.add_raw_token = function(token) {
+        for (var x = 0; x < token.newlines; x++) {
+            this.add_outputline();
+        }
+        this.current_line.push(token.whitespace_before);
+        this.current_line.push(token.text);
+        this.space_before_token = false;
+    };
+
+    this.add_token = function(printable_token) {
+        this.add_space_before_token();
+        this.current_line.push(printable_token);
+    };
+
+    this.add_space_before_token = function() {
+        if (this.space_before_token && !this.just_added_newline()) {
+            this.current_line.push(' ');
+        }
+        this.space_before_token = false;
+    };
+
+    this.remove_indent = function(index) {
+        var output_length = lines.length;
+        while (index < output_length) {
+            lines[index].remove_indent();
+            index++;
+        }
+    };
+
+    this.trim = function(eat_newlines) {
+        eat_newlines = (eat_newlines === undefined) ? false : eat_newlines;
+
+        this.current_line.trim(indent_string, baseIndentString);
+
+        while (eat_newlines && lines.length > 1 &&
+            this.current_line.is_empty()) {
+            lines.pop();
+            this.current_line = lines[lines.length - 1];
+            this.current_line.trim();
+        }
+
+        this.previous_line = lines.length > 1 ? lines[lines.length - 2] : null;
+    };
+
+    this.just_added_newline = function() {
+        return this.current_line.is_empty();
+    };
+
+    this.just_added_blankline = function() {
+        if (this.just_added_newline()) {
+            if (lines.length === 1) {
+                return true; // start of the file and newline = blank
+            }
+
+            var line = lines[lines.length - 2];
+            return line.is_empty();
+        }
+        return false;
+    };
+}
+
+module.exports.Output = Output;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+  The MIT License (MIT)
+
+  Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+*/
+
+function Token(type, text, newlines, whitespace_before, parent) {
+    this.type = type;
+    this.text = text;
+
+    // comments_before are
+    // comments that have a new line before them
+    // and may or may not have a newline after
+    // this is a set of comments before
+    this.comments_before = /* inline comment*/ [];
+
+
+    this.comments_after = []; // no new line before and newline after
+    this.newlines = newlines || 0;
+    this.wanted_newline = newlines > 0;
+    this.whitespace_before = whitespace_before || '';
+    this.parent = parent || null;
+    this.opened = null;
+    this.directives = null;
+}
+
+module.exports.Token = Token;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+    The MIT License (MIT)
+
+    Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation files
+    (the "Software"), to deal in the Software without restriction,
+    including without limitation the rights to use, copy, modify, merge,
+    publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+    BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+var Beautifier = __webpack_require__(1).Beautifier;
+
+function js_beautify(js_source_text, options) {
+    var beautifier = new Beautifier(js_source_text, options);
+    return beautifier.beautify();
+}
+
+module.exports = js_beautify;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
+/*
+
+    The MIT License (MIT)
+
+    Copyright (c) 2007-2017 Einar Lielmanis, Liam Newman, and contributors.
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation files
+    (the "Software"), to deal in the Software without restriction,
+    including without limitation the rights to use, copy, modify, merge,
+    publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+    BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+var InputScanner = __webpack_require__(2).InputScanner;
+var Token = __webpack_require__(5).Token;
+var acorn = __webpack_require__(0);
+
+function trim(s) {
+    return s.replace(/^\s+|\s+$/g, '');
+}
+
+function in_array(what, arr) {
+    for (var i = 0; i < arr.length; i += 1) {
+        if (arr[i] === what) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function Tokenizer(input_string, opts) {
+
+    var whitespace = "\n\r\t ".split('');
+    var digit = /[0-9]/;
+    var digit_bin = /[01]/;
+    var digit_oct = /[01234567]/;
+    var digit_hex = /[0123456789abcdefABCDEF]/;
+
+    this.positionable_operators = '!= !== % & && * ** + - / : < << <= == === > >= >> >>> ? ^ | ||'.split(' ');
+    var punct = this.positionable_operators.concat(
+        // non-positionable operators - these do not follow operator position settings
+        '! %= &= *= **= ++ += , -- -= /= :: <<= = => >>= >>>= ^= |= ~ ...'.split(' '));
+
+    // words which should always start on new line.
+    this.line_starters = 'continue,try,throw,return,var,let,const,if,switch,case,default,for,while,break,function,import,export'.split(',');
+    var reserved_words = this.line_starters.concat(['do', 'in', 'of', 'else', 'get', 'set', 'new', 'catch', 'finally', 'typeof', 'yield', 'async', 'await', 'from', 'as']);
+
+    //  /* ... */ comment ends with nearest */ or end of file
+    var block_comment_pattern = /([\s\S]*?)((?:\*\/)|$)/g;
+
+    // comment ends just before nearest linefeed or end of file
+    var comment_pattern = /([^\n\r\u2028\u2029]*)/g;
+
+    var directives_block_pattern = /\/\* beautify( \w+[:]\w+)+ \*\//g;
+    var directive_pattern = / (\w+)[:](\w+)/g;
+    var directives_end_ignore_pattern = /([\s\S]*?)((?:\/\*\sbeautify\signore:end\s\*\/)|$)/g;
+
+    var template_pattern = /((<\?php|<\?=)[\s\S]*?\?>)|(<%[\s\S]*?%>)/g;
+
+    var n_newlines, whitespace_before_token, in_html_comment, tokens;
+    var input;
+
+    this.tokenize = function() {
+        input = new InputScanner(input_string);
+        in_html_comment = false;
+        tokens = [];
+
+        var next, last;
+        var token_values;
+        var open = null;
+        var open_stack = [];
+        var comments = [];
+
+        while (!(last && last.type === 'TK_EOF')) {
+            token_values = tokenize_next();
+            next = new Token(token_values[1], token_values[0], n_newlines, whitespace_before_token);
+            while (next.type === 'TK_COMMENT' || next.type === 'TK_BLOCK_COMMENT' || next.type === 'TK_UNKNOWN') {
+                if (next.type === 'TK_BLOCK_COMMENT') {
+                    next.directives = token_values[2];
+                }
+                comments.push(next);
+                token_values = tokenize_next();
+                next = new Token(token_values[1], token_values[0], n_newlines, whitespace_before_token);
+            }
+
+            if (comments.length) {
+                next.comments_before = comments;
+                comments = [];
+            }
+
+            if (next.type === 'TK_START_BLOCK' || next.type === 'TK_START_EXPR') {
+                next.parent = last;
+                open_stack.push(open);
+                open = next;
+            } else if ((next.type === 'TK_END_BLOCK' || next.type === 'TK_END_EXPR') &&
+                (open && (
+                    (next.text === ']' && open.text === '[') ||
+                    (next.text === ')' && open.text === '(') ||
+                    (next.text === '}' && open.text === '{')))) {
+                next.parent = open.parent;
+                next.opened = open;
+
+                open = open_stack.pop();
+            }
+
+            tokens.push(next);
+            last = next;
+        }
+
+        return tokens;
+    };
+
+    function get_directives(text) {
+        if (!text.match(directives_block_pattern)) {
+            return null;
+        }
+
+        var directives = {};
+        directive_pattern.lastIndex = 0;
+        var directive_match = directive_pattern.exec(text);
+
+        while (directive_match) {
+            directives[directive_match[1]] = directive_match[2];
+            directive_match = directive_pattern.exec(text);
+        }
+
+        return directives;
+    }
+
+    function tokenize_next() {
+        var resulting_string;
+        var whitespace_on_this_line = [];
+
+        n_newlines = 0;
+        whitespace_before_token = '';
+
+        var c = input.next();
+
+        if (c === null) {
+            return ['', 'TK_EOF'];
+        }
+
+        var last_token;
+        if (tokens.length) {
+            last_token = tokens[tokens.length - 1];
+        } else {
+            // For the sake of tokenizing we can pretend that there was on open brace to start
+            last_token = new Token('TK_START_BLOCK', '{');
+        }
+
+        while (in_array(c, whitespace)) {
+
+            if (acorn.newline.test(c)) {
+                if (!(c === '\n' && input.peek(-2) === '\r')) {
+                    n_newlines += 1;
+                    whitespace_on_this_line = [];
+                }
+            } else {
+                whitespace_on_this_line.push(c);
+            }
+
+            c = input.next();
+
+            if (c === null) {
+                return ['', 'TK_EOF'];
+            }
+        }
+
+        if (whitespace_on_this_line.length) {
+            whitespace_before_token = whitespace_on_this_line.join('');
+        }
+
+        if (digit.test(c) || (c === '.' && input.testChar(digit))) {
+            var allow_decimal = true;
+            var allow_e = true;
+            var local_digit = digit;
+
+            if (c === '0' && input.testChar(/[XxOoBb]/)) {
+                // switch to hex/oct/bin number, no decimal or e, just hex/oct/bin digits
+                allow_decimal = false;
+                allow_e = false;
+                if (input.testChar(/[Bb]/)) {
+                    local_digit = digit_bin;
+                } else if (input.testChar(/[Oo]/)) {
+                    local_digit = digit_oct;
+                } else {
+                    local_digit = digit_hex;
+                }
+                c += input.next();
+            } else if (c === '.') {
+                // Already have a decimal for this literal, don't allow another
+                allow_decimal = false;
+            } else {
+                // we know this first loop will run.  It keeps the logic simpler.
+                c = '';
+                input.back();
+            }
+
+            // Add the digits
+            while (input.testChar(local_digit)) {
+                c += input.next();
+
+                if (allow_decimal && input.peek() === '.') {
+                    c += input.next();
+                    allow_decimal = false;
+                }
+
+                // a = 1.e-7 is valid, so we test for . then e in one loop
+                if (allow_e && input.testChar(/[Ee]/)) {
+                    c += input.next();
+
+                    if (input.testChar(/[+-]/)) {
+                        c += input.next();
+                    }
+
+                    allow_e = false;
+                    allow_decimal = false;
+                }
+            }
+
+            return [c, 'TK_WORD'];
+        }
+
+        if (acorn.isIdentifierStart(input.peekCharCode(-1))) {
+            if (input.hasNext()) {
+                while (acorn.isIdentifierChar(input.peekCharCode())) {
+                    c += input.next();
+                    if (!input.hasNext()) {
+                        break;
+                    }
+                }
+            }
+
+            if (!(last_token.type === 'TK_DOT' ||
+                    (last_token.type === 'TK_RESERVED' && in_array(last_token.text, ['set', 'get']))) &&
+                in_array(c, reserved_words)) {
+                if (c === 'in' || c === 'of') { // hack for 'in' and 'of' operators
+                    return [c, 'TK_OPERATOR'];
+                }
+                return [c, 'TK_RESERVED'];
+            }
+
+            return [c, 'TK_WORD'];
+        }
+
+        if (c === '(' || c === '[') {
+            return [c, 'TK_START_EXPR'];
+        }
+
+        if (c === ')' || c === ']') {
+            return [c, 'TK_END_EXPR'];
+        }
+
+        if (c === '{') {
+            return [c, 'TK_START_BLOCK'];
+        }
+
+        if (c === '}') {
+            return [c, 'TK_END_BLOCK'];
+        }
+
+        if (c === ';') {
+            return [c, 'TK_SEMICOLON'];
+        }
+
+        if (c === '/') {
+            var comment = '';
+            var comment_match;
+            // peek for comment /* ... */
+            if (input.peek() === '*') {
+                input.next();
+                comment_match = input.match(block_comment_pattern);
+                comment = '/*' + comment_match[0];
+                var directives = get_directives(comment);
+                if (directives && directives.ignore === 'start') {
+                    comment_match = input.match(directives_end_ignore_pattern);
+                    comment += comment_match[0];
+                }
+                comment = comment.replace(acorn.allLineBreaks, '\n');
+                return [comment, 'TK_BLOCK_COMMENT', directives];
+            }
+            // peek for comment // ...
+            if (input.peek() === '/') {
+                input.next();
+                comment_match = input.match(comment_pattern);
+                comment = '//' + comment_match[0];
+                return [comment, 'TK_COMMENT'];
+            }
+
+        }
+
+        var startXmlRegExp = /<()([-a-zA-Z:0-9_.]+|{[\s\S]+?}|!\[CDATA\[[\s\S]*?\]\])(\s+{[\s\S]+?}|\s+[-a-zA-Z:0-9_.]+|\s+[-a-zA-Z:0-9_.]+\s*=\s*('[^']*'|"[^"]*"|{[\s\S]+?}))*\s*(\/?)\s*>/g;
+
+        if (c === '`' || c === "'" || c === '"' || // string
+            (
+                (c === '/') || // regexp
+                (opts.e4x && c === "<" && input.test(startXmlRegExp, -1)) // xml
+            ) && ( // regex and xml can only appear in specific locations during parsing
+                (last_token.type === 'TK_RESERVED' && in_array(last_token.text, ['return', 'case', 'throw', 'else', 'do', 'typeof', 'yield'])) ||
+                (last_token.type === 'TK_END_EXPR' && last_token.text === ')' &&
+                    last_token.parent && last_token.parent.type === 'TK_RESERVED' && in_array(last_token.parent.text, ['if', 'while', 'for'])) ||
+                (in_array(last_token.type, ['TK_COMMENT', 'TK_START_EXPR', 'TK_START_BLOCK',
+                    'TK_END_BLOCK', 'TK_OPERATOR', 'TK_EQUALS', 'TK_EOF', 'TK_SEMICOLON', 'TK_COMMA'
+                ]))
+            )) {
+
+            var sep = c,
+                esc = false,
+                has_char_escapes = false;
+
+            resulting_string = c;
+
+            if (sep === '/') {
+                //
+                // handle regexp
+                //
+                var in_char_class = false;
+                while (input.hasNext() &&
+                    ((esc || in_char_class || input.peek() !== sep) &&
+                        !input.testChar(acorn.newline))) {
+                    resulting_string += input.peek();
+                    if (!esc) {
+                        esc = input.peek() === '\\';
+                        if (input.peek() === '[') {
+                            in_char_class = true;
+                        } else if (input.peek() === ']') {
+                            in_char_class = false;
+                        }
+                    } else {
+                        esc = false;
+                    }
+                    input.next();
+                }
+            } else if (opts.e4x && sep === '<') {
+                //
+                // handle e4x xml literals
+                //
+
+                var xmlRegExp = /[\s\S]*?<(\/?)([-a-zA-Z:0-9_.]+|{[\s\S]+?}|!\[CDATA\[[\s\S]*?\]\])(\s+{[\s\S]+?}|\s+[-a-zA-Z:0-9_.]+|\s+[-a-zA-Z:0-9_.]+\s*=\s*('[^']*'|"[^"]*"|{[\s\S]+?}))*\s*(\/?)\s*>/g;
+                input.back();
+                var xmlStr = '';
+                var match = input.match(startXmlRegExp);
+                if (match) {
+                    // Trim root tag to attempt to
+                    var rootTag = match[2].replace(/^{\s+/, '{').replace(/\s+}$/, '}');
+                    var isCurlyRoot = rootTag.indexOf('{') === 0;
+                    var depth = 0;
+                    while (match) {
+                        var isEndTag = !!match[1];
+                        var tagName = match[2];
+                        var isSingletonTag = (!!match[match.length - 1]) || (tagName.slice(0, 8) === "![CDATA[");
+                        if (!isSingletonTag &&
+                            (tagName === rootTag || (isCurlyRoot && tagName.replace(/^{\s+/, '{').replace(/\s+}$/, '}')))) {
+                            if (isEndTag) {
+                                --depth;
+                            } else {
+                                ++depth;
+                            }
+                        }
+                        xmlStr += match[0];
+                        if (depth <= 0) {
+                            break;
+                        }
+                        match = input.match(xmlRegExp);
+                    }
+                    // if we didn't close correctly, keep unformatted.
+                    if (!match) {
+                        xmlStr += input.match(/[\s\S]*/g)[0];
+                    }
+                    xmlStr = xmlStr.replace(acorn.allLineBreaks, '\n');
+                    return [xmlStr, "TK_STRING"];
+                }
+            } else {
+                //
+                // handle string
+                //
+                var parse_string = function(delimiter, allow_unescaped_newlines, start_sub) {
+                    // Template strings can travers lines without escape characters.
+                    // Other strings cannot
+                    var current_char;
+                    while (input.hasNext()) {
+                        current_char = input.peek();
+                        if (!(esc || (current_char !== delimiter &&
+                                (allow_unescaped_newlines || !acorn.newline.test(current_char))))) {
+                            break;
+                        }
+
+                        // Handle \r\n linebreaks after escapes or in template strings
+                        if ((esc || allow_unescaped_newlines) && acorn.newline.test(current_char)) {
+                            if (current_char === '\r' && input.peek(1) === '\n') {
+                                input.next();
+                                current_char = input.peek();
+                            }
+                            resulting_string += '\n';
+                        } else {
+                            resulting_string += current_char;
+                        }
+
+                        if (esc) {
+                            if (current_char === 'x' || current_char === 'u') {
+                                has_char_escapes = true;
+                            }
+                            esc = false;
+                        } else {
+                            esc = current_char === '\\';
+                        }
+
+                        input.next();
+
+                        if (start_sub && resulting_string.indexOf(start_sub, resulting_string.length - start_sub.length) !== -1) {
+                            if (delimiter === '`') {
+                                parse_string('}', allow_unescaped_newlines, '`');
+                            } else {
+                                parse_string('`', allow_unescaped_newlines, '${');
+                            }
+
+                            if (input.hasNext()) {
+                                resulting_string += input.next();
+                            }
+                        }
+                    }
+                };
+
+                if (sep === '`') {
+                    parse_string('`', true, '${');
+                } else {
+                    parse_string(sep);
+                }
+            }
+
+            if (has_char_escapes && opts.unescape_strings) {
+                resulting_string = unescape_string(resulting_string);
+            }
+
+            if (input.peek() === sep) {
+                resulting_string += sep;
+                input.next();
+
+                if (sep === '/') {
+                    // regexps may have modifiers /regexp/MOD , so fetch those, too
+                    // Only [gim] are valid, but if the user puts in garbage, do what we can to take it.
+                    while (input.hasNext() && acorn.isIdentifierStart(input.peekCharCode())) {
+                        resulting_string += input.next();
+                    }
+                }
+            }
+            return [resulting_string, 'TK_STRING'];
+        }
+
+        if (c === '#') {
+
+            if (tokens.length === 0 && input.peek() === '!') {
+                // shebang
+                resulting_string = c;
+                while (input.hasNext() && c !== '\n') {
+                    c = input.next();
+                    resulting_string += c;
+                }
+                return [trim(resulting_string) + '\n', 'TK_UNKNOWN'];
+            }
+
+
+
+            // Spidermonkey-specific sharp variables for circular references
+            // https://developer.mozilla.org/En/Sharp_variables_in_JavaScript
+            // http://mxr.mozilla.org/mozilla-central/source/js/src/jsscan.cpp around line 1935
+            var sharp = '#';
+            if (input.hasNext() && input.testChar(digit)) {
+                do {
+                    c = input.next();
+                    sharp += c;
+                } while (input.hasNext() && c !== '#' && c !== '=');
+                if (c === '#') {
+                    //
+                } else if (input.peek() === '[' && input.peek(1) === ']') {
+                    sharp += '[]';
+                    input.next();
+                    input.next();
+                } else if (input.peek() === '{' && input.peek(1) === '}') {
+                    sharp += '{}';
+                    input.next();
+                    input.next();
+                }
+                return [sharp, 'TK_WORD'];
+            }
+        }
+
+        if (c === '<' && (input.peek() === '?' || input.peek() === '%')) {
+            input.back();
+            var template_match = input.match(template_pattern);
+            if (template_match) {
+                c = template_match[0];
+                c = c.replace(acorn.allLineBreaks, '\n');
+                return [c, 'TK_STRING'];
+            }
+        }
+
+        if (c === '<' && input.match(/\!--/g)) {
+            c = '<!--';
+            while (input.hasNext() && !input.testChar(acorn.newline)) {
+                c += input.next();
+            }
+            in_html_comment = true;
+            return [c, 'TK_COMMENT'];
+        }
+
+        if (c === '-' && in_html_comment && input.match(/->/g)) {
+            in_html_comment = false;
+            return ['-->', 'TK_COMMENT'];
+        }
+
+        if (c === '.') {
+            if (input.peek() === '.' && input.peek(1) === '.') {
+                c += input.next() + input.next();
+                return [c, 'TK_OPERATOR'];
+            }
+            return [c, 'TK_DOT'];
+        }
+
+        if (in_array(c, punct)) {
+            while (input.hasNext() && in_array(c + input.peek(), punct)) {
+                c += input.next();
+                if (!input.hasNext()) {
+                    break;
+                }
+            }
+
+            if (c === ',') {
+                return [c, 'TK_COMMA'];
+            } else if (c === '=') {
+                return [c, 'TK_EQUALS'];
+            } else {
+                return [c, 'TK_OPERATOR'];
+            }
+        }
+
+        return [c, 'TK_UNKNOWN'];
+    }
+
+
+    function unescape_string(s) {
+        // You think that a regex would work for this
+        // return s.replace(/\\x([0-9a-f]{2})/gi, function(match, val) {
+        //         return String.fromCharCode(parseInt(val, 16));
+        //     })
+        // However, dealing with '\xff', '\\xff', '\\\xff' makes this more fun.
+        var out = '',
+            escaped = 0;
+
+        var input_scan = new InputScanner(s);
+        var matched = null;
+
+        while (input_scan.hasNext()) {
+            // Keep any whitespace, non-slash characters
+            // also keep slash pairs.
+            matched = input_scan.match(/([\s]|[^\\]|\\\\)+/g);
+
+            if (matched) {
+                out += matched[0];
+            }
+
+            if (input_scan.peek() === '\\') {
+                input_scan.next();
+                if (input_scan.peek() === 'x') {
+                    matched = input_scan.match(/x([0-9A-Fa-f]{2})/g);
+                } else if (input_scan.peek() === 'u') {
+                    matched = input_scan.match(/u([0-9A-Fa-f]{4})/g);
+                } else {
+                    out += '\\';
+                    if (input_scan.hasNext()) {
+                        out += input_scan.next();
+                    }
+                    continue;
+                }
+
+                // If there's some error decoding, return the original string
+                if (!matched) {
+                    return s;
+                }
+
+                escaped = parseInt(matched[1], 16);
+
+                if (escaped > 0x7e && escaped <= 0xff && matched[0].indexOf('x') === 0) {
+                    // we bail out on \x7f..\xff,
+                    // leaving whole string escaped,
+                    // as it's probably completely binary
+                    return s;
+                } else if (escaped >= 0x00 && escaped < 0x20) {
+                    // leave 0x00...0x1f escaped
+                    out += '\\' + matched[0];
+                    continue;
+                } else if (escaped === 0x22 || escaped === 0x27 || escaped === 0x5c) {
+                    // single-quote, apostrophe, backslash - escape these
+                    out += '\\' + String.fromCharCode(escaped);
+                } else {
+                    out += String.fromCharCode(escaped);
+                }
+            }
+        }
+
+        return out;
+    }
+}
+
+module.exports.Tokenizer = Tokenizer;
+
+/***/ })
+/******/ ]);
+var js_beautify = legacy_beautify_js;
+/* Footer */
+if (true) {
+    // Add support for AMD ( https://github.com/amdjs/amdjs-api/wiki/AMD#defineamd-property- )
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function() {
+        return { js_beautify: js_beautify };
+    }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {}
+
+}());
+
+
+/***/ }),
+
 /***/ "../../../node_modules/jshint/dist/jshint.js":
-/*!**************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jshint/dist/jshint.js ***!
-  \**************************************************************************/
+/*!*********************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jshint/dist/jshint.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -48565,9 +55971,9 @@ if (typeof exports === 'object' && exports) exports.JSHINT = JSHINT;
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/jstree.js":
-/*!**************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jstree/dist/jstree.js ***!
-  \**************************************************************************/
+/*!*********************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/jstree.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -57162,9 +64568,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/32px.png":
-/*!****************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jstree/dist/themes/default/32px.png ***!
-  \****************************************************************************************/
+/*!***********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/32px.png ***!
+  \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -57173,9 +64579,9 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAABgCAMAAABb
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/40px.png":
-/*!****************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jstree/dist/themes/default/40px.png ***!
-  \****************************************************************************************/
+/*!***********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/40px.png ***!
+  \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -57184,9 +64590,9 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAAHgCAMAAACs
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/style.min.css":
-/*!*********************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
-  \*********************************************************************************************/
+/*!****************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
+  \****************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -57214,9 +64620,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/throbber.gif":
-/*!********************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jstree/dist/themes/default/throbber.gif ***!
-  \********************************************************************************************/
+/*!***************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/throbber.gif ***!
+  \***************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -57225,9 +64631,9 @@ module.exports = "data:image/gif;base64,R0lGODlhEAAQAPMAAP////Dw8IqKiuDg4EZGRnp6
 /***/ }),
 
 /***/ "../../../node_modules/style-loader/lib/addStyles.js":
-/*!**********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/style-loader/lib/addStyles.js ***!
-  \**********************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/style-loader/lib/addStyles.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -57612,9 +65018,9 @@ function updateLink (link, options, obj) {
 /***/ }),
 
 /***/ "../../../node_modules/style-loader/lib/urls.js":
-/*!*****************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/style-loader/lib/urls.js ***!
-  \*****************************************************************************/
+/*!************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/style-loader/lib/urls.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -57743,9 +65149,9 @@ module.exports = g;
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/css/spexp.css":
-/*!***********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
-  \***********************************************************************************/
+/*!******************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -57773,9 +65179,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot":
-/*!************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot ***!
-  \************************************************************************************************************/
+/*!*******************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot ***!
+  \*******************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -57784,9 +65190,9 @@ module.exports = "data:application/vnd.ms-fontobject;base64,n04AAEFNAAACAAIABAAA
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg":
-/*!************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg ***!
-  \************************************************************************************************************/
+/*!*******************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg ***!
+  \*******************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -57795,9 +65201,9 @@ module.exports = "data:image/svg+xml;base64,bW9kdWxlLmV4cG9ydHMgPSAiZGF0YTppbWFn
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf":
-/*!************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf ***!
-  \************************************************************************************************************/
+/*!*******************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf ***!
+  \*******************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -57806,9 +65212,9 @@ module.exports = "data:font/ttf;base64,AAEAAAAPAIAAAwBwRkZUTW0ql9wAAAD8AAAAHEdER
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff":
-/*!*************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff ***!
-  \*************************************************************************************************************/
+/*!********************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff ***!
+  \********************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -57817,9 +65223,9 @@ module.exports = "data:application/font-woff;base64,d09GRgABAAAAAFuAAA8AAAAAsVwA
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2":
-/*!**************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2 ***!
-  \**************************************************************************************************************/
+/*!*********************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2 ***!
+  \*********************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -57828,9 +65234,9 @@ module.exports = "data:font/woff2;base64,d09GMgABAAAAAEZsAA8AAAAAsVwAAEYJAAECTQA
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js":
-/*!*************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/js/bootstrap.js ***!
-  \*************************************************************************************/
+/*!********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/js/bootstrap.js ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -60000,9 +67406,9 @@ if (typeof jQuery === "undefined") {
 /***/ }),
 
 /***/ "../../../public/vendor/select2/css/select2.css":
-/*!*****************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/select2/css/select2.css ***!
-  \*****************************************************************************/
+/*!************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -60030,9 +67436,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../public/vendor/select2/js/select2.full.js":
-/*!********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/select2/js/select2.full.js ***!
-  \********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/select2/js/select2.full.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -60074,9 +67480,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					require = S2;
 				}
 				/**
-    * @license almond 0.3.3 Copyright jQuery Foundation and other contributors.
-    * Released under MIT license, http://github.com/requirejs/almond/LICENSE
-    */
+     * @license almond 0.3.3 Copyright jQuery Foundation and other contributors.
+     * Released under MIT license, http://github.com/requirejs/almond/LICENSE
+     */
 				//Going sloppy to avoid 'use strict' string cost, but strict practices should
 				//be followed.
 				/*global setTimeout: false */
@@ -60100,13 +67506,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					}
 
 					/**
-      * Given a relative module name, like ./something, normalize it to
-      * a real name that can be mapped to a path.
-      * @param {String} name the relative name
-      * @param {String} baseName a real name that the name arg is relative
-      * to.
-      * @returns {String} normalized name
-      */
+         * Given a relative module name, like ./something, normalize it to
+         * a real name that can be mapped to a path.
+         * @param {String} name the relative name
+         * @param {String} baseName a real name that the name arg is relative
+         * to.
+         * @returns {String} normalized name
+         */
 					function normalize(name, baseName) {
 						var nameParts,
 						    nameSegment,
@@ -60290,10 +67696,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					}
 
 					/**
-      * Makes a name map, normalizing the name, and using a plugin
-      * for normalization if necessary. Grabs a ref to plugin
-      * too, as an optimization.
-      */
+         * Makes a name map, normalizing the name, and using a plugin
+         * for normalization if necessary. Grabs a ref to plugin
+         * too, as an optimization.
+         */
 					makeMap = function makeMap(name, relParts) {
 						var plugin,
 						    parts = splitPrefix(name),
@@ -60487,16 +67893,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					};
 
 					/**
-      * Just drops the config on the floor, but returns req in case
-      * the config return value is used.
-      */
+         * Just drops the config on the floor, but returns req in case
+         * the config return value is used.
+         */
 					_req.config = function (cfg) {
 						return _req(cfg);
 					};
 
 					/**
-      * Expose module registry for debugging and tooling
-      */
+         * Expose module registry for debugging and tooling
+         */
 					requirejs._defined = defined;
 
 					define = function define(name, deps, callback) {
@@ -66136,18 +73542,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.default = undefined;
-
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 __webpack_require__(/*! ../string/string.js */ "../string/string.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (function (ns, $) {
 
@@ -66156,60 +73551,405 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		if (this && this.source) {
 			msg = this.source + ": " + msg;
 		}
-		console && console.log.apply(console, [msg]);
+		window.console && console.log.apply(console, [msg]);
 	};
 	var log = function log() {
-		try {
-			if (this && this.source) {
-				if (arguments.length === 1 && typeof arguments[0] == "string") {
-					logf("{0}: {1}", this.source, arguments[0]);
-				} else {
-					var obj = {};
-					obj[this.source] = arguments;
-					if (arguments.length === 1) obj[this.source] = arguments[0];
-					console.log.apply(console, [obj]);
-				}
+		if (this && this.source) {
+			if (arguments.length === 1 && typeof arguments[0] == "string") {
+				logf("{0}: {1}", this.source, arguments[0]);
+			} else {
+				var obj = {};
+				obj[this.source] = arguments;
+				if (arguments.length === 1) obj[this.source] = arguments[0];
+				window.console && console.log.apply(console, [obj]);
 			}
-			//if (this && this.source && arguments.length === 1 && typeof arguments[0] == "string") {
-			//	let s = this.source + ": "; for (let i = 0; i < arguments.length; i++) {
-			//		s += `{${i}} `;
-			//	}
-			//	var msg = logf(s, arguments[0]);
-			//	console.log.apply(console, [msg]);
-			//	var obj = {};
-			//	obj[this.source] = arguments;
-			//	console.log.apply(console, [obj]);
-			//         }
-			else console.log.apply(console, arguments);
-			//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
 		}
+		//if (this && this.source && arguments.length === 1 && typeof arguments[0] == "string") {
+		//	let s = this.source + ": "; for (let i = 0; i < arguments.length; i++) {
+		//		s += `{${i}} `;
+		//	}
+		//	var msg = logf(s, arguments[0]);
+		//	console.log.apply(console, [msg]);
+		//	var obj = {};
+		//	obj[this.source] = arguments;
+		//	console.log.apply(console, [obj]);
+		//         }
+		else window.console && console.log.apply(console, arguments);
+		//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 	var error = function error() {
-		try {
-			console.error.apply(console, arguments);
-			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
-		}
+		window.console && console.error.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 	var warn = function warn() {
-		try {
-			console.warn.apply(console, arguments);
-			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
-		}
+		window.console && console.warn.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+	};
+	var debug = function debug() {
+		window.console && console.log.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 
-	ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn };
+	var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
+		var scopedLog = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.log.apply(scopedLog, arguments);
+				onTrace && onTrace({ type: "log", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedError = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.error.apply(scopedError, arguments);
+				onTrace && onTrace({ type: "error", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedDebug = new function () {
+			var d = function d() {
+				if (debugging) {
+					ns.logger && ns.logger.log.apply(scopedDebug, arguments);
+					onTrace && onTrace({ type: "debug", args: arguments });
+				}
+			};
+			d.source = source;
+			return d;
+		}();
+
+		var scopedWarn = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.error.apply(scopedWarn, arguments);
+				onTrace && onTrace({ type: "warn", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+
+		return {
+			log: scopedLog,
+			error: scopedError,
+			debug: scopedDebug,
+			warn: scopedWarn
+		};
+	};
+
+	ns["logger"] = {
+		"version": "0.0.2",
+		get: defineScopedTracing,
+		/// TODO: this should be private
+		logf: logf, "log": log, "error": error, "warn": warn, "debug": debug
+	};
 	log("logger");
-	ns.$ = $;
 	return ns.logger;
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
-var logger = window["spexplorerjs"];
-exports.default = logger;
+
+	// both of these dependencies are resolved in string.js
+})(window.spexplorerjs, window.jQuery); // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
+// v 0.0.1: 2018-03-28  - debug, get
+
+/***/ }),
+
+/***/ "../mirrors/jseditor.js":
+/*!******************************!*\
+  !*** ../mirrors/jseditor.js ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../string/string.js */ "../string/string.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/lib/codemirror.css */ "../../../node_modules/codemirror/lib/codemirror.css");
+
+var _jshint = __webpack_require__(/*! ../../../node_modules/jshint/dist/jshint.js */ "../../../node_modules/jshint/dist/jshint.js");
+
+var _jshint2 = _interopRequireDefault(_jshint);
+
+var _codemirror = __webpack_require__(/*! ../../../node_modules/codemirror/lib/codemirror.js */ "../../../node_modules/codemirror/lib/codemirror.js");
+
+var _codemirror2 = _interopRequireDefault(_codemirror);
+
+__webpack_require__(/*! ../../../node_modules/codemirror/mode/javascript/javascript.js */ "../../../node_modules/codemirror/mode/javascript/javascript.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js */ "../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/mode/css/css.js */ "../../../node_modules/codemirror/mode/css/css.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/lint.css */ "../../../node_modules/codemirror/addon/lint/lint.css");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldgutter.css */ "../../../node_modules/codemirror/addon/fold/foldgutter.css");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/anyword-hint.js */ "../../../node_modules/codemirror/addon/hint/anyword-hint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/css-hint.js */ "../../../node_modules/codemirror/addon/hint/css-hint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/html-hint.js */ "../../../node_modules/codemirror/addon/hint/html-hint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/javascript-hint.js */ "../../../node_modules/codemirror/addon/hint/javascript-hint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/show-hint.js */ "../../../node_modules/codemirror/addon/hint/show-hint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/sql-hint.js */ "../../../node_modules/codemirror/addon/hint/sql-hint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/xml-hint.js */ "../../../node_modules/codemirror/addon/hint/xml-hint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/show-hint.css */ "../../../node_modules/codemirror/addon/hint/show-hint.css");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/brace-fold.js */ "../../../node_modules/codemirror/addon/fold/brace-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/comment-fold.js */ "../../../node_modules/codemirror/addon/fold/comment-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldcode.js */ "../../../node_modules/codemirror/addon/fold/foldcode.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldgutter.js */ "../../../node_modules/codemirror/addon/fold/foldgutter.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/indent-fold.js */ "../../../node_modules/codemirror/addon/fold/indent-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/markdown-fold.js */ "../../../node_modules/codemirror/addon/fold/markdown-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/xml-fold.js */ "../../../node_modules/codemirror/addon/fold/xml-fold.js");
+
+var _beautify = __webpack_require__(/*! ../../../node_modules/js-beautify/js/lib/beautify.js */ "../../../node_modules/js-beautify/js/lib/beautify.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/lint.js */ "../../../node_modules/codemirror/addon/lint/lint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/javascript-lint.js */ "../../../node_modules/codemirror/addon/lint/javascript-lint.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//import "../../../node_modules/codemirror/addon/lint/json-lint.js";
+//import "../../../node_modules/codemirror/addon/lint/yaml-lint.js";
+//import "../../../node_modules/codemirror/addon/lint/lint.css";
+
+//< !--lint -->
+//import "https://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js";
+//import "https://rawgithub.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js";
+//import "csslint.js";
+window.CodeMirror = _codemirror2.default;
+//import "../../../node_modules/codemirror/addon/lint/coffeescript-lint.js";
+//import "../../../node_modules/codemirror/addon/lint/css-lint.js";
+//import "../../../node_modules/codemirror/addon/lint/html-lint.js";
+
+//< !--end fold-- >
+
+//<!-- endhint -->
+//<!-- fold-->
+
+
+//<!-- hint -->
+
+//import "../../../components/js/vakata/libs/jquery.js";
+//import "https://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.4/jquery-ui.min.js";
+//import "../../../node_modules/jquery-ui-dist/jquery-ui.min.js";
+//import "../../../public/vendor/bootstrap/js/bootstrap.js";
+
+(function (ns, $) {
+	ns.widgets = ns.widgets || {};
+	ns.widgets.jseditorinit = function (ell) {
+		window.JSHINT = _jshint2.default.JSHINT;
+		var setupJS = function setupJS(el) {
+			var editor = el.CodeMirror;
+			if (editor) {
+				editor.toTextArea();
+			}
+			editor = _codemirror2.default.fromTextArea(el, {
+				mode: "javascript",
+				lineNumbers: true,
+				lineWrapping: true,
+				foldGutter: true,
+				gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+				lint: true
+			});
+
+			editor.setOption("extraKeys", {
+				"Ctrl-Q": function CtrlQ(cm) {
+
+					cm.foldCode(cm.getCursor());
+				},
+				"Alt-R": function AltR() /*cm*/{
+					$(el).trigger("run");
+				},
+				"Alt-F": function AltF(cm) {
+
+					cm.setValue((0, _beautify.js_beautify)(cm.getValue()));
+				},
+				"Enter": function Enter() /*e*/{
+					editor.replaceSelection("\n", "end");
+				}
+			});
+
+			$(el).data("CodeMirror", editor);
+		};
+
+		setupJS(ell);
+
+		var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+		var eventer = window[eventMethod];
+		var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+
+		// Listen to message from child IFrame window
+		var editor = $(ell).data("CodeMirror");
+		eventer(messageEvent, function (e) {
+			var elem = e.data; //JSON.parse(e.data);
+
+			if (elem.action == "set") {
+				var data = ns.string.htmlDecode(elem.data);
+				editor.setValue(data);
+				editor.refresh();
+			} else if (elem.action == "get") {
+				var val = editor.getValue();
+				window.parent.postMessage(JSON.stringify({ code: val, action: elem.action, id: window.location.href.split("=")[1] }), "*");
+			}
+		});
+
+		return {
+			refresh: function refresh() {
+
+				editor.refresh();
+			},
+			set: function set(data) {
+				editor.setValue(data);
+			}, get: function get() {
+				return editor.getValue();
+			}
+
+		};
+	};
+	ns.widgets.jseditor = function (iframe) {
+
+		iframe.contentWindow.document.write("<html><body><textarea></textarea></body></html>");
+		var cont = $(iframe).contents().find("textarea");
+		ns.widgets.jseditorinit(cont);
+	};
+})(window["spexplorerjs"], _jquery2.default);
+
+/***/ }),
+
+/***/ "../mirrors/jsmirror.js":
+/*!******************************!*\
+  !*** ../mirrors/jsmirror.js ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ./jseditor.js */ "../mirrors/jseditor.js");
+
+var _jsmirrorTemplate = __webpack_require__(/*! ./jsmirror.template.html */ "../mirrors/jsmirror.template.html");
+
+var _jsmirrorTemplate2 = _interopRequireDefault(_jsmirrorTemplate);
+
+__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// v 0.0.1 - 2018/03/28     - Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
+//                          - setScript method
+//                          - use Function constructor for code execution
+//                          - refresh method
+(function (ns, $, template) {
+
+	var debugging = window.location.href.search(/(localhost|debugjsmirror)/) > 0;
+	var tracing = ns.logger.get("jsmirror", debugging);
+	var log = tracing.log,
+	    debug = tracing.debug,
+	    error = tracing.error;
+
+	var xjsmirror = function xjsmirror(ui, opts) {
+
+		debug("xjsmirror.init");
+
+		var $el = $(ui);
+		opts = $.extend({}, opts);
+
+		$el.html(template.trim());
+		var run = $("button", ui);
+
+		var runScript = function runScript(code) {
+			try {
+				log({ runScript: code });
+				ns.spelem = opts.spelem;
+				var script = "var log = console.log, clear = console.clear;\r\n\
+                    {0}\r\n".replace("{0}", code);
+
+				var tempFunction = new Function("spelem", script);
+				var res = tempFunction(opts.spelem);
+				if (res) console.log(res);
+			} catch (e) {
+				error(e.message);
+				throw e;
+			}
+		};
+
+		var editor = null;
+
+		(function iframeImplementation() {
+
+			var iframe = $("iframe", ui);
+			iframe[0].contentWindow.document.write("<html><body><textarea></textarea></body></html>");
+
+			var head = iframe.contents().find("head");
+			$("style").each(function () {
+				// cloneNode doesnt work in IE
+				//head.append(this.cloneNode(true));
+				var html = $(this).html().trim();
+				if (html.search("CodeMirror") > 0) $("<style type='text/css'>" + html + "</style>").appendTo(head);
+			});
+
+			var editorCtrl = iframe.contents().find("textarea")[0];
+			editor = ns.widgets.jseditorinit(editorCtrl);
+
+			$(editorCtrl).on("run", function () {
+				runScript(editor.get());
+			});
+
+			run.click(function () {
+				runScript(editor.get());
+				return false;
+			});
+		})();
+
+		return {
+			refresh: function refresh() {
+				editor.refresh();
+			},
+			setScript: function setScript(obj) {
+				editor.set(obj);
+			},
+			setScriptingObject: function setScriptingObject(obj) {
+				opts.spelem = obj;
+			}
+		};
+	};
+
+	var widgetInfo = ns.widgets.addWidget("xjsmirror", xjsmirror, "0.0.1");
+
+	widgetInfo.startup();
+})(window["spexplorerjs"], _jquery2.default, _jsmirrorTemplate2.default);
+
+/***/ }),
+
+/***/ "../mirrors/jsmirror.template.html":
+/*!*****************************************!*\
+  !*** ../mirrors/jsmirror.template.html ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n            width: 100%;\r\n            height: 100%;\r\n        }\r\n    </style>\r\n\r\n    <div class=\"full\">\r\n        <iframe src=\"#\" class=\"full jsmirror mirror\" style=\"resize:both\"></iframe>\r\n        <button type=\"button\">Run</button>\r\n    </div>\r\n</div>\r\n";
 
 /***/ }),
 
@@ -66243,21 +73983,25 @@ var _codemirror = __webpack_require__(/*! ../../../node_modules/codemirror/lib/c
 
 var _codemirror2 = _interopRequireDefault(_codemirror);
 
-__webpack_require__(/*! ../../../node_modules/codemirror/mode/javascript/javascript.js */ "../../../node_modules/codemirror/mode/javascript/javascript.js");
-
-__webpack_require__(/*! ../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js */ "../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js");
-
-__webpack_require__(/*! ../../../node_modules/codemirror/mode/xml/xml.js */ "../../../node_modules/codemirror/mode/xml/xml.js");
-
 __webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/lint.css */ "../../../node_modules/codemirror/addon/lint/lint.css");
 
 __webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldgutter.css */ "../../../node_modules/codemirror/addon/fold/foldgutter.css");
 
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/edit/closetag.js */ "../../../node_modules/codemirror/addon/edit/closetag.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/edit/matchtags */ "../../../node_modules/codemirror/addon/edit/matchtags.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/show-hint.css */ "../../../node_modules/codemirror/addon/hint/show-hint.css");
+
 __webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/anyword-hint.js */ "../../../node_modules/codemirror/addon/hint/anyword-hint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/show-hint.js */ "../../../node_modules/codemirror/addon/hint/show-hint.js");
 
 __webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/xml-hint.js */ "../../../node_modules/codemirror/addon/hint/xml-hint.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/show-hint.css */ "../../../node_modules/codemirror/addon/hint/show-hint.css");
+__webpack_require__(/*! ../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js */ "../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/mode/xml/xml.js */ "../../../node_modules/codemirror/mode/xml/xml.js");
 
 __webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/brace-fold.js */ "../../../node_modules/codemirror/addon/fold/brace-fold.js");
 
@@ -66275,30 +74019,35 @@ __webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/xml-fold.js 
 
 __webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/lint.js */ "../../../node_modules/codemirror/addon/lint/lint.js");
 
+var _beautifyHtml = __webpack_require__(/*! ../../../node_modules/js-beautify/js/lib/beautify-html.js */ "../../../node_modules/js-beautify/js/lib/beautify-html.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//< !--end fold-- >
-//< !--lint -->
-//import "https://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js";
-//import "https://rawgithub.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js";
-//import "csslint.js";
-
-//<!-- endhint -->
-//<!-- fold-->
-//v 0.1.1 : 2018-03-15: Support for IE
-window.CodeMirror = _codemirror2.default;
 //import "../../../node_modules/codemirror/addon/lint/coffeescript-lint.js";
 //import "../../../node_modules/codemirror/addon/lint/css-lint.js";
 //import "../../../node_modules/codemirror/addon/lint/html-lint.js";
 //import "../../../node_modules/codemirror/addon/lint/javascript-lint.js";
 //import "../../../node_modules/codemirror/addon/lint/json-lint.js";
 //import "../../../node_modules/codemirror/addon/lint/yaml-lint.js";
+window.CodeMirror = _codemirror2.default;
+//< !--end fold-- >
+//< !--lint -->
+
+//<!-- fold-->
+
+//<!-- endhint -->
 
 
 //<!-- hint -->
+//v 0.1.1 : 2018-03-15: Support for IE
+//v 0.1.2 : 2018-03-28: - Autocomplete tag, highlight matching tag
+//                      - Shortcuts:
+//                          - Alt-f: format
+//                          - Ctrl-J: jump to matching tag
+//                          - Ctrl-Q: collapse/expand tag
 
 window.JSHINT = _jshint2.default.JSHINT;
-(function (ns, $) {
+(function (ns, $, template) {
 
 	var setupXml = function setupXml(el) {
 		var editor = el.CodeMirror;
@@ -66307,21 +74056,30 @@ window.JSHINT = _jshint2.default.JSHINT;
 		}
 
 		editor = _codemirror2.default.fromTextArea(el, {
-			mode: "xml",
+			matchTags: { bothTags: true },
+			mode: "xml", htmlMode: true,
 			lineNumbers: true,
 			lineWrapping: true,
 			autoCloseTags: true,
 			viewportMargin: Infinity,
-			extraKeys: {
-				//"'>'": function (cm) { cm.closeTag(cm, ">"); },
-				//"'/'": function (cm) { cm.closeTag(cm, "/"); },
-				//"' '": function (cm) { CodeMirror.xmlHint(cm, ' '); },
-				//"'<'": function (cm) { CodeMirror.xmlHint(cm, '<'); },
-				//"Ctrl-Space": function (cm) { CodeMirror.xmlHint(cm, ''); }
-			},
 			foldGutter: {
 				rangeFinder: _codemirror2.default.fold.xml
-			}, gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"], lint: false
+			}, gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+			lint: true
+		});
+
+		editor.setOption("extraKeys", {
+			"Ctrl-Space": "autocomplete",
+			"Ctrl-Q": function CtrlQ(cm) {
+				cm.foldCode(cm.getCursor());
+			},
+			"Ctrl-J": "toMatchingTag",
+			"Alt-F": function AltF(cm) {
+				cm.setValue((0, _beautifyHtml.html_beautify)(cm.getValue()));
+			},
+			"Enter": function Enter() /*e*/{
+				editor.replaceSelection("\n", "end");
+			}
 		});
 
 		$(el).data("CodeMirror", editor);
@@ -66354,25 +74112,28 @@ window.JSHINT = _jshint2.default.JSHINT;
 		//https://www.kochan.io/javascript/how-to-dynamically-create-an-iframe.html
 		iframe.attr("src", "javascript:void((function(){var script = document.createElement('script');" + "script.innerHTML = \"(function() {" + "document.open();document.domain='" + document.domain + "';document.close();})();\";" + "document.write(\"<head>\" + script.outerHTML + \"</head><body></body>\");})())");
 
-		iframe[0].contentWindow.document.write(_xmleditorTemplate2.default);
+		iframe[0].contentWindow.document.write(template);
 
 		var head = iframe.contents().find("head");
 		$("style").each(function () {
 			// cloneNode doesnt work in IE
 			//head.append(this.cloneNode(true));
-			$("<style type='text/css'>" + $(this).html() + "</style>").appendTo(head);
+			var html = $(this).html().trim();
+			if (html.search("CodeMirror") > 0) $("<style type='text/css'>" + html + "</style>").appendTo(head);
 		});
 
 		return ns.widgets.xmleditorinit(iframe.contents().find("textarea")[0]);
 	};
 	ns.widgets.xmleditorinit = function (ell) {
-
 		setupXml(ell);
 
 		// Listen to message from child IFrame window
 		var editor = $(ell).data("CodeMirror");
 
 		return {
+			refresh: function refresh() {
+				editor.refresh();
+			},
 			set: function set(data) {
 				editor.setValue(data);
 			}, get: function get() {
@@ -66383,7 +74144,7 @@ window.JSHINT = _jshint2.default.JSHINT;
 	};
 	ns.widgets.xmleditor = function (iframe) {
 
-		iframe.contentWindow.document.write(_xmleditorTemplate2.default);
+		iframe.contentWindow.document.write(template);
 		var cont = $(iframe).contents().find("textarea");
 		ns.widgets.xmleditorinit(cont);
 
@@ -66399,7 +74160,7 @@ window.JSHINT = _jshint2.default.JSHINT;
 
 		//iframe.contentWindow.document.write('<div>foo</div>');
 	};
-})(window["spexplorerjs"], _jquery2.default);
+})(window["spexplorerjs"], _jquery2.default, _xmleditorTemplate2.default);
 
 /***/ }),
 
@@ -66428,9 +74189,7 @@ var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/di
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
-__webpack_require__(/*! ../string/string.js */ "../string/string.js");
-
-__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
+__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
 
 __webpack_require__(/*! ./xmleditor.js */ "../mirrors/xmleditor.js");
 
@@ -66440,52 +74199,37 @@ var _xmlmirrorTemplate2 = _interopRequireDefault(_xmlmirrorTemplate);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// v 0.1.5 - 2018-03-28:    - use widget declaration
+//                          - refresh method
 (function (ns, $) {
 
-	//var debug = window.location.href.search(/localhost|debugxsptree/) > 0;
-	var log = new function () {
-		var d = function d() {
-			ns.logger && ns.logger.log.apply(log, arguments);
-		};
-		d.source = "xmlmirror";
-		return d;
-	}();
-	//var error = new function () {
-	//	var d = function () {
-	//		ns.logger && ns.logger.error.apply(log, arguments);
-	//	};
-	//	d.source = "xmlmirror";
-	//	return d;
-	//};
+	var debugging = window.location.href.search(/(localhost|debugxmlmirror)/) > 0;
+	var tracing = ns.logger.get("xmlmirror", debugging);
+	var log = tracing.log;
+	var debug = tracing.debug;
+	debug("xxmlmirror.loading");
+	//   var error = tracing.error;
 
-	var xxmlmirror = function xxmlmirror(ui, opts) {
+	var xxmlmirror = function xxmlmirror(ui /*, opts*/) {
 
 		log("xxmlmirror.init");
 
 		var $el = $(ui);
 
-		opts.id = opts.id || $(".full").length;
+		//opts = $.extend({}, opts);
 		$el.html(_xmlmirrorTemplate2.default.trim());
-		var iframe = $("iframe", ui);
-		var src = iframe.attr("src");
-		iframe.attr("src", src + "?id=" + opts.id);
-		//var run = $("button", ui);
 
-		// --
 		var editor = null;
 		(function iframeImplementation() {
 			var iframe = $("iframe", ui);
 
 			editor = ns.widgets.xmleditorInitIframe(iframe);
-
-			//run.click(function () {
-			//	runScript(editor.get());
-			//	return false;
-			//});
 		})();
 
-		//--
 		var me = {};
+		me.refresh = function () {
+			editor.refresh();
+		};
 		me.getXml = function () {
 			return $.Deferred(function (dfd) {
 
@@ -66496,55 +74240,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		me.setXml = function (xml) {
 			editor.set(xml);
 		};
+
 		return me;
 	};
 
-	var widgetInfo = {
-		publicName: "xxmlmirror",
-		constructor: xxmlmirror,
-		version: "0.1.3",
-		getSelector: function getSelector() {
-			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
-			log("selector: " + selector);
-			return selector;
-		},
-		startup: function startup(context) {
-			log(widgetInfo.publicName + ".startup");
-			var selector = widgetInfo.getSelector();
-			var elems = $(selector, context || document);
-			log("Elems: " + elems.length);
-			elems[widgetInfo.publicName]({});
-			return elems;
-		}
-	};
-
-	$.fn[widgetInfo.publicName] = function (opts) {
-		var args = arguments;
-		var result = this.each(function () {
-
-			var $el = $(this);
-
-			var me = $el.data(widgetInfo.publicName);
-
-			if (me) {
-				// object has been initialized before
-
-				if (opts == null) {// request for instance
-					//lastInstance = me;
-				} else if (me[opts]) {
-					if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
-				}
-			} else {
-
-				var obj = new widgetInfo.constructor(this, opts);
-				$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
-			}
-		});
-
-		return result;
-	};
-
-	(ns.widgets = ns.widgets || {})[widgetInfo.publicName] = widgetInfo;
+	var widgetInfo = ns.widgets.addWidget("xxmlmirror", xxmlmirror, "0.1.5");
 
 	widgetInfo.startup();
 })(window["spexplorerjs"], _jquery2.default);
@@ -66558,7 +74258,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n            width: 100%;\r\n            height: 100%;\r\n        }\r\n\r\n    </style>\r\n    <div class=\"full\">\r\n        <iframe src=\"#\" class=\"full\" style=\"resize:both\"></iframe>\r\n    </div>\r\n</div>\r\n";
+module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n            width: 100%;\r\n            height: 100%;\r\n        }\r\n\r\n    </style>\r\n    <div class=\"full\">\r\n        <iframe src=\"#\" class=\"full xmlmirror mirror\" style=\"resize:both\"></iframe>\r\n    </div>\r\n</div>\r\n";
 
 /***/ }),
 
@@ -66572,16 +74272,15 @@ module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n 
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+/* global require */
+// v 0.1.4: 2018-04-02: - check if already defined, make jQuery global if needed
+//                          The inline check won't work for more complex modules, but it is an easy way to address multiple endpoints that load this.
 // v 0.1.2: 2018-03-10: brought back htmlEncode/htmlDecode and jQuery dependency
+
 (function (ns, $) {
-	ns.string = {
-		version: "0.1",
+
+	return ns.string = ns.string || {
+		version: "0.1.4",
 		htmlEncode: function htmlEncode(value) {
 			// create a in-memory div, set it's inner text(which jQuery
 			// automatically encodes)
@@ -66609,11 +74308,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			}
 
 			return tmpl;
-		}, startsWith: function startsWith(str1, str2) {
+		},
+		startsWith: function startsWith(str1, str2) {
 			return str2.length > 0 && str1.substring(0, str2.length) === str2;
-		}, endsWith: function endsWith(str1, str2) {
+		},
+		endsWith: function endsWith(str1, str2) {
 			return str2.length > 0 && str1 && str1.substring(str1.length - str2.length, str1.length) === str2;
-		}, trimEnd: function trimEnd(stringToTrim, charToRemove) {
+		},
+		trimEnd: function trimEnd(stringToTrim, charToRemove) {
 			var s = stringToTrim || ""; // make sure str1 is not null
 			var c = charToRemove;
 			var lastIndexOf = -1;
@@ -66626,17 +74328,179 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			}
 			if (lastIndexOf > -1) s = s.substring(0, lastIndexOf);
 			return s;
-		}, trimStart: function trimStart(stringToTrim, sToRemove, opts) {
+		},
+		trimStart: function trimStart(stringToTrim, sToRemove, opts) {
 			var exp = "^" + sToRemove + "+";
 			var reg = RegExp(exp, opts || "gi");
 
 			var res = stringToTrim.replace(reg, "");
 			return res;
-		}, trim: function trim(stringToTrim, sToRemove, opts) {
+		},
+		trim: function trim(stringToTrim, sToRemove, opts) {
 			stringToTrim = this.trimStart(stringToTrim, sToRemove, opts);
 			stringToTrim = this.trimEnd(stringToTrim, sToRemove, opts);
 			return stringToTrim;
 		}
+	};
+})(window.spexplorerjs = window["spexplorerjs"] || {}, window.jQuery = window["jQuery"] || __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed"));
+
+/***/ }),
+
+/***/ "../widget.base.js":
+/*!*************************!*\
+  !*** ../widget.base.js ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
+
+var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// 0.1.2: 2018/03/23    -   addSpWidget for SharePoint components
+//                          add version number to elements with class widgetinfo
+// 0.1.1: 2018/03/28    -   selector property
+//                          log from tracing
+// 0.1.0: 2018/03/23    -   pass options to widget constructor
+(function (ns, $) {
+
+	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
+	var tracing = ns.logger.get("widgets", debugging);
+	var log = tracing.log,
+	    debug = tracing.debug;
+
+	log("widgets.register");
+	ns.widgets = ns.widgets || {};
+
+	var defineWidget = function defineWidget(name, constructor, version) {
+
+		return {
+			publicName: name,
+			constructor: constructor,
+			version: version,
+			selector: "[data-widget=\"publicName\"]".replace("publicName", name),
+			startup: function startup(context, opts) {
+
+				debug(name + ".startup");
+				var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
+				debug("selector: " + selector);
+				var elems = $(selector, context || document);
+				debug("Elems: " + elems.length);
+				elems[name](opts);
+				$(".widgetinfo", elems).html(version);
+
+				return elems;
+			}
+		};
+	};
+	var registerWidget = function registerWidget(widgetInfo) {
+
+		$.fn[widgetInfo.publicName] = function (opts) {
+			var args = arguments;
+			var result = this.each(function () {
+
+				var $el = $(this);
+
+				var me = $el.data(widgetInfo.publicName);
+
+				if (me) {
+					// object has been initialized before
+
+					if (opts == null) {// request for instance
+					} else if (me[opts]) {
+						if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
+					}
+				} else {
+					var obj = new widgetInfo.constructor(this, opts);
+					$(".version:first", this).html(widgetInfo.version);
+					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
+				}
+			});
+
+			return result;
+		};
+
+		ns.widgets[widgetInfo.publicName] = widgetInfo;
+		log(widgetInfo.publicName + ".registered");
+	};
+
+	var addWidget = function addWidget(name, constructor, version) {
+
+		var widgetInfo = defineWidget(name, constructor, version);
+		registerWidget(widgetInfo);
+		return widgetInfo;
+	};
+
+	ns.widgets.addWidget = addWidget;
+	ns.widgets.addSpWidget = function (name, constructor, version) {
+
+		var widgetInfo = addWidget(name, constructor, version);
+
+		ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
+
+		return widgetInfo;
+	};
+})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+
+(function (ns, $) {
+
+	/// Iterate over an expanding array
+	//  Example:
+	//  var arr = [1, 2];
+	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
+	//    if (item == 1) {
+	//        arr.push(3);
+	//    }
+	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
+	//});
+	/// arr: array to process
+	/// action: promise (argument: item removed from array)
+	var processAsQueue = function processAsQueue(arr, action) {
+		return $.Deferred(function (dfd) {
+			var doNext = function doNext() {
+				if (arr == null || arr.length == 0) {
+					dfd.resolve();
+				} else {
+					var item = arr.shift();
+					action(item).done(function () {
+						doNext();
+					});
+				}
+			};
+
+			if (typeof arr == "function") {
+				arr().done(function (items) {
+					arr = items;
+					doNext();
+				});
+			} else {
+				doNext();
+			}
+		}).promise();
+	};
+
+	var enumer = function enumer(values) {
+		var me = {};
+		for (var i = 0; i < values.length; i++) {
+			me[values[i]] = 1;
+		}
+		if (Object.freeze) {
+			me = Object.freeze(me);
+		}
+
+		return me;
+	};
+
+	ns.funcs = {
+		processAsQueue: processAsQueue,
+		enumeration: enumer
 	};
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
 
@@ -66663,14 +74527,6 @@ module.exports = "<b>{0}</b>\r\n<ul class='xfieldInfo'>\r\n    <li>Internal Name
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-__webpack_require__(/*! ../../../public/vendor/select2/js/select2.full.js */ "../../../public/vendor/select2/js/select2.full.js");
-
-__webpack_require__(/*! ../../../public/vendor/select2/css/select2.css */ "../../../public/vendor/select2/css/select2.css");
-
 __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
 __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
@@ -66687,22 +74543,40 @@ var _fieldSelectorFieldtemplate2 = _interopRequireDefault(_fieldSelectorFieldtem
 
 __webpack_require__(/*! ./treelight.js */ "./treelight.js");
 
+__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
+
+__webpack_require__(/*! ../mirrors/jsmirror.js */ "../mirrors/jsmirror.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// loads jstree, bootstrap
+/// <reference path="../logger/logger.js" />
+/// <reference path="../widget.base.js" />
+/* global require */
+
+// v 0.1.5: 2018-04-02 - Probe before loading select2
+// v 0.1.4: 2018-03-15 - Added option to hide list selector
+
+//import "../../../public/vendor/select2/js/select2.full.js";
+//import "../../../public/vendor/select2/css/select2.css";
 //import "../../../public/vendor/bootstrap/js/bootstrap.js";
 //import "../../../public/vendor/bootstrap/css/spexpjs.css";
 //import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
 //import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 (function (ns, $) {
 
-	var debug = window.location.href.search(/[localhost|debugfieldsel]/) > 0;
-	var log = new function () {
-		var d = function d() {
-			ns.logger && ns.logger.log.apply(log, arguments);
-			if (debug) SP.UI.Notify.addNotification(arguments[0]);
-		};
-		d.source = "field.selector";
-		return d;
+	var debugging = window.location.href.search(/(localhost|debugfieldsel)/) > 0;
+	var trace = ns.logger.get("fieldEditor", debugging);
+
+	+function loadPublicRefs() {
+
+		if ($.fn.select2) {
+			trace.debug("select2 already loaded");
+		} else {
+			trace.log("loading select2");
+			__webpack_require__(/*! ../../../public/vendor/select2/js/select2.full.js */ "../../../public/vendor/select2/js/select2.full.js");
+			__webpack_require__(/*! ../../../public/vendor/select2/css/select2.css */ "../../../public/vendor/select2/css/select2.css");
+		}
 	}();
 
 	var fieldLabel = function fieldLabel(field) {
@@ -66731,7 +74605,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				var fields = list.get_fields();
 				iCtx.load(fields);
 				iCtx.executeQueryAsync(function () {
-					log(list);
+					trace.log(list);
 					var enumer = fields.getEnumerator();
 					var spfields = [];
 					while (enumer.moveNext()) {
@@ -66743,7 +74617,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					});
 					dfd.resolve(spfields);
 				}, function onError(sender, args) {
-					log("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
+					trace.error("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
 					dfd.reject(args);
 				});
 			}).promise();
@@ -66763,7 +74637,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 				ctx.load(lists, "Include(Title)");
 				ctx.executeQueryAsync(function () {
-					log(lists);
+					trace.log(lists);
 					var enumer = lists.getEnumerator();
 					var splists = [];
 					while (enumer.moveNext()) {
@@ -66772,7 +74646,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					}
 					dfd.resolve(splists);
 				}, function onError(sender, args) {
-					log("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
+					trace.error("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
 				});
 			}).promise();
 		};
@@ -66787,7 +74661,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			opt.prop("data-field", field);
 
 			if (excludereadonly && field.get_readOnlyField()) {
-				log("readonly");
+				trace.debug("readonly");
 			} else sel.append(opt);
 		}
 
@@ -66829,12 +74703,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				opts = $.extend(opts, JSON.parse(state.html().trim()));
 			}
 		} catch (e) {
-			log(e);
+			trace.error(e);
 		}
 
 		$el.html(_fieldSelectorTemplate2.default.trim().replace("[label]", opts.label));
 
 		var xmlMirror = ns.widgets.xxmlmirror.startup($el).data("xwidget");
+		var jsMirror = ns.widgets.xjsmirror.startup($el).data("xwidget");
+
+		jsMirror.setScript("console.log(spelem);// spelem: reference to field");
 
 		var spdal = new SPDAL(opts.weburl);
 		var fieldSel = $(".fieldsDrp", ui).on("change", function () {
@@ -66843,7 +74720,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 				var xml = field.get_schemaXml();
 				xmlMirror.setXml(xml);
-				log({ field: field });
+				jsMirror.setScriptingObject(field);
+				trace.log({ field: field });
 			}
 		});
 
@@ -66869,7 +74747,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					bindFieldSelect(fieldSel, fields, opts.excludereadonly);
 					fieldSel.val(null).trigger("change.select2");
 				}).fail(function (err) {
-					log(err);
+					trace.error(err);
 				}).always(function () {
 					dfd.resolve();
 				});
@@ -66891,7 +74769,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		var loadList = function loadList(listTitle) {
 			return $.Deferred(function (dfd) {
 
-				log("loading list" + listTitle);
+				trace.debug("loading list" + listTitle);
 
 				spdal.getList(listTitle).done(function (list) {
 					onListChange(list);
@@ -66909,7 +74787,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			$el.trigger("xwidget.init");
 		}
 
-		$(".widgetinfo", $el).html(widgetInfo.version);
 		return function register() {
 			var me = {
 				setList: function setList(list) {
@@ -66931,7 +74808,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				},
 				state: function state(instate) {
 					if (arguments.length > 0) {
-						log({ setstate: instate });
+						trace.log({ setstate: instate });
 						opts.listtitle = instate.listtitle;
 						if (opts.weburl != instate.weburl) {
 
@@ -66974,59 +74851,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		}();
 	};
 
-	var widgetInfo = {
-		publicName: "xSPFieldSelector",
-		constructor: xSPFieldSelector,
-		version: "v 0.1.4",
-		getSelector: function getSelector() {
-			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
-			log("selector: " + selector);
-			return selector;
-		},
-		startup: function startup(context, opts) {
-			log(widgetInfo.publicName + ".startup");
-			var selector = widgetInfo.getSelector();
-			var elems = $(selector, context || document);
-			log("Elems: " + elems.length);
-			elems[widgetInfo.publicName](opts);
-
-			return elems;
-		}
-	};
-
-	$.fn[widgetInfo.publicName] = function (opts) {
-		var args = arguments;
-		//var lastInstance = null;
-		var result = this.each(function () {
-
-			var $el = $(this);
-
-			var me = $el.data(widgetInfo.publicName);
-
-			if (me) {
-				// object has been initialized before
-
-				if (opts == null) {// request for instance
-					//lastInstance = me;
-				} else if (me[opts]) {
-					if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
-				}
-			} else {
-
-				var obj = new widgetInfo.constructor(this, opts);
-				$el.data(widgetInfo.publicName, obj);
-			}
-		});
-
-		//if (lastInstance && result.length == 1) return lastInstance;
-		return result;
-	};
-
-	(ns.widgets = ns.widgets || {})[widgetInfo.publicName] = widgetInfo;
-	log(widgetInfo.publicName + ".registered");
-
-	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
-})(spexplorerjs, _jquery2.default); // v 0.1.4: 2018-03-15 - Added option to hide list selector
+	ns.widgets.addSpWidget("xSPFieldSelector", xSPFieldSelector, "0.1.5");
+})(spexplorerjs, jQuery);
 
 /***/ }),
 
@@ -67037,7 +74863,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<div class=\"xwidgetui\">\r\n    <fieldset class=\"form-horizontal\">\r\n        <legend>[label]</legend>\r\n        <div class=\"form-group listSelector\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xSPTreeLight\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field</label>\r\n            <div class=\"col-md-10\">\r\n                <select class='fieldsDrp' style=\"width:100%\"></select>\r\n                <input type=\"checkbox\" class=\"ereadonly\" value=\"0\" />Exclude read only\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field Schema</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xxmlmirror\"></div>\r\n                <small class=\"widgetinfo\">fieldselect 0.3.3</small>\r\n            </div>\r\n        </div>\r\n    </fieldset>\r\n\r\n</div>";
+module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<div class=\"xwidgetui\">\r\n    <fieldset class=\"form-horizontal\">\r\n        <legend>[label]</legend>\r\n        <div class=\"form-group listSelector\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xSPTreeLight\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field</label>\r\n            <div class=\"col-md-10\">\r\n                <select class='fieldsDrp' style=\"width:100%\"></select>\r\n                <input type=\"checkbox\" class=\"ereadonly\" value=\"0\" />Exclude read only\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field Schema</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xxmlmirror\"></div>\r\n                <small class=\"widgetinfo\"></small>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Scripting</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xjsmirror\"></div>\r\n                <small>Modify the field through JSOM (variable for field: spelem)</small>\r\n            </div>\r\n        </div>\r\n\r\n    </fieldset>\r\n\r\n</div>";
 
 /***/ }),
 
@@ -67059,7 +74885,7 @@ __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// v 0.0.1 : 2018/03/11 - loadSpElem
+// v 0.0.1 : 2018-03-11 - loadSpElem
 (function (ns, $) {
 
 	var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
@@ -67149,6 +74975,15 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (function (ns, $) {
+	var debug = window.location.href.search(/[localhost|webapi]/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "webapi";
+		return d;
+	}();
 	/// TODO: Document
 	var createWeb = function createWeb(parentWeb, title, url, template, inheritPermissions) {
 		return $.Deferred(function (dfd) {
@@ -67210,14 +75045,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			});
 		}).promise();
 	};
+
 	ns.webapi = {
 		webTemplates: webTemplates,
 		createWeb: createWeb,
 		loadWeb: loadWeb,
-		version: "0.1"
+		version: "0.1.2"
 	};
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default); /// TODO: Document
-// v 0.0.1: 208-03-11 - Added loadWeb function
+// v 0.0.2: 2018-03-28 - WebDal
+// v 0.0.1: 2018-03-11 - Added loadWeb function
 
 /***/ }),
 
@@ -67231,17 +75068,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-__webpack_require__(/*! ../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js */ "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js");
-
-__webpack_require__(/*! ../../../public/vendor/bootstrap/3.3.7/css/spexp.css */ "../../../public/vendor/bootstrap/3.3.7/css/spexp.css");
-
-__webpack_require__(/*! jstree */ "../../../node_modules/jstree/dist/jstree.js");
-
-__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
+__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
 
 __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
@@ -67251,39 +75078,73 @@ var _treelightTemplate = __webpack_require__(/*! ./treelight.template.html */ ".
 
 var _treelightTemplate2 = _interopRequireDefault(_treelightTemplate);
 
-__webpack_require__(/*! ../../../node_modules/jstree/dist/themes/default/style.min.css */ "../../../node_modules/jstree/dist/themes/default/style.min.css");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/// <reference path="../logger/logger.js" />
+/// <reference path="../widget.base.js" />
+/* global require */
+
+// v 0.1.5: 2018-04-02  -   Use addSpWidget, use 'trace'
+//                          Probe before loading jstree,bootstrap
+// v 0.1.4: 2018-03-28  - Used widget registration, use local images for list/web collection nodes
+//                      - Selectable option
+//                      - loadTree uses processAsQueue
 //import "../../../public/vendor/bootstrap/js/bootstrap.js";
 //import "../../../public/vendor/bootstrap/css/spexpjs.css";
+//import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
+//import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 (function (ns, $, template) {
-	var debug = window.location.href.search(/[localhost|debugtreelight]/) > 0;
-	var log = new function () {
-		var d = function d() {
-			ns.logger && ns.logger.log.apply(log, arguments);
-			if (debug) SP.UI.Notify.addNotification(arguments[0]);
-		};
-		d.source = "treelight";
-		return d;
+	var debugging = window.location.href.search(/(localhost|debugtreelight)/) > 0;
+	var trace = ns.logger.get("treelight", debugging);
+
+	+function loadPublicRefs() {
+		if ($.fn.carousel) {
+			trace.debug("bootstrap already loaded");
+		} else {
+			trace.log("loading bootstrap");
+			__webpack_require__(/*! ../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js */ "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js");
+			__webpack_require__(/*! ../../../public/vendor/bootstrap/3.3.7/css/spexp.css */ "../../../public/vendor/bootstrap/3.3.7/css/spexp.css");
+		}
+
+		if ($.fn.jstree) {
+			trace.debug("jstree already loaded");
+		} else {
+			trace.log("loading jstree");
+			__webpack_require__(/*! jstree */ "../../../node_modules/jstree/dist/jstree.js");
+			__webpack_require__(/*! ../../../node_modules/jstree/dist/themes/default/style.min.css */ "../../../node_modules/jstree/dist/themes/default/style.min.css");
+		}
 	}();
 
-	var xSPTreeLight = function xSPTreeLight(ui /*, opts*/) {
+	var xSPTreeLight = function xSPTreeLight(ui, opts) {
 
 		var $el = $(ui).html(template.trim());
 		var selectedSpElement = null;
 		var ctx = SP.ClientContext.get_current();
-		//opts = $.extend({
-		//    //siteUrl: $el.attr('data-siteurl'),
-		//}, opts);
+
+		opts = $.extend({
+			selectable: $el.attr("data-selectable") || "SP.List|SP.Web",
+			load: $el.attr("data-load") || "All"
+		}, opts);
+
+		opts.selectable = ns.funcs.enumeration(opts.selectable.split("|"));
 
 		var selectionChanged = function selectionChanged(spElem) {
 			selectedSpElement = spElem;
-			$(".sptreelabel", $el).html(spElem.get_title());
-			log("listchange");
+
+			var selectionName = spElem.get_title ? spElem.get_title() : spElem.constructor.getName();
+
+			$(".sptreelabel", $el).html(selectionName);
+
+			var eventName = spElem.constructor.getName() + ".change";
+			trace.log(eventName);
+			$el.trigger("selectionchange", [spElem]);
+
+			// backwards support
 			$el.trigger("listchange", [spElem]);
+
 			$(".dropdown.open .dropdown-toggle", $el).dropdown("toggle");
 		};
+
 		var tree = function (treeElem) {
 			var loadGroups = function loadGroups(node, cb) {
 				var web = tree.get_node(node.parent).data;
@@ -67387,7 +75248,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 						if (a.text > b.text) return 1;
 						return 0;
 					});
-					log({ fields: spFields });
+					trace.log({ fields: spFields });
 					cb(spFields);
 				});
 			};
@@ -67414,7 +75275,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			};
 			var loadList = function loadList(node, cb) {
 				var list = node.data;
-				log({ list: list });
+				trace.log({ list: list });
 				var items = [];
 				if (list.get_hasUniqueRoleAssignments()) {
 					items.push({ text: "Security", id: list.get_id() + "_Security", data: list.get_roleAssignments(), icon: "http://icons.iconarchive.com/icons/kyo-tux/phuzion/16/Misc-Security-icon.png" });
@@ -67431,13 +75292,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				cb(items);
 			};
 			var loadLists = function loadLists(node, cb) {
+				trace.debug("loading lists");
 				var parent = node.parent;
 				var web = tree.get_node(parent).data;
 
 				var lists = web.get_lists();
 				ctx.load(lists, "Include(Id,Title,HasUniqueRoleAssignments,ImageUrl,ItemCount,DefaultViewUrl)");
 				ctx.executeQueryAsync(function () {
-					log("lists loaded");
+					trace.log("lists loaded");
 					var lenum = lists.getEnumerator();
 					var spLists = [];
 
@@ -67451,7 +75313,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 						spLists.push(node);
 					}
 					ns.lists = spLists;
-					log({ lists: spLists });
+					trace.log({ lists: spLists });
 					cb(spLists);
 				});
 			};
@@ -67463,7 +75325,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 						return true;
 					}, "data": function data(node, cb) {
 						ns.node = node;
-						log({ tree_data_node: node });
+						trace.log({ tree_data_node: node });
 						if (node.id == "#") cb([]);else if (node.text == "Site Groups") {
 							loadGroups(node, cb);
 						} else if (node.text == "Lists") {
@@ -67491,7 +75353,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 							"expand": {
 								"label": "Expand tree",
 								"action": function action(data) {
-									var inst = _jquery2.default.jstree.reference(data.reference),
+									var inst = jQuery.jstree.reference(data.reference),
 									    obj = inst.get_node(data.reference);
 									inst.open_all(obj);
 								}
@@ -67499,7 +75361,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 							"collapse": {
 								"label": "Collapse tree",
 								"action": function action(data) {
-									var inst = _jquery2.default.jstree.reference(data.reference),
+									var inst = jQuery.jstree.reference(data.reference),
 									    obj = inst.get_node(data.reference);
 									inst.close_all(obj);
 								}
@@ -67510,10 +75372,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			}).on("changed.jstree", function (e, data) {
 				e.preventDefault();
 				e.stopPropagation();
-				log({ jstreechanged: data.node.id });
+				trace.log({ jstreechanged: data.node.id });
 				var spElem = data.node.data;
-				if (SP.List.isInstanceOfType(spElem)) {
-					selectionChanged(spElem);
+				if (spElem) {
+					var type = spElem.constructor.getName();
+					if (opts.selectable[type]) {
+						// && SP.List.isInstanceOfType(spElem)) {
+						selectionChanged(spElem);
+					}
 				}
 			}).on("open_node.jstree", function (e /*, data*/) {
 				e.preventDefault();
@@ -67525,100 +75391,69 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			return jTree.data("jstree");
 		}($el.find(".tree"));
 
-		(function loadTree(tree) {
-			var processWeb = function processWeb(curWeb, args) {
-				log({ processWeb: curWeb });
-				//var path = curWeb.get_path().get_identity().split("|");
-				(function () {
-					var id = curWeb.get_id().toString();
-					log("creating web node: " + id);
-					tree.create_node(args.parentNode, {
-						text: curWeb.get_title(), id: id, data: curWeb, icon: "/_layouts/images/sts_web16.gif"
-					}, "last", function () {
-						log("web node created");
-						tree.create_node(id, {
-							text: "Lists", children: true, id: id + "_Lists", icon: "http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/16/Actions-view-list-tree-icon.png"
-						});
-						tree.create_node(id, {
-							text: "Webs", id: id + "_Webs", icon: "http://icons.iconarchive.com/icons/icons8/ios7/16/Data-Flow-Chart-icon.png"
-						});
-						//tree.create_node(id, {
-						//    text: 'Meta', id: id + "_Meta", icon: 'http://icons.iconarchive.com/icons/fatcow/farm-fresh/16/database-table-icon.png'
-						//});
-						//tree.create_node(id + "_Meta", {
-						//    text: 'Content Types', id: id + "_ContentTypes", data: curWeb.get_contentTypes(), children: true, icon: 'http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/application-icon-large-icon.png'
-						//});
-						//tree.create_node(id + "_Meta", {
-						//    text: 'Fields', id: id + "_Fields", data: curWeb.get_fields(), children: true, icon: 'http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-menu-icon.png'
-						//});
-						//(function loadSecurity() {
-						//    var done = function () {
-						//        if (curWeb.get_hasUniqueRoleAssignments())
-						//            tree.create_node(id, {
-						//                text: 'Security', id: id + "_Security", data: curWeb.get_roleAssignments(), icon: 'http://icons.iconarchive.com/icons/kyo-tux/phuzion/16/Misc-Security-icon.png'
-						//            }
-						//                            );
-						//    };
-						//    if (!curWeb.isPropertyAvailable('HasUniqueRoleAssignments')) {
-						//        ctx.load(curWeb, 'HasUniqueRoleAssignments');
-						//        ctx.executeQueryAsync(done);
-						//    }
-						//    else done();
-						//})();
-						// if (!args.parentNode) {
-						//    tree.create_node(id, {
-						//        text: 'Site Groups', id: "Site_Groups", children: true, icon: 'http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/16/Actions-resource-group-icon.png'
-						//    }
-						//                    );
-						//    tree.create_node(id, {
-						//        text: 'Site Users', id: "Site_Users", children: true, icon: 'http://icons.iconarchive.com/icons/treetog/junior/16/user-group-icon.png'
-						//    }
-						//                    );
-						//    tree.create_node(id, {
-						//        text: 'Snippets', id: "Snippets", children: false, icon: 'http://icons.iconarchive.com/icons/fatcow/farm-fresh/16/script-code-red-icon.png', data: {
-						//            snippet: '5516798471879038457'
-						//        }
-						//    }
-						//                    );
-						//}
-						var nWeb = tree.get_node(id);
-						log(nWeb);
-						//if (!nWeb) {
+		var websToProcess = [{ web: ctx.get_web(), parentNode: null }];
 
-						//}
-						(function doWebs() {
-							var lenum = args.subs.getEnumerator();
-							var parent = tree.get_node(nWeb.id + "_Webs");
-							while (lenum.moveNext()) {
-								var list = lenum.get_current();
-								queueWeb(list, parent);
-							}
-						})();
-					});
-				})();
-			};
-			var queueWeb = function queueWeb(spWeb, parentNode) {
-				log("queueWeb" + spWeb);
-				ns.webapi.loadWeb(spWeb, null, ctx, function (web) {
-					ctx.load(web, "Id", "Title", "HasUniqueRoleAssignments", "ServerRelativeUrl");
-					var subs = web.getSubwebsForCurrentUser();
-					ctx.load(subs);
-					//var lists = web.get_lists();
-					//ctx.load(lists, 'Include(Id,Title,HasUniqueRoleAssignments,ImageUrl,ItemCount,DefaultViewUrl)');
-					return {
-						subs: subs, parentNode: parentNode
-					};
-				}).done(processWeb).fail(function (e) {
-					log({ loadWebFailed: e });
+		var addWebNode = function addWebNode(curWeb, parentNode, subs) {
+			return $.Deferred(function (dfd) {
+				var id = curWeb.get_id().toString();
+				trace.debug("creating web node: " + id);
+
+				tree.create_node(parentNode, {
+					text: curWeb.get_title(), id: id, data: curWeb, icon: "/_layouts/images/sts_web16.gif"
+				}, "last", function () {
+
+					trace.debug("web node created");
+					tree.create_node(id, { text: "Lists", children: true, id: id + "_Lists", icon: "/_layouts/15/images/itgen.png?rev=23" });
+					tree.create_node(id, { text: "Webs", id: id + "_Webs", icon: "/_layouts/15/images/siteicon_16x16.png" });
+
+					//if (opts.load["SP.ContentType"]) {
+
+					//}
+
+					var nWeb = tree.get_node(id);
+					trace.debug(nWeb);
+
+					(function doWebs() {
+						var lenum = subs.getEnumerator();
+						var parent = tree.get_node(nWeb.id + "_Webs");
+						while (lenum.moveNext()) {
+							var list = lenum.get_current();
+							websToProcess.push({ web: list, parentNode: parent });
+						}
+						dfd.resolve();
+					})();
 				});
-			};
-			queueWeb(null, null);
-		})(tree);
+			}).promise();
+		};
+
+		ns.funcs.processAsQueue(websToProcess, function (iterNode) {
+			return $.Deferred(function (dfd) {
+				var web = iterNode.web;
+
+				ctx.load(web, "Id", "Title", "HasUniqueRoleAssignments", "ServerRelativeUrl");
+				var subs = web.getSubwebsForCurrentUser();
+
+				ns.sp.loadSpElem(subs).done(function () {
+					iterNode.subs = subs;
+					addWebNode(web, iterNode.parentNode, iterNode.subs).done(function () {
+						dfd.resolve();
+					});
+				});
+			}).promise();
+		}).done(function () {
+			trace.log("tree loaded");
+		});
 
 		$(".cc", $el).click(function (event) {
 			// prevent propagation so drop down doesn't close
+			trace.debug(".cc.click");
 			event.preventDefault();
 			event.stopPropagation();
+		});
+
+		$("#dropdownMenu1", $el).click(function () /*event*/{
+			// prevent propagation so drop down doesn't close
+			trace.debug("dropdownMenu1.click");
 		});
 
 		return function () {
@@ -67638,60 +75473,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		}();
 	};
 
-	var widgetInfo = {
-		publicName: "xSPTreeLight",
-		constructor: xSPTreeLight,
-		version: "0.1.3",
-		getSelector: function getSelector() {
-			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
-			log("selector: " + selector);
-			return selector;
-		},
-		startup: function startup(context) {
-			log(widgetInfo.publicName + ".startup");
-			var selector = widgetInfo.getSelector();
-			var elems = $(selector, context || document);
-			log("Elems: " + elems.length);
-			elems[widgetInfo.publicName]({});
-			$(document).ready(function () {});
-
-			return elems;
-		}
-	};
-
-	$.fn[widgetInfo.publicName] = function (opts) {
-		var args = arguments;
-		//var lastInstance = null;
-		var result = this.each(function () {
-
-			var $el = $(this);
-
-			var me = $el.data(widgetInfo.publicName);
-
-			if (me) {
-				// object has been initialized before
-
-				if (opts == null) {// request for instance
-					//lastInstance = me;
-				} else if (me[opts]) {
-					if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
-				}
-			} else {
-
-				var obj = new widgetInfo.constructor(this, opts);
-				$el.data(widgetInfo.publicName, obj);
-			}
-		});
-
-		//if (lastInstance && result.length == 1) return lastInstance;
-		return result;
-	};
-
-	(ns.widgets = ns.widgets || {})[widgetInfo.publicName] = widgetInfo;
-	log(widgetInfo.publicName + ".registered");
-
-	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _treelightTemplate2.default);
+	ns.widgets.addSpWidget("xSPTreeLight", xSPTreeLight, "0.1.5");
+})(spexplorerjs, jQuery, _treelightTemplate2.default);
 
 /***/ }),
 
@@ -67702,7 +75485,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"dropdown\">\r\n    <button class=\"btn btn-default dropdown-toggle\" type=\"button\" id=\"dropdownMenu1\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"true\">\r\n        <span class=\"sptreelabel\">Select List...</span>\r\n        <span class=\"caret\">\r\n        </span>\r\n    </button>\r\n    <div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\">\r\n        <div style=\"max-height:300px;overflow-y:auto\" class='cc'>\r\n            <div class=\"tree\"></div>\r\n        </div>\r\n    </div>\r\n</div>";
+module.exports = "<div class=\"dropdown\">\r\n    <button class=\"btn btn-default dropdown-toggle\" type=\"button\" id=\"dropdownMenu1\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"true\">\r\n        <span class=\"sptreelabel\">Select...</span>\r\n        <span class=\"caret\">\r\n        </span>\r\n    </button>\r\n    <div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\">\r\n        <div style=\"max-height:300px;overflow-y:auto\" class='cc'>\r\n            <div class=\"tree\"></div>\r\n        </div>\r\n    </div>\r\n</div>";
 
 /***/ })
 

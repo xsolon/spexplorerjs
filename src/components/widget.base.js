@@ -1,6 +1,8 @@
-// 0.1.0: 2018/03/23    - pass options to widget constructor
-// 0.1.1: 2018/03/28    - selector property
-//                      - log from tracing
+// 0.1.2: 2018/03/23    -   addSpWidget for SharePoint components
+//                          add version number to elements with class widgetinfo
+// 0.1.1: 2018/03/28    -   selector property
+//                          log from tracing
+// 0.1.0: 2018/03/23    -   pass options to widget constructor
 import "./logger/logger.js";
 import $ from "jquery";
 
@@ -28,6 +30,8 @@ import $ from "jquery";
 				var elems = $(selector, context || document);
 				debug("Elems: " + elems.length);
 				elems[name](opts);
+				$(".widgetinfo", elems).html(version);
+
 				return elems;
 			}
 		};
@@ -76,6 +80,15 @@ import $ from "jquery";
 	};
 
 	ns.widgets.addWidget = addWidget;
+	ns.widgets.addSpWidget = function (name, constructor, version) {
+
+		var widgetInfo = addWidget(name, constructor, version);
+
+		ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
+
+		return widgetInfo;
+	};
+
 
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, $);
 
@@ -92,7 +105,7 @@ import $ from "jquery";
 	//});
 	/// arr: array to process
 	/// action: promise (argument: item removed from array)
-	var processDynamicArrayAsQueue = function (arr, action) {
+	var processAsQueue = function (arr, action) {
 		return $.Deferred(function (dfd) {
 			var doNext = function () {
 				if (arr == null || arr.length == 0) {
@@ -117,32 +130,6 @@ import $ from "jquery";
 
 	};
 
-	// obsolete use processDynamicArrayAsQueue
-	// make sure array doesn't change
-	//var processAsQueue = function (arr, action) {
-	//	return $.Deferred(function (dfd) {
-	//		var step = 0;
-	//		var doNext = function () {
-	//			if (arr == null || (step >= (arr.length))) {
-	//				dfd.resolve();
-	//			} else {
-	//				var item = arr[step++];
-	//				action(item).done(function () {
-	//					doNext();
-	//				});
-	//			}
-	//		};
-	//		if (typeof arr == "function") {
-	//			arr().done(function (items) {
-	//				arr = items;
-	//				doNext();
-	//			});
-	//		} else {
-	//			doNext();
-	//		}
-	//	}).promise();
-	//};
-
 	var enumer = function (values) {
 		var me = {};
 		for (var i = 0; i < values.length; i++) {
@@ -154,8 +141,8 @@ import $ from "jquery";
 	};
 
 	ns.funcs = {
-		processAsQueue: processDynamicArrayAsQueue,
-		enum: enumer
+		processAsQueue: processAsQueue,
+		enumeration: enumer
 	};
 
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, $);

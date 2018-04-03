@@ -1,23 +1,42 @@
+/// <reference path="../logger/logger.js" />
+/// <reference path="../widget.base.js" />
+/* global require */
+
+// v 0.1.5: 2018-04-02  -   Use addSpWidget, use 'trace'
+//                          Probe before loading jstree,bootstrap
 // v 0.1.4: 2018-03-28  - Used widget registration, use local images for list/web collection nodes
 //                      - Selectable option
 //                      - loadTree uses processAsQueue
-import jQuery from "jquery";
 //import "../../../public/vendor/bootstrap/js/bootstrap.js";
 //import "../../../public/vendor/bootstrap/css/spexpjs.css";
-import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
-import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
-import "jstree";
+//import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
+//import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 import "../widget.base.js";
 import "./sp.base.js";
 import "./sp.web.js";
 import template from "./treelight.template.html";
-import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 
 (function (ns, $, template) {
 	var debugging = window.location.href.search(/(localhost|debugtreelight)/) > 0;
-	var tracing = ns.logger.get("treelight", debugging);
-	var log = tracing.log, debug = tracing.debug;
-	//var error = tracing.error;
+	var trace = ns.logger.get("treelight", debugging);
+
+	+function loadPublicRefs() {
+		if ($.fn.carousel) {
+			trace.debug("bootstrap already loaded");
+		} else {
+			trace.log("loading bootstrap");
+			require("../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js");
+			require("../../../public/vendor/bootstrap/3.3.7/css/spexp.css");
+		}
+
+		if ($.fn.jstree) {
+			trace.debug("jstree already loaded");
+		} else {
+			trace.log("loading jstree");
+			require("jstree");
+			require("../../../node_modules/jstree/dist/themes/default/style.min.css");
+		}
+	}();
 
 	var xSPTreeLight = function (ui, opts) {
 
@@ -30,7 +49,7 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 			load: $el.attr("data-load") || "All"
 		}, opts);
 
-		opts.selectable = ns.funcs.enum(opts.selectable.split("|"));
+		opts.selectable = ns.funcs.enumeration(opts.selectable.split("|"));
 
 		var selectionChanged = function (spElem) {
 			selectedSpElement = spElem;
@@ -40,7 +59,7 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 			$(".sptreelabel", $el).html(selectionName);
 
 			var eventName = spElem.constructor.getName() + ".change";
-			log(eventName);
+			trace.log(eventName);
 			$el.trigger("selectionchange", [spElem]);
 
 			// backwards support
@@ -157,7 +176,7 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 						if (a.text > b.text) return 1;
 						return 0;
 					});
-					log({ fields: spFields });
+					trace.log({ fields: spFields });
 					cb(spFields);
 				});
 			};
@@ -185,7 +204,7 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 			};
 			var loadList = function (node, cb) {
 				var list = node.data;
-				log({ list: list });
+				trace.log({ list: list });
 				var items = [];
 				if (list.get_hasUniqueRoleAssignments()) {
 					items.push({ text: "Security", id: list.get_id() + "_Security", data: list.get_roleAssignments(), icon: "http://icons.iconarchive.com/icons/kyo-tux/phuzion/16/Misc-Security-icon.png" });
@@ -202,14 +221,14 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 				cb(items);
 			};
 			var loadLists = function (node, cb) {
-				debug("loading lists");
+				trace.debug("loading lists");
 				var parent = node.parent;
 				var web = tree.get_node(parent).data;
 
 				var lists = web.get_lists();
 				ctx.load(lists, "Include(Id,Title,HasUniqueRoleAssignments,ImageUrl,ItemCount,DefaultViewUrl)");
 				ctx.executeQueryAsync(function () {
-					log("lists loaded");
+					trace.log("lists loaded");
 					var lenum = lists.getEnumerator();
 					var spLists = [];
 
@@ -224,7 +243,7 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 
 					}
 					ns.lists = spLists;
-					log({ lists: spLists });
+					trace.log({ lists: spLists });
 					cb(spLists);
 				});
 			};
@@ -236,7 +255,7 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 						return true;
 					}, "data": function (node, cb) {
 						ns.node = node;
-						log({ tree_data_node: node });
+						trace.log({ tree_data_node: node });
 						if (node.id == "#")
 							cb([]);
 						else if (node.text == "Site Groups") {
@@ -292,7 +311,7 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 				.on("changed.jstree", function (e, data) {
 					e.preventDefault();
 					e.stopPropagation();
-					log({ jstreechanged: data.node.id });
+					trace.log({ jstreechanged: data.node.id });
 					var spElem = data.node.data;
 					if (spElem) {
 						var type = spElem.constructor.getName();
@@ -316,13 +335,13 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 		var addWebNode = function (curWeb, parentNode, subs) {
 			return $.Deferred(function (dfd) {
 				var id = curWeb.get_id().toString();
-				debug("creating web node: " + id);
+				trace.debug("creating web node: " + id);
 
 				tree.create_node(parentNode, {
 					text: curWeb.get_title(), id: id, data: curWeb, icon: "/_layouts/images/sts_web16.gif"
 				}, "last", function () {
 
-					debug("web node created");
+					trace.debug("web node created");
 					tree.create_node(id, { text: "Lists", children: true, id: id + "_Lists", icon: "/_layouts/15/images/itgen.png?rev=23" });
 					tree.create_node(id, { text: "Webs", id: id + "_Webs", icon: "/_layouts/15/images/siteicon_16x16.png" });
 
@@ -331,7 +350,7 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 					//}
 
 					var nWeb = tree.get_node(id);
-					debug(nWeb);
+					trace.debug(nWeb);
 
 					(function doWebs() {
 						var lenum = subs.getEnumerator();
@@ -361,16 +380,16 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 				});
 
 			}).promise();
-		}).done(function () { log("tree loaded"); });
+		}).done(function () { trace.log("tree loaded"); });
 
 		$(".cc", $el).click(function (event) { // prevent propagation so drop down doesn't close
-			debug(".cc.click");
+			trace.debug(".cc.click");
 			event.preventDefault();
 			event.stopPropagation();
 		});
 
-		$("#dropdownMenu1", $el).click(function (event) { // prevent propagation so drop down doesn't close
-			debug("dropdownMenu1.click");
+		$("#dropdownMenu1", $el).click(function (/*event*/) { // prevent propagation so drop down doesn't close
+			trace.debug("dropdownMenu1.click");
 		});
 
 		return (function () {
@@ -391,8 +410,6 @@ import "../../../node_modules/jstree/dist/themes/default/style.min.css";
 		})();
 	};
 
-	var widgetInfo = ns.widgets.addWidget("xSPTreeLight", xSPTreeLight, "0.1.4");
+	ns.widgets.addSpWidget("xSPTreeLight", xSPTreeLight, "0.1.5");
 
-	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
-
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, jQuery, template);
+})(spexplorerjs, jQuery, template);
