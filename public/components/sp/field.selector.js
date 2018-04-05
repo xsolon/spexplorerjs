@@ -73645,7 +73645,7 @@ __webpack_require__(/*! ../string/string.js */ "../string/string.js");
 	return ns.logger;
 
 	// both of these dependencies are resolved in string.js
-})(window.spexplorerjs, window.jQuery); // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
+})(spexplorerjs, jQuery); // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
 // v 0.0.1: 2018-03-28  - debug, get
 
 /***/ }),
@@ -73842,10 +73842,6 @@ window.CodeMirror = _codemirror2.default;
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 __webpack_require__(/*! ./jseditor.js */ "../mirrors/jseditor.js");
 
 var _jsmirrorTemplate = __webpack_require__(/*! ./jsmirror.template.html */ "../mirrors/jsmirror.template.html");
@@ -73856,21 +73852,14 @@ __webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// v 0.0.1 - 2018/03/28     - Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
-//                          - setScript method
-//                          - use Function constructor for code execution
-//                          - refresh method
 (function (ns, $, template) {
 
 	var debugging = window.location.href.search(/(localhost|debugjsmirror)/) > 0;
-	var tracing = ns.logger.get("jsmirror", debugging);
-	var log = tracing.log,
-	    debug = tracing.debug,
-	    error = tracing.error;
+	var trace = ns.logger.get("jsmirror", debugging);
 
 	var xjsmirror = function xjsmirror(ui, opts) {
 
-		debug("xjsmirror.init");
+		trace.debug("xjsmirror.init");
 
 		var $el = $(ui);
 		opts = $.extend({}, opts);
@@ -73880,16 +73869,25 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 		var runScript = function runScript(code) {
 			try {
-				log({ runScript: code });
-				ns.spelem = opts.spelem;
+				trace.log({ runScript: code });
 				var script = "var log = console.log, clear = console.clear;\r\n\
                     {0}\r\n".replace("{0}", code);
 
-				var tempFunction = new Function("spelem", script);
-				var res = tempFunction(opts.spelem);
+				var args = [];
+				var vals = [];
+
+				for (var name in resourceHash) {
+					if (resourceHash.hasOwnProperty(name)) {
+						args.push(name);
+						vals.push(resourceHash[name]);
+					}
+				}
+
+				var tempFunction = new Function(args, script);
+				var res = tempFunction(vals);
 				if (res) console.log(res);
 			} catch (e) {
-				error(e.message);
+				trace.error(e.message);
 				throw e;
 			}
 		};
@@ -73922,6 +73920,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			});
 		})();
 
+		var resourceHash = {};
 		return {
 			refresh: function refresh() {
 				editor.refresh();
@@ -73929,8 +73928,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			setScript: function setScript(obj) {
 				editor.set(obj);
 			},
-			setScriptingObject: function setScriptingObject(obj) {
-				opts.spelem = obj;
+			setScriptingObject: function setScriptingObject(name, obj) {
+				resourceHash[name] = obj;
 			}
 		};
 	};
@@ -73938,7 +73937,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	var widgetInfo = ns.widgets.addWidget("xjsmirror", xjsmirror, "0.0.1");
 
 	widgetInfo.startup();
-})(window["spexplorerjs"], _jquery2.default, _jsmirrorTemplate2.default);
+})(spexplorerjs, jQuery, _jsmirrorTemplate2.default);
+// v 0.0.2 - 2018/04/04     - setScriptingObject: new signature allows to name resource that will be avaialbel during function execution
+// v 0.0.1 - 2018/03/28     - Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
+//                          - setScript method
+//                          - use Function constructor for code execution
+//                          - refresh method
 
 /***/ }),
 
@@ -74358,17 +74362,6 @@ module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n 
 
 __webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// 0.1.2: 2018/03/23    -   addSpWidget for SharePoint components
-//                          add version number to elements with class widgetinfo
-// 0.1.1: 2018/03/28    -   selector property
-//                          log from tracing
-// 0.1.0: 2018/03/23    -   pass options to widget constructor
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
@@ -74394,12 +74387,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				var elems = $(selector, context || document);
 				debug("Elems: " + elems.length);
 				elems[name](opts);
+				/// TODO: set only info for current widget (not sub widgets)
 				$(".widgetinfo", elems).html(version);
 
 				return elems;
 			}
 		};
 	};
+
 	var registerWidget = function registerWidget(widgetInfo) {
 
 		$.fn[widgetInfo.publicName] = function (opts) {
@@ -74447,7 +74442,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 		return widgetInfo;
 	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+})(spexplorerjs, jQuery); // 0.1.2: 2018/03/23    -   addSpWidget for SharePoint components
+//                          add version number to elements with class widgetinfo
+// 0.1.1: 2018/03/28    -   selector property
+//                          log from tracing
+// 0.1.0: 2018/03/23    -   pass options to widget constructor
+
 
 (function (ns, $) {
 
@@ -74502,7 +74502,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		processAsQueue: processAsQueue,
 		enumeration: enumer
 	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+})(spexplorerjs, jQuery);
 
 /***/ }),
 
@@ -74711,7 +74711,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		var xmlMirror = ns.widgets.xxmlmirror.startup($el).data("xwidget");
 		var jsMirror = ns.widgets.xjsmirror.startup($el).data("xwidget");
 
-		jsMirror.setScript("console.log(spelem);// spelem: reference to field");
+		jsMirror.setScript("console.log(field);// field: reference to field");
 
 		var spdal = new SPDAL(opts.weburl);
 		var fieldSel = $(".fieldsDrp", ui).on("change", function () {
@@ -74720,7 +74720,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 				var xml = field.get_schemaXml();
 				xmlMirror.setXml(xml);
-				jsMirror.setScriptingObject(field);
+				jsMirror.setScriptingObject("field", field);
 				trace.log({ field: field });
 			}
 		});
@@ -74863,7 +74863,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<div class=\"xwidgetui\">\r\n    <fieldset class=\"form-horizontal\">\r\n        <legend>[label]</legend>\r\n        <div class=\"form-group listSelector\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xSPTreeLight\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field</label>\r\n            <div class=\"col-md-10\">\r\n                <select class='fieldsDrp' style=\"width:100%\"></select>\r\n                <input type=\"checkbox\" class=\"ereadonly\" value=\"0\" />Exclude read only\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field Schema</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xxmlmirror\"></div>\r\n                <small class=\"widgetinfo\"></small>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Scripting</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xjsmirror\"></div>\r\n                <small>Modify the field through JSOM (variable for field: spelem)</small>\r\n            </div>\r\n        </div>\r\n\r\n    </fieldset>\r\n\r\n</div>";
+module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<style type=\"text/css\">\r\n    .select2-container{\r\n        z-index: 1600 !important; /* modal sharepoint dialogs are 1500*/\r\n    }\r\n</style>\r\n<div class=\"xwidgetui\">\r\n    <fieldset class=\"form-horizontal\">\r\n        <legend>[label]</legend>\r\n        <div class=\"form-group listSelector\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xSPTreeLight\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field</label>\r\n            <div class=\"col-md-10\">\r\n                <select class='fieldsDrp' style=\"width:100%\"></select>\r\n                <input type=\"checkbox\" class=\"ereadonly\" value=\"0\" />Exclude read only\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field Schema</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xxmlmirror\"></div>\r\n                <small class=\"widgetinfo\"></small>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Scripting</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xjsmirror\"></div>\r\n                <small>Modify the field through JSOM (variable for field: spelem)</small>\r\n            </div>\r\n        </div>\r\n\r\n    </fieldset>\r\n\r\n</div>";
 
 /***/ }),
 
@@ -75454,6 +75454,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		$("#dropdownMenu1", $el).click(function () /*event*/{
 			// prevent propagation so drop down doesn't close
 			trace.debug("dropdownMenu1.click");
+
+			/// TODO: bug in modal window ???, works fine outside modal
+			if ($(".dropdown-menu:visible", $el).length == 0) $(".dropdown-menu", $el).show();else {
+				$(".dropdown-menu", $el).hide();
+			}
 		});
 
 		return function () {

@@ -4,7 +4,6 @@
 //                          log from tracing
 // 0.1.0: 2018/03/23    -   pass options to widget constructor
 import "./logger/logger.js";
-import $ from "jquery";
 
 (function (ns, $) {
 
@@ -30,12 +29,14 @@ import $ from "jquery";
 				var elems = $(selector, context || document);
 				debug("Elems: " + elems.length);
 				elems[name](opts);
-				$(".widgetinfo", elems).html(version);
+				/// TODO: set only info for current widget (not sub widgets)
+				$(".widgetinfo" + name, elems).html(version);
 
 				return elems;
 			}
 		};
 	};
+
 	var registerWidget = function (widgetInfo) {
 
 		$.fn[widgetInfo.publicName] = function (opts) {
@@ -90,7 +91,7 @@ import $ from "jquery";
 	};
 
 
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, $);
+})(spexplorerjs, jQuery);
 
 (function (ns, $) {
 
@@ -145,4 +146,4 @@ import $ from "jquery";
 		enumeration: enumer
 	};
 
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, $);
+})(spexplorerjs, jQuery);

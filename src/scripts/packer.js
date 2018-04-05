@@ -16,12 +16,13 @@ var files = [
     //"./src/components/mirrors/xmleditor.js"
     //, "./src/components/mirrors/xmlmirror.js"
     //"./src/components/sp/treelight.js"
+    //,
     //"./src/components/sp/sp.explorer.js",
-    //"./src/components/sp/sp.wizard.js"
+    "./src/components/sp/sp.wizard.js"
+    ,
+    "./src/components/sp/list.editor.js"
     //,
-    //"./src/components/sp/list.editor.js"
-    //,
-    "./src/components/sp/field.selector.js"
+    //"./src/components/sp/field.selector.js"
     //, "./src/components/sp/customaction.selector.js"
     //"./src/components/sp/customaction.editor.js"
     //, "./src/components/sp/ui.perms.js"

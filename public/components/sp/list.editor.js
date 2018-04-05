@@ -67480,9 +67480,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					require = S2;
 				}
 				/**
-    * @license almond 0.3.3 Copyright jQuery Foundation and other contributors.
-    * Released under MIT license, http://github.com/requirejs/almond/LICENSE
-    */
+     * @license almond 0.3.3 Copyright jQuery Foundation and other contributors.
+     * Released under MIT license, http://github.com/requirejs/almond/LICENSE
+     */
 				//Going sloppy to avoid 'use strict' string cost, but strict practices should
 				//be followed.
 				/*global setTimeout: false */
@@ -67506,13 +67506,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					}
 
 					/**
-      * Given a relative module name, like ./something, normalize it to
-      * a real name that can be mapped to a path.
-      * @param {String} name the relative name
-      * @param {String} baseName a real name that the name arg is relative
-      * to.
-      * @returns {String} normalized name
-      */
+         * Given a relative module name, like ./something, normalize it to
+         * a real name that can be mapped to a path.
+         * @param {String} name the relative name
+         * @param {String} baseName a real name that the name arg is relative
+         * to.
+         * @returns {String} normalized name
+         */
 					function normalize(name, baseName) {
 						var nameParts,
 						    nameSegment,
@@ -67696,10 +67696,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					}
 
 					/**
-      * Makes a name map, normalizing the name, and using a plugin
-      * for normalization if necessary. Grabs a ref to plugin
-      * too, as an optimization.
-      */
+         * Makes a name map, normalizing the name, and using a plugin
+         * for normalization if necessary. Grabs a ref to plugin
+         * too, as an optimization.
+         */
 					makeMap = function makeMap(name, relParts) {
 						var plugin,
 						    parts = splitPrefix(name),
@@ -67893,16 +67893,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					};
 
 					/**
-      * Just drops the config on the floor, but returns req in case
-      * the config return value is used.
-      */
+         * Just drops the config on the floor, but returns req in case
+         * the config return value is used.
+         */
 					_req.config = function (cfg) {
 						return _req(cfg);
 					};
 
 					/**
-      * Expose module registry for debugging and tooling
-      */
+         * Expose module registry for debugging and tooling
+         */
 					requirejs._defined = defined;
 
 					define = function define(name, deps, callback) {
@@ -73645,7 +73645,7 @@ __webpack_require__(/*! ../string/string.js */ "../string/string.js");
 	return ns.logger;
 
 	// both of these dependencies are resolved in string.js
-})(window.spexplorerjs, window.jQuery); // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
+})(spexplorerjs, jQuery); // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
 // v 0.0.1: 2018-03-28  - debug, get
 
 /***/ }),
@@ -73659,10 +73659,6 @@ __webpack_require__(/*! ../string/string.js */ "../string/string.js");
 
 "use strict";
 
-
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
 
 __webpack_require__(/*! ../string/string.js */ "../string/string.js");
 
@@ -73828,7 +73824,7 @@ window.CodeMirror = _codemirror2.default;
 		var cont = $(iframe).contents().find("textarea");
 		ns.widgets.jseditorinit(cont);
 	};
-})(window["spexplorerjs"], _jquery2.default);
+})(spexplorerjs, jQuery);
 
 /***/ }),
 
@@ -73842,10 +73838,6 @@ window.CodeMirror = _codemirror2.default;
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 __webpack_require__(/*! ./jseditor.js */ "../mirrors/jseditor.js");
 
 var _jsmirrorTemplate = __webpack_require__(/*! ./jsmirror.template.html */ "../mirrors/jsmirror.template.html");
@@ -73856,40 +73848,42 @@ __webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// v 0.0.1 - 2018/03/28     - Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
-//                          - setScript method
-//                          - use Function constructor for code execution
-//                          - refresh method
 (function (ns, $, template) {
 
 	var debugging = window.location.href.search(/(localhost|debugjsmirror)/) > 0;
-	var tracing = ns.logger.get("jsmirror", debugging);
-	var log = tracing.log,
-	    debug = tracing.debug,
-	    error = tracing.error;
+	var trace = ns.logger.get("jsmirror", debugging);
 
-	var xjsmirror = function xjsmirror(ui, opts) {
+	var xjsmirror = function xjsmirror(ui /*, opts*/) {
 
-		debug("xjsmirror.init");
+		trace.debug("xjsmirror.init");
 
 		var $el = $(ui);
-		opts = $.extend({}, opts);
+		//opts = $.extend({}, opts);
 
 		$el.html(template.trim());
 		var run = $("button", ui);
 
 		var runScript = function runScript(code) {
 			try {
-				log({ runScript: code });
-				ns.spelem = opts.spelem;
+				trace.log({ runScript: code });
 				var script = "var log = console.log, clear = console.clear;\r\n\
                     {0}\r\n".replace("{0}", code);
 
-				var tempFunction = new Function("spelem", script);
-				var res = tempFunction(opts.spelem);
+				var args = [];
+				var vals = [];
+
+				for (var name in resourceHash) {
+					if (resourceHash.hasOwnProperty(name)) {
+						args.push(name);
+						vals.push(resourceHash[name]);
+					}
+				}
+
+				var tempFunction = new Function(args, script);
+				var res = tempFunction.apply(tempFunction, vals);
 				if (res) console.log(res);
 			} catch (e) {
-				error(e.message);
+				trace.error(e.message);
 				throw e;
 			}
 		};
@@ -73922,6 +73916,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			});
 		})();
 
+		var resourceHash = {};
 		return {
 			refresh: function refresh() {
 				editor.refresh();
@@ -73929,8 +73924,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			setScript: function setScript(obj) {
 				editor.set(obj);
 			},
-			setScriptingObject: function setScriptingObject(obj) {
-				opts.spelem = obj;
+			setScriptingObject: function setScriptingObject(name, obj) {
+				resourceHash[name] = obj;
 			}
 		};
 	};
@@ -73938,7 +73933,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	var widgetInfo = ns.widgets.addWidget("xjsmirror", xjsmirror, "0.0.1");
 
 	widgetInfo.startup();
-})(window["spexplorerjs"], _jquery2.default, _jsmirrorTemplate2.default);
+})(spexplorerjs, jQuery, _jsmirrorTemplate2.default);
+// v 0.0.2 - 2018/04/04     - setScriptingObject: new signature allows to name resource that will be avaialbel during function execution
+// v 0.0.1 - 2018/03/28     - Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
+//                          - setScript method
+//                          - use Function constructor for code execution
+//                          - refresh method
 
 /***/ }),
 
@@ -74199,6 +74199,7 @@ var _xmlmirrorTemplate2 = _interopRequireDefault(_xmlmirrorTemplate);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// v 0.1.6 - 2018-04-04:    - getXml is not longer a promise
 // v 0.1.5 - 2018-03-28:    - use widget declaration
 //                          - refresh method
 (function (ns, $) {
@@ -74231,11 +74232,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			editor.refresh();
 		};
 		me.getXml = function () {
-			return $.Deferred(function (dfd) {
-
-				var code = editor.get();
-				dfd.resolve(code);
-			}).promise();
+			var code = editor.get();
+			return code;
 		};
 		me.setXml = function (xml) {
 			editor.set(xml);
@@ -74358,148 +74356,147 @@ module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n 
 
 __webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// 0.1.2: 2018/03/23    - addSpWidget for SharePoint components
-// 0.1.0: 2018/03/23    - pass options to widget constructor
-// 0.1.1: 2018/03/28    - selector property
-//                      - log from tracing
 (function (ns, $) {
 
-    var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
-    var tracing = ns.logger.get("widgets", debugging);
-    var log = tracing.log,
-        debug = tracing.debug;
+	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
+	var tracing = ns.logger.get("widgets", debugging);
+	var log = tracing.log,
+	    debug = tracing.debug;
 
-    log("widgets.register");
-    ns.widgets = ns.widgets || {};
+	log("widgets.register");
+	ns.widgets = ns.widgets || {};
 
-    var defineWidget = function defineWidget(name, constructor, version) {
+	var defineWidget = function defineWidget(name, constructor, version) {
 
-        return {
-            publicName: name,
-            constructor: constructor,
-            version: version,
-            selector: "[data-widget=\"publicName\"]".replace("publicName", name),
-            startup: function startup(context, opts) {
+		return {
+			publicName: name,
+			constructor: constructor,
+			version: version,
+			selector: "[data-widget=\"publicName\"]".replace("publicName", name),
+			startup: function startup(context, opts) {
 
-                debug(name + ".startup");
-                var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
-                debug("selector: " + selector);
-                var elems = $(selector, context || document);
-                debug("Elems: " + elems.length);
-                elems[name](opts);
-                return elems;
-            }
-        };
-    };
-    var registerWidget = function registerWidget(widgetInfo) {
+				debug(name + ".startup");
+				var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
+				debug("selector: " + selector);
+				var elems = $(selector, context || document);
+				debug("Elems: " + elems.length);
+				elems[name](opts);
+				/// TODO: set only info for current widget (not sub widgets)
+				$(".widgetinfo" + name, elems).html(version);
 
-        $.fn[widgetInfo.publicName] = function (opts) {
-            var args = arguments;
-            var result = this.each(function () {
+				return elems;
+			}
+		};
+	};
 
-                var $el = $(this);
+	var registerWidget = function registerWidget(widgetInfo) {
 
-                var me = $el.data(widgetInfo.publicName);
+		$.fn[widgetInfo.publicName] = function (opts) {
+			var args = arguments;
+			var result = this.each(function () {
 
-                if (me) {
-                    // object has been initialized before
+				var $el = $(this);
 
-                    if (opts == null) {// request for instance
-                    } else if (me[opts]) {
-                        if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
-                    }
-                } else {
-                    var obj = new widgetInfo.constructor(this, opts);
-                    $(".version:first", this).html(widgetInfo.version);
-                    $el.data(widgetInfo.publicName, obj).data("xwidget", obj);
-                }
-            });
+				var me = $el.data(widgetInfo.publicName);
 
-            return result;
-        };
+				if (me) {
+					// object has been initialized before
 
-        ns.widgets[widgetInfo.publicName] = widgetInfo;
-        log(widgetInfo.publicName + ".registered");
-    };
+					if (opts == null) {// request for instance
+					} else if (me[opts]) {
+						if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
+					}
+				} else {
+					var obj = new widgetInfo.constructor(this, opts);
+					$(".version:first", this).html(widgetInfo.version);
+					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
+				}
+			});
 
-    var addWidget = function addWidget(name, constructor, version) {
+			return result;
+		};
 
-        var widgetInfo = defineWidget(name, constructor, version);
-        registerWidget(widgetInfo);
-        return widgetInfo;
-    };
+		ns.widgets[widgetInfo.publicName] = widgetInfo;
+		log(widgetInfo.publicName + ".registered");
+	};
 
-    ns.widgets.addWidget = addWidget;
-    ns.widgets.addSpWidget = function (name, constructor, version) {
+	var addWidget = function addWidget(name, constructor, version) {
 
-        var widgetInfo = addWidget(name, constructor, version);
+		var widgetInfo = defineWidget(name, constructor, version);
+		registerWidget(widgetInfo);
+		return widgetInfo;
+	};
 
-        ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
+	ns.widgets.addWidget = addWidget;
+	ns.widgets.addSpWidget = function (name, constructor, version) {
 
-        return widgetInfo;
-    };
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+		var widgetInfo = addWidget(name, constructor, version);
+
+		ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
+
+		return widgetInfo;
+	};
+})(spexplorerjs, jQuery); // 0.1.2: 2018/03/23    -   addSpWidget for SharePoint components
+//                          add version number to elements with class widgetinfo
+// 0.1.1: 2018/03/28    -   selector property
+//                          log from tracing
+// 0.1.0: 2018/03/23    -   pass options to widget constructor
+
 
 (function (ns, $) {
 
-    /// Iterate over an expanding array
-    //  Example:
-    //  var arr = [1, 2];
-    //  spexplorerjs.funcs.processAsQueue(arr, function (item) {
-    //    if (item == 1) {
-    //        arr.push(3);
-    //    }
-    //    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
-    //});
-    /// arr: array to process
-    /// action: promise (argument: item removed from array)
-    var processAsQueue = function processAsQueue(arr, action) {
-        return $.Deferred(function (dfd) {
-            var doNext = function doNext() {
-                if (arr == null || arr.length == 0) {
-                    dfd.resolve();
-                } else {
-                    var item = arr.shift();
-                    action(item).done(function () {
-                        doNext();
-                    });
-                }
-            };
+	/// Iterate over an expanding array
+	//  Example:
+	//  var arr = [1, 2];
+	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
+	//    if (item == 1) {
+	//        arr.push(3);
+	//    }
+	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
+	//});
+	/// arr: array to process
+	/// action: promise (argument: item removed from array)
+	var processAsQueue = function processAsQueue(arr, action) {
+		return $.Deferred(function (dfd) {
+			var doNext = function doNext() {
+				if (arr == null || arr.length == 0) {
+					dfd.resolve();
+				} else {
+					var item = arr.shift();
+					action(item).done(function () {
+						doNext();
+					});
+				}
+			};
 
-            if (typeof arr == "function") {
-                arr().done(function (items) {
-                    arr = items;
-                    doNext();
-                });
-            } else {
-                doNext();
-            }
-        }).promise();
-    };
+			if (typeof arr == "function") {
+				arr().done(function (items) {
+					arr = items;
+					doNext();
+				});
+			} else {
+				doNext();
+			}
+		}).promise();
+	};
 
-    var enumer = function enumer(values) {
-        var me = {};
-        for (var i = 0; i < values.length; i++) {
-            me[values[i]] = 1;
-        }
-        if (Object.freeze) {
-            me = Object.freeze(me);
-        }
+	var enumer = function enumer(values) {
+		var me = {};
+		for (var i = 0; i < values.length; i++) {
+			me[values[i]] = 1;
+		}
+		if (Object.freeze) {
+			me = Object.freeze(me);
+		}
 
-        return me;
-    };
+		return me;
+	};
 
-    ns.funcs = {
-        processAsQueue: processDynamicArrayAsQueue,
-        enumeration: enumer
-    };
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+	ns.funcs = {
+		processAsQueue: processAsQueue,
+		enumeration: enumer
+	};
+})(spexplorerjs, jQuery);
 
 /***/ }),
 
@@ -74732,10 +74729,6 @@ var _customactionEditorTemplate = __webpack_require__(/*! ./customaction.editor.
 
 var _customactionEditorTemplate2 = _interopRequireDefault(_customactionEditorTemplate);
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 __webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
 
 __webpack_require__(/*! ./sp.list.js */ "./sp.list.js");
@@ -74847,7 +74840,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {});
 		} else widgetInfo.startup();
 	})();
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _customactionEditorTemplate2.default); // v 0.1.3 - 2018/03/28 - Widget declaration
+})(spexplorerjs, jQuery, _customactionEditorTemplate2.default); // v 0.1.3 - 2018/03/28 - Widget declaration
 // v 0.1.2 - 2018/03/24 - Option to preload local list: use attribute data-ListTitle
 //                      - Working update of basic custom action fields: Title, Src, Sequence, Rights, Xml
 // TODO: Implement all fields
@@ -75168,10 +75161,6 @@ module.exports = "<b>{0}</b>\r\n<ul class='xfieldInfo'>\r\n    <li>Internal Name
 "use strict";
 
 
-__webpack_require__(/*! ../../../public/vendor/select2/js/select2.full.js */ "../../../public/vendor/select2/js/select2.full.js");
-
-__webpack_require__(/*! ../../../public/vendor/select2/css/select2.css */ "../../../public/vendor/select2/css/select2.css");
-
 __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
 __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
@@ -75190,18 +75179,38 @@ __webpack_require__(/*! ./treelight.js */ "./treelight.js");
 
 __webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
 
+__webpack_require__(/*! ../mirrors/jsmirror.js */ "../mirrors/jsmirror.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// loads jstree, bootstrap
+/// <reference path="../logger/logger.js" />
+/// <reference path="../widget.base.js" />
+/* global require */
+
+// v 0.1.5: 2018-04-02 - Probe before loading select2
+// v 0.1.4: 2018-03-15 - Added option to hide list selector
+
+//import "../../../public/vendor/select2/js/select2.full.js";
+//import "../../../public/vendor/select2/css/select2.css";
+//import "../../../public/vendor/bootstrap/js/bootstrap.js";
+//import "../../../public/vendor/bootstrap/css/spexpjs.css";
+//import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
+//import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 (function (ns, $) {
 
-	var debug = window.location.href.search(/[localhost|debugfieldsel]/) > 0;
-	var log = new function () {
-		var d = function d() {
-			ns.logger && ns.logger.log.apply(log, arguments);
-			if (debug) SP.UI.Notify.addNotification(arguments[0]);
-		};
-		d.source = "field.selector";
-		return d;
+	var debugging = window.location.href.search(/(localhost|debugfieldsel)/) > 0;
+	var trace = ns.logger.get("fieldEditor", debugging);
+
+	+function loadPublicRefs() {
+
+		if ($.fn.select2) {
+			trace.debug("select2 already loaded");
+		} else {
+			trace.log("loading select2");
+			__webpack_require__(/*! ../../../public/vendor/select2/js/select2.full.js */ "../../../public/vendor/select2/js/select2.full.js");
+			__webpack_require__(/*! ../../../public/vendor/select2/css/select2.css */ "../../../public/vendor/select2/css/select2.css");
+		}
 	}();
 
 	var fieldLabel = function fieldLabel(field) {
@@ -75230,7 +75239,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				var fields = list.get_fields();
 				iCtx.load(fields);
 				iCtx.executeQueryAsync(function () {
-					log(list);
+					trace.log(list);
 					var enumer = fields.getEnumerator();
 					var spfields = [];
 					while (enumer.moveNext()) {
@@ -75242,7 +75251,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					});
 					dfd.resolve(spfields);
 				}, function onError(sender, args) {
-					log("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
+					trace.error("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
 					dfd.reject(args);
 				});
 			}).promise();
@@ -75262,7 +75271,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 				ctx.load(lists, "Include(Title)");
 				ctx.executeQueryAsync(function () {
-					log(lists);
+					trace.log(lists);
 					var enumer = lists.getEnumerator();
 					var splists = [];
 					while (enumer.moveNext()) {
@@ -75271,7 +75280,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					}
 					dfd.resolve(splists);
 				}, function onError(sender, args) {
-					log("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
+					trace.error("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
 				});
 			}).promise();
 		};
@@ -75286,7 +75295,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			opt.prop("data-field", field);
 
 			if (excludereadonly && field.get_readOnlyField()) {
-				log("readonly");
+				trace.debug("readonly");
 			} else sel.append(opt);
 		}
 
@@ -75328,12 +75337,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				opts = $.extend(opts, JSON.parse(state.html().trim()));
 			}
 		} catch (e) {
-			log(e);
+			trace.error(e);
 		}
 
 		$el.html(_fieldSelectorTemplate2.default.trim().replace("[label]", opts.label));
 
 		var xmlMirror = ns.widgets.xxmlmirror.startup($el).data("xwidget");
+		var jsMirror = ns.widgets.xjsmirror.startup($el).data("xwidget");
+
+		jsMirror.setScript("console.log(field);// field: reference to field");
 
 		var spdal = new SPDAL(opts.weburl);
 		var fieldSel = $(".fieldsDrp", ui).on("change", function () {
@@ -75342,7 +75354,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 				var xml = field.get_schemaXml();
 				xmlMirror.setXml(xml);
-				log({ field: field });
+				jsMirror.setScriptingObject("field", field);
+				trace.log({ field: field });
 			}
 		});
 
@@ -75368,7 +75381,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					bindFieldSelect(fieldSel, fields, opts.excludereadonly);
 					fieldSel.val(null).trigger("change.select2");
 				}).fail(function (err) {
-					log(err);
+					trace.error(err);
 				}).always(function () {
 					dfd.resolve();
 				});
@@ -75390,7 +75403,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		var loadList = function loadList(listTitle) {
 			return $.Deferred(function (dfd) {
 
-				log("loading list" + listTitle);
+				trace.debug("loading list" + listTitle);
 
 				spdal.getList(listTitle).done(function (list) {
 					onListChange(list);
@@ -75408,7 +75421,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			$el.trigger("xwidget.init");
 		}
 
-		$(".widgetinfo", $el).html(widgetInfo.version);
 		return function register() {
 			var me = {
 				setList: function setList(list) {
@@ -75430,7 +75442,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				},
 				state: function state(instate) {
 					if (arguments.length > 0) {
-						log({ setstate: instate });
+						trace.log({ setstate: instate });
 						opts.listtitle = instate.listtitle;
 						if (opts.weburl != instate.weburl) {
 
@@ -75473,13 +75485,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		}();
 	};
 
-	ns.widgets.addSpWidget("xSPFieldSelector", SPListWidget, "0.1.4");
+	ns.widgets.addSpWidget("xSPFieldSelector", xSPFieldSelector, "0.1.5");
 })(spexplorerjs, jQuery);
-//import "../../../public/vendor/bootstrap/js/bootstrap.js";
-//import "../../../public/vendor/bootstrap/css/spexpjs.css";
-//import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
-//import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
-// v 0.1.4: 2018-03-15 - Added option to hide list selector
 
 /***/ }),
 
@@ -75490,7 +75497,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<div class=\"xwidgetui\">\r\n    <fieldset class=\"form-horizontal\">\r\n        <legend>[label]</legend>\r\n        <div class=\"form-group listSelector\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xSPTreeLight\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field</label>\r\n            <div class=\"col-md-10\">\r\n                <select class='fieldsDrp' style=\"width:100%\"></select>\r\n                <input type=\"checkbox\" class=\"ereadonly\" value=\"0\" />Exclude read only\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field Schema</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xxmlmirror\"></div>\r\n                <small class=\"widgetinfo\">fieldselect 0.3.3</small>\r\n            </div>\r\n        </div>\r\n    </fieldset>\r\n\r\n</div>";
+module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<style type=\"text/css\">\r\n    .select2-container{\r\n        z-index: 1600 !important; /* modal sharepoint dialogs are 1500*/\r\n    }\r\n</style>\r\n<div class=\"xwidgetui\">\r\n    <fieldset class=\"form-horizontal\">\r\n        <legend>[label]</legend>\r\n        <div class=\"form-group listSelector\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xSPTreeLight\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field</label>\r\n            <div class=\"col-md-10\">\r\n                <select class='fieldsDrp' style=\"width:100%\"></select>\r\n                <input type=\"checkbox\" class=\"ereadonly\" value=\"0\" />Exclude read only\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field Schema</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xxmlmirror\"></div>\r\n                <small class=\"widgetinfo\"></small>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Scripting</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xjsmirror\"></div>\r\n                <small>Modify the field through JSOM (variable for field: spelem)</small>\r\n            </div>\r\n        </div>\r\n\r\n    </fieldset>\r\n\r\n</div>";
 
 /***/ }),
 
@@ -75503,12 +75510,6 @@ module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<
 
 "use strict";
 
-
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
 __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
@@ -75534,18 +75535,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 (function (ns, $, template) {
 
-	var debug = window.location.href.search(/[localhost|debuglisteditor]/) > 0;
-	var log = new function () {
-		var d = function d() {
-			ns.logger && ns.logger.log.apply(log, arguments);
-			if (debug) SP.UI.Notify.addNotification(arguments[0]);
-		};
-		d.source = "list.selector";
-		return d;
-	}();
+	var debugging = window.location.href.search(/(localhost|debuglisteditor)/) > 0;
+	var trace = ns.logger.get("list.selector", debugging);
 
 	var SPListWidget = function SPListWidget(el /*, opts*/) {
 		// constructor
+		trace.log("new instance");
 		var $el = $(el),
 		    me = {}; //, ctx = null;
 		//opts = $.extend({}, opts);
@@ -75554,15 +75549,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		$("#btnAdd", $el).click(function () {});
 
 		var jsWidget = ns.widgets.xjsmirror.startup($el).data("xwidget");
-		jsWidget.setScript("console.log(spelem);// spelem: reference to list");
 		var xmlWidget = ns.widgets.xxmlmirror.startup($(".listschema", $el)).data("xwidget");
+		var camlWidget = ns.widgets.xxmlmirror.startup($(".scriptCaml", $el)).data("xwidget");
 		var fieldSelector = ns.widgets.xSPFieldSelector.startup($el, { showSelector: false });
 		var caCtrl = ns.widgets.spCustomActions.startup($el, { showSelector: false }).data("xwidget");
+
+		jsWidget.setScript("console.log(list);// list: reference to list\r\nconsole.log(caml());//caml: function that returns xml in 'caml' editor");
+		jsWidget.setScriptingObject("caml", function () {
+			return camlWidget.getXml();
+		});
 
 		ns.widgets.xSPTreeLight.startup($(".listSelectorFirst", $el)).on("listchange", function (event, list) {
 
 			$("#title", $el).val(list.get_title());
-			jsWidget.setScriptingObject(list);
+			jsWidget.setScriptingObject("list", list);
 			fieldSelector.data("xSPFieldSelector").setList(list);
 			caCtrl.setList(list);
 
@@ -75579,33 +75579,37 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			}
 		});
 
-		// refresh CodeMirrors that may not be visible to address dimension issues
 		$(".nav-tabs a", $el).click(function () {
+			/// TODO: manual tab switch, bug in sp dialogs
+			var link = $(this);
+			$("li.active", link.parents("ul:first")).removeClass("active");
+			link.parents("li:first").addClass("active");
+			var cnt = $(".tab-content", $el);
+			$(".active", cnt).removeClass("active").removeClass("in");
+			$(link.attr("href")).addClass("in").addClass("active");
+
+			// refresh CodeMirrors that may not be visible to address dimension issues
 			setTimeout(function () {
 				$("iframe.mirror", $el).each(function () {
 					$(this).contents().find("textarea").data("CodeMirror").refresh();
 				});
 			}, 500);
+			return false;
 		});
 
 		return me;
 	};
 
-	(function register() {
-		var widgetInfo = ns.widgets.addWidget("spListWidget", SPListWidget, "0.1.2");
+	ns.widgets.addSpWidget("spListWidget", SPListWidget, "0.1.3");
+})(spexplorerjs, jQuery, _listEditorTemplate2.default); /// <reference path="../../components/logger/logger.js" />
+/// <reference path="../mirrors/xmlmirror.js" />
 
-		if (window["ExecuteOrDelayUntilScriptLoaded"]) {
-			ExecuteOrDelayUntilScriptLoaded(function () {
-				widgetInfo.startup();
-			}, "sp.js");
-			SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {});
-		} else widgetInfo.startup();
-	})();
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _listEditorTemplate2.default);
+// v 0.1.3 - 2018/04/03 - Updated to use trace, AddSpWidget
 // v 0.1.2 - 2018/03/28 - Renamed to list.editor (from list.selector)
 //                      - Bug: CodeMirror dimensions
 // v 0.1.1 - 2018/03/24 - Register through widgets.base
 //                      - Sync custom actions control with list selector
+
 /// TODO: Document
 
 /***/ }),
@@ -75617,7 +75621,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .xxxnav-tabs > li .close {\r\n            margin: -2px 0 0 10px;\r\n            font-size: 18px;\r\n        }\r\n    </style>\r\n    <div>\r\n        <div class=\"form-horizontal\">\r\n            <fieldset>\r\n                <legend>List Editor</legend>\r\n                <div class=\"form-group listSelector\">\r\n                    <label class=\"col-md-2 control-label\" for=\"textinput\">List</label>\r\n                    <div class=\"col-md-10 listSelectorFirst\">\r\n                        <div data-widget=\"xSPTreeLight\"></div>\r\n                        <span class=\"help-block\">Select an existing list.</span>\r\n                    </div>\r\n                </div>\r\n            </fieldset>\r\n        </div>\r\n        <br />\r\n        <ul class=\"nav nav-tabs\" style=\"max-height:40px\">\r\n            <li class=\"active\"><a data-toggle=\"tab\" href=\"#splistinfo\">List Info</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistscripting\">Scripting</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistcustomactions\">Custom Actions</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistfiels\">Fields</a></li>\r\n        </ul>\r\n        <div class=\"tab-content col-md-12\">\r\n            <div id=\"splistinfo\" class=\"tab-pane fade in active\">\r\n                <div class=\"form-horizontal\">\r\n                    <fieldset>\r\n\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textinput\">Title</label>\r\n                            <div class=\"col-md-10\">\r\n                                <input id=\"title\" name=\"title\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" />\r\n                                <span class=\"help-block\">\r\n                                    A string that contains the title.\r\n                                </span>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textarea\">Schema</label>\r\n                            <div class=\"col-md-10\">\r\n                                <div class=\" listschema\">\r\n                                    <div data-widget=\"xxmlmirror\"></div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </fieldset>\r\n                </div>\r\n            </div>\r\n            <div id=\"splistscripting\" class=\"tab-pane fade\">\r\n                <div data-widget=\"xjsmirror\"></div>\r\n            </div>\r\n            <div id=\"splistcustomactions\" class=\"tab-pane fade\">\r\n                <div data-widget=\"spCustomActions\"></div>\r\n            </div>\r\n            <div id=\"splistfiels\" class=\"tab-pane fade\">\r\n                <div data-widget=\"xSPFieldSelector\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"widgetInfo\" style=\"font-size: small\">list <span>v0.1.2</span></div>\r\n</div>";
+module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .xxxnav-tabs > li .close {\r\n            margin: -2px 0 0 10px;\r\n            font-size: 18px;\r\n        }\r\n    </style>\r\n    <div>\r\n        <div class=\"form-horizontal\">\r\n            <fieldset>\r\n                <legend>List Editor</legend>\r\n                <div class=\"form-group listSelector\">\r\n                    <label class=\"col-md-2 control-label\" for=\"textinput\">List</label>\r\n                    <div class=\"col-md-10 listSelectorFirst\">\r\n                        <div data-widget=\"xSPTreeLight\"></div>\r\n                        <span class=\"help-block\">Select an existing list.</span>\r\n                    </div>\r\n                </div>\r\n            </fieldset>\r\n        </div>\r\n        <br />\r\n        <ul class=\"nav nav-tabs\" style=\"max-height:40px\">\r\n            <li class=\"active\"><a data-toggle=\"tab\" href=\"#splistinfo\">List Info</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistscripting\">Scripting</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistcustomactions\">Custom Actions</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistfiels\">Fields</a></li>\r\n        </ul>\r\n        <div class=\"tab-content col-md-12\">\r\n            <div id=\"splistinfo\" class=\"tab-pane fade in active\">\r\n                <div class=\"form-horizontal\">\r\n                    <fieldset>\r\n\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textinput\">Title</label>\r\n                            <div class=\"col-md-10\">\r\n                                <input id=\"title\" name=\"title\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" />\r\n                                <span class=\"help-block\">\r\n                                    A string that contains the title.\r\n                                </span>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textarea\">Schema</label>\r\n                            <div class=\"col-md-10\">\r\n                                <div class=\" listschema\">\r\n                                    <div data-widget=\"xxmlmirror\"></div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </fieldset>\r\n                </div>\r\n            </div>\r\n            <div id=\"splistscripting\" class=\"tab-pane fade\">\r\n                <b>Script:</b>\r\n                <div data-widget=\"xjsmirror\"></div>\r\n\r\n                <b>Caml Editor:</b>\r\n                <div class=\"scriptCaml\">\r\n                    <div data-widget=\"xxmlmirror\"></div>\r\n                </div>\r\n            </div>\r\n            <div id=\"splistcustomactions\" class=\"tab-pane fade\">\r\n                <div data-widget=\"spCustomActions\"></div>\r\n            </div>\r\n            <div id=\"splistfiels\" class=\"tab-pane fade\">\r\n                <div data-widget=\"xSPFieldSelector\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"widgetInfo\" style=\"font-size: small\">list <span>v0.1.2</span></div>\r\n</div>";
 
 /***/ }),
 
@@ -75718,15 +75722,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
 __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+/// <reference path="../logger/logger.js" />
+
+// v 0.0.1: 2018-04-04  - fallback to trace logging if necessary
+//                      - new args.list parameter
 
 (function (ns, $) {
 
@@ -75740,7 +75743,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		}
 		var web = ctx.get_web();
 		var lists = web.get_lists();
-		var list = null;
+		var list = args.list || null;
 		var items = null;
 		var listFields = null;
 
@@ -75748,8 +75751,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		ctx.load(lists, "Include(Title, Fields.Include(Title))");
 		ctx.load(lists, "Include(Fields.Include(Title))");
 
-		log = log || ns.log;
-		error = log || ns.log;
+		var trace = ns.logger.get("spdal");
+		log = log || trace.log;
+		error = error || trace.error;
 
 		var listExists = function listExists(lists, listTitle) {
 
@@ -76670,7 +76674,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		dal: SpDal,
 		version: "0.1"
 	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+})(spexplorerjs, jQuery);
 
 /***/ }),
 
@@ -76788,16 +76792,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-__webpack_require__(/*! ../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js */ "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js");
-
-__webpack_require__(/*! ../../../public/vendor/bootstrap/3.3.7/css/spexp.css */ "../../../public/vendor/bootstrap/3.3.7/css/spexp.css");
-
-__webpack_require__(/*! jstree */ "../../../node_modules/jstree/dist/jstree.js");
-
 __webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
 
 __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
@@ -76808,18 +76802,42 @@ var _treelightTemplate = __webpack_require__(/*! ./treelight.template.html */ ".
 
 var _treelightTemplate2 = _interopRequireDefault(_treelightTemplate);
 
-__webpack_require__(/*! ../../../node_modules/jstree/dist/themes/default/style.min.css */ "../../../node_modules/jstree/dist/themes/default/style.min.css");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/// <reference path="../logger/logger.js" />
+/// <reference path="../widget.base.js" />
+/* global require */
+
+// v 0.1.5: 2018-04-02  -   Use addSpWidget, use 'trace'
+//                          Probe before loading jstree,bootstrap
+// v 0.1.4: 2018-03-28  - Used widget registration, use local images for list/web collection nodes
+//                      - Selectable option
+//                      - loadTree uses processAsQueue
 //import "../../../public/vendor/bootstrap/js/bootstrap.js";
 //import "../../../public/vendor/bootstrap/css/spexpjs.css";
+//import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
+//import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 (function (ns, $, template) {
 	var debugging = window.location.href.search(/(localhost|debugtreelight)/) > 0;
-	var tracing = ns.logger.get("treelight", debugging);
-	var log = tracing.log,
-	    debug = tracing.debug;
-	//var error = tracing.error;
+	var trace = ns.logger.get("treelight", debugging);
+
+	+function loadPublicRefs() {
+		if ($.fn.carousel) {
+			trace.debug("bootstrap already loaded");
+		} else {
+			trace.log("loading bootstrap");
+			__webpack_require__(/*! ../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js */ "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js");
+			__webpack_require__(/*! ../../../public/vendor/bootstrap/3.3.7/css/spexp.css */ "../../../public/vendor/bootstrap/3.3.7/css/spexp.css");
+		}
+
+		if ($.fn.jstree) {
+			trace.debug("jstree already loaded");
+		} else {
+			trace.log("loading jstree");
+			__webpack_require__(/*! jstree */ "../../../node_modules/jstree/dist/jstree.js");
+			__webpack_require__(/*! ../../../node_modules/jstree/dist/themes/default/style.min.css */ "../../../node_modules/jstree/dist/themes/default/style.min.css");
+		}
+	}();
 
 	var xSPTreeLight = function xSPTreeLight(ui, opts) {
 
@@ -76832,7 +76850,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			load: $el.attr("data-load") || "All"
 		}, opts);
 
-		opts.selectable = ns.funcs.enum(opts.selectable.split("|"));
+		opts.selectable = ns.funcs.enumeration(opts.selectable.split("|"));
 
 		var selectionChanged = function selectionChanged(spElem) {
 			selectedSpElement = spElem;
@@ -76842,7 +76860,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			$(".sptreelabel", $el).html(selectionName);
 
 			var eventName = spElem.constructor.getName() + ".change";
-			log(eventName);
+			trace.log(eventName);
 			$el.trigger("selectionchange", [spElem]);
 
 			// backwards support
@@ -76954,7 +76972,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 						if (a.text > b.text) return 1;
 						return 0;
 					});
-					log({ fields: spFields });
+					trace.log({ fields: spFields });
 					cb(spFields);
 				});
 			};
@@ -76981,7 +76999,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			};
 			var loadList = function loadList(node, cb) {
 				var list = node.data;
-				log({ list: list });
+				trace.log({ list: list });
 				var items = [];
 				if (list.get_hasUniqueRoleAssignments()) {
 					items.push({ text: "Security", id: list.get_id() + "_Security", data: list.get_roleAssignments(), icon: "http://icons.iconarchive.com/icons/kyo-tux/phuzion/16/Misc-Security-icon.png" });
@@ -76998,14 +77016,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				cb(items);
 			};
 			var loadLists = function loadLists(node, cb) {
-				debug("loading lists");
+				trace.debug("loading lists");
 				var parent = node.parent;
 				var web = tree.get_node(parent).data;
 
 				var lists = web.get_lists();
 				ctx.load(lists, "Include(Id,Title,HasUniqueRoleAssignments,ImageUrl,ItemCount,DefaultViewUrl)");
 				ctx.executeQueryAsync(function () {
-					log("lists loaded");
+					trace.log("lists loaded");
 					var lenum = lists.getEnumerator();
 					var spLists = [];
 
@@ -77019,7 +77037,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 						spLists.push(node);
 					}
 					ns.lists = spLists;
-					log({ lists: spLists });
+					trace.log({ lists: spLists });
 					cb(spLists);
 				});
 			};
@@ -77031,7 +77049,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 						return true;
 					}, "data": function data(node, cb) {
 						ns.node = node;
-						log({ tree_data_node: node });
+						trace.log({ tree_data_node: node });
 						if (node.id == "#") cb([]);else if (node.text == "Site Groups") {
 							loadGroups(node, cb);
 						} else if (node.text == "Lists") {
@@ -77059,7 +77077,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 							"expand": {
 								"label": "Expand tree",
 								"action": function action(data) {
-									var inst = _jquery2.default.jstree.reference(data.reference),
+									var inst = jQuery.jstree.reference(data.reference),
 									    obj = inst.get_node(data.reference);
 									inst.open_all(obj);
 								}
@@ -77067,7 +77085,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 							"collapse": {
 								"label": "Collapse tree",
 								"action": function action(data) {
-									var inst = _jquery2.default.jstree.reference(data.reference),
+									var inst = jQuery.jstree.reference(data.reference),
 									    obj = inst.get_node(data.reference);
 									inst.close_all(obj);
 								}
@@ -77078,7 +77096,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			}).on("changed.jstree", function (e, data) {
 				e.preventDefault();
 				e.stopPropagation();
-				log({ jstreechanged: data.node.id });
+				trace.log({ jstreechanged: data.node.id });
 				var spElem = data.node.data;
 				if (spElem) {
 					var type = spElem.constructor.getName();
@@ -77102,13 +77120,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		var addWebNode = function addWebNode(curWeb, parentNode, subs) {
 			return $.Deferred(function (dfd) {
 				var id = curWeb.get_id().toString();
-				debug("creating web node: " + id);
+				trace.debug("creating web node: " + id);
 
 				tree.create_node(parentNode, {
 					text: curWeb.get_title(), id: id, data: curWeb, icon: "/_layouts/images/sts_web16.gif"
 				}, "last", function () {
 
-					debug("web node created");
+					trace.debug("web node created");
 					tree.create_node(id, { text: "Lists", children: true, id: id + "_Lists", icon: "/_layouts/15/images/itgen.png?rev=23" });
 					tree.create_node(id, { text: "Webs", id: id + "_Webs", icon: "/_layouts/15/images/siteicon_16x16.png" });
 
@@ -77117,7 +77135,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 					//}
 
 					var nWeb = tree.get_node(id);
-					debug(nWeb);
+					trace.debug(nWeb);
 
 					(function doWebs() {
 						var lenum = subs.getEnumerator();
@@ -77147,19 +77165,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				});
 			}).promise();
 		}).done(function () {
-			log("tree loaded");
+			trace.log("tree loaded");
 		});
 
 		$(".cc", $el).click(function (event) {
 			// prevent propagation so drop down doesn't close
-			debug(".cc.click");
+			trace.debug(".cc.click");
 			event.preventDefault();
 			event.stopPropagation();
 		});
 
-		$("#dropdownMenu1", $el).click(function (event) {
+		$("#dropdownMenu1", $el).click(function () /*event*/{
 			// prevent propagation so drop down doesn't close
-			debug("dropdownMenu1.click");
+			trace.debug("dropdownMenu1.click");
+
+			/// TODO: bug in modal window ???, works fine outside modal
+			if ($(".dropdown-menu:visible", $el).length == 0) $(".dropdown-menu", $el).show();else {
+				$(".dropdown-menu", $el).hide();
+			}
 		});
 
 		return function () {
@@ -77179,12 +77202,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		}();
 	};
 
-	var widgetInfo = ns.widgets.addWidget("xSPTreeLight", xSPTreeLight, "0.1.4");
-
-	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _treelightTemplate2.default); // v 0.1.4: 2018-03-28  - Used widget registration, use local images for list/web collection nodes
-//                      - Selectable option
-//                      - loadTree uses processAsQueue
+	ns.widgets.addSpWidget("xSPTreeLight", xSPTreeLight, "0.1.5");
+})(spexplorerjs, jQuery, _treelightTemplate2.default);
 
 /***/ }),
 
@@ -77195,7 +77214,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"dropdown\">\r\n    <button class=\"btn btn-default dropdown-toggle\" type=\"button\" id=\"dropdownMenu1\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"true\">\r\n        <span class=\"sptreelabel\">Select...</span>\r\n        <span class=\"caret\">\r\n        </span>\r\n    </button>\r\n    <div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\">\r\n        <div style=\"max-height:300px;overflow-y:auto\" class='cc'>\r\n            <div class=\"tree\"></div>\r\n        </div>\r\n    </div>\r\n</div>";
+module.exports = "<div class=\"dropdown\">\r\n    <button class=\"btn btn-default dropdown-toggle\" type=\"button\" id=\"dropdownMenu1\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"true\">\r\n        <span class=\"sptreelabel\">Select...</span>\r\n        <span class=\"caret\">\r\n        </span>\r\n    </button>\r\n    <div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\" style=\"z-index:1605\">\r\n        <div style=\"max-height:300px;overflow-y:auto\" class='cc'>\r\n            <div class=\"tree\"></div>\r\n        </div>\r\n    </div>\r\n</div>";
 
 /***/ }),
 
@@ -77297,7 +77316,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\r\n    <select multiple name=\"Permissions\" class=\"form-control input-md\">\r\n        <option></option>\r\n        <option value='1'>viewListItems</option>\r\n        <option value='2'>addListItems</option>\r\n        <option value='3'>editListItems</option>\r\n        <option value='4'>deleteListItems</option>\r\n        <option value='5'>approveItems</option>\r\n        <option value='6'>openItems</option>\r\n        <option value='7'>viewVersions</option>\r\n        <option value='8'>deleteVersions</option>\r\n        <option value='9'>cancelCheckout</option>\r\n        <option value='10'>managePersonalViews</option>\r\n        <option value='12'>manageLists</option>\r\n        <option value='13'>viewFormPages</option>\r\n        <option value='14'>anonymousSearchAccessList</option>\r\n        <option value='17'>open</option>\r\n        <option value='18'>viewPages</option>\r\n        <option value='19'>addAndCustomizePages</option>\r\n        <option value='20'>applyThemeAndBorder</option>\r\n        <option value='21'>applyStyleSheets</option>\r\n        <option value='22'>viewUsageData</option>\r\n        <option value='23'>createSSCSite</option>\r\n        <option value='24'>manageSubwebs</option>\r\n        <option value='25'>createGroups</option>\r\n        <option value='26'>managePermissions</option>\r\n        <option value='27'>browseDirectories</option>\r\n        <option value='28'>browseUserInfo</option>\r\n        <option value='29'>addDelPrivateWebParts</option>\r\n        <option value='30'>updatePersonalWebParts</option>\r\n        <option value='31'>manageWeb</option>\r\n        <option value='32'>anonymousSearchAccessWebLists</option>\r\n        <option value='37'>useClientIntegration</option>\r\n        <option value='38'>useRemoteAPIs</option>\r\n        <option value='39'>manageAlerts</option>\r\n        <option value='40'>createAlerts</option>\r\n        <option value='41'>editMyUserInfo</option>\r\n        <option value='63'>enumeratePermissions</option>\r\n        <option value='65'>fullMask</option>\r\n    </select>\r\n</div>";
+module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .select2-container {\r\n            min-width: 140px;\r\n        }\r\n    </style>\r\n    <select multiple name=\"Permissions\" class=\"form-control input-md\">\r\n        <option></option>\r\n        <option value='1'>viewListItems</option>\r\n        <option value='2'>addListItems</option>\r\n        <option value='3'>editListItems</option>\r\n        <option value='4'>deleteListItems</option>\r\n        <option value='5'>approveItems</option>\r\n        <option value='6'>openItems</option>\r\n        <option value='7'>viewVersions</option>\r\n        <option value='8'>deleteVersions</option>\r\n        <option value='9'>cancelCheckout</option>\r\n        <option value='10'>managePersonalViews</option>\r\n        <option value='12'>manageLists</option>\r\n        <option value='13'>viewFormPages</option>\r\n        <option value='14'>anonymousSearchAccessList</option>\r\n        <option value='17'>open</option>\r\n        <option value='18'>viewPages</option>\r\n        <option value='19'>addAndCustomizePages</option>\r\n        <option value='20'>applyThemeAndBorder</option>\r\n        <option value='21'>applyStyleSheets</option>\r\n        <option value='22'>viewUsageData</option>\r\n        <option value='23'>createSSCSite</option>\r\n        <option value='24'>manageSubwebs</option>\r\n        <option value='25'>createGroups</option>\r\n        <option value='26'>managePermissions</option>\r\n        <option value='27'>browseDirectories</option>\r\n        <option value='28'>browseUserInfo</option>\r\n        <option value='29'>addDelPrivateWebParts</option>\r\n        <option value='30'>updatePersonalWebParts</option>\r\n        <option value='31'>manageWeb</option>\r\n        <option value='32'>anonymousSearchAccessWebLists</option>\r\n        <option value='37'>useClientIntegration</option>\r\n        <option value='38'>useRemoteAPIs</option>\r\n        <option value='39'>manageAlerts</option>\r\n        <option value='40'>createAlerts</option>\r\n        <option value='41'>editMyUserInfo</option>\r\n        <option value='63'>enumeratePermissions</option>\r\n        <option value='65'>fullMask</option>\r\n    </select>\r\n</div>";
 
 /***/ })
 

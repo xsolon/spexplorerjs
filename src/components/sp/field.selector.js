@@ -176,7 +176,7 @@ import "../mirrors/jsmirror.js";
 		var xmlMirror = ns.widgets.xxmlmirror.startup($el).data("xwidget");
 		var jsMirror = ns.widgets.xjsmirror.startup($el).data("xwidget");
 
-		jsMirror.setScript("console.log(spelem);// spelem: reference to field");
+		jsMirror.setScript("console.log(field);// field: reference to field");
 
 		var spdal = new SPDAL(opts.weburl);
 		var fieldSel = $(".fieldsDrp", ui).on("change", function () {
@@ -185,7 +185,7 @@ import "../mirrors/jsmirror.js";
 
 				var xml = field.get_schemaXml();
 				xmlMirror.setXml(xml);
-				jsMirror.setScriptingObject(field);
+				jsMirror.setScriptingObject("field", field);
 				trace.log({ field: field });
 			}
 		});

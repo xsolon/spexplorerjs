@@ -1,8 +1,9 @@
+
+// v 0.0.2 - 2018/04/04     - setScriptingObject: new signature allows to name resource that will be avaialbel during function execution
 // v 0.0.1 - 2018/03/28     - Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
 //                          - setScript method
 //                          - use Function constructor for code execution
 //                          - refresh method
-import $ from "jquery";
 import "./jseditor.js";
 import template from "./jsmirror.template.html";
 import "../widget.base.js";
@@ -10,31 +11,39 @@ import "../widget.base.js";
 (function (ns, $, template) {
 
 	var debugging = window.location.href.search(/(localhost|debugjsmirror)/) > 0;
-	var tracing = ns.logger.get("jsmirror", debugging);
-	var log = tracing.log, debug = tracing.debug, error = tracing.error;
+	var trace = ns.logger.get("jsmirror", debugging);
 
-	var xjsmirror = function (ui, opts) {
+	var xjsmirror = function (ui/*, opts*/) {
 
-		debug("xjsmirror.init");
+		trace.debug("xjsmirror.init");
 
 		var $el = $(ui);
-		opts = $.extend({}, opts);
+		//opts = $.extend({}, opts);
 
 		$el.html(template.trim());
 		var run = $("button", ui);
 
 		var runScript = function (code) {
 			try {
-				log({ runScript: code });
-				ns.spelem = opts.spelem;
+				trace.log({ runScript: code });
 				var script = "var log = console.log, clear = console.clear;\r\n\
                     {0}\r\n".replace("{0}", code);
 
-				var tempFunction = new Function("spelem", script);
-				var res = tempFunction(opts.spelem);
+				var args = [];
+				var vals = [];
+
+				for (var name in resourceHash) {
+					if (resourceHash.hasOwnProperty(name)) {
+						args.push(name);
+						vals.push(resourceHash[name]);
+					}
+				}
+
+				var tempFunction = new Function(args, script);
+				var res = tempFunction.apply(tempFunction, vals);
 				if (res) console.log(res);
 			} catch (e) {
-				error(e.message);
+				trace.error(e.message);
 				throw e;
 			}
 
@@ -70,6 +79,7 @@ import "../widget.base.js";
 
 		})();
 
+		var resourceHash = {};
 		return {
 			refresh: function () {
 				editor.refresh();
@@ -77,8 +87,8 @@ import "../widget.base.js";
 			setScript: function (obj) {
 				editor.set(obj);
 			},
-			setScriptingObject: function (obj) {
-				opts.spelem = obj;
+			setScriptingObject: function (name,obj) {
+				resourceHash[name] = obj;
 			}
 		};
 	};
@@ -87,4 +97,4 @@ import "../widget.base.js";
 
 	widgetInfo.startup();
 
-})(window["spexplorerjs"], $, template);
+})(spexplorerjs, jQuery, template);

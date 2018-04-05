@@ -105,4 +105,4 @@ import "../string/string.js";
 	return ns.logger;
 
 	// both of these dependencies are resolved in string.js
-})(window.spexplorerjs, window.jQuery);
+})(spexplorerjs, jQuery);

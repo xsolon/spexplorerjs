@@ -1,4 +1,3 @@
-import $ from "jquery";
 import "../string/string.js";
 //import "../../../components/js/vakata/libs/jquery.js";
 //import "https://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.4/jquery-ui.min.js";
@@ -133,4 +132,4 @@ window.CodeMirror = CodeMirror;
 		ns.widgets.jseditorinit(cont);
 	};
 
-})(window["spexplorerjs"], $);
+})(spexplorerjs, jQuery);

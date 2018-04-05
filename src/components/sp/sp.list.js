@@ -1,4 +1,8 @@
-import $ from "jquery";
+/// <reference path="../logger/logger.js" />
+
+// v 0.0.1: 2018-04-04  - fallback to trace logging if necessary
+//                      - new args.list parameter
+
 import "../logger/logger.js";
 import "./sp.base.js";
 
@@ -14,7 +18,7 @@ import "./sp.base.js";
 		}
 		var web = ctx.get_web();
 		var lists = web.get_lists();
-		var list = null;
+		var list = args.list || null;
 		var items = null;
 		var listFields = null;
 
@@ -22,8 +26,9 @@ import "./sp.base.js";
 		ctx.load(lists, "Include(Title, Fields.Include(Title))");
 		ctx.load(lists, "Include(Fields.Include(Title))");
 
-		log = log || ns.log;
-		error = log || ns.log;
+		var trace = ns.logger.get("spdal");
+		log = log || trace.log;
+		error = error || trace.error;
 
 		var listExists = function (lists, listTitle) {
 
@@ -616,7 +621,7 @@ import "./sp.base.js";
 									});
 
 								}).fail(function (err) {
-									
+
 									log(err);
 								});
 							}
@@ -725,7 +730,7 @@ import "./sp.base.js";
 				sptx.executeQueryAsync(function () {
 					dfd.resolve(elem);
 				},
-				function (r, a) {  reqFailure(r, a, caller || "loadSpElem", dfd); });
+				function (r, a) { reqFailure(r, a, caller || "loadSpElem", dfd); });
 
 			}).promise();
 
@@ -765,7 +770,7 @@ import "./sp.base.js";
 						dfd.resolve(items);
 					}
 				}).fail(function () {
-					
+
 					error("getitems error");
 				});
 			}).promise();
@@ -862,7 +867,7 @@ import "./sp.base.js";
 
 					spctx.executeQueryAsync(onSuccess,
 						function (r, a) {
-							
+
 							reqFailure(r, a, "getAll", dfd);
 							error("caml: " + caml);
 						});
@@ -881,7 +886,7 @@ import "./sp.base.js";
 				loadNext();
 
 			}).fail(function () {
-				
+
 			});
 
 			var dfd = $.Deferred();
@@ -973,8 +978,8 @@ import "./sp.base.js";
 	};
 
 	ns.listapi = {
-		dal : SpDal,
+		dal: SpDal,
 		version: "0.1"
 	};
 
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, $);
+})(spexplorerjs, jQuery);

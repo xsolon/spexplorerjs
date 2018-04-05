@@ -4,14 +4,12 @@
 // TODO: Implement all fields
 import template from "./customaction.editor.template.html";
 
-import $ from "jquery";
 import "../widget.base.js";
 import "./sp.list.js";
 import "./treelight.js";
 import "./customaction.selector.js";
 import "./ui.perms.js";
 import "../mirrors/xmlmirror.js";
-import "../widget.base.js";
 
 (function (ns, $, template) {
 
@@ -111,4 +109,4 @@ import "../widget.base.js";
 
 	})();
 
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, $, template);
+})(spexplorerjs, jQuery, template);

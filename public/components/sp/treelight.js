@@ -72,9 +72,9 @@
 /******/ ({
 
 /***/ "../../../node_modules/css-loader/index.js!../../../node_modules/jstree/dist/themes/default/style.min.css":
-/*!*****************************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/css-loader!F:/sc/spexplorerjs/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
-  \*****************************************************************************************************************************************************/
+/*!*******************************************************************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
+  \*******************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -92,9 +92,9 @@ exports.push([module.i, ".jstree-node,.jstree-children,.jstree-container-ul{disp
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../public/vendor/bootstrap/3.3.7/css/spexp.css":
-/*!*******************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/css-loader!F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
-  \*******************************************************************************************************************************************/
+/*!*********************************************************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
+  \*********************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -112,9 +112,9 @@ exports.push([module.i, ".spexp {\r\n  /*!\r\n * Bootstrap v3.3.7 (http://getboo
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/lib/css-base.js":
-/*!*******************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
-  \*******************************************************************************/
+/*!**************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -199,9 +199,9 @@ function toComment(sourceMap) {
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/lib/url/escape.js":
-/*!*********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/css-loader/lib/url/escape.js ***!
-  \*********************************************************************************/
+/*!****************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader/lib/url/escape.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -226,9 +226,9 @@ module.exports = function escape(url) {
 /***/ }),
 
 /***/ "../../../node_modules/jquery/dist/jquery.js":
-/*!**************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
-  \**************************************************************************/
+/*!*********************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10602,9 +10602,9 @@ return jQuery;
 /***/ }),
 
 /***/ "../../../node_modules/jquery/dist/jquery.js-exposed":
-/*!**********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
-  \**********************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10614,9 +10614,9 @@ return jQuery;
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/jstree.js":
-/*!**************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jstree/dist/jstree.js ***!
-  \**************************************************************************/
+/*!*********************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/jstree.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19211,9 +19211,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/32px.png":
-/*!****************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jstree/dist/themes/default/32px.png ***!
-  \****************************************************************************************/
+/*!***********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/32px.png ***!
+  \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19222,9 +19222,9 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAABgCAMAAABb
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/40px.png":
-/*!****************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jstree/dist/themes/default/40px.png ***!
-  \****************************************************************************************/
+/*!***********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/40px.png ***!
+  \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19233,9 +19233,9 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAAHgCAMAAACs
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/style.min.css":
-/*!*********************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
-  \*********************************************************************************************/
+/*!****************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
+  \****************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19263,9 +19263,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/throbber.gif":
-/*!********************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jstree/dist/themes/default/throbber.gif ***!
-  \********************************************************************************************/
+/*!***************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/throbber.gif ***!
+  \***************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19274,9 +19274,9 @@ module.exports = "data:image/gif;base64,R0lGODlhEAAQAPMAAP////Dw8IqKiuDg4EZGRnp6
 /***/ }),
 
 /***/ "../../../node_modules/style-loader/lib/addStyles.js":
-/*!**********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/style-loader/lib/addStyles.js ***!
-  \**********************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/style-loader/lib/addStyles.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19661,9 +19661,9 @@ function updateLink (link, options, obj) {
 /***/ }),
 
 /***/ "../../../node_modules/style-loader/lib/urls.js":
-/*!*****************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/style-loader/lib/urls.js ***!
-  \*****************************************************************************/
+/*!************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/style-loader/lib/urls.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19792,9 +19792,9 @@ module.exports = g;
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/css/spexp.css":
-/*!***********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
-  \***********************************************************************************/
+/*!******************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19822,9 +19822,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot":
-/*!************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot ***!
-  \************************************************************************************************************/
+/*!*******************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot ***!
+  \*******************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19833,9 +19833,9 @@ module.exports = "data:application/vnd.ms-fontobject;base64,n04AAEFNAAACAAIABAAA
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg":
-/*!************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg ***!
-  \************************************************************************************************************/
+/*!*******************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg ***!
+  \*******************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19844,9 +19844,9 @@ module.exports = "data:image/svg+xml;base64,bW9kdWxlLmV4cG9ydHMgPSAiZGF0YTppbWFn
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf":
-/*!************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf ***!
-  \************************************************************************************************************/
+/*!*******************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf ***!
+  \*******************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19855,9 +19855,9 @@ module.exports = "data:font/ttf;base64,AAEAAAAPAIAAAwBwRkZUTW0ql9wAAAD8AAAAHEdER
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff":
-/*!*************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff ***!
-  \*************************************************************************************************************/
+/*!********************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff ***!
+  \********************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19866,9 +19866,9 @@ module.exports = "data:application/font-woff;base64,d09GRgABAAAAAFuAAA8AAAAAsVwA
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2":
-/*!**************************************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2 ***!
-  \**************************************************************************************************************/
+/*!*********************************************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2 ***!
+  \*********************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19877,9 +19877,9 @@ module.exports = "data:font/woff2;base64,d09GMgABAAAAAEZsAA8AAAAAsVwAAEYJAAECTQA
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js":
-/*!*************************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/public/vendor/bootstrap/3.3.7/js/bootstrap.js ***!
-  \*************************************************************************************/
+/*!********************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/js/bootstrap.js ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -22058,18 +22058,7 @@ if (typeof jQuery === "undefined") {
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.default = undefined;
-
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 __webpack_require__(/*! ../string/string.js */ "../string/string.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (function (ns, $) {
 
@@ -22078,60 +22067,102 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		if (this && this.source) {
 			msg = this.source + ": " + msg;
 		}
-		console && console.log.apply(console, [msg]);
+		window.console && console.log.apply(console, [msg]);
 	};
 	var log = function log() {
-		try {
-			if (this && this.source) {
-				if (arguments.length === 1 && typeof arguments[0] == "string") {
-					logf("{0}: {1}", this.source, arguments[0]);
-				} else {
-					var obj = {};
-					obj[this.source] = arguments;
-					if (arguments.length === 1) obj[this.source] = arguments[0];
-					console.log.apply(console, [obj]);
-				}
+		if (this && this.source) {
+			if (arguments.length === 1 && typeof arguments[0] == "string") {
+				logf("{0}: {1}", this.source, arguments[0]);
+			} else {
+				var obj = {};
+				obj[this.source] = arguments;
+				if (arguments.length === 1) obj[this.source] = arguments[0];
+				window.console && console.log.apply(console, [obj]);
 			}
-			//if (this && this.source && arguments.length === 1 && typeof arguments[0] == "string") {
-			//	let s = this.source + ": "; for (let i = 0; i < arguments.length; i++) {
-			//		s += `{${i}} `;
-			//	}
-			//	var msg = logf(s, arguments[0]);
-			//	console.log.apply(console, [msg]);
-			//	var obj = {};
-			//	obj[this.source] = arguments;
-			//	console.log.apply(console, [obj]);
-			//         }
-			else console.log.apply(console, arguments);
-			//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
 		}
+		//if (this && this.source && arguments.length === 1 && typeof arguments[0] == "string") {
+		//	let s = this.source + ": "; for (let i = 0; i < arguments.length; i++) {
+		//		s += `{${i}} `;
+		//	}
+		//	var msg = logf(s, arguments[0]);
+		//	console.log.apply(console, [msg]);
+		//	var obj = {};
+		//	obj[this.source] = arguments;
+		//	console.log.apply(console, [obj]);
+		//         }
+		else window.console && console.log.apply(console, arguments);
+		//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 	var error = function error() {
-		try {
-			console.error.apply(console, arguments);
-			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
-		}
+		window.console && console.error.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 	var warn = function warn() {
-		try {
-			console.warn.apply(console, arguments);
-			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
-		}
+		window.console && console.warn.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+	};
+	var debug = function debug() {
+		window.console && console.log.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 
-	ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn };
+	var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
+		var scopedLog = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.log.apply(scopedLog, arguments);
+				onTrace && onTrace({ type: "log", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedError = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.error.apply(scopedError, arguments);
+				onTrace && onTrace({ type: "error", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedDebug = new function () {
+			var d = function d() {
+				if (debugging) {
+					ns.logger && ns.logger.log.apply(scopedDebug, arguments);
+					onTrace && onTrace({ type: "debug", args: arguments });
+				}
+			};
+			d.source = source;
+			return d;
+		}();
+
+		var scopedWarn = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.error.apply(scopedWarn, arguments);
+				onTrace && onTrace({ type: "warn", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+
+		return {
+			log: scopedLog,
+			error: scopedError,
+			debug: scopedDebug,
+			warn: scopedWarn
+		};
+	};
+
+	ns["logger"] = {
+		"version": "0.0.2",
+		get: defineScopedTracing,
+		/// TODO: this should be private
+		logf: logf, "log": log, "error": error, "warn": warn, "debug": debug
+	};
 	log("logger");
-	ns.$ = $;
 	return ns.logger;
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
-var logger = window["spexplorerjs"];
-exports.default = logger;
+
+	// both of these dependencies are resolved in string.js
+})(spexplorerjs, jQuery); // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
+// v 0.0.1: 2018-03-28  - debug, get
 
 /***/ }),
 
@@ -22145,16 +22176,15 @@ exports.default = logger;
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+/* global require */
+// v 0.1.4: 2018-04-02: - check if already defined, make jQuery global if needed
+//                          The inline check won't work for more complex modules, but it is an easy way to address multiple endpoints that load this.
 // v 0.1.2: 2018-03-10: brought back htmlEncode/htmlDecode and jQuery dependency
+
 (function (ns, $) {
-	ns.string = {
-		version: "0.1",
+
+	return ns.string = ns.string || {
+		version: "0.1.4",
 		htmlEncode: function htmlEncode(value) {
 			// create a in-memory div, set it's inner text(which jQuery
 			// automatically encodes)
@@ -22182,11 +22212,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			}
 
 			return tmpl;
-		}, startsWith: function startsWith(str1, str2) {
+		},
+		startsWith: function startsWith(str1, str2) {
 			return str2.length > 0 && str1.substring(0, str2.length) === str2;
-		}, endsWith: function endsWith(str1, str2) {
+		},
+		endsWith: function endsWith(str1, str2) {
 			return str2.length > 0 && str1 && str1.substring(str1.length - str2.length, str1.length) === str2;
-		}, trimEnd: function trimEnd(stringToTrim, charToRemove) {
+		},
+		trimEnd: function trimEnd(stringToTrim, charToRemove) {
 			var s = stringToTrim || ""; // make sure str1 is not null
 			var c = charToRemove;
 			var lastIndexOf = -1;
@@ -22199,19 +22232,177 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			}
 			if (lastIndexOf > -1) s = s.substring(0, lastIndexOf);
 			return s;
-		}, trimStart: function trimStart(stringToTrim, sToRemove, opts) {
+		},
+		trimStart: function trimStart(stringToTrim, sToRemove, opts) {
 			var exp = "^" + sToRemove + "+";
 			var reg = RegExp(exp, opts || "gi");
 
 			var res = stringToTrim.replace(reg, "");
 			return res;
-		}, trim: function trim(stringToTrim, sToRemove, opts) {
+		},
+		trim: function trim(stringToTrim, sToRemove, opts) {
 			stringToTrim = this.trimStart(stringToTrim, sToRemove, opts);
 			stringToTrim = this.trimEnd(stringToTrim, sToRemove, opts);
 			return stringToTrim;
 		}
 	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+})(window.spexplorerjs = window["spexplorerjs"] || {}, window.jQuery = window["jQuery"] || __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed"));
+
+/***/ }),
+
+/***/ "../widget.base.js":
+/*!*************************!*\
+  !*** ../widget.base.js ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
+
+(function (ns, $) {
+
+	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
+	var tracing = ns.logger.get("widgets", debugging);
+	var log = tracing.log,
+	    debug = tracing.debug;
+
+	log("widgets.register");
+	ns.widgets = ns.widgets || {};
+
+	var defineWidget = function defineWidget(name, constructor, version) {
+
+		return {
+			publicName: name,
+			constructor: constructor,
+			version: version,
+			selector: "[data-widget=\"publicName\"]".replace("publicName", name),
+			startup: function startup(context, opts) {
+
+				debug(name + ".startup");
+				var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
+				debug("selector: " + selector);
+				var elems = $(selector, context || document);
+				debug("Elems: " + elems.length);
+				elems[name](opts);
+				/// TODO: set only info for current widget (not sub widgets)
+				$(".widgetinfo", elems).html(version);
+
+				return elems;
+			}
+		};
+	};
+
+	var registerWidget = function registerWidget(widgetInfo) {
+
+		$.fn[widgetInfo.publicName] = function (opts) {
+			var args = arguments;
+			var result = this.each(function () {
+
+				var $el = $(this);
+
+				var me = $el.data(widgetInfo.publicName);
+
+				if (me) {
+					// object has been initialized before
+
+					if (opts == null) {// request for instance
+					} else if (me[opts]) {
+						if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
+					}
+				} else {
+					var obj = new widgetInfo.constructor(this, opts);
+					$(".version:first", this).html(widgetInfo.version);
+					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
+				}
+			});
+
+			return result;
+		};
+
+		ns.widgets[widgetInfo.publicName] = widgetInfo;
+		log(widgetInfo.publicName + ".registered");
+	};
+
+	var addWidget = function addWidget(name, constructor, version) {
+
+		var widgetInfo = defineWidget(name, constructor, version);
+		registerWidget(widgetInfo);
+		return widgetInfo;
+	};
+
+	ns.widgets.addWidget = addWidget;
+	ns.widgets.addSpWidget = function (name, constructor, version) {
+
+		var widgetInfo = addWidget(name, constructor, version);
+
+		ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
+
+		return widgetInfo;
+	};
+})(spexplorerjs, jQuery); // 0.1.2: 2018/03/23    -   addSpWidget for SharePoint components
+//                          add version number to elements with class widgetinfo
+// 0.1.1: 2018/03/28    -   selector property
+//                          log from tracing
+// 0.1.0: 2018/03/23    -   pass options to widget constructor
+
+
+(function (ns, $) {
+
+	/// Iterate over an expanding array
+	//  Example:
+	//  var arr = [1, 2];
+	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
+	//    if (item == 1) {
+	//        arr.push(3);
+	//    }
+	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
+	//});
+	/// arr: array to process
+	/// action: promise (argument: item removed from array)
+	var processAsQueue = function processAsQueue(arr, action) {
+		return $.Deferred(function (dfd) {
+			var doNext = function doNext() {
+				if (arr == null || arr.length == 0) {
+					dfd.resolve();
+				} else {
+					var item = arr.shift();
+					action(item).done(function () {
+						doNext();
+					});
+				}
+			};
+
+			if (typeof arr == "function") {
+				arr().done(function (items) {
+					arr = items;
+					doNext();
+				});
+			} else {
+				doNext();
+			}
+		}).promise();
+	};
+
+	var enumer = function enumer(values) {
+		var me = {};
+		for (var i = 0; i < values.length; i++) {
+			me[values[i]] = 1;
+		}
+		if (Object.freeze) {
+			me = Object.freeze(me);
+		}
+
+		return me;
+	};
+
+	ns.funcs = {
+		processAsQueue: processAsQueue,
+		enumeration: enumer
+	};
+})(spexplorerjs, jQuery);
 
 /***/ }),
 
@@ -22233,7 +22424,7 @@ __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// v 0.0.1 : 2018/03/11 - loadSpElem
+// v 0.0.1 : 2018-03-11 - loadSpElem
 (function (ns, $) {
 
 	var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
@@ -22323,6 +22514,15 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (function (ns, $) {
+	var debug = window.location.href.search(/[localhost|webapi]/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "webapi";
+		return d;
+	}();
 	/// TODO: Document
 	var createWeb = function createWeb(parentWeb, title, url, template, inheritPermissions) {
 		return $.Deferred(function (dfd) {
@@ -22389,10 +22589,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		webTemplates: webTemplates,
 		createWeb: createWeb,
 		loadWeb: loadWeb,
-		version: "0.1"
+		version: "0.1.2"
 	};
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default); /// TODO: Document
-// v 0.0.1: 208-03-11 - Added loadWeb function
+// v 0.0.2: 2018-03-28 - WebDal
+// v 0.0.1: 2018-03-11 - Added loadWeb function
 
 /***/ }),
 
@@ -22406,17 +22607,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-__webpack_require__(/*! ../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js */ "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js");
-
-__webpack_require__(/*! ../../../public/vendor/bootstrap/3.3.7/css/spexp.css */ "../../../public/vendor/bootstrap/3.3.7/css/spexp.css");
-
-__webpack_require__(/*! jstree */ "../../../node_modules/jstree/dist/jstree.js");
-
-__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
+__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
 
 __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
@@ -22426,447 +22617,408 @@ var _treelightTemplate = __webpack_require__(/*! ./treelight.template.html */ ".
 
 var _treelightTemplate2 = _interopRequireDefault(_treelightTemplate);
 
-__webpack_require__(/*! ../../../node_modules/jstree/dist/themes/default/style.min.css */ "../../../node_modules/jstree/dist/themes/default/style.min.css");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/// <reference path="../logger/logger.js" />
+/// <reference path="../widget.base.js" />
+/* global require */
+
+// v 0.1.5: 2018-04-02  -   Use addSpWidget, use 'trace'
+//                          Probe before loading jstree,bootstrap
+// v 0.1.4: 2018-03-28  - Used widget registration, use local images for list/web collection nodes
+//                      - Selectable option
+//                      - loadTree uses processAsQueue
 //import "../../../public/vendor/bootstrap/js/bootstrap.js";
 //import "../../../public/vendor/bootstrap/css/spexpjs.css";
+//import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
+//import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 (function (ns, $, template) {
-	var debug = window.location.href.search(/[localhost|debugtreelight]/) > 0;
-	var log = new function () {
-		var d = function d() {
-			ns.logger && ns.logger.log.apply(log, arguments);
-			if (debug) SP.UI.Notify.addNotification(arguments[0]);
-		};
-		d.source = "treelight";
-		return d;
-	}();
+    var debugging = window.location.href.search(/(localhost|debugtreelight)/) > 0;
+    var trace = ns.logger.get("treelight", debugging);
 
-	var xSPTreeLight = function xSPTreeLight(ui /*, opts*/) {
+    +function loadPublicRefs() {
+        if ($.fn.carousel) {
+            trace.debug("bootstrap already loaded");
+        } else {
+            trace.log("loading bootstrap");
+            __webpack_require__(/*! ../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js */ "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js");
+            __webpack_require__(/*! ../../../public/vendor/bootstrap/3.3.7/css/spexp.css */ "../../../public/vendor/bootstrap/3.3.7/css/spexp.css");
+        }
 
-		var $el = $(ui).html(template.trim());
-		var selectedSpElement = null;
-		var ctx = SP.ClientContext.get_current();
-		//opts = $.extend({
-		//    //siteUrl: $el.attr('data-siteurl'),
-		//}, opts);
+        if ($.fn.jstree) {
+            trace.debug("jstree already loaded");
+        } else {
+            trace.log("loading jstree");
+            __webpack_require__(/*! jstree */ "../../../node_modules/jstree/dist/jstree.js");
+            __webpack_require__(/*! ../../../node_modules/jstree/dist/themes/default/style.min.css */ "../../../node_modules/jstree/dist/themes/default/style.min.css");
+        }
+    }();
 
-		var selectionChanged = function selectionChanged(spElem) {
-			selectedSpElement = spElem;
-			$(".sptreelabel", $el).html(spElem.get_title());
-			log("listchange");
-			$el.trigger("listchange", [spElem]);
-			$(".dropdown.open .dropdown-toggle", $el).dropdown("toggle");
-		};
-		var tree = function (treeElem) {
-			var loadGroups = function loadGroups(node, cb) {
-				var web = tree.get_node(node.parent).data;
-				var gs = web.get_siteGroups();
-				ctx.load(gs);
-				var groups = [];
-				ctx.executeQueryAsync(function () {
-					var enumer = gs.getEnumerator();
-					while (enumer.moveNext()) {
-						var g = enumer.get_current();
-						groups.push({ text: g.get_title(), id: g.get_id() + "_Group", data: g, icon: "http://icons.iconarchive.com/icons/apathae/wren/16/Group-icon.png" });
-					}
-					cb(groups);
-				});
-			};
-			var loadSiteUsers = function loadSiteUsers(node, cb) {
-				var web = tree.get_node(node.parent).data;
+    var xSPTreeLight = function xSPTreeLight(ui, opts) {
 
-				var groups = [];
-				if (web.get_siteUsers) {
+        var $el = $(ui).html(template.trim());
+        var selectedSpElement = null;
+        var ctx = SP.ClientContext.get_current();
 
-					var gs = web.get_siteUsers();
-					ctx.load(gs);
-					ctx.executeQueryAsync(function () {
-						var enumer = gs.getEnumerator();
-						while (enumer.moveNext()) {
-							var g = enumer.get_current();
-							groups.push({ text: g.get_title(), id: g.get_id() + "_User", data: g, icon: "/_layouts/images/ribbon_userprofile_16.png" });
-						}
-						cb(groups);
-					});
-				} else {
-					ctx.executeQueryAsync();
-					var l = web.get_siteUserInfoList();
-					var lis = l.getItems(SP.CamlQuery.createAllItemsQuery());
-					ctx.load(lis);
-					ctx.executeQueryAsync(function () {
+        opts = $.extend({
+            selectable: $el.attr("data-selectable") || "SP.List|SP.Web",
+            load: $el.attr("data-load") || "All"
+        }, opts);
 
-						var enumer = lis.getEnumerator();
-						//var count = 0;
-						var doNext = function doNext() {
+        opts.selectable = ns.funcs.enumeration(opts.selectable.split("|"));
 
-							if (!enumer.moveNext()) {
-								cb(groups);
-								return;
-							}
-							var li = enumer.get_current();
-							var name = li.get_item("Name");
-							if (name.search(" ") > 0) {
-								doNext();
-							} else {
-								var id = li.get_item("ID");
-								var user = web.ensureUser(name);
-								ctx.load(user);
-								groups.push({ text: name, id: id + "_User", data: user, icon: "/_layouts/images/ribbon_userprofile_16.png" });
-								//count++;
-								//if (count % 50 == 0)
-								ctx.executeQueryAsync(function () {
-									doNext();
-								}, function () {
-									doNext();
-								});
-							}
-						};
+        var selectionChanged = function selectionChanged(spElem) {
+            selectedSpElement = spElem;
 
-						doNext();
-					});
-				}
-			};
-			var loadFieldLinks = function loadFieldLinks(node, cb) {
-				var fields = node.data;
-				ctx.load(fields);
-				ctx.executeQueryAsync(function () {
-					var enumer = fields.getEnumerator();
-					var spFields = [];
-					while (enumer.moveNext()) {
-						var g = enumer.get_current();
-						spFields.push({ text: g.get_name() + " - " + g.get_id(), id: "FieldLink|" + g.get_id().toString(), data: g, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-text-field-icon.png" });
-					}
-					spFields.sort(function (a, b) {
-						if (a.text < b.text) return -1;
-						if (a.text > b.text) return 1;
-						return 0;
-					});
+            var selectionName = spElem.get_title ? spElem.get_title() : spElem.constructor.getName();
 
-					cb(spFields);
-				});
-			};
-			var loadFields = function loadFields(node, cb) {
-				var fields = node.data;
-				ctx.load(fields);
-				ctx.executeQueryAsync(function () {
-					var enumer = fields.getEnumerator();
-					var spFields = [];
-					while (enumer.moveNext()) {
-						var g = enumer.get_current();
-						spFields.push({ text: g.get_title() + " - " + g.get_staticName(), id: g.get_id().toString(), data: g, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-text-field-icon.png" });
-					}
-					spFields.sort(function (a, b) {
-						if (a.text < b.text) return -1;
-						if (a.text > b.text) return 1;
-						return 0;
-					});
-					log({ fields: spFields });
-					cb(spFields);
-				});
-			};
-			var loadCTypes = function loadCTypes(node, cb) {
-				var cTypes = node.data;
-				ctx.load(cTypes);
-				ctx.executeQueryAsync(function () {
-					var enumer = cTypes.getEnumerator();
-					var spCTypes = [];
-					while (enumer.moveNext()) {
-						var g = enumer.get_current();
-						spCTypes.push({ text: g.get_name(), children: true, id: g.get_id().toString(), data: g, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/application-block-icon.png" });
-					}
-					cb(spCTypes);
-				});
-			};
-			var loadCType = function loadCType(node, cb) {
-				var list = node.data;
-				var items = [];
-				items.push({ text: "Field Links", id: list.get_id() + "_FieldLinks", data: list.get_fieldLinks(), children: true, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/application-icon-large-icon.png" });
-				items.push({ text: "Fields", id: list.get_id() + "_Fields", data: list.get_fields(), children: true, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-menu-icon.png" });
+            $(".sptreelabel", $el).html(selectionName);
 
-				cb(items);
-			};
-			var loadList = function loadList(node, cb) {
-				var list = node.data;
-				log({ list: list });
-				var items = [];
-				if (list.get_hasUniqueRoleAssignments()) {
-					items.push({ text: "Security", id: list.get_id() + "_Security", data: list.get_roleAssignments(), icon: "http://icons.iconarchive.com/icons/kyo-tux/phuzion/16/Misc-Security-icon.png" });
-				}
+            var eventName = spElem.constructor.getName() + ".change";
+            trace.log(eventName);
+            $el.trigger("selectionchange", [spElem]);
 
-				if (list.get_itemCount() > 0) {
-					items.push({ text: "Items", id: list.get_id() + "_Items", data: list.get_defaultViewUrl() });
-				}
+            // backwards support
+            $el.trigger("listchange", [spElem]);
 
-				//items.push( { text: 'Meta', id: list.get_id() + "_Meta", icon: 'http://icons.iconarchive.com/icons/fatcow/farm-fresh/16/database-table-icon.png' });
-				items.push({ text: "Content Types", id: list.get_id() + "_ContentTypes", data: list.get_contentTypes(), children: true, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/application-icon-large-icon.png" });
-				items.push({ text: "Fields", id: list.get_id() + "_Fields", data: list.get_fields(), children: true, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-menu-icon.png" });
+            $(".dropdown.open .dropdown-toggle", $el).dropdown("toggle");
+        };
 
-				cb(items);
-			};
-			var loadLists = function loadLists(node, cb) {
-				var parent = node.parent;
-				var web = tree.get_node(parent).data;
+        var tree = function (treeElem) {
+            var loadGroups = function loadGroups(node, cb) {
+                var web = tree.get_node(node.parent).data;
+                var gs = web.get_siteGroups();
+                ctx.load(gs);
+                var groups = [];
+                ctx.executeQueryAsync(function () {
+                    var enumer = gs.getEnumerator();
+                    while (enumer.moveNext()) {
+                        var g = enumer.get_current();
+                        groups.push({ text: g.get_title(), id: g.get_id() + "_Group", data: g, icon: "http://icons.iconarchive.com/icons/apathae/wren/16/Group-icon.png" });
+                    }
+                    cb(groups);
+                });
+            };
+            var loadSiteUsers = function loadSiteUsers(node, cb) {
+                var web = tree.get_node(node.parent).data;
 
-				var lists = web.get_lists();
-				ctx.load(lists, "Include(Id,Title,HasUniqueRoleAssignments,ImageUrl,ItemCount,DefaultViewUrl)");
-				ctx.executeQueryAsync(function () {
-					log("lists loaded");
-					var lenum = lists.getEnumerator();
-					var spLists = [];
+                var groups = [];
+                if (web.get_siteUsers) {
 
-					while (lenum.moveNext()) {
-						var list = lenum.get_current();
+                    var gs = web.get_siteUsers();
+                    ctx.load(gs);
+                    ctx.executeQueryAsync(function () {
+                        var enumer = gs.getEnumerator();
+                        while (enumer.moveNext()) {
+                            var g = enumer.get_current();
+                            groups.push({ text: g.get_title(), id: g.get_id() + "_User", data: g, icon: "/_layouts/images/ribbon_userprofile_16.png" });
+                        }
+                        cb(groups);
+                    });
+                } else {
+                    ctx.executeQueryAsync();
+                    var l = web.get_siteUserInfoList();
+                    var lis = l.getItems(SP.CamlQuery.createAllItemsQuery());
+                    ctx.load(lis);
+                    ctx.executeQueryAsync(function () {
 
-						var node = {
-							children: false, text: ns.string.format("{0} ({1})", list.get_title(), list.get_itemCount()),
-							id: list.get_id().toString(), data: list, icon: list.get_imageUrl()
-						};
-						spLists.push(node);
-					}
-					ns.lists = spLists;
-					log({ lists: spLists });
-					cb(spLists);
-				});
-			};
+                        var enumer = lis.getEnumerator();
+                        //var count = 0;
+                        var doNext = function doNext() {
 
-			var jTree = treeElem.jstree({
-				"core": {
-					"worker": false,
-					"check_callback": function check_callback() /*operation, node, node_parent, node_position, more*/{
-						return true;
-					}, "data": function data(node, cb) {
-						ns.node = node;
-						log({ tree_data_node: node });
-						if (node.id == "#") cb([]);else if (node.text == "Site Groups") {
-							loadGroups(node, cb);
-						} else if (node.text == "Lists") {
-							loadLists(node, cb);
-						} else if (node.text == "Site Users") {
-							loadSiteUsers(node, cb);
-						} else if (SP.List.isInstanceOfType(node.data)) {
-							loadList(node, cb);
-						} else if (SP.ContentType.isInstanceOfType(node.data)) {
-							loadCType(node, cb);
-						} else if (SP.FieldLinkCollection.isInstanceOfType(node.data)) {
-							loadFieldLinks(node, cb);
-						} else if (SP.FieldCollection.isInstanceOfType(node.data)) {
-							loadFields(node, cb);
-						} else if (SP.ContentTypeCollection.isInstanceOfType(node.data)) {
-							loadCTypes(node, cb);
-						} else if (ns.string.endsWith(node.text, "_Group")) {
-							//var web = tree.get_node(node.id.split("_")[0]).data.spWeb;
-						}
-					}
-				},
-				"plugins": ["contextmenu"], contextmenu: {
-					items: function items() /*o, cb*/{
-						return {
-							"expand": {
-								"label": "Expand tree",
-								"action": function action(data) {
-									var inst = _jquery2.default.jstree.reference(data.reference),
-									    obj = inst.get_node(data.reference);
-									inst.open_all(obj);
-								}
-							},
-							"collapse": {
-								"label": "Collapse tree",
-								"action": function action(data) {
-									var inst = _jquery2.default.jstree.reference(data.reference),
-									    obj = inst.get_node(data.reference);
-									inst.close_all(obj);
-								}
-							}
-						};
-					}
-				}
-			}).on("changed.jstree", function (e, data) {
-				e.preventDefault();
-				e.stopPropagation();
-				log({ jstreechanged: data.node.id });
-				var spElem = data.node.data;
-				if (SP.List.isInstanceOfType(spElem)) {
-					selectionChanged(spElem);
-				}
-			}).on("open_node.jstree", function (e /*, data*/) {
-				e.preventDefault();
-				e.stopPropagation();
-			}).on("close_node.jstree", function (e /*, data*/) {
-				e.preventDefault();
-				e.stopPropagation();
-			});
-			return jTree.data("jstree");
-		}($el.find(".tree"));
+                            if (!enumer.moveNext()) {
+                                cb(groups);
+                                return;
+                            }
+                            var li = enumer.get_current();
+                            var name = li.get_item("Name");
+                            if (name.search(" ") > 0) {
+                                doNext();
+                            } else {
+                                var id = li.get_item("ID");
+                                var user = web.ensureUser(name);
+                                ctx.load(user);
+                                groups.push({ text: name, id: id + "_User", data: user, icon: "/_layouts/images/ribbon_userprofile_16.png" });
+                                //count++;
+                                //if (count % 50 == 0)
+                                ctx.executeQueryAsync(function () {
+                                    doNext();
+                                }, function () {
+                                    doNext();
+                                });
+                            }
+                        };
 
-		(function loadTree(tree) {
-			var processWeb = function processWeb(curWeb, args) {
-				log({ processWeb: curWeb });
-				//var path = curWeb.get_path().get_identity().split("|");
-				(function () {
-					var id = curWeb.get_id().toString();
-					log("creating web node: " + id);
-					tree.create_node(args.parentNode, {
-						text: curWeb.get_title(), id: id, data: curWeb, icon: "/_layouts/images/sts_web16.gif"
-					}, "last", function () {
-						log("web node created");
-						tree.create_node(id, {
-							text: "Lists", children: true, id: id + "_Lists", icon: "http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/16/Actions-view-list-tree-icon.png"
-						});
-						tree.create_node(id, {
-							text: "Webs", id: id + "_Webs", icon: "http://icons.iconarchive.com/icons/icons8/ios7/16/Data-Flow-Chart-icon.png"
-						});
-						//tree.create_node(id, {
-						//    text: 'Meta', id: id + "_Meta", icon: 'http://icons.iconarchive.com/icons/fatcow/farm-fresh/16/database-table-icon.png'
-						//});
-						//tree.create_node(id + "_Meta", {
-						//    text: 'Content Types', id: id + "_ContentTypes", data: curWeb.get_contentTypes(), children: true, icon: 'http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/application-icon-large-icon.png'
-						//});
-						//tree.create_node(id + "_Meta", {
-						//    text: 'Fields', id: id + "_Fields", data: curWeb.get_fields(), children: true, icon: 'http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-menu-icon.png'
-						//});
-						//(function loadSecurity() {
-						//    var done = function () {
-						//        if (curWeb.get_hasUniqueRoleAssignments())
-						//            tree.create_node(id, {
-						//                text: 'Security', id: id + "_Security", data: curWeb.get_roleAssignments(), icon: 'http://icons.iconarchive.com/icons/kyo-tux/phuzion/16/Misc-Security-icon.png'
-						//            }
-						//                            );
-						//    };
-						//    if (!curWeb.isPropertyAvailable('HasUniqueRoleAssignments')) {
-						//        ctx.load(curWeb, 'HasUniqueRoleAssignments');
-						//        ctx.executeQueryAsync(done);
-						//    }
-						//    else done();
-						//})();
-						// if (!args.parentNode) {
-						//    tree.create_node(id, {
-						//        text: 'Site Groups', id: "Site_Groups", children: true, icon: 'http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/16/Actions-resource-group-icon.png'
-						//    }
-						//                    );
-						//    tree.create_node(id, {
-						//        text: 'Site Users', id: "Site_Users", children: true, icon: 'http://icons.iconarchive.com/icons/treetog/junior/16/user-group-icon.png'
-						//    }
-						//                    );
-						//    tree.create_node(id, {
-						//        text: 'Snippets', id: "Snippets", children: false, icon: 'http://icons.iconarchive.com/icons/fatcow/farm-fresh/16/script-code-red-icon.png', data: {
-						//            snippet: '5516798471879038457'
-						//        }
-						//    }
-						//                    );
-						//}
-						var nWeb = tree.get_node(id);
-						log(nWeb);
-						//if (!nWeb) {
+                        doNext();
+                    });
+                }
+            };
+            var loadFieldLinks = function loadFieldLinks(node, cb) {
+                var fields = node.data;
+                ctx.load(fields);
+                ctx.executeQueryAsync(function () {
+                    var enumer = fields.getEnumerator();
+                    var spFields = [];
+                    while (enumer.moveNext()) {
+                        var g = enumer.get_current();
+                        spFields.push({ text: g.get_name() + " - " + g.get_id(), id: "FieldLink|" + g.get_id().toString(), data: g, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-text-field-icon.png" });
+                    }
+                    spFields.sort(function (a, b) {
+                        if (a.text < b.text) return -1;
+                        if (a.text > b.text) return 1;
+                        return 0;
+                    });
 
-						//}
-						(function doWebs() {
-							var lenum = args.subs.getEnumerator();
-							var parent = tree.get_node(nWeb.id + "_Webs");
-							while (lenum.moveNext()) {
-								var list = lenum.get_current();
-								queueWeb(list, parent);
-							}
-						})();
-					});
-				})();
-			};
-			var queueWeb = function queueWeb(spWeb, parentNode) {
-				log("queueWeb" + spWeb);
-				ns.webapi.loadWeb(spWeb, null, ctx, function (web) {
-					ctx.load(web, "Id", "Title", "HasUniqueRoleAssignments", "ServerRelativeUrl");
-					var subs = web.getSubwebsForCurrentUser();
-					ctx.load(subs);
-					//var lists = web.get_lists();
-					//ctx.load(lists, 'Include(Id,Title,HasUniqueRoleAssignments,ImageUrl,ItemCount,DefaultViewUrl)');
-					return {
-						subs: subs, parentNode: parentNode
-					};
-				}).done(processWeb).fail(function (e) {
-					log({ loadWebFailed: e });
-				});
-			};
-			queueWeb(null, null);
-		})(tree);
+                    cb(spFields);
+                });
+            };
+            var loadFields = function loadFields(node, cb) {
+                var fields = node.data;
+                ctx.load(fields);
+                ctx.executeQueryAsync(function () {
+                    var enumer = fields.getEnumerator();
+                    var spFields = [];
+                    while (enumer.moveNext()) {
+                        var g = enumer.get_current();
+                        spFields.push({ text: g.get_title() + " - " + g.get_staticName(), id: g.get_id().toString(), data: g, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-text-field-icon.png" });
+                    }
+                    spFields.sort(function (a, b) {
+                        if (a.text < b.text) return -1;
+                        if (a.text > b.text) return 1;
+                        return 0;
+                    });
+                    trace.log({ fields: spFields });
+                    cb(spFields);
+                });
+            };
+            var loadCTypes = function loadCTypes(node, cb) {
+                var cTypes = node.data;
+                ctx.load(cTypes);
+                ctx.executeQueryAsync(function () {
+                    var enumer = cTypes.getEnumerator();
+                    var spCTypes = [];
+                    while (enumer.moveNext()) {
+                        var g = enumer.get_current();
+                        spCTypes.push({ text: g.get_name(), children: true, id: g.get_id().toString(), data: g, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/application-block-icon.png" });
+                    }
+                    cb(spCTypes);
+                });
+            };
+            var loadCType = function loadCType(node, cb) {
+                var list = node.data;
+                var items = [];
+                items.push({ text: "Field Links", id: list.get_id() + "_FieldLinks", data: list.get_fieldLinks(), children: true, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/application-icon-large-icon.png" });
+                items.push({ text: "Fields", id: list.get_id() + "_Fields", data: list.get_fields(), children: true, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-menu-icon.png" });
 
-		$(".cc", $el).click(function (event) {
-			// prevent propagation so drop down doesn't close
-			event.preventDefault();
-			event.stopPropagation();
-		});
+                cb(items);
+            };
+            var loadList = function loadList(node, cb) {
+                var list = node.data;
+                trace.log({ list: list });
+                var items = [];
+                if (list.get_hasUniqueRoleAssignments()) {
+                    items.push({ text: "Security", id: list.get_id() + "_Security", data: list.get_roleAssignments(), icon: "http://icons.iconarchive.com/icons/kyo-tux/phuzion/16/Misc-Security-icon.png" });
+                }
 
-		return function () {
-			var me = {
-				value: function value(v) {
-					if (arguments.length > 0) {
-						selectionChanged(v);
-					} else {
-						return selectedSpElement;
-					}
-				}
-			};
+                if (list.get_itemCount() > 0) {
+                    items.push({ text: "Items", id: list.get_id() + "_Items", data: list.get_defaultViewUrl() });
+                }
 
-			$el.data("xSPTreeLight", me);
+                //items.push( { text: 'Meta', id: list.get_id() + "_Meta", icon: 'http://icons.iconarchive.com/icons/fatcow/farm-fresh/16/database-table-icon.png' });
+                items.push({ text: "Content Types", id: list.get_id() + "_ContentTypes", data: list.get_contentTypes(), children: true, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/application-icon-large-icon.png" });
+                items.push({ text: "Fields", id: list.get_id() + "_Fields", data: list.get_fields(), children: true, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-menu-icon.png" });
 
-			return me;
-		}();
-	};
+                cb(items);
+            };
+            var loadLists = function loadLists(node, cb) {
+                trace.debug("loading lists");
+                var parent = node.parent;
+                var web = tree.get_node(parent).data;
 
-	var widgetInfo = {
-		publicName: "xSPTreeLight",
-		constructor: xSPTreeLight,
-		version: "0.1.3",
-		getSelector: function getSelector() {
-			var selector = "[data-widget=\"publicName\"]".replace("publicName", widgetInfo.publicName);
-			log("selector: " + selector);
-			return selector;
-		},
-		startup: function startup(context) {
-			log(widgetInfo.publicName + ".startup");
-			var selector = widgetInfo.getSelector();
-			var elems = $(selector, context || document);
-			log("Elems: " + elems.length);
-			elems[widgetInfo.publicName]({});
-			$(document).ready(function () {});
+                var lists = web.get_lists();
+                ctx.load(lists, "Include(Id,Title,HasUniqueRoleAssignments,ImageUrl,ItemCount,DefaultViewUrl)");
+                ctx.executeQueryAsync(function () {
+                    trace.log("lists loaded");
+                    var lenum = lists.getEnumerator();
+                    var spLists = [];
 
-			return elems;
-		}
-	};
+                    while (lenum.moveNext()) {
+                        var list = lenum.get_current();
 
-	$.fn[widgetInfo.publicName] = function (opts) {
-		var args = arguments;
-		//var lastInstance = null;
-		var result = this.each(function () {
+                        var node = {
+                            children: false, text: ns.string.format("{0} ({1})", list.get_title(), list.get_itemCount()),
+                            id: list.get_id().toString(), data: list, icon: list.get_imageUrl()
+                        };
+                        spLists.push(node);
+                    }
+                    ns.lists = spLists;
+                    trace.log({ lists: spLists });
+                    cb(spLists);
+                });
+            };
 
-			var $el = $(this);
+            var jTree = treeElem.jstree({
+                "core": {
+                    "worker": false,
+                    "check_callback": function check_callback() /*operation, node, node_parent, node_position, more*/{
+                        return true;
+                    }, "data": function data(node, cb) {
+                        ns.node = node;
+                        trace.log({ tree_data_node: node });
+                        if (node.id == "#") cb([]);else if (node.text == "Site Groups") {
+                            loadGroups(node, cb);
+                        } else if (node.text == "Lists") {
+                            loadLists(node, cb);
+                        } else if (node.text == "Site Users") {
+                            loadSiteUsers(node, cb);
+                        } else if (SP.List.isInstanceOfType(node.data)) {
+                            loadList(node, cb);
+                        } else if (SP.ContentType.isInstanceOfType(node.data)) {
+                            loadCType(node, cb);
+                        } else if (SP.FieldLinkCollection.isInstanceOfType(node.data)) {
+                            loadFieldLinks(node, cb);
+                        } else if (SP.FieldCollection.isInstanceOfType(node.data)) {
+                            loadFields(node, cb);
+                        } else if (SP.ContentTypeCollection.isInstanceOfType(node.data)) {
+                            loadCTypes(node, cb);
+                        } else if (ns.string.endsWith(node.text, "_Group")) {
+                            //var web = tree.get_node(node.id.split("_")[0]).data.spWeb;
+                        }
+                    }
+                },
+                "plugins": ["contextmenu"], contextmenu: {
+                    items: function items() /*o, cb*/{
+                        return {
+                            "expand": {
+                                "label": "Expand tree",
+                                "action": function action(data) {
+                                    var inst = jQuery.jstree.reference(data.reference),
+                                        obj = inst.get_node(data.reference);
+                                    inst.open_all(obj);
+                                }
+                            },
+                            "collapse": {
+                                "label": "Collapse tree",
+                                "action": function action(data) {
+                                    var inst = jQuery.jstree.reference(data.reference),
+                                        obj = inst.get_node(data.reference);
+                                    inst.close_all(obj);
+                                }
+                            }
+                        };
+                    }
+                }
+            }).on("changed.jstree", function (e, data) {
+                e.preventDefault();
+                e.stopPropagation();
+                trace.log({ jstreechanged: data.node.id });
+                var spElem = data.node.data;
+                if (spElem) {
+                    var type = spElem.constructor.getName();
+                    if (opts.selectable[type]) {
+                        // && SP.List.isInstanceOfType(spElem)) {
+                        selectionChanged(spElem);
+                    }
+                }
+            }).on("open_node.jstree", function (e /*, data*/) {
+                e.preventDefault();
+                e.stopPropagation();
+            }).on("close_node.jstree", function (e /*, data*/) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            return jTree.data("jstree");
+        }($el.find(".tree"));
 
-			var me = $el.data(widgetInfo.publicName);
+        var websToProcess = [{ web: ctx.get_web(), parentNode: null }];
 
-			if (me) {
-				// object has been initialized before
+        var addWebNode = function addWebNode(curWeb, parentNode, subs) {
+            return $.Deferred(function (dfd) {
+                var id = curWeb.get_id().toString();
+                trace.debug("creating web node: " + id);
 
-				if (opts == null) {// request for instance
-					//lastInstance = me;
-				} else if (me[opts]) {
-					if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
-				}
-			} else {
+                tree.create_node(parentNode, {
+                    text: curWeb.get_title(), id: id, data: curWeb, icon: "/_layouts/images/sts_web16.gif"
+                }, "last", function () {
 
-				var obj = new widgetInfo.constructor(this, opts);
-				$el.data(widgetInfo.publicName, obj);
-			}
-		});
+                    trace.debug("web node created");
+                    tree.create_node(id, { text: "Lists", children: true, id: id + "_Lists", icon: "/_layouts/15/images/itgen.png?rev=23" });
+                    tree.create_node(id, { text: "Webs", id: id + "_Webs", icon: "/_layouts/15/images/siteicon_16x16.png" });
 
-		//if (lastInstance && result.length == 1) return lastInstance;
-		return result;
-	};
+                    //if (opts.load["SP.ContentType"]) {
 
-	(ns.widgets = ns.widgets || {})[widgetInfo.publicName] = widgetInfo;
-	log(widgetInfo.publicName + ".registered");
+                    //}
 
-	ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default, _treelightTemplate2.default);
+                    var nWeb = tree.get_node(id);
+                    trace.debug(nWeb);
+
+                    (function doWebs() {
+                        var lenum = subs.getEnumerator();
+                        var parent = tree.get_node(nWeb.id + "_Webs");
+                        while (lenum.moveNext()) {
+                            var list = lenum.get_current();
+                            websToProcess.push({ web: list, parentNode: parent });
+                        }
+                        dfd.resolve();
+                    })();
+                });
+            }).promise();
+        };
+
+        ns.funcs.processAsQueue(websToProcess, function (iterNode) {
+            return $.Deferred(function (dfd) {
+                var web = iterNode.web;
+
+                ctx.load(web, "Id", "Title", "HasUniqueRoleAssignments", "ServerRelativeUrl");
+                var subs = web.getSubwebsForCurrentUser();
+
+                ns.sp.loadSpElem(subs).done(function () {
+                    iterNode.subs = subs;
+                    addWebNode(web, iterNode.parentNode, iterNode.subs).done(function () {
+                        dfd.resolve();
+                    });
+                });
+            }).promise();
+        }).done(function () {
+            trace.log("tree loaded");
+        });
+
+        $(".cc", $el).click(function (event) {
+            // prevent propagation so drop down doesn't close
+            trace.debug(".cc.click");
+            event.preventDefault();
+            event.stopPropagation();
+        });
+
+        $("#dropdownMenu1", $el).click(function () /*event*/{
+            // prevent propagation so drop down doesn't close
+            trace.debug("dropdownMenu1.click");
+
+            /// TODO: bug in modal window ???, works fine outside modal
+            if ($(".dropdown-menu:visible", $el).length == 0) $(".dropdown-menu", $el).show();else {
+                $(".dropdown-menu", $el).hide();
+            }
+        });
+
+        return function () {
+            var me = {
+                value: function value(v) {
+                    if (arguments.length > 0) {
+                        selectionChanged(v);
+                    } else {
+                        return selectedSpElement;
+                    }
+                }
+            };
+
+            $el.data("xSPTreeLight", me);
+
+            return me;
+        }();
+    };
+
+    ns.widgets.addSpWidget("xSPTreeLight", xSPTreeLight, "0.1.5");
+})(spexplorerjs, jQuery, _treelightTemplate2.default);
 
 /***/ }),
 
@@ -22877,7 +23029,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"dropdown\">\r\n    <button class=\"btn btn-default dropdown-toggle\" type=\"button\" id=\"dropdownMenu1\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"true\">\r\n        <span class=\"sptreelabel\">Select List...</span>\r\n        <span class=\"caret\">\r\n        </span>\r\n    </button>\r\n    <div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\">\r\n        <div style=\"max-height:300px;overflow-y:auto\" class='cc'>\r\n            <div class=\"tree\"></div>\r\n        </div>\r\n    </div>\r\n</div>";
+module.exports = "<div class=\"dropdown\">\r\n    <button class=\"btn btn-default dropdown-toggle\" type=\"button\" id=\"dropdownMenu1\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"true\">\r\n        <span class=\"sptreelabel\">Select...</span>\r\n        <span class=\"caret\">\r\n        </span>\r\n    </button>\r\n    <div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\">\r\n        <div style=\"max-height:300px;overflow-y:auto\" class='cc'>\r\n            <div class=\"tree\"></div>\r\n        </div>\r\n    </div>\r\n</div>";
 
 /***/ })
 

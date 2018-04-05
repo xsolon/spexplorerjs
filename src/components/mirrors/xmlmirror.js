@@ -1,3 +1,4 @@
+// v 0.1.6 - 2018-04-04:    - getXml is not longer a promise
 // v 0.1.5 - 2018-03-28:    - use widget declaration
 //                          - refresh method
 import $ from "jquery";
@@ -34,11 +35,8 @@ import template from "./xmlmirror.template.html";
 		var me = {};
 		me.refresh = function () { editor.refresh(); };
 		me.getXml = function () {
-			return $.Deferred(function (dfd) {
-
-				var code = editor.get();
-				dfd.resolve(code);
-			}).promise();
+			var code = editor.get();
+			return code;
 		};
 		me.setXml = function (xml) {
 			editor.set(xml);

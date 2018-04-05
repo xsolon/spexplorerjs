@@ -390,6 +390,13 @@ import template from "./treelight.template.html";
 
 		$("#dropdownMenu1", $el).click(function (/*event*/) { // prevent propagation so drop down doesn't close
 			trace.debug("dropdownMenu1.click");
+
+			/// TODO: bug in modal window ???, works fine outside modal
+			if ($(".dropdown-menu:visible", $el).length == 0)
+				$(".dropdown-menu", $el).show();
+			else {
+				$(".dropdown-menu", $el).hide();
+			}
 		});
 
 		return (function () {

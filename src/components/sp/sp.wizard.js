@@ -1,4 +1,3 @@
-import $ from "jquery";
 import "../widget.base.js";
 import "./sp.base.js";
 import "./sp.web.js";
@@ -8,24 +7,22 @@ import modaltemplate from "./sp.wizard.modaltemplate.html";
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugspWizard)/) > 0;
-	var tracing = ns.logger.get("spWizard", debugging);
-	var log = tracing.log, debug = tracing.debug;
-	//var error = tracing.error;
+	var trace = ns.logger.get("spWizard", debugging);
 
-	log("0.0.1");
+	trace.log("0.0.2");
 
 	ns.widgetClick = function (el) {
 
 		var $el = $(el);
 		var url = $el.attr("data-widgetUrl");
-		debug("loading" + url);
+		trace.debug("loading" + url);
 
 		var widgetType = $el.attr("data-widget");
 		var parent = $el.parents(".spexp");
-		parent.html("<div data-widget=\"" + widgetType + "\"/>");
+		parent.html("<div data-widget='" + widgetType + "'/>");
 
 		$.getScript(url, function () {
-			debug("done");
+			trace.debug("done");
 		});
 	};
 
@@ -50,40 +47,36 @@ import modaltemplate from "./sp.wizard.modaltemplate.html";
 
 		var tmp = template;
 
-		var dialog = $(tmp).clone();
+		var dialog = $(tmp);
 
 		options.html = dialog[0];
-		options.showMaximized = false;
+		options.showMaximized = true;
 		options.resizable = true;
 
 		SP.UI.ModalDialog.showModalDialog(options);
 
+		// some third party set an !important z-index!
+		setTimeout(function () {
+			// this is the ootb value + !important
+			$(".ms-dlgContent").each(function () { this.style.setProperty("z-index", "1505", "important"); });
+		}, 500);
 	};
 
-	(function register() {
-		var widgetInfo = ns.widgets.addWidget("spWizard", SpWizard, "0.0.1");
 
-		if (window["ExecuteOrDelayUntilScriptLoaded"]) {
-			ExecuteOrDelayUntilScriptLoaded(function () {
-				widgetInfo.startup();
-			}, "sp.js");
-			SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () { });
-		}
-		else widgetInfo.startup();
+	ns.widgets.addSpWidget("spWizard", SpWizard, "0.0.2");
+
+	//if (false)
+	(function init() {
+
+		ExecuteOrDelayUntilScriptLoaded(function () {
+			trace.debug("ExecuteOrDelayUntilScriptLoaded");
+			//bootDialog();
+			spDialog();
+		}, "sp.js");
+		//SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {
+		//	debug("executeFunc");
+		//});
 
 	})();
 
-	if (false)
-		(function init() {
-
-			ExecuteOrDelayUntilScriptLoaded(function () {
-				debug("ExecuteOrDelayUntilScriptLoaded");
-				bootDialog();
-			}, "sp.js");
-			//SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () {
-			//	debug("executeFunc");
-			//});
-
-		})();
-
-})(window.spexplorerjs, $);
+})(spexplorerjs, jQuery);
