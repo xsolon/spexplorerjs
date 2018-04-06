@@ -139,6 +139,17 @@ var sanitizeJsinHtml = function (j$) {
     });
 
 };
+var cdnScriptSimple = function (widgetPath, execPath) {
+
+    var prodwidgetPath = widgetPath.replace("src", "public");
+
+    var fileContent = fs.readFileSync(prodwidgetPath, "utf8");
+
+    fs.writeFileSync(prodwidgetPath.replace(".js", ".local.js"), fileContent);
+
+    fs.writeFileSync(prodwidgetPath, fileContent.replace(/https\:\/\/localhost\:8443/g, "https://spexplorerjs.azurewebsites.net"));
+
+};
 var cdnScripts = function (widgetPath, execPath) {
 
     var sourceDir = path.dirname(widgetPath);
@@ -235,17 +246,18 @@ var createWidget = function (widgetPath, execPath) {
 
     var sourceDir = path.dirname(widgetPath);
 
-    inlineScripts(widgetPath, execPath)
-        .on('end', function () {
-            console.log('widget.inline.done');
+    //inlineScripts(widgetPath, execPath)
+    //    .on('end', function () {
+    //        console.log('widget.inline.done');
 
-        });
+    //    });
 
-    cdnScripts(widgetPath, execPath)
-        .on('end', function () {
-            console.log('widget.cdn.done');
+    cdnScriptSimple(widgetPath, execPath);
 
-        });
+        //.on('end', function () {
+          //  console.log('widget.cdn.done');
+
+        //});
 
 };
 
@@ -287,7 +299,7 @@ var createSpPage = function (module, inline) {
     var scriptBlockTemplate = '<SharePoint:ScriptBlock runat="server">[[[Content]]]</SharePoint:ScriptBlock>';
     /// TODO: uploader to use scriptlink
     var scriptLinkTempalte = '<ScriptLink language="javascript" name="MyJS.js" Defer="true" runat="server"/>';
-    scriptLinkTempalte = '<script type="text/javascript" src="[[[Src]]]"></script>';
+    scriptLinkTempalte = '<script type="text/javascript" src="[[[Src]]][[[Env]]].js"></script>';
 
     var cdn = function (url, environment) {
 
@@ -296,7 +308,8 @@ var createSpPage = function (module, inline) {
             .replace('[[[WidgetPublicName]]]', module.publicName)
             .replace('[[[Script]]]', scriptLinkTempalte)
             .replace('[[[Content]]]', "")
-            .replace('[[[Src]]]', url + "components/sp/" + fileName);
+            .replace('[[[Src]]]', url + "components/sp/" + fileName.replace(".js",""))
+            .replace('[[[Env]]]', environment);
 
         var outputPage = path.join(sourceDir, fileName.replace(".js", environment + ".aspx"));
         log(outputPage);

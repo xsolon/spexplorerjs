@@ -50,5 +50,5 @@ body #s4-leftpanel {
     <div class="spexp">
         <div data-widget="xSPTreeLight"></div>
     </div>
-    <script type="text/javascript" src="https://localhost:8443/components/sp/treelight.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/components/sp/treelight.local.js"></script>
 </asp:Content>

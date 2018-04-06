@@ -6,26 +6,26 @@ var widgetTransforms = require("./widgettransforms.js");
 var HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 
 var files = [
-    //"./src/components/string/string.js"
+    "./src/components/string/string.js"
     //,"./src/components/loader/loader.js"
-    //,"./src/components/logger/logger.js"
+    ,"./src/components/logger/logger.js"
     //,"./src/components/datatables/datatables.js"
-    //"./src/components/sp/sp.web.js"
-    //"./src/components/mirrors/jseditor.js"
-    //,"./src/components/mirrors/jsmirror.js"
-    //"./src/components/mirrors/xmleditor.js"
-    //, "./src/components/mirrors/xmlmirror.js"
-    //"./src/components/sp/treelight.js"
+    ,"./src/components/sp/sp.web.js"
+    ,"./src/components/mirrors/jseditor.js"
+    ,"./src/components/mirrors/jsmirror.js"
+    ,"./src/components/mirrors/xmleditor.js"
+    , "./src/components/mirrors/xmlmirror.js"
+    ,"./src/components/sp/treelight.js"
     //,
     //"./src/components/sp/sp.explorer.js",
-    "./src/components/sp/sp.wizard.js"
-    ,
-    "./src/components/sp/list.editor.js"
+    ,"./src/components/sp/sp.wizard.js"
     //,
-    //"./src/components/sp/field.selector.js"
+    ,"./src/components/sp/list.editor.js"
+    //,
+    ,"./src/components/sp/field.selector.js"
     //, "./src/components/sp/customaction.selector.js"
-    //"./src/components/sp/customaction.editor.js"
-    //, "./src/components/sp/ui.perms.js"
+    ,"./src/components/sp/customaction.editor.js"
+    , "./src/components/sp/ui.perms.js"
     //"./src/pages/tests/index.js"
 ];
 
@@ -171,6 +171,7 @@ var runWebPack = function (debug, filePath) {
             return;
         } else {
 
+            widgetTransforms.createWidget(filePath, execPath);
             if (module && module.spPage) {
                 module.localTemplatePath = localTemplatePath;
                 module.filePath = filePath;
@@ -179,10 +180,10 @@ var runWebPack = function (debug, filePath) {
                 widgetTransforms.createSpPage(module, true);
                 widgetTransforms.createSpPage(module, false);
 
-                var samplePath = localTemplatePath.replace("src", "public");
-                if (fs.existsSync(samplePath)) {
-                    //widgetTransforms.createWidget(samplePath, execPath);
-                }
+                //var samplePath = localTemplatePath.replace("src", "public");
+                //if (fs.existsSync(samplePath)) {
+                //    //widgetTransforms.createWidget(samplePath, execPath);
+                //}
 
             }
 

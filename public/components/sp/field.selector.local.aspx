@@ -50,5 +50,5 @@ body #s4-leftpanel {
     <div class="spexp">
         <div data-widget="xSPFieldSelector"></div>
     </div>
-    <script type="text/javascript" src="https://localhost:8443/components/sp/field.selector.js"></script>
+    <script type="text/javascript" src="https://localhost:8443/components/sp/field.selector.local.js"></script>
 </asp:Content>

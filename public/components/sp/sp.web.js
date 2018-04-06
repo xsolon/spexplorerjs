@@ -72,9 +72,9 @@
 /******/ ({
 
 /***/ "../../../node_modules/jquery/dist/jquery.js":
-/*!**************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
-  \**************************************************************************/
+/*!*********************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10448,9 +10448,9 @@ return jQuery;
 /***/ }),
 
 /***/ "../../../node_modules/jquery/dist/jquery.js-exposed":
-/*!**********************************************************************************!*\
-  !*** F:/sc/spexplorerjs/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
-  \**********************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10500,18 +10500,7 @@ module.exports = g;
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.default = undefined;
-
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 __webpack_require__(/*! ../string/string.js */ "../string/string.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (function (ns, $) {
 
@@ -10520,60 +10509,102 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		if (this && this.source) {
 			msg = this.source + ": " + msg;
 		}
-		console && console.log.apply(console, [msg]);
+		window.console && console.log.apply(console, [msg]);
 	};
 	var log = function log() {
-		try {
-			if (this && this.source) {
-				if (arguments.length === 1 && typeof arguments[0] == "string") {
-					logf("{0}: {1}", this.source, arguments[0]);
-				} else {
-					var obj = {};
-					obj[this.source] = arguments;
-					if (arguments.length === 1) obj[this.source] = arguments[0];
-					console.log.apply(console, [obj]);
-				}
+		if (this && this.source) {
+			if (arguments.length === 1 && typeof arguments[0] == "string") {
+				logf("{0}: {1}", this.source, arguments[0]);
+			} else {
+				var obj = {};
+				obj[this.source] = arguments;
+				if (arguments.length === 1) obj[this.source] = arguments[0];
+				window.console && console.log.apply(console, [obj]);
 			}
-			//if (this && this.source && arguments.length === 1 && typeof arguments[0] == "string") {
-			//	let s = this.source + ": "; for (let i = 0; i < arguments.length; i++) {
-			//		s += `{${i}} `;
-			//	}
-			//	var msg = logf(s, arguments[0]);
-			//	console.log.apply(console, [msg]);
-			//	var obj = {};
-			//	obj[this.source] = arguments;
-			//	console.log.apply(console, [obj]);
-			//         }
-			else console.log.apply(console, arguments);
-			//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
 		}
+		//if (this && this.source && arguments.length === 1 && typeof arguments[0] == "string") {
+		//	let s = this.source + ": "; for (let i = 0; i < arguments.length; i++) {
+		//		s += `{${i}} `;
+		//	}
+		//	var msg = logf(s, arguments[0]);
+		//	console.log.apply(console, [msg]);
+		//	var obj = {};
+		//	obj[this.source] = arguments;
+		//	console.log.apply(console, [obj]);
+		//         }
+		else window.console && console.log.apply(console, arguments);
+		//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 	var error = function error() {
-		try {
-			console.error.apply(console, arguments);
-			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
-		}
+		window.console && console.error.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 	var warn = function warn() {
-		try {
-			console.warn.apply(console, arguments);
-			$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
-		} catch (e) {
-			alert(e);
-		}
+		window.console && console.warn.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+	};
+	var debug = function debug() {
+		window.console && console.log.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 
-	ns["logger"] = { "version": "0.0.1", logf: logf, "log": log, "error": error, "warn": warn };
+	var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
+		var scopedLog = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.log.apply(scopedLog, arguments);
+				onTrace && onTrace({ type: "log", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedError = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.error.apply(scopedError, arguments);
+				onTrace && onTrace({ type: "error", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedDebug = new function () {
+			var d = function d() {
+				if (debugging) {
+					ns.logger && ns.logger.log.apply(scopedDebug, arguments);
+					onTrace && onTrace({ type: "debug", args: arguments });
+				}
+			};
+			d.source = source;
+			return d;
+		}();
+
+		var scopedWarn = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.error.apply(scopedWarn, arguments);
+				onTrace && onTrace({ type: "warn", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+
+		return {
+			log: scopedLog,
+			error: scopedError,
+			debug: scopedDebug,
+			warn: scopedWarn
+		};
+	};
+
+	ns["logger"] = {
+		"version": "0.0.2",
+		get: defineScopedTracing,
+		/// TODO: this should be private
+		logf: logf, "log": log, "error": error, "warn": warn, "debug": debug
+	};
 	log("logger");
-	ns.$ = $;
 	return ns.logger;
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
-var logger = window["spexplorerjs"];
-exports.default = logger;
+
+	// both of these dependencies are resolved in string.js
+})(spexplorerjs, jQuery); // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
+// v 0.0.1: 2018-03-28  - debug, get
 
 /***/ }),
 
@@ -10587,16 +10618,15 @@ exports.default = logger;
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+/* global require */
+// v 0.1.4: 2018-04-02: - check if already defined, make jQuery global if needed
+//                          The inline check won't work for more complex modules, but it is an easy way to address multiple endpoints that load this.
 // v 0.1.2: 2018-03-10: brought back htmlEncode/htmlDecode and jQuery dependency
+
 (function (ns, $) {
-	ns.string = {
-		version: "0.1",
+
+	return ns.string = ns.string || {
+		version: "0.1.4",
 		htmlEncode: function htmlEncode(value) {
 			// create a in-memory div, set it's inner text(which jQuery
 			// automatically encodes)
@@ -10624,11 +10654,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			}
 
 			return tmpl;
-		}, startsWith: function startsWith(str1, str2) {
+		},
+		startsWith: function startsWith(str1, str2) {
 			return str2.length > 0 && str1.substring(0, str2.length) === str2;
-		}, endsWith: function endsWith(str1, str2) {
+		},
+		endsWith: function endsWith(str1, str2) {
 			return str2.length > 0 && str1 && str1.substring(str1.length - str2.length, str1.length) === str2;
-		}, trimEnd: function trimEnd(stringToTrim, charToRemove) {
+		},
+		trimEnd: function trimEnd(stringToTrim, charToRemove) {
 			var s = stringToTrim || ""; // make sure str1 is not null
 			var c = charToRemove;
 			var lastIndexOf = -1;
@@ -10641,19 +10674,21 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			}
 			if (lastIndexOf > -1) s = s.substring(0, lastIndexOf);
 			return s;
-		}, trimStart: function trimStart(stringToTrim, sToRemove, opts) {
+		},
+		trimStart: function trimStart(stringToTrim, sToRemove, opts) {
 			var exp = "^" + sToRemove + "+";
 			var reg = RegExp(exp, opts || "gi");
 
 			var res = stringToTrim.replace(reg, "");
 			return res;
-		}, trim: function trim(stringToTrim, sToRemove, opts) {
+		},
+		trim: function trim(stringToTrim, sToRemove, opts) {
 			stringToTrim = this.trimStart(stringToTrim, sToRemove, opts);
 			stringToTrim = this.trimEnd(stringToTrim, sToRemove, opts);
 			return stringToTrim;
 		}
 	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default);
+})(window.spexplorerjs = window["spexplorerjs"] || {}, window.jQuery = window["jQuery"] || __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed"));
 
 /***/ }),
 
@@ -10675,7 +10710,7 @@ __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// v 0.0.1 : 2018/03/11 - loadSpElem
+// v 0.0.1 : 2018-03-11 - loadSpElem
 (function (ns, $) {
 
 	var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
@@ -10765,6 +10800,15 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (function (ns, $) {
+	var debug = window.location.href.search(/[localhost|webapi]/) > 0;
+	var log = new function () {
+		var d = function d() {
+			ns.logger && ns.logger.log.apply(log, arguments);
+			if (debug) SP.UI.Notify.addNotification(arguments[0]);
+		};
+		d.source = "webapi";
+		return d;
+	}();
 	/// TODO: Document
 	var createWeb = function createWeb(parentWeb, title, url, template, inheritPermissions) {
 		return $.Deferred(function (dfd) {
@@ -10826,14 +10870,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			});
 		}).promise();
 	};
+
 	ns.webapi = {
 		webTemplates: webTemplates,
 		createWeb: createWeb,
 		loadWeb: loadWeb,
-		version: "0.1"
+		version: "0.1.2"
 	};
 })(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default); /// TODO: Document
-// v 0.0.1: 208-03-11 - Added loadWeb function
+// v 0.0.2: 2018-03-28 - WebDal
+// v 0.0.1: 2018-03-11 - Added loadWeb function
 
 /***/ })
 
