@@ -1,26 +1,25 @@
-// v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
-// v 0.0.1: 2018-03-28  - debug, get
-import "../string/string.js";
+/* global require */
+
+require("../string/string.js");
 
 (function (ns, $) {
 
-	const logf = function () {
+	var logf = function logf() {
 		var msg = ns.string.format.apply(ns.string.format, arguments);
 		if (this && this.source) {
-			msg = `${this.source}: ${msg}`;
+			msg = this.source + ": " + msg;
 		}
-		(window.console && console.log.apply(console, [msg]));
+		window.console && console.log.apply(console, [msg]);
 	};
-	const log = function () {
+	var log = function log() {
 		if (this && this.source) {
 			if (arguments.length === 1 && typeof arguments[0] == "string") {
 				logf("{0}: {1}", this.source, arguments[0]);
 			} else {
 				var obj = {};
 				obj[this.source] = arguments;
-				if (arguments.length === 1)
-					obj[this.source] = arguments[0];
-				(window.console && console.log.apply(console, [obj]));
+				if (arguments.length === 1) obj[this.source] = arguments[0];
+				window.console && console.log.apply(console, [obj]);
 			}
 		}
 		//if (this && this.source && arguments.length === 1 && typeof arguments[0] == "string") {
@@ -33,58 +32,58 @@ import "../string/string.js";
 		//	obj[this.source] = arguments;
 		//	console.log.apply(console, [obj]);
 		//         }
-		else (window.console && console.log.apply(console, arguments));
+		else window.console && console.log.apply(console, arguments);
 		//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
-	const error = function () {
-		(window.console && console.error.apply(console, arguments));
+	var error = function error() {
+		window.console && console.error.apply(console, arguments);
 		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
-	const warn = function () {
-		(window.console && console.warn.apply(console, arguments));
+	var warn = function warn() {
+		window.console && console.warn.apply(console, arguments);
 		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
-	const debug = function () {
-		(window.console && console.log.apply(console, arguments));
+	var debug = function debug() {
+		window.console && console.log.apply(console, arguments);
 		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
 
-	const defineScopedTracing = function (source, debugging, onTrace) {
+	var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
 		var scopedLog = new function () {
-			var d = function () {
+			var d = function d() {
 				ns.logger && ns.logger.log.apply(scopedLog, arguments);
-				(onTrace && onTrace({ type: "log", args: arguments }));
+				onTrace && onTrace({ type: "log", args: arguments });
 			};
 			d.source = source;
 			return d;
-		};
+		}();
 		var scopedError = new function () {
-			var d = function () {
+			var d = function d() {
 				ns.logger && ns.logger.error.apply(scopedError, arguments);
-				(onTrace && onTrace({ type: "error", args: arguments }));
+				onTrace && onTrace({ type: "error", args: arguments });
 			};
 			d.source = source;
 			return d;
-		};
+		}();
 		var scopedDebug = new function () {
-			var d = function () {
+			var d = function d() {
 				if (debugging) {
 					ns.logger && ns.logger.log.apply(scopedDebug, arguments);
-					(onTrace && onTrace({ type: "debug", args: arguments }));
+					onTrace && onTrace({ type: "debug", args: arguments });
 				}
 			};
 			d.source = source;
 			return d;
-		};
+		}();
 
 		var scopedWarn = new function () {
-			var d = function () {
+			var d = function d() {
 				ns.logger && ns.logger.error.apply(scopedWarn, arguments);
-				(onTrace && onTrace({ type: "warn", args: arguments }));
+				onTrace && onTrace({ type: "warn", args: arguments });
 			};
 			d.source = source;
 			return d;
-		};
+		}();
 
 		return {
 			log: scopedLog,
@@ -92,7 +91,6 @@ import "../string/string.js";
 			debug: scopedDebug,
 			warn: scopedWarn
 		};
-
 	};
 
 	ns["logger"] = {
@@ -105,4 +103,5 @@ import "../string/string.js";
 	return ns.logger;
 
 	// both of these dependencies are resolved in string.js
-})(spexplorerjs, jQuery);
+})(spexplorerjs, jQuery); // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
+// v 0.0.1: 2018-03-28  - debug, get

@@ -6,27 +6,32 @@ var widgetTransforms = require("./widgettransforms.js");
 var HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 
 var files = [
-    "./src/components/string/string.js"
+    //"./src/components/string/string.js"
     //,"./src/components/loader/loader.js"
-    ,"./src/components/logger/logger.js"
+    //, "./src/components/logger/logger.js"
     //,"./src/components/datatables/datatables.js"
-    ,"./src/components/sp/sp.web.js"
-    ,"./src/components/mirrors/jseditor.js"
-    ,"./src/components/mirrors/jsmirror.js"
-    ,"./src/components/mirrors/xmleditor.js"
-    , "./src/components/mirrors/xmlmirror.js"
-    ,"./src/components/sp/treelight.js"
+    //,"./src/components/sp/sp.web.js"
+    //,"./src/components/mirrors/jseditor.js"
+    //,"./src/components/mirrors/jsmirror.js"
+    //,"./src/components/mirrors/xmleditor.js"
+    //, "./src/components/mirrors/xmlmirror.js"
+    //,"./src/components/sp/treelight.js"
     //,
-    //"./src/components/sp/sp.explorer.js",
-    ,"./src/components/sp/sp.wizard.js"
+    "./src/components/sp/spFileReport.js"
     //,
-    ,"./src/components/sp/list.editor.js"
+    //"./src/components/sp/sp.list.js"
     //,
-    ,"./src/components/sp/field.selector.js"
+    //"./src/components/sp/sp.explorer.js"
+    //, "./src/components/sp/sp.wizard.js"
+    //,
+    //,"./src/components/sp/list.editor.js"
+    //,
+    //,"./src/components/sp/field.selector.js"
     //, "./src/components/sp/customaction.selector.js"
-    ,"./src/components/sp/customaction.editor.js"
-    , "./src/components/sp/ui.perms.js"
+    //,"./src/components/sp/customaction.editor.js"
+    //, "./src/components/sp/ui.perms.js"
     //"./src/pages/tests/index.js"
+    //,"./src/pages/caml.js"
 ];
 
 var runWebPack = function (debug, filePath) {
@@ -122,14 +127,36 @@ var runWebPack = function (debug, filePath) {
                 {
                     enforce: "pre",
                     test: /\.js$/,
-                    exclude: /node_modules/,
-                    loader: "eslint-loader",
-                    options: {
-                        emitError: true,
-                        emitWarning: true,
-                        fix: true
+                    exclude: /(node_modules|bower_components)/,
+                    use: [{
+                        loader: "babel-loader",
+                        options: {
+                            //presets: ['@babel/preset-env'],
+                            presets: ["es2015"]
+                            ,plugins: ["transform-flow-strip-types"]
+                        }
+                    },
+                    {
+                        loader: "eslint-loader",
+                        options: {
+                            emitError: true,
+                            emitWarning: true,
+                            fix:false 
+                        }
                     }
+                    ]
                 },
+                //{
+                //    enforce: "pre",
+                //    test: /\.js$/,
+                //    exclude: /(node_modules|bower_components)/,
+                //    loader: "eslint-loader",
+                //    options: {
+                //        emitError: true,
+                //        emitWarning: true,
+                //        fix: true
+                //    }
+                //},
                 {
                     test: /\.(eot|svg|ttf|woff|woff2)$/,
                     use: [
@@ -141,18 +168,6 @@ var runWebPack = function (debug, filePath) {
                     use: [
                         'url-loader'
                     ]
-                },
-                {
-                    test: /\.js$/,
-                    exclude: /(node_modules|bower_components)/,
-                    use: {
-                        loader: "babel-loader",
-                        options: {
-                            //presets: ['@babel/preset-env'],
-                            presets: ["es2015"]
-                            //plugins: [require('@babel/plugin-proposal-object-rest-spread')]
-                        }
-                    }
                 }
             ]
         },

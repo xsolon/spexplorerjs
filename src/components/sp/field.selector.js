@@ -25,7 +25,7 @@ import "../mirrors/jsmirror.js";
 	var debugging = window.location.href.search(/(localhost|debugfieldsel)/) > 0;
 	var trace = ns.logger.get("fieldEditor", debugging);
 
-	+function loadPublicRefs() {
+	(function loadPublicRefs() {
 
 		if ($.fn.select2) {
 			trace.debug("select2 already loaded");
@@ -34,7 +34,7 @@ import "../mirrors/jsmirror.js";
 			require("../../../public/vendor/select2/js/select2.full.js");
 			require("../../../public/vendor/select2/css/select2.css");
 		}
-	}();
+	})();
 
 	var fieldLabel = function (field) {
 		var tmpl = fieldtemplate.trim();

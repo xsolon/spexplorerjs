@@ -1,3 +1,4 @@
+//v 0.1.3 : 2018-04-09: format function & autformat when calling set
 //v 0.1.1 : 2018-03-15: Support for IE
 //v 0.1.2 : 2018-03-28: - Autocomplete tag, highlight matching tag
 //                      - Shortcuts:
@@ -145,11 +146,14 @@ window.JSHINT = JSHINT.JSHINT;
 		var editor = $(ell).data("CodeMirror");
 
 		return {
+			format: function () {
+				editor.setValue(html_beautify(editor.getValue()));
+			},
 			refresh: function () {
 				editor.refresh();
 			},
 			set: function (data) {
-				editor.setValue(data);
+				editor.setValue(html_beautify(data));
 			}, get: function () {
 				return editor.getValue();
 			}

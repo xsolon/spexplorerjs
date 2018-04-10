@@ -66,12 +66,12 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./xmleditor.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./caml.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "../../../node_modules/codemirror/addon/edit/closetag.js":
+/***/ "../../node_modules/codemirror/addon/edit/closetag.js":
 /*!***************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/edit/closetag.js ***!
   \***************************************************************************************/
@@ -107,7 +107,7 @@
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ../fold/xml-fold */ "../../../node_modules/codemirror/addon/fold/xml-fold.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ../fold/xml-fold */ "../../node_modules/codemirror/addon/fold/xml-fold.js"));
   else {}
 })(function(CodeMirror) {
   CodeMirror.defineOption("autoCloseTags", false, function(cm, val, old) {
@@ -254,7 +254,7 @@
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/edit/matchtags.js":
+/***/ "../../node_modules/codemirror/addon/edit/matchtags.js":
 /*!****************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/edit/matchtags.js ***!
   \****************************************************************************************/
@@ -266,7 +266,7 @@
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ../fold/xml-fold */ "../../../node_modules/codemirror/addon/fold/xml-fold.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ../fold/xml-fold */ "../../node_modules/codemirror/addon/fold/xml-fold.js"));
   else {}
 })(function(CodeMirror) {
   "use strict";
@@ -328,7 +328,7 @@
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/fold/brace-fold.js":
+/***/ "../../node_modules/codemirror/addon/fold/brace-fold.js":
 /*!*****************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/brace-fold.js ***!
   \*****************************************************************************************/
@@ -340,7 +340,7 @@
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
   else {}
 })(function(CodeMirror) {
 "use strict";
@@ -441,7 +441,7 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/fold/comment-fold.js":
+/***/ "../../node_modules/codemirror/addon/fold/comment-fold.js":
 /*!*******************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/comment-fold.js ***!
   \*******************************************************************************************/
@@ -453,7 +453,7 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
   else {}
 })(function(CodeMirror) {
 "use strict";
@@ -508,7 +508,7 @@ CodeMirror.registerGlobalHelper("fold", "comment", function(mode) {
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/fold/foldcode.js":
+/***/ "../../node_modules/codemirror/addon/fold/foldcode.js":
 /*!***************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldcode.js ***!
   \***************************************************************************************/
@@ -520,7 +520,7 @@ CodeMirror.registerGlobalHelper("fold", "comment", function(mode) {
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
   else {}
 })(function(CodeMirror) {
   "use strict";
@@ -668,7 +668,7 @@ CodeMirror.registerGlobalHelper("fold", "comment", function(mode) {
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/fold/foldgutter.css":
+/***/ "../../node_modules/codemirror/addon/fold/foldgutter.css":
 /*!******************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
   \******************************************************************************************/
@@ -676,7 +676,7 @@ CodeMirror.registerGlobalHelper("fold", "comment", function(mode) {
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader!./foldgutter.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/fold/foldgutter.css");
+var content = __webpack_require__(/*! !../../../css-loader!./foldgutter.css */ "../../node_modules/css-loader/index.js!../../node_modules/codemirror/addon/fold/foldgutter.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -690,7 +690,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../style-loader/lib/addStyles.js */ "../../../node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../style-loader/lib/addStyles.js */ "../../node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -698,7 +698,7 @@ if(false) {}
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/fold/foldgutter.js":
+/***/ "../../node_modules/codemirror/addon/fold/foldgutter.js":
 /*!*****************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.js ***!
   \*****************************************************************************************/
@@ -710,7 +710,7 @@ if(false) {}
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ./foldcode */ "../../../node_modules/codemirror/addon/fold/foldcode.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ./foldcode */ "../../node_modules/codemirror/addon/fold/foldcode.js"));
   else {}
 })(function(CodeMirror) {
   "use strict";
@@ -852,7 +852,7 @@ if(false) {}
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/fold/indent-fold.js":
+/***/ "../../node_modules/codemirror/addon/fold/indent-fold.js":
 /*!******************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/indent-fold.js ***!
   \******************************************************************************************/
@@ -864,7 +864,7 @@ if(false) {}
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
   else {}
 })(function(CodeMirror) {
 "use strict";
@@ -908,7 +908,7 @@ CodeMirror.registerHelper("fold", "indent", function(cm, start) {
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/fold/markdown-fold.js":
+/***/ "../../node_modules/codemirror/addon/fold/markdown-fold.js":
 /*!********************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/markdown-fold.js ***!
   \********************************************************************************************/
@@ -920,7 +920,7 @@ CodeMirror.registerHelper("fold", "indent", function(cm, start) {
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
   else {}
 })(function(CodeMirror) {
 "use strict";
@@ -965,7 +965,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/fold/xml-fold.js":
+/***/ "../../node_modules/codemirror/addon/fold/xml-fold.js":
 /*!***************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/xml-fold.js ***!
   \***************************************************************************************/
@@ -977,7 +977,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
   else {}
 })(function(CodeMirror) {
   "use strict";
@@ -1155,7 +1155,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/hint/anyword-hint.js":
+/***/ "../../node_modules/codemirror/addon/hint/anyword-hint.js":
 /*!*******************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/anyword-hint.js ***!
   \*******************************************************************************************/
@@ -1167,7 +1167,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
   else {}
 })(function(CodeMirror) {
   "use strict";
@@ -1204,7 +1204,594 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/hint/show-hint.css":
+/***/ "../../node_modules/codemirror/addon/hint/css-hint.js":
+/*!***************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/css-hint.js ***!
+  \***************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ../../mode/css/css */ "../../node_modules/codemirror/mode/css/css.js"));
+  else {}
+})(function(CodeMirror) {
+  "use strict";
+
+  var pseudoClasses = {link: 1, visited: 1, active: 1, hover: 1, focus: 1,
+                       "first-letter": 1, "first-line": 1, "first-child": 1,
+                       before: 1, after: 1, lang: 1};
+
+  CodeMirror.registerHelper("hint", "css", function(cm) {
+    var cur = cm.getCursor(), token = cm.getTokenAt(cur);
+    var inner = CodeMirror.innerMode(cm.getMode(), token.state);
+    if (inner.mode.name != "css") return;
+
+    if (token.type == "keyword" && "!important".indexOf(token.string) == 0)
+      return {list: ["!important"], from: CodeMirror.Pos(cur.line, token.start),
+              to: CodeMirror.Pos(cur.line, token.end)};
+
+    var start = token.start, end = cur.ch, word = token.string.slice(0, end - start);
+    if (/[^\w$_-]/.test(word)) {
+      word = ""; start = end = cur.ch;
+    }
+
+    var spec = CodeMirror.resolveMode("text/css");
+
+    var result = [];
+    function add(keywords) {
+      for (var name in keywords)
+        if (!word || name.lastIndexOf(word, 0) == 0)
+          result.push(name);
+    }
+
+    var st = inner.state.state;
+    if (st == "pseudo" || token.type == "variable-3") {
+      add(pseudoClasses);
+    } else if (st == "block" || st == "maybeprop") {
+      add(spec.propertyKeywords);
+    } else if (st == "prop" || st == "parens" || st == "at" || st == "params") {
+      add(spec.valueKeywords);
+      add(spec.colorKeywords);
+    } else if (st == "media" || st == "media_parens") {
+      add(spec.mediaTypes);
+      add(spec.mediaFeatures);
+    }
+
+    if (result.length) return {
+      list: result,
+      from: CodeMirror.Pos(cur.line, start),
+      to: CodeMirror.Pos(cur.line, end)
+    };
+  });
+});
+
+
+/***/ }),
+
+/***/ "../../node_modules/codemirror/addon/hint/html-hint.js":
+/*!****************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/html-hint.js ***!
+  \****************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ./xml-hint */ "../../node_modules/codemirror/addon/hint/xml-hint.js"));
+  else {}
+})(function(CodeMirror) {
+  "use strict";
+
+  var langs = "ab aa af ak sq am ar an hy as av ae ay az bm ba eu be bn bh bi bs br bg my ca ch ce ny zh cv kw co cr hr cs da dv nl dz en eo et ee fo fj fi fr ff gl ka de el gn gu ht ha he hz hi ho hu ia id ie ga ig ik io is it iu ja jv kl kn kr ks kk km ki rw ky kv kg ko ku kj la lb lg li ln lo lt lu lv gv mk mg ms ml mt mi mr mh mn na nv nb nd ne ng nn no ii nr oc oj cu om or os pa pi fa pl ps pt qu rm rn ro ru sa sc sd se sm sg sr gd sn si sk sl so st es su sw ss sv ta te tg th ti bo tk tl tn to tr ts tt tw ty ug uk ur uz ve vi vo wa cy wo fy xh yi yo za zu".split(" ");
+  var targets = ["_blank", "_self", "_top", "_parent"];
+  var charsets = ["ascii", "utf-8", "utf-16", "latin1", "latin1"];
+  var methods = ["get", "post", "put", "delete"];
+  var encs = ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"];
+  var media = ["all", "screen", "print", "embossed", "braille", "handheld", "print", "projection", "screen", "tty", "tv", "speech",
+               "3d-glasses", "resolution [>][<][=] [X]", "device-aspect-ratio: X/Y", "orientation:portrait",
+               "orientation:landscape", "device-height: [X]", "device-width: [X]"];
+  var s = { attrs: {} }; // Simple tag, reused for a whole lot of tags
+
+  var data = {
+    a: {
+      attrs: {
+        href: null, ping: null, type: null,
+        media: media,
+        target: targets,
+        hreflang: langs
+      }
+    },
+    abbr: s,
+    acronym: s,
+    address: s,
+    applet: s,
+    area: {
+      attrs: {
+        alt: null, coords: null, href: null, target: null, ping: null,
+        media: media, hreflang: langs, type: null,
+        shape: ["default", "rect", "circle", "poly"]
+      }
+    },
+    article: s,
+    aside: s,
+    audio: {
+      attrs: {
+        src: null, mediagroup: null,
+        crossorigin: ["anonymous", "use-credentials"],
+        preload: ["none", "metadata", "auto"],
+        autoplay: ["", "autoplay"],
+        loop: ["", "loop"],
+        controls: ["", "controls"]
+      }
+    },
+    b: s,
+    base: { attrs: { href: null, target: targets } },
+    basefont: s,
+    bdi: s,
+    bdo: s,
+    big: s,
+    blockquote: { attrs: { cite: null } },
+    body: s,
+    br: s,
+    button: {
+      attrs: {
+        form: null, formaction: null, name: null, value: null,
+        autofocus: ["", "autofocus"],
+        disabled: ["", "autofocus"],
+        formenctype: encs,
+        formmethod: methods,
+        formnovalidate: ["", "novalidate"],
+        formtarget: targets,
+        type: ["submit", "reset", "button"]
+      }
+    },
+    canvas: { attrs: { width: null, height: null } },
+    caption: s,
+    center: s,
+    cite: s,
+    code: s,
+    col: { attrs: { span: null } },
+    colgroup: { attrs: { span: null } },
+    command: {
+      attrs: {
+        type: ["command", "checkbox", "radio"],
+        label: null, icon: null, radiogroup: null, command: null, title: null,
+        disabled: ["", "disabled"],
+        checked: ["", "checked"]
+      }
+    },
+    data: { attrs: { value: null } },
+    datagrid: { attrs: { disabled: ["", "disabled"], multiple: ["", "multiple"] } },
+    datalist: { attrs: { data: null } },
+    dd: s,
+    del: { attrs: { cite: null, datetime: null } },
+    details: { attrs: { open: ["", "open"] } },
+    dfn: s,
+    dir: s,
+    div: s,
+    dl: s,
+    dt: s,
+    em: s,
+    embed: { attrs: { src: null, type: null, width: null, height: null } },
+    eventsource: { attrs: { src: null } },
+    fieldset: { attrs: { disabled: ["", "disabled"], form: null, name: null } },
+    figcaption: s,
+    figure: s,
+    font: s,
+    footer: s,
+    form: {
+      attrs: {
+        action: null, name: null,
+        "accept-charset": charsets,
+        autocomplete: ["on", "off"],
+        enctype: encs,
+        method: methods,
+        novalidate: ["", "novalidate"],
+        target: targets
+      }
+    },
+    frame: s,
+    frameset: s,
+    h1: s, h2: s, h3: s, h4: s, h5: s, h6: s,
+    head: {
+      attrs: {},
+      children: ["title", "base", "link", "style", "meta", "script", "noscript", "command"]
+    },
+    header: s,
+    hgroup: s,
+    hr: s,
+    html: {
+      attrs: { manifest: null },
+      children: ["head", "body"]
+    },
+    i: s,
+    iframe: {
+      attrs: {
+        src: null, srcdoc: null, name: null, width: null, height: null,
+        sandbox: ["allow-top-navigation", "allow-same-origin", "allow-forms", "allow-scripts"],
+        seamless: ["", "seamless"]
+      }
+    },
+    img: {
+      attrs: {
+        alt: null, src: null, ismap: null, usemap: null, width: null, height: null,
+        crossorigin: ["anonymous", "use-credentials"]
+      }
+    },
+    input: {
+      attrs: {
+        alt: null, dirname: null, form: null, formaction: null,
+        height: null, list: null, max: null, maxlength: null, min: null,
+        name: null, pattern: null, placeholder: null, size: null, src: null,
+        step: null, value: null, width: null,
+        accept: ["audio/*", "video/*", "image/*"],
+        autocomplete: ["on", "off"],
+        autofocus: ["", "autofocus"],
+        checked: ["", "checked"],
+        disabled: ["", "disabled"],
+        formenctype: encs,
+        formmethod: methods,
+        formnovalidate: ["", "novalidate"],
+        formtarget: targets,
+        multiple: ["", "multiple"],
+        readonly: ["", "readonly"],
+        required: ["", "required"],
+        type: ["hidden", "text", "search", "tel", "url", "email", "password", "datetime", "date", "month",
+               "week", "time", "datetime-local", "number", "range", "color", "checkbox", "radio",
+               "file", "submit", "image", "reset", "button"]
+      }
+    },
+    ins: { attrs: { cite: null, datetime: null } },
+    kbd: s,
+    keygen: {
+      attrs: {
+        challenge: null, form: null, name: null,
+        autofocus: ["", "autofocus"],
+        disabled: ["", "disabled"],
+        keytype: ["RSA"]
+      }
+    },
+    label: { attrs: { "for": null, form: null } },
+    legend: s,
+    li: { attrs: { value: null } },
+    link: {
+      attrs: {
+        href: null, type: null,
+        hreflang: langs,
+        media: media,
+        sizes: ["all", "16x16", "16x16 32x32", "16x16 32x32 64x64"]
+      }
+    },
+    map: { attrs: { name: null } },
+    mark: s,
+    menu: { attrs: { label: null, type: ["list", "context", "toolbar"] } },
+    meta: {
+      attrs: {
+        content: null,
+        charset: charsets,
+        name: ["viewport", "application-name", "author", "description", "generator", "keywords"],
+        "http-equiv": ["content-language", "content-type", "default-style", "refresh"]
+      }
+    },
+    meter: { attrs: { value: null, min: null, low: null, high: null, max: null, optimum: null } },
+    nav: s,
+    noframes: s,
+    noscript: s,
+    object: {
+      attrs: {
+        data: null, type: null, name: null, usemap: null, form: null, width: null, height: null,
+        typemustmatch: ["", "typemustmatch"]
+      }
+    },
+    ol: { attrs: { reversed: ["", "reversed"], start: null, type: ["1", "a", "A", "i", "I"] } },
+    optgroup: { attrs: { disabled: ["", "disabled"], label: null } },
+    option: { attrs: { disabled: ["", "disabled"], label: null, selected: ["", "selected"], value: null } },
+    output: { attrs: { "for": null, form: null, name: null } },
+    p: s,
+    param: { attrs: { name: null, value: null } },
+    pre: s,
+    progress: { attrs: { value: null, max: null } },
+    q: { attrs: { cite: null } },
+    rp: s,
+    rt: s,
+    ruby: s,
+    s: s,
+    samp: s,
+    script: {
+      attrs: {
+        type: ["text/javascript"],
+        src: null,
+        async: ["", "async"],
+        defer: ["", "defer"],
+        charset: charsets
+      }
+    },
+    section: s,
+    select: {
+      attrs: {
+        form: null, name: null, size: null,
+        autofocus: ["", "autofocus"],
+        disabled: ["", "disabled"],
+        multiple: ["", "multiple"]
+      }
+    },
+    small: s,
+    source: { attrs: { src: null, type: null, media: null } },
+    span: s,
+    strike: s,
+    strong: s,
+    style: {
+      attrs: {
+        type: ["text/css"],
+        media: media,
+        scoped: null
+      }
+    },
+    sub: s,
+    summary: s,
+    sup: s,
+    table: s,
+    tbody: s,
+    td: { attrs: { colspan: null, rowspan: null, headers: null } },
+    textarea: {
+      attrs: {
+        dirname: null, form: null, maxlength: null, name: null, placeholder: null,
+        rows: null, cols: null,
+        autofocus: ["", "autofocus"],
+        disabled: ["", "disabled"],
+        readonly: ["", "readonly"],
+        required: ["", "required"],
+        wrap: ["soft", "hard"]
+      }
+    },
+    tfoot: s,
+    th: { attrs: { colspan: null, rowspan: null, headers: null, scope: ["row", "col", "rowgroup", "colgroup"] } },
+    thead: s,
+    time: { attrs: { datetime: null } },
+    title: s,
+    tr: s,
+    track: {
+      attrs: {
+        src: null, label: null, "default": null,
+        kind: ["subtitles", "captions", "descriptions", "chapters", "metadata"],
+        srclang: langs
+      }
+    },
+    tt: s,
+    u: s,
+    ul: s,
+    "var": s,
+    video: {
+      attrs: {
+        src: null, poster: null, width: null, height: null,
+        crossorigin: ["anonymous", "use-credentials"],
+        preload: ["auto", "metadata", "none"],
+        autoplay: ["", "autoplay"],
+        mediagroup: ["movie"],
+        muted: ["", "muted"],
+        controls: ["", "controls"]
+      }
+    },
+    wbr: s
+  };
+
+  var globalAttrs = {
+    accesskey: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    "class": null,
+    contenteditable: ["true", "false"],
+    contextmenu: null,
+    dir: ["ltr", "rtl", "auto"],
+    draggable: ["true", "false", "auto"],
+    dropzone: ["copy", "move", "link", "string:", "file:"],
+    hidden: ["hidden"],
+    id: null,
+    inert: ["inert"],
+    itemid: null,
+    itemprop: null,
+    itemref: null,
+    itemscope: ["itemscope"],
+    itemtype: null,
+    lang: ["en", "es"],
+    spellcheck: ["true", "false"],
+    style: null,
+    tabindex: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    title: null,
+    translate: ["yes", "no"],
+    onclick: null,
+    rel: ["stylesheet", "alternate", "author", "bookmark", "help", "license", "next", "nofollow", "noreferrer", "prefetch", "prev", "search", "tag"]
+  };
+  function populate(obj) {
+    for (var attr in globalAttrs) if (globalAttrs.hasOwnProperty(attr))
+      obj.attrs[attr] = globalAttrs[attr];
+  }
+
+  populate(s);
+  for (var tag in data) if (data.hasOwnProperty(tag) && data[tag] != s)
+    populate(data[tag]);
+
+  CodeMirror.htmlSchema = data;
+  function htmlHint(cm, options) {
+    var local = {schemaInfo: data};
+    if (options) for (var opt in options) local[opt] = options[opt];
+    return CodeMirror.hint.xml(cm, local);
+  }
+  CodeMirror.registerHelper("hint", "html", htmlHint);
+});
+
+
+/***/ }),
+
+/***/ "../../node_modules/codemirror/addon/hint/javascript-hint.js":
+/*!**********************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/javascript-hint.js ***!
+  \**********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
+  else {}
+})(function(CodeMirror) {
+  var Pos = CodeMirror.Pos;
+
+  function forEach(arr, f) {
+    for (var i = 0, e = arr.length; i < e; ++i) f(arr[i]);
+  }
+
+  function arrayContains(arr, item) {
+    if (!Array.prototype.indexOf) {
+      var i = arr.length;
+      while (i--) {
+        if (arr[i] === item) {
+          return true;
+        }
+      }
+      return false;
+    }
+    return arr.indexOf(item) != -1;
+  }
+
+  function scriptHint(editor, keywords, getToken, options) {
+    // Find the token at the cursor
+    var cur = editor.getCursor(), token = getToken(editor, cur);
+    if (/\b(?:string|comment)\b/.test(token.type)) return;
+    token.state = CodeMirror.innerMode(editor.getMode(), token.state).state;
+
+    // If it's not a 'word-style' token, ignore the token.
+    if (!/^[\w$_]*$/.test(token.string)) {
+      token = {start: cur.ch, end: cur.ch, string: "", state: token.state,
+               type: token.string == "." ? "property" : null};
+    } else if (token.end > cur.ch) {
+      token.end = cur.ch;
+      token.string = token.string.slice(0, cur.ch - token.start);
+    }
+
+    var tprop = token;
+    // If it is a property, find out what it is a property of.
+    while (tprop.type == "property") {
+      tprop = getToken(editor, Pos(cur.line, tprop.start));
+      if (tprop.string != ".") return;
+      tprop = getToken(editor, Pos(cur.line, tprop.start));
+      if (!context) var context = [];
+      context.push(tprop);
+    }
+    return {list: getCompletions(token, context, keywords, options),
+            from: Pos(cur.line, token.start),
+            to: Pos(cur.line, token.end)};
+  }
+
+  function javascriptHint(editor, options) {
+    return scriptHint(editor, javascriptKeywords,
+                      function (e, cur) {return e.getTokenAt(cur);},
+                      options);
+  };
+  CodeMirror.registerHelper("hint", "javascript", javascriptHint);
+
+  function getCoffeeScriptToken(editor, cur) {
+  // This getToken, it is for coffeescript, imitates the behavior of
+  // getTokenAt method in javascript.js, that is, returning "property"
+  // type and treat "." as indepenent token.
+    var token = editor.getTokenAt(cur);
+    if (cur.ch == token.start + 1 && token.string.charAt(0) == '.') {
+      token.end = token.start;
+      token.string = '.';
+      token.type = "property";
+    }
+    else if (/^\.[\w$_]*$/.test(token.string)) {
+      token.type = "property";
+      token.start++;
+      token.string = token.string.replace(/\./, '');
+    }
+    return token;
+  }
+
+  function coffeescriptHint(editor, options) {
+    return scriptHint(editor, coffeescriptKeywords, getCoffeeScriptToken, options);
+  }
+  CodeMirror.registerHelper("hint", "coffeescript", coffeescriptHint);
+
+  var stringProps = ("charAt charCodeAt indexOf lastIndexOf substring substr slice trim trimLeft trimRight " +
+                     "toUpperCase toLowerCase split concat match replace search").split(" ");
+  var arrayProps = ("length concat join splice push pop shift unshift slice reverse sort indexOf " +
+                    "lastIndexOf every some filter forEach map reduce reduceRight ").split(" ");
+  var funcProps = "prototype apply call bind".split(" ");
+  var javascriptKeywords = ("break case catch class const continue debugger default delete do else export extends false finally for function " +
+                  "if in import instanceof new null return super switch this throw true try typeof var void while with yield").split(" ");
+  var coffeescriptKeywords = ("and break catch class continue delete do else extends false finally for " +
+                  "if in instanceof isnt new no not null of off on or return switch then throw true try typeof until void while with yes").split(" ");
+
+  function forAllProps(obj, callback) {
+    if (!Object.getOwnPropertyNames || !Object.getPrototypeOf) {
+      for (var name in obj) callback(name)
+    } else {
+      for (var o = obj; o; o = Object.getPrototypeOf(o))
+        Object.getOwnPropertyNames(o).forEach(callback)
+    }
+  }
+
+  function getCompletions(token, context, keywords, options) {
+    var found = [], start = token.string, global = options && options.globalScope || window;
+    function maybeAdd(str) {
+      if (str.lastIndexOf(start, 0) == 0 && !arrayContains(found, str)) found.push(str);
+    }
+    function gatherCompletions(obj) {
+      if (typeof obj == "string") forEach(stringProps, maybeAdd);
+      else if (obj instanceof Array) forEach(arrayProps, maybeAdd);
+      else if (obj instanceof Function) forEach(funcProps, maybeAdd);
+      forAllProps(obj, maybeAdd)
+    }
+
+    if (context && context.length) {
+      // If this is a property, see if it belongs to some object we can
+      // find in the current environment.
+      var obj = context.pop(), base;
+      if (obj.type && obj.type.indexOf("variable") === 0) {
+        if (options && options.additionalContext)
+          base = options.additionalContext[obj.string];
+        if (!options || options.useGlobalScope !== false)
+          base = base || global[obj.string];
+      } else if (obj.type == "string") {
+        base = "";
+      } else if (obj.type == "atom") {
+        base = 1;
+      } else if (obj.type == "function") {
+        if (global.jQuery != null && (obj.string == '$' || obj.string == 'jQuery') &&
+            (typeof global.jQuery == 'function'))
+          base = global.jQuery();
+        else if (global._ != null && (obj.string == '_') && (typeof global._ == 'function'))
+          base = global._();
+      }
+      while (base != null && context.length)
+        base = base[context.pop().string];
+      if (base != null) gatherCompletions(base);
+    } else {
+      // If not, just look in the global object and any local scope
+      // (reading into JS mode internals to get at the local and global variables)
+      for (var v = token.state.localVars; v; v = v.next) maybeAdd(v.name);
+      for (var v = token.state.globalVars; v; v = v.next) maybeAdd(v.name);
+      if (!options || options.useGlobalScope !== false)
+        gatherCompletions(global);
+      forEach(keywords, maybeAdd);
+    }
+    return found;
+  }
+});
+
+
+/***/ }),
+
+/***/ "../../node_modules/codemirror/addon/hint/show-hint.css":
 /*!*****************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
   \*****************************************************************************************/
@@ -1212,7 +1799,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader!./show-hint.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/hint/show-hint.css");
+var content = __webpack_require__(/*! !../../../css-loader!./show-hint.css */ "../../node_modules/css-loader/index.js!../../node_modules/codemirror/addon/hint/show-hint.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -1226,7 +1813,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../style-loader/lib/addStyles.js */ "../../../node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../style-loader/lib/addStyles.js */ "../../node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -1234,7 +1821,7 @@ if(false) {}
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/hint/show-hint.js":
+/***/ "../../node_modules/codemirror/addon/hint/show-hint.js":
 /*!****************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.js ***!
   \****************************************************************************************/
@@ -1246,7 +1833,7 @@ if(false) {}
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
   else {}
 })(function(CodeMirror) {
   "use strict";
@@ -1674,7 +2261,301 @@ if(false) {}
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/hint/xml-hint.js":
+/***/ "../../node_modules/codemirror/addon/hint/sql-hint.js":
+/*!***************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/sql-hint.js ***!
+  \***************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ../../mode/sql/sql */ "../../node_modules/codemirror/mode/sql/sql.js"));
+  else {}
+})(function(CodeMirror) {
+  "use strict";
+
+  var tables;
+  var defaultTable;
+  var keywords;
+  var identifierQuote;
+  var CONS = {
+    QUERY_DIV: ";",
+    ALIAS_KEYWORD: "AS"
+  };
+  var Pos = CodeMirror.Pos, cmpPos = CodeMirror.cmpPos;
+
+  function isArray(val) { return Object.prototype.toString.call(val) == "[object Array]" }
+
+  function getKeywords(editor) {
+    var mode = editor.doc.modeOption;
+    if (mode === "sql") mode = "text/x-sql";
+    return CodeMirror.resolveMode(mode).keywords;
+  }
+
+  function getIdentifierQuote(editor) {
+    var mode = editor.doc.modeOption;
+    if (mode === "sql") mode = "text/x-sql";
+    return CodeMirror.resolveMode(mode).identifierQuote || "`";
+  }
+
+  function getText(item) {
+    return typeof item == "string" ? item : item.text;
+  }
+
+  function wrapTable(name, value) {
+    if (isArray(value)) value = {columns: value}
+    if (!value.text) value.text = name
+    return value
+  }
+
+  function parseTables(input) {
+    var result = {}
+    if (isArray(input)) {
+      for (var i = input.length - 1; i >= 0; i--) {
+        var item = input[i]
+        result[getText(item).toUpperCase()] = wrapTable(getText(item), item)
+      }
+    } else if (input) {
+      for (var name in input)
+        result[name.toUpperCase()] = wrapTable(name, input[name])
+    }
+    return result
+  }
+
+  function getTable(name) {
+    return tables[name.toUpperCase()]
+  }
+
+  function shallowClone(object) {
+    var result = {};
+    for (var key in object) if (object.hasOwnProperty(key))
+      result[key] = object[key];
+    return result;
+  }
+
+  function match(string, word) {
+    var len = string.length;
+    var sub = getText(word).substr(0, len);
+    return string.toUpperCase() === sub.toUpperCase();
+  }
+
+  function addMatches(result, search, wordlist, formatter) {
+    if (isArray(wordlist)) {
+      for (var i = 0; i < wordlist.length; i++)
+        if (match(search, wordlist[i])) result.push(formatter(wordlist[i]))
+    } else {
+      for (var word in wordlist) if (wordlist.hasOwnProperty(word)) {
+        var val = wordlist[word]
+        if (!val || val === true)
+          val = word
+        else
+          val = val.displayText ? {text: val.text, displayText: val.displayText} : val.text
+        if (match(search, val)) result.push(formatter(val))
+      }
+    }
+  }
+
+  function cleanName(name) {
+    // Get rid name from identifierQuote and preceding dot(.)
+    if (name.charAt(0) == ".") {
+      name = name.substr(1);
+    }
+    // replace doublicated identifierQuotes with single identifierQuotes
+    // and remove single identifierQuotes
+    var nameParts = name.split(identifierQuote+identifierQuote);
+    for (var i = 0; i < nameParts.length; i++)
+      nameParts[i] = nameParts[i].replace(new RegExp(identifierQuote,"g"), "");
+    return nameParts.join(identifierQuote);
+  }
+
+  function insertIdentifierQuotes(name) {
+    var nameParts = getText(name).split(".");
+    for (var i = 0; i < nameParts.length; i++)
+      nameParts[i] = identifierQuote +
+        // doublicate identifierQuotes
+        nameParts[i].replace(new RegExp(identifierQuote,"g"), identifierQuote+identifierQuote) +
+        identifierQuote;
+    var escaped = nameParts.join(".");
+    if (typeof name == "string") return escaped;
+    name = shallowClone(name);
+    name.text = escaped;
+    return name;
+  }
+
+  function nameCompletion(cur, token, result, editor) {
+    // Try to complete table, column names and return start position of completion
+    var useIdentifierQuotes = false;
+    var nameParts = [];
+    var start = token.start;
+    var cont = true;
+    while (cont) {
+      cont = (token.string.charAt(0) == ".");
+      useIdentifierQuotes = useIdentifierQuotes || (token.string.charAt(0) == identifierQuote);
+
+      start = token.start;
+      nameParts.unshift(cleanName(token.string));
+
+      token = editor.getTokenAt(Pos(cur.line, token.start));
+      if (token.string == ".") {
+        cont = true;
+        token = editor.getTokenAt(Pos(cur.line, token.start));
+      }
+    }
+
+    // Try to complete table names
+    var string = nameParts.join(".");
+    addMatches(result, string, tables, function(w) {
+      return useIdentifierQuotes ? insertIdentifierQuotes(w) : w;
+    });
+
+    // Try to complete columns from defaultTable
+    addMatches(result, string, defaultTable, function(w) {
+      return useIdentifierQuotes ? insertIdentifierQuotes(w) : w;
+    });
+
+    // Try to complete columns
+    string = nameParts.pop();
+    var table = nameParts.join(".");
+
+    var alias = false;
+    var aliasTable = table;
+    // Check if table is available. If not, find table by Alias
+    if (!getTable(table)) {
+      var oldTable = table;
+      table = findTableByAlias(table, editor);
+      if (table !== oldTable) alias = true;
+    }
+
+    var columns = getTable(table);
+    if (columns && columns.columns)
+      columns = columns.columns;
+
+    if (columns) {
+      addMatches(result, string, columns, function(w) {
+        var tableInsert = table;
+        if (alias == true) tableInsert = aliasTable;
+        if (typeof w == "string") {
+          w = tableInsert + "." + w;
+        } else {
+          w = shallowClone(w);
+          w.text = tableInsert + "." + w.text;
+        }
+        return useIdentifierQuotes ? insertIdentifierQuotes(w) : w;
+      });
+    }
+
+    return start;
+  }
+
+  function eachWord(lineText, f) {
+    var words = lineText.split(/\s+/)
+    for (var i = 0; i < words.length; i++)
+      if (words[i]) f(words[i].replace(/[,;]/g, ''))
+  }
+
+  function findTableByAlias(alias, editor) {
+    var doc = editor.doc;
+    var fullQuery = doc.getValue();
+    var aliasUpperCase = alias.toUpperCase();
+    var previousWord = "";
+    var table = "";
+    var separator = [];
+    var validRange = {
+      start: Pos(0, 0),
+      end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
+    };
+
+    //add separator
+    var indexOfSeparator = fullQuery.indexOf(CONS.QUERY_DIV);
+    while(indexOfSeparator != -1) {
+      separator.push(doc.posFromIndex(indexOfSeparator));
+      indexOfSeparator = fullQuery.indexOf(CONS.QUERY_DIV, indexOfSeparator+1);
+    }
+    separator.unshift(Pos(0, 0));
+    separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
+
+    //find valid range
+    var prevItem = null;
+    var current = editor.getCursor()
+    for (var i = 0; i < separator.length; i++) {
+      if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
+        validRange = {start: prevItem, end: separator[i]};
+        break;
+      }
+      prevItem = separator[i];
+    }
+
+    if (validRange.start) {
+      var query = doc.getRange(validRange.start, validRange.end, false);
+
+      for (var i = 0; i < query.length; i++) {
+        var lineText = query[i];
+        eachWord(lineText, function(word) {
+          var wordUpperCase = word.toUpperCase();
+          if (wordUpperCase === aliasUpperCase && getTable(previousWord))
+            table = previousWord;
+          if (wordUpperCase !== CONS.ALIAS_KEYWORD)
+            previousWord = word;
+        });
+        if (table) break;
+      }
+    }
+    return table;
+  }
+
+  CodeMirror.registerHelper("hint", "sql", function(editor, options) {
+    tables = parseTables(options && options.tables)
+    var defaultTableName = options && options.defaultTable;
+    var disableKeywords = options && options.disableKeywords;
+    defaultTable = defaultTableName && getTable(defaultTableName);
+    keywords = getKeywords(editor);
+    identifierQuote = getIdentifierQuote(editor);
+
+    if (defaultTableName && !defaultTable)
+      defaultTable = findTableByAlias(defaultTableName, editor);
+
+    defaultTable = defaultTable || [];
+
+    if (defaultTable.columns)
+      defaultTable = defaultTable.columns;
+
+    var cur = editor.getCursor();
+    var result = [];
+    var token = editor.getTokenAt(cur), start, end, search;
+    if (token.end > cur.ch) {
+      token.end = cur.ch;
+      token.string = token.string.slice(0, cur.ch - token.start);
+    }
+
+    if (token.string.match(/^[.`"\w@]\w*$/)) {
+      search = token.string;
+      start = token.start;
+      end = token.end;
+    } else {
+      start = end = cur.ch;
+      search = "";
+    }
+    if (search.charAt(0) == "." || search.charAt(0) == identifierQuote) {
+      start = nameCompletion(cur, token, result, editor);
+    } else {
+      addMatches(result, search, defaultTable, function(w) {return w;});
+      addMatches(result, search, tables, function(w) {return w;});
+      if (!disableKeywords)
+        addMatches(result, search, keywords, function(w) {return w.toUpperCase();});
+    }
+
+    return {list: result, from: Pos(cur.line, start), to: Pos(cur.line, end)};
+  });
+});
+
+
+/***/ }),
+
+/***/ "../../node_modules/codemirror/addon/hint/xml-hint.js":
 /*!***************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/xml-hint.js ***!
   \***************************************************************************************/
@@ -1686,7 +2567,7 @@ if(false) {}
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
   else {}
 })(function(CodeMirror) {
   "use strict";
@@ -1792,7 +2673,78 @@ if(false) {}
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/lint/lint.css":
+/***/ "../../node_modules/codemirror/addon/lint/javascript-lint.js":
+/*!**********************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/javascript-lint.js ***!
+  \**********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
+  else {}
+})(function(CodeMirror) {
+  "use strict";
+  // declare global: JSHINT
+
+  function validator(text, options) {
+    if (!window.JSHINT) {
+      if (window.console) {
+        window.console.error("Error: window.JSHINT not defined, CodeMirror JavaScript linting cannot run.");
+      }
+      return [];
+    }
+    if (!options.indent) // JSHint error.character actually is a column index, this fixes underlining on lines using tabs for indentation
+      options.indent = 1; // JSHint default value is 4
+    JSHINT(text, options, options.globals);
+    var errors = JSHINT.data().errors, result = [];
+    if (errors) parseErrors(errors, result);
+    return result;
+  }
+
+  CodeMirror.registerHelper("lint", "javascript", validator);
+
+  function parseErrors(errors, output) {
+    for ( var i = 0; i < errors.length; i++) {
+      var error = errors[i];
+      if (error) {
+        if (error.line <= 0) {
+          if (window.console) {
+            window.console.warn("Cannot display JSHint error (invalid line " + error.line + ")", error);
+          }
+          continue;
+        }
+
+        var start = error.character - 1, end = start + 1;
+        if (error.evidence) {
+          var index = error.evidence.substring(start).search(/.\b/);
+          if (index > -1) {
+            end += index;
+          }
+        }
+
+        // Convert to format expected by validation service
+        var hint = {
+          message: error.reason,
+          severity: error.code ? (error.code.startsWith('W') ? "warning" : "error") : "error",
+          from: CodeMirror.Pos(error.line - 1, start),
+          to: CodeMirror.Pos(error.line - 1, end)
+        };
+
+        output.push(hint);
+      }
+    }
+  }
+});
+
+
+/***/ }),
+
+/***/ "../../node_modules/codemirror/addon/lint/lint.css":
 /*!************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
   \************************************************************************************/
@@ -1800,7 +2752,7 @@ if(false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader!./lint.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/lint/lint.css");
+var content = __webpack_require__(/*! !../../../css-loader!./lint.css */ "../../node_modules/css-loader/index.js!../../node_modules/codemirror/addon/lint/lint.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -1814,7 +2766,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../style-loader/lib/addStyles.js */ "../../../node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../style-loader/lib/addStyles.js */ "../../node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -1822,7 +2774,7 @@ if(false) {}
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/addon/lint/lint.js":
+/***/ "../../node_modules/codemirror/addon/lint/lint.js":
 /*!***********************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.js ***!
   \***********************************************************************************/
@@ -1834,7 +2786,7 @@ if(false) {}
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
   else {}
 })(function(CodeMirror) {
   "use strict";
@@ -2082,7 +3034,7 @@ if(false) {}
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/lib/codemirror.css":
+/***/ "../../node_modules/codemirror/lib/codemirror.css":
 /*!***********************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
   \***********************************************************************************/
@@ -2090,7 +3042,7 @@ if(false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../css-loader!./codemirror.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/lib/codemirror.css");
+var content = __webpack_require__(/*! !../../css-loader!./codemirror.css */ "../../node_modules/css-loader/index.js!../../node_modules/codemirror/lib/codemirror.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -2104,7 +3056,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../style-loader/lib/addStyles.js */ "../../../node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../style-loader/lib/addStyles.js */ "../../node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -2112,7 +3064,7 @@ if(false) {}
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/lib/codemirror.js":
+/***/ "../../node_modules/codemirror/lib/codemirror.js":
 /*!**********************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.js ***!
   \**********************************************************************************/
@@ -11794,7 +12746,7 @@ return CodeMirror$1;
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/mode/css/css.js":
+/***/ "../../node_modules/codemirror/mode/css/css.js":
 /*!********************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/css/css.js ***!
   \********************************************************************************/
@@ -11806,7 +12758,7 @@ return CodeMirror$1;
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
   else {}
 })(function(CodeMirror) {
 "use strict";
@@ -12634,7 +13586,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js":
+/***/ "../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js":
 /*!********************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/htmlmixed/htmlmixed.js ***!
   \********************************************************************************************/
@@ -12646,7 +13598,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ../xml/xml */ "../../../node_modules/codemirror/mode/xml/xml.js"), __webpack_require__(/*! ../javascript/javascript */ "../../../node_modules/codemirror/mode/javascript/javascript.js"), __webpack_require__(/*! ../css/css */ "../../../node_modules/codemirror/mode/css/css.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"), __webpack_require__(/*! ../xml/xml */ "../../node_modules/codemirror/mode/xml/xml.js"), __webpack_require__(/*! ../javascript/javascript */ "../../node_modules/codemirror/mode/javascript/javascript.js"), __webpack_require__(/*! ../css/css */ "../../node_modules/codemirror/mode/css/css.js"));
   else {}
 })(function(CodeMirror) {
   "use strict";
@@ -12794,7 +13746,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/mode/javascript/javascript.js":
+/***/ "../../node_modules/codemirror/mode/javascript/javascript.js":
 /*!**********************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/javascript/javascript.js ***!
   \**********************************************************************************************/
@@ -12806,7 +13758,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
   else {}
 })(function(CodeMirror) {
 "use strict";
@@ -13670,7 +14622,505 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 
 /***/ }),
 
-/***/ "../../../node_modules/codemirror/mode/xml/xml.js":
+/***/ "../../node_modules/codemirror/mode/sql/sql.js":
+/*!********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/sql/sql.js ***!
+  \********************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
+  else {}
+})(function(CodeMirror) {
+"use strict";
+
+CodeMirror.defineMode("sql", function(config, parserConfig) {
+  "use strict";
+
+  var client         = parserConfig.client || {},
+      atoms          = parserConfig.atoms || {"false": true, "true": true, "null": true},
+      builtin        = parserConfig.builtin || {},
+      keywords       = parserConfig.keywords || {},
+      operatorChars  = parserConfig.operatorChars || /^[*+\-%<>!=&|~^]/,
+      support        = parserConfig.support || {},
+      hooks          = parserConfig.hooks || {},
+      dateSQL        = parserConfig.dateSQL || {"date" : true, "time" : true, "timestamp" : true},
+      backslashStringEscapes = parserConfig.backslashStringEscapes !== false
+
+  function tokenBase(stream, state) {
+    var ch = stream.next();
+
+    // call hooks from the mime type
+    if (hooks[ch]) {
+      var result = hooks[ch](stream, state);
+      if (result !== false) return result;
+    }
+
+    if (support.hexNumber &&
+      ((ch == "0" && stream.match(/^[xX][0-9a-fA-F]+/))
+      || (ch == "x" || ch == "X") && stream.match(/^'[0-9a-fA-F]+'/))) {
+      // hex
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/hexadecimal-literals.html
+      return "number";
+    } else if (support.binaryNumber &&
+      (((ch == "b" || ch == "B") && stream.match(/^'[01]+'/))
+      || (ch == "0" && stream.match(/^b[01]+/)))) {
+      // bitstring
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/bit-field-literals.html
+      return "number";
+    } else if (ch.charCodeAt(0) > 47 && ch.charCodeAt(0) < 58) {
+      // numbers
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/number-literals.html
+      stream.match(/^[0-9]*(\.[0-9]+)?([eE][-+]?[0-9]+)?/);
+      support.decimallessFloat && stream.match(/^\.(?!\.)/);
+      return "number";
+    } else if (ch == "?" && (stream.eatSpace() || stream.eol() || stream.eat(";"))) {
+      // placeholders
+      return "variable-3";
+    } else if (ch == "'" || (ch == '"' && support.doubleQuote)) {
+      // strings
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/string-literals.html
+      state.tokenize = tokenLiteral(ch);
+      return state.tokenize(stream, state);
+    } else if ((((support.nCharCast && (ch == "n" || ch == "N"))
+        || (support.charsetCast && ch == "_" && stream.match(/[a-z][a-z0-9]*/i)))
+        && (stream.peek() == "'" || stream.peek() == '"'))) {
+      // charset casting: _utf8'str', N'str', n'str'
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/string-literals.html
+      return "keyword";
+    } else if (/^[\(\),\;\[\]]/.test(ch)) {
+      // no highlighting
+      return null;
+    } else if (support.commentSlashSlash && ch == "/" && stream.eat("/")) {
+      // 1-line comment
+      stream.skipToEnd();
+      return "comment";
+    } else if ((support.commentHash && ch == "#")
+        || (ch == "-" && stream.eat("-") && (!support.commentSpaceRequired || stream.eat(" ")))) {
+      // 1-line comments
+      // ref: https://kb.askmonty.org/en/comment-syntax/
+      stream.skipToEnd();
+      return "comment";
+    } else if (ch == "/" && stream.eat("*")) {
+      // multi-line comments
+      // ref: https://kb.askmonty.org/en/comment-syntax/
+      state.tokenize = tokenComment(1);
+      return state.tokenize(stream, state);
+    } else if (ch == ".") {
+      // .1 for 0.1
+      if (support.zerolessFloat && stream.match(/^(?:\d+(?:e[+-]?\d+)?)/i))
+        return "number";
+      if (stream.match(/^\.+/))
+        return null
+      // .table_name (ODBC)
+      // // ref: http://dev.mysql.com/doc/refman/5.6/en/identifier-qualifiers.html
+      if (support.ODBCdotTable && stream.match(/^[\w\d_]+/))
+        return "variable-2";
+    } else if (operatorChars.test(ch)) {
+      // operators
+      stream.eatWhile(operatorChars);
+      return null;
+    } else if (ch == '{' &&
+        (stream.match(/^( )*(d|D|t|T|ts|TS)( )*'[^']*'( )*}/) || stream.match(/^( )*(d|D|t|T|ts|TS)( )*"[^"]*"( )*}/))) {
+      // dates (weird ODBC syntax)
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/date-and-time-literals.html
+      return "number";
+    } else {
+      stream.eatWhile(/^[_\w\d]/);
+      var word = stream.current().toLowerCase();
+      // dates (standard SQL syntax)
+      // ref: http://dev.mysql.com/doc/refman/5.5/en/date-and-time-literals.html
+      if (dateSQL.hasOwnProperty(word) && (stream.match(/^( )+'[^']*'/) || stream.match(/^( )+"[^"]*"/)))
+        return "number";
+      if (atoms.hasOwnProperty(word)) return "atom";
+      if (builtin.hasOwnProperty(word)) return "builtin";
+      if (keywords.hasOwnProperty(word)) return "keyword";
+      if (client.hasOwnProperty(word)) return "string-2";
+      return null;
+    }
+  }
+
+  // 'string', with char specified in quote escaped by '\'
+  function tokenLiteral(quote) {
+    return function(stream, state) {
+      var escaped = false, ch;
+      while ((ch = stream.next()) != null) {
+        if (ch == quote && !escaped) {
+          state.tokenize = tokenBase;
+          break;
+        }
+        escaped = backslashStringEscapes && !escaped && ch == "\\";
+      }
+      return "string";
+    };
+  }
+  function tokenComment(depth) {
+    return function(stream, state) {
+      var m = stream.match(/^.*?(\/\*|\*\/)/)
+      if (!m) stream.skipToEnd()
+      else if (m[1] == "/*") state.tokenize = tokenComment(depth + 1)
+      else if (depth > 1) state.tokenize = tokenComment(depth - 1)
+      else state.tokenize = tokenBase
+      return "comment"
+    }
+  }
+
+  function pushContext(stream, state, type) {
+    state.context = {
+      prev: state.context,
+      indent: stream.indentation(),
+      col: stream.column(),
+      type: type
+    };
+  }
+
+  function popContext(state) {
+    state.indent = state.context.indent;
+    state.context = state.context.prev;
+  }
+
+  return {
+    startState: function() {
+      return {tokenize: tokenBase, context: null};
+    },
+
+    token: function(stream, state) {
+      if (stream.sol()) {
+        if (state.context && state.context.align == null)
+          state.context.align = false;
+      }
+      if (state.tokenize == tokenBase && stream.eatSpace()) return null;
+
+      var style = state.tokenize(stream, state);
+      if (style == "comment") return style;
+
+      if (state.context && state.context.align == null)
+        state.context.align = true;
+
+      var tok = stream.current();
+      if (tok == "(")
+        pushContext(stream, state, ")");
+      else if (tok == "[")
+        pushContext(stream, state, "]");
+      else if (state.context && state.context.type == tok)
+        popContext(state);
+      return style;
+    },
+
+    indent: function(state, textAfter) {
+      var cx = state.context;
+      if (!cx) return CodeMirror.Pass;
+      var closing = textAfter.charAt(0) == cx.type;
+      if (cx.align) return cx.col + (closing ? 0 : 1);
+      else return cx.indent + (closing ? 0 : config.indentUnit);
+    },
+
+    blockCommentStart: "/*",
+    blockCommentEnd: "*/",
+    lineComment: support.commentSlashSlash ? "//" : support.commentHash ? "#" : "--"
+  };
+});
+
+(function() {
+  "use strict";
+
+  // `identifier`
+  function hookIdentifier(stream) {
+    // MySQL/MariaDB identifiers
+    // ref: http://dev.mysql.com/doc/refman/5.6/en/identifier-qualifiers.html
+    var ch;
+    while ((ch = stream.next()) != null) {
+      if (ch == "`" && !stream.eat("`")) return "variable-2";
+    }
+    stream.backUp(stream.current().length - 1);
+    return stream.eatWhile(/\w/) ? "variable-2" : null;
+  }
+
+  // "identifier"
+  function hookIdentifierDoublequote(stream) {
+    // Standard SQL /SQLite identifiers
+    // ref: http://web.archive.org/web/20160813185132/http://savage.net.au/SQL/sql-99.bnf.html#delimited%20identifier
+    // ref: http://sqlite.org/lang_keywords.html
+    var ch;
+    while ((ch = stream.next()) != null) {
+      if (ch == "\"" && !stream.eat("\"")) return "variable-2";
+    }
+    stream.backUp(stream.current().length - 1);
+    return stream.eatWhile(/\w/) ? "variable-2" : null;
+  }
+
+  // variable token
+  function hookVar(stream) {
+    // variables
+    // @@prefix.varName @varName
+    // varName can be quoted with ` or ' or "
+    // ref: http://dev.mysql.com/doc/refman/5.5/en/user-variables.html
+    if (stream.eat("@")) {
+      stream.match(/^session\./);
+      stream.match(/^local\./);
+      stream.match(/^global\./);
+    }
+
+    if (stream.eat("'")) {
+      stream.match(/^.*'/);
+      return "variable-2";
+    } else if (stream.eat('"')) {
+      stream.match(/^.*"/);
+      return "variable-2";
+    } else if (stream.eat("`")) {
+      stream.match(/^.*`/);
+      return "variable-2";
+    } else if (stream.match(/^[0-9a-zA-Z$\.\_]+/)) {
+      return "variable-2";
+    }
+    return null;
+  };
+
+  // short client keyword token
+  function hookClient(stream) {
+    // \N means NULL
+    // ref: http://dev.mysql.com/doc/refman/5.5/en/null-values.html
+    if (stream.eat("N")) {
+        return "atom";
+    }
+    // \g, etc
+    // ref: http://dev.mysql.com/doc/refman/5.5/en/mysql-commands.html
+    return stream.match(/^[a-zA-Z.#!?]/) ? "variable-2" : null;
+  }
+
+  // these keywords are used by all SQL dialects (however, a mode can still overwrite it)
+  var sqlKeywords = "alter and as asc between by count create delete desc distinct drop from group having in insert into is join like not on or order select set table union update values where limit ";
+
+  // turn a space-separated list into an array
+  function set(str) {
+    var obj = {}, words = str.split(" ");
+    for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
+    return obj;
+  }
+
+  // A generic SQL Mode. It's not a standard, it just try to support what is generally supported
+  CodeMirror.defineMIME("text/x-sql", {
+    name: "sql",
+    keywords: set(sqlKeywords + "begin"),
+    builtin: set("bool boolean bit blob enum long longblob longtext medium mediumblob mediumint mediumtext time timestamp tinyblob tinyint tinytext text bigint int int1 int2 int3 int4 int8 integer float float4 float8 double char varbinary varchar varcharacter precision real date datetime year unsigned signed decimal numeric"),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=]/,
+    dateSQL: set("date time timestamp"),
+    support: set("ODBCdotTable doubleQuote binaryNumber hexNumber")
+  });
+
+  CodeMirror.defineMIME("text/x-mssql", {
+    name: "sql",
+    client: set("charset clear connect edit ego exit go help nopager notee nowarning pager print prompt quit rehash source status system tee"),
+    keywords: set(sqlKeywords + "begin trigger proc view index for add constraint key primary foreign collate clustered nonclustered declare exec"),
+    builtin: set("bigint numeric bit smallint decimal smallmoney int tinyint money float real char varchar text nchar nvarchar ntext binary varbinary image cursor timestamp hierarchyid uniqueidentifier sql_variant xml table "),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=]/,
+    backslashStringEscapes: false,
+    dateSQL: set("date datetimeoffset datetime2 smalldatetime datetime time"),
+    hooks: {
+      "@":   hookVar
+    }
+  });
+
+  CodeMirror.defineMIME("text/x-mysql", {
+    name: "sql",
+    client: set("charset clear connect edit ego exit go help nopager notee nowarning pager print prompt quit rehash source status system tee"),
+    keywords: set(sqlKeywords + "accessible action add after algorithm all analyze asensitive at authors auto_increment autocommit avg avg_row_length before binary binlog both btree cache call cascade cascaded case catalog_name chain change changed character check checkpoint checksum class_origin client_statistics close coalesce code collate collation collations column columns comment commit committed completion concurrent condition connection consistent constraint contains continue contributors convert cross current current_date current_time current_timestamp current_user cursor data database databases day_hour day_microsecond day_minute day_second deallocate dec declare default delay_key_write delayed delimiter des_key_file describe deterministic dev_pop dev_samp deviance diagnostics directory disable discard distinctrow div dual dumpfile each elseif enable enclosed end ends engine engines enum errors escape escaped even event events every execute exists exit explain extended fast fetch field fields first flush for force foreign found_rows full fulltext function general get global grant grants group group_concat handler hash help high_priority hosts hour_microsecond hour_minute hour_second if ignore ignore_server_ids import index index_statistics infile inner innodb inout insensitive insert_method install interval invoker isolation iterate key keys kill language last leading leave left level limit linear lines list load local localtime localtimestamp lock logs low_priority master master_heartbeat_period master_ssl_verify_server_cert masters match max max_rows maxvalue message_text middleint migrate min min_rows minute_microsecond minute_second mod mode modifies modify mutex mysql_errno natural next no no_write_to_binlog offline offset one online open optimize option optionally out outer outfile pack_keys parser partition partitions password phase plugin plugins prepare preserve prev primary privileges procedure processlist profile profiles purge query quick range read read_write reads real rebuild recover references regexp relaylog release remove rename reorganize repair repeatable replace require resignal restrict resume return returns revoke right rlike rollback rollup row row_format rtree savepoint schedule schema schema_name schemas second_microsecond security sensitive separator serializable server session share show signal slave slow smallint snapshot soname spatial specific sql sql_big_result sql_buffer_result sql_cache sql_calc_found_rows sql_no_cache sql_small_result sqlexception sqlstate sqlwarning ssl start starting starts status std stddev stddev_pop stddev_samp storage straight_join subclass_origin sum suspend table_name table_statistics tables tablespace temporary terminated to trailing transaction trigger triggers truncate uncommitted undo uninstall unique unlock upgrade usage use use_frm user user_resources user_statistics using utc_date utc_time utc_timestamp value variables varying view views warnings when while with work write xa xor year_month zerofill begin do then else loop repeat"),
+    builtin: set("bool boolean bit blob decimal double float long longblob longtext medium mediumblob mediumint mediumtext time timestamp tinyblob tinyint tinytext text bigint int int1 int2 int3 int4 int8 integer float float4 float8 double char varbinary varchar varcharacter precision date datetime year unsigned signed numeric"),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=&|^]/,
+    dateSQL: set("date time timestamp"),
+    support: set("ODBCdotTable decimallessFloat zerolessFloat binaryNumber hexNumber doubleQuote nCharCast charsetCast commentHash commentSpaceRequired"),
+    hooks: {
+      "@":   hookVar,
+      "`":   hookIdentifier,
+      "\\":  hookClient
+    }
+  });
+
+  CodeMirror.defineMIME("text/x-mariadb", {
+    name: "sql",
+    client: set("charset clear connect edit ego exit go help nopager notee nowarning pager print prompt quit rehash source status system tee"),
+    keywords: set(sqlKeywords + "accessible action add after algorithm all always analyze asensitive at authors auto_increment autocommit avg avg_row_length before binary binlog both btree cache call cascade cascaded case catalog_name chain change changed character check checkpoint checksum class_origin client_statistics close coalesce code collate collation collations column columns comment commit committed completion concurrent condition connection consistent constraint contains continue contributors convert cross current current_date current_time current_timestamp current_user cursor data database databases day_hour day_microsecond day_minute day_second deallocate dec declare default delay_key_write delayed delimiter des_key_file describe deterministic dev_pop dev_samp deviance diagnostics directory disable discard distinctrow div dual dumpfile each elseif enable enclosed end ends engine engines enum errors escape escaped even event events every execute exists exit explain extended fast fetch field fields first flush for force foreign found_rows full fulltext function general generated get global grant grants group groupby_concat handler hard hash help high_priority hosts hour_microsecond hour_minute hour_second if ignore ignore_server_ids import index index_statistics infile inner innodb inout insensitive insert_method install interval invoker isolation iterate key keys kill language last leading leave left level limit linear lines list load local localtime localtimestamp lock logs low_priority master master_heartbeat_period master_ssl_verify_server_cert masters match max max_rows maxvalue message_text middleint migrate min min_rows minute_microsecond minute_second mod mode modifies modify mutex mysql_errno natural next no no_write_to_binlog offline offset one online open optimize option optionally out outer outfile pack_keys parser partition partitions password persistent phase plugin plugins prepare preserve prev primary privileges procedure processlist profile profiles purge query quick range read read_write reads real rebuild recover references regexp relaylog release remove rename reorganize repair repeatable replace require resignal restrict resume return returns revoke right rlike rollback rollup row row_format rtree savepoint schedule schema schema_name schemas second_microsecond security sensitive separator serializable server session share show shutdown signal slave slow smallint snapshot soft soname spatial specific sql sql_big_result sql_buffer_result sql_cache sql_calc_found_rows sql_no_cache sql_small_result sqlexception sqlstate sqlwarning ssl start starting starts status std stddev stddev_pop stddev_samp storage straight_join subclass_origin sum suspend table_name table_statistics tables tablespace temporary terminated to trailing transaction trigger triggers truncate uncommitted undo uninstall unique unlock upgrade usage use use_frm user user_resources user_statistics using utc_date utc_time utc_timestamp value variables varying view views virtual warnings when while with work write xa xor year_month zerofill begin do then else loop repeat"),
+    builtin: set("bool boolean bit blob decimal double float long longblob longtext medium mediumblob mediumint mediumtext time timestamp tinyblob tinyint tinytext text bigint int int1 int2 int3 int4 int8 integer float float4 float8 double char varbinary varchar varcharacter precision date datetime year unsigned signed numeric"),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=&|^]/,
+    dateSQL: set("date time timestamp"),
+    support: set("ODBCdotTable decimallessFloat zerolessFloat binaryNumber hexNumber doubleQuote nCharCast charsetCast commentHash commentSpaceRequired"),
+    hooks: {
+      "@":   hookVar,
+      "`":   hookIdentifier,
+      "\\":  hookClient
+    }
+  });
+
+  // provided by the phpLiteAdmin project - phpliteadmin.org
+  CodeMirror.defineMIME("text/x-sqlite", {
+    name: "sql",
+    // commands of the official SQLite client, ref: https://www.sqlite.org/cli.html#dotcmd
+    client: set("auth backup bail binary changes check clone databases dbinfo dump echo eqp exit explain fullschema headers help import imposter indexes iotrace limit lint load log mode nullvalue once open output print prompt quit read restore save scanstats schema separator session shell show stats system tables testcase timeout timer trace vfsinfo vfslist vfsname width"),
+    // ref: http://sqlite.org/lang_keywords.html
+    keywords: set(sqlKeywords + "abort action add after all analyze attach autoincrement before begin cascade case cast check collate column commit conflict constraint cross current_date current_time current_timestamp database default deferrable deferred detach each else end escape except exclusive exists explain fail for foreign full glob if ignore immediate index indexed initially inner instead intersect isnull key left limit match natural no notnull null of offset outer plan pragma primary query raise recursive references regexp reindex release rename replace restrict right rollback row savepoint temp temporary then to transaction trigger unique using vacuum view virtual when with without"),
+    // SQLite is weakly typed, ref: http://sqlite.org/datatype3.html. This is just a list of some common types.
+    builtin: set("bool boolean bit blob decimal double float long longblob longtext medium mediumblob mediumint mediumtext time timestamp tinyblob tinyint tinytext text clob bigint int int2 int8 integer float double char varchar date datetime year unsigned signed numeric real"),
+    // ref: http://sqlite.org/syntax/literal-value.html
+    atoms: set("null current_date current_time current_timestamp"),
+    // ref: http://sqlite.org/lang_expr.html#binaryops
+    operatorChars: /^[*+\-%<>!=&|/~]/,
+    // SQLite is weakly typed, ref: http://sqlite.org/datatype3.html. This is just a list of some common types.
+    dateSQL: set("date time timestamp datetime"),
+    support: set("decimallessFloat zerolessFloat"),
+    identifierQuote: "\"",  //ref: http://sqlite.org/lang_keywords.html
+    hooks: {
+      // bind-parameters ref:http://sqlite.org/lang_expr.html#varparam
+      "@":   hookVar,
+      ":":   hookVar,
+      "?":   hookVar,
+      "$":   hookVar,
+      // The preferred way to escape Identifiers is using double quotes, ref: http://sqlite.org/lang_keywords.html
+      "\"":   hookIdentifierDoublequote,
+      // there is also support for backtics, ref: http://sqlite.org/lang_keywords.html
+      "`":   hookIdentifier
+    }
+  });
+
+  // the query language used by Apache Cassandra is called CQL, but this mime type
+  // is called Cassandra to avoid confusion with Contextual Query Language
+  CodeMirror.defineMIME("text/x-cassandra", {
+    name: "sql",
+    client: { },
+    keywords: set("add all allow alter and any apply as asc authorize batch begin by clustering columnfamily compact consistency count create custom delete desc distinct drop each_quorum exists filtering from grant if in index insert into key keyspace keyspaces level limit local_one local_quorum modify nan norecursive nosuperuser not of on one order password permission permissions primary quorum rename revoke schema select set storage superuser table three to token truncate ttl two type unlogged update use user users using values where with writetime"),
+    builtin: set("ascii bigint blob boolean counter decimal double float frozen inet int list map static text timestamp timeuuid tuple uuid varchar varint"),
+    atoms: set("false true infinity NaN"),
+    operatorChars: /^[<>=]/,
+    dateSQL: { },
+    support: set("commentSlashSlash decimallessFloat"),
+    hooks: { }
+  });
+
+  // this is based on Peter Raganitsch's 'plsql' mode
+  CodeMirror.defineMIME("text/x-plsql", {
+    name:       "sql",
+    client:     set("appinfo arraysize autocommit autoprint autorecovery autotrace blockterminator break btitle cmdsep colsep compatibility compute concat copycommit copytypecheck define describe echo editfile embedded escape exec execute feedback flagger flush heading headsep instance linesize lno loboffset logsource long longchunksize markup native newpage numformat numwidth pagesize pause pno recsep recsepchar release repfooter repheader serveroutput shiftinout show showmode size spool sqlblanklines sqlcase sqlcode sqlcontinue sqlnumber sqlpluscompatibility sqlprefix sqlprompt sqlterminator suffix tab term termout time timing trimout trimspool ttitle underline verify version wrap"),
+    keywords:   set("abort accept access add all alter and any array arraylen as asc assert assign at attributes audit authorization avg base_table begin between binary_integer body boolean by case cast char char_base check close cluster clusters colauth column comment commit compress connect connected constant constraint crash create current currval cursor data_base database date dba deallocate debugoff debugon decimal declare default definition delay delete desc digits dispose distinct do drop else elseif elsif enable end entry escape exception exception_init exchange exclusive exists exit external fast fetch file for force form from function generic goto grant group having identified if immediate in increment index indexes indicator initial initrans insert interface intersect into is key level library like limited local lock log logging long loop master maxextents maxtrans member minextents minus mislabel mode modify multiset new next no noaudit nocompress nologging noparallel not nowait number_base object of off offline on online only open option or order out package parallel partition pctfree pctincrease pctused pls_integer positive positiven pragma primary prior private privileges procedure public raise range raw read rebuild record ref references refresh release rename replace resource restrict return returning returns reverse revoke rollback row rowid rowlabel rownum rows run savepoint schema segment select separate session set share snapshot some space split sql start statement storage subtype successful synonym tabauth table tables tablespace task terminate then to trigger truncate type union unique unlimited unrecoverable unusable update use using validate value values variable view views when whenever where while with work"),
+    builtin:    set("abs acos add_months ascii asin atan atan2 average bfile bfilename bigserial bit blob ceil character chartorowid chr clob concat convert cos cosh count dec decode deref dual dump dup_val_on_index empty error exp false float floor found glb greatest hextoraw initcap instr instrb int integer isopen last_day least length lengthb ln lower lpad ltrim lub make_ref max min mlslabel mod months_between natural naturaln nchar nclob new_time next_day nextval nls_charset_decl_len nls_charset_id nls_charset_name nls_initcap nls_lower nls_sort nls_upper nlssort no_data_found notfound null number numeric nvarchar2 nvl others power rawtohex real reftohex round rowcount rowidtochar rowtype rpad rtrim serial sign signtype sin sinh smallint soundex sqlcode sqlerrm sqrt stddev string substr substrb sum sysdate tan tanh to_char text to_date to_label to_multi_byte to_number to_single_byte translate true trunc uid unlogged upper user userenv varchar varchar2 variance varying vsize xml"),
+    operatorChars: /^[*+\-%<>!=~]/,
+    dateSQL:    set("date time timestamp"),
+    support:    set("doubleQuote nCharCast zerolessFloat binaryNumber hexNumber")
+  });
+
+  // Created to support specific hive keywords
+  CodeMirror.defineMIME("text/x-hive", {
+    name: "sql",
+    keywords: set("select alter $elem$ $key$ $value$ add after all analyze and archive as asc before between binary both bucket buckets by cascade case cast change cluster clustered clusterstatus collection column columns comment compute concatenate continue create cross cursor data database databases dbproperties deferred delete delimited desc describe directory disable distinct distribute drop else enable end escaped exclusive exists explain export extended external false fetch fields fileformat first format formatted from full function functions grant group having hold_ddltime idxproperties if import in index indexes inpath inputdriver inputformat insert intersect into is items join keys lateral left like limit lines load local location lock locks mapjoin materialized minus msck no_drop nocompress not of offline on option or order out outer outputdriver outputformat overwrite partition partitioned partitions percent plus preserve procedure purge range rcfile read readonly reads rebuild recordreader recordwriter recover reduce regexp rename repair replace restrict revoke right rlike row schema schemas semi sequencefile serde serdeproperties set shared show show_database sort sorted ssl statistics stored streamtable table tables tablesample tblproperties temporary terminated textfile then tmp to touch transform trigger true unarchive undo union uniquejoin unlock update use using utc utc_tmestamp view when where while with"),
+    builtin: set("bool boolean long timestamp tinyint smallint bigint int float double date datetime unsigned string array struct map uniontype"),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=]/,
+    dateSQL: set("date timestamp"),
+    support: set("ODBCdotTable doubleQuote binaryNumber hexNumber")
+  });
+
+  CodeMirror.defineMIME("text/x-pgsql", {
+    name: "sql",
+    client: set("source"),
+    // https://www.postgresql.org/docs/10/static/sql-keywords-appendix.html
+    keywords: set(sqlKeywords + "a abort abs absent absolute access according action ada add admin after aggregate all allocate also always analyse analyze any are array array_agg array_max_cardinality asensitive assertion assignment asymmetric at atomic attribute attributes authorization avg backward base64 before begin begin_frame begin_partition bernoulli binary bit_length blob blocked bom both breadth c cache call called cardinality cascade cascaded case cast catalog catalog_name ceil ceiling chain characteristics characters character_length character_set_catalog character_set_name character_set_schema char_length check checkpoint class class_origin clob close cluster coalesce cobol collate collation collation_catalog collation_name collation_schema collect column columns column_name command_function command_function_code comment comments commit committed concurrently condition condition_number configuration conflict connect connection connection_name constraint constraints constraint_catalog constraint_name constraint_schema constructor contains content continue control conversion convert copy corr corresponding cost covar_pop covar_samp cross csv cube cume_dist current current_catalog current_date current_default_transform_group current_path current_role current_row current_schema current_time current_timestamp current_transform_group_for_type current_user cursor cursor_name cycle data database datalink datetime_interval_code datetime_interval_precision day db deallocate dec declare default defaults deferrable deferred defined definer degree delimiter delimiters dense_rank depth deref derived describe descriptor deterministic diagnostics dictionary disable discard disconnect dispatch dlnewcopy dlpreviouscopy dlurlcomplete dlurlcompleteonly dlurlcompletewrite dlurlpath dlurlpathonly dlurlpathwrite dlurlscheme dlurlserver dlvalue do document domain dynamic dynamic_function dynamic_function_code each element else empty enable encoding encrypted end end-exec end_frame end_partition enforced enum equals escape event every except exception exclude excluding exclusive exec execute exists exp explain expression extension external extract false family fetch file filter final first first_value flag float floor following for force foreign fortran forward found frame_row free freeze fs full function functions fusion g general generated get global go goto grant granted greatest grouping groups handler header hex hierarchy hold hour id identity if ignore ilike immediate immediately immutable implementation implicit import including increment indent index indexes indicator inherit inherits initially inline inner inout input insensitive instance instantiable instead integrity intersect intersection invoker isnull isolation k key key_member key_type label lag language large last last_value lateral lc_collate lc_ctype lead leading leakproof least left length level library like_regex link listen ln load local localtime localtimestamp location locator lock locked logged lower m map mapping match matched materialized max maxvalue max_cardinality member merge message_length message_octet_length message_text method min minute minvalue mod mode modifies module month more move multiset mumps name names namespace national natural nchar nclob nesting new next nfc nfd nfkc nfkd nil no none normalize normalized nothing notify notnull nowait nth_value ntile null nullable nullif nulls number object occurrences_regex octets octet_length of off offset oids old only open operator option options ordering ordinality others out outer output over overlaps overlay overriding owned owner p pad parallel parameter parameter_mode parameter_name parameter_ordinal_position parameter_specific_catalog parameter_specific_name parameter_specific_schema parser partial partition pascal passing passthrough password percent percentile_cont percentile_disc percent_rank period permission placing plans pli policy portion position position_regex power precedes preceding prepare prepared preserve primary prior privileges procedural procedure program public quote range rank read reads reassign recheck recovery recursive ref references referencing refresh regr_avgx regr_avgy regr_count regr_intercept regr_r2 regr_slope regr_sxx regr_sxy regr_syy reindex relative release rename repeatable replace replica requiring reset respect restart restore restrict restricted result return returned_cardinality returned_length returned_octet_length returned_sqlstate returning returns revoke right role rollback rollup routine routine_catalog routine_name routine_schema row rows row_count row_number rule savepoint scale schema schema_name scope scope_catalog scope_name scope_schema scroll search second section security selective self sensitive sequence sequences serializable server server_name session session_user setof sets share show similar simple size skip snapshot some source space specific specifictype specific_name sql sqlcode sqlerror sqlexception sqlstate sqlwarning sqrt stable standalone start state statement static statistics stddev_pop stddev_samp stdin stdout storage strict strip structure style subclass_origin submultiset substring substring_regex succeeds sum symmetric sysid system system_time system_user t tables tablesample tablespace table_name temp template temporary then ties timezone_hour timezone_minute to token top_level_count trailing transaction transactions_committed transactions_rolled_back transaction_active transform transforms translate translate_regex translation treat trigger trigger_catalog trigger_name trigger_schema trim trim_array true truncate trusted type types uescape unbounded uncommitted under unencrypted unique unknown unlink unlisten unlogged unnamed unnest until untyped upper uri usage user user_defined_type_catalog user_defined_type_code user_defined_type_name user_defined_type_schema using vacuum valid validate validator value value_of varbinary variadic var_pop var_samp verbose version versioning view views volatile when whenever whitespace width_bucket window within work wrapper write xmlagg xmlattributes xmlbinary xmlcast xmlcomment xmlconcat xmldeclaration xmldocument xmlelement xmlexists xmlforest xmliterate xmlnamespaces xmlparse xmlpi xmlquery xmlroot xmlschema xmlserialize xmltable xmltext xmlvalidate year yes loop repeat attach path depends detach zone"),
+    // https://www.postgresql.org/docs/10/static/datatype.html
+    builtin: set("bigint int8 bigserial serial8 bit varying varbit boolean bool box bytea character char varchar cidr circle date double precision float8 inet integer int int4 interval json jsonb line lseg macaddr macaddr8 money numeric decimal path pg_lsn point polygon real float4 smallint int2 smallserial serial2 serial serial4 text time without zone with timetz timestamp timestamptz tsquery tsvector txid_snapshot uuid xml"),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=&|^\/#@?~]/,
+    dateSQL: set("date time timestamp"),
+    support: set("ODBCdotTable decimallessFloat zerolessFloat binaryNumber hexNumber nCharCast charsetCast")
+  });
+
+  // Google's SQL-like query language, GQL
+  CodeMirror.defineMIME("text/x-gql", {
+    name: "sql",
+    keywords: set("ancestor and asc by contains desc descendant distinct from group has in is limit offset on order select superset where"),
+    atoms: set("false true"),
+    builtin: set("blob datetime first key __key__ string integer double boolean null"),
+    operatorChars: /^[*+\-%<>!=]/
+  });
+
+  // Greenplum
+  CodeMirror.defineMIME("text/x-gpsql", {
+    name: "sql",
+    client: set("source"),
+    //https://github.com/greenplum-db/gpdb/blob/master/src/include/parser/kwlist.h
+    keywords: set("abort absolute access action active add admin after aggregate all also alter always analyse analyze and any array as asc assertion assignment asymmetric at authorization backward before begin between bigint binary bit boolean both by cache called cascade cascaded case cast chain char character characteristics check checkpoint class close cluster coalesce codegen collate column comment commit committed concurrency concurrently configuration connection constraint constraints contains content continue conversion copy cost cpu_rate_limit create createdb createexttable createrole createuser cross csv cube current current_catalog current_date current_role current_schema current_time current_timestamp current_user cursor cycle data database day deallocate dec decimal declare decode default defaults deferrable deferred definer delete delimiter delimiters deny desc dictionary disable discard distinct distributed do document domain double drop dxl each else enable encoding encrypted end enum errors escape every except exchange exclude excluding exclusive execute exists explain extension external extract false family fetch fields filespace fill filter first float following for force foreign format forward freeze from full function global grant granted greatest group group_id grouping handler hash having header hold host hour identity if ignore ilike immediate immutable implicit in including inclusive increment index indexes inherit inherits initially inline inner inout input insensitive insert instead int integer intersect interval into invoker is isnull isolation join key language large last leading least left level like limit list listen load local localtime localtimestamp location lock log login mapping master match maxvalue median merge minute minvalue missing mode modifies modify month move name names national natural nchar new newline next no nocreatedb nocreateexttable nocreaterole nocreateuser noinherit nologin none noovercommit nosuperuser not nothing notify notnull nowait null nullif nulls numeric object of off offset oids old on only operator option options or order ordered others out outer over overcommit overlaps overlay owned owner parser partial partition partitions passing password percent percentile_cont percentile_disc placing plans position preceding precision prepare prepared preserve primary prior privileges procedural procedure protocol queue quote randomly range read readable reads real reassign recheck recursive ref references reindex reject relative release rename repeatable replace replica reset resource restart restrict returning returns revoke right role rollback rollup rootpartition row rows rule savepoint scatter schema scroll search second security segment select sequence serializable session session_user set setof sets share show similar simple smallint some split sql stable standalone start statement statistics stdin stdout storage strict strip subpartition subpartitions substring superuser symmetric sysid system table tablespace temp template temporary text then threshold ties time timestamp to trailing transaction treat trigger trim true truncate trusted type unbounded uncommitted unencrypted union unique unknown unlisten until update user using vacuum valid validation validator value values varchar variadic varying verbose version view volatile web when where whitespace window with within without work writable write xml xmlattributes xmlconcat xmlelement xmlexists xmlforest xmlparse xmlpi xmlroot xmlserialize year yes zone"),
+    builtin: set("bigint int8 bigserial serial8 bit varying varbit boolean bool box bytea character char varchar cidr circle date double precision float float8 inet integer int int4 interval json jsonb line lseg macaddr macaddr8 money numeric decimal path pg_lsn point polygon real float4 smallint int2 smallserial serial2 serial serial4 text time without zone with timetz timestamp timestamptz tsquery tsvector txid_snapshot uuid xml"),
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=&|^\/#@?~]/,
+    dateSQL: set("date time timestamp"),
+    support: set("ODBCdotTable decimallessFloat zerolessFloat binaryNumber hexNumber nCharCast charsetCast")
+  });
+
+  // Spark SQL
+  CodeMirror.defineMIME("text/x-sparksql", {
+    name: "sql",
+    keywords: set("add after all alter analyze and anti archive array as asc at between bucket buckets by cache cascade case cast change clear cluster clustered codegen collection column columns comment commit compact compactions compute concatenate cost create cross cube current current_date current_timestamp database databases datata dbproperties defined delete delimited desc describe dfs directories distinct distribute drop else end escaped except exchange exists explain export extended external false fields fileformat first following for format formatted from full function functions global grant group grouping having if ignore import in index indexes inner inpath inputformat insert intersect interval into is items join keys last lateral lazy left like limit lines list load local location lock locks logical macro map minus msck natural no not null nulls of on option options or order out outer outputformat over overwrite partition partitioned partitions percent preceding principals purge range recordreader recordwriter recover reduce refresh regexp rename repair replace reset restrict revoke right rlike role roles rollback rollup row rows schema schemas select semi separated serde serdeproperties set sets show skewed sort sorted start statistics stored stratify struct table tables tablesample tblproperties temp temporary terminated then to touch transaction transactions transform true truncate unarchive unbounded uncache union unlock unset use using values view when where window with"),
+    builtin: set("tinyint smallint int bigint boolean float double string binary timestamp decimal array map struct uniontype delimited serde sequencefile textfile rcfile inputformat outputformat"),
+    atoms: set("false true null"),
+    operatorChars: /^[*+\-%<>!=~&|^]/,
+    dateSQL: set("date time timestamp"),
+    support: set("ODBCdotTable doubleQuote zerolessFloat")
+  });
+
+  // Esper
+  CodeMirror.defineMIME("text/x-esper", {
+    name: "sql",
+    client: set("source"),
+    // http://www.espertech.com/esper/release-5.5.0/esper-reference/html/appendix_keywords.html
+    keywords: set("alter and as asc between by count create delete desc distinct drop from group having in insert into is join like not on or order select set table union update values where limit after all and as at asc avedev avg between by case cast coalesce count create current_timestamp day days delete define desc distinct else end escape events every exists false first from full group having hour hours in inner insert instanceof into irstream is istream join last lastweekday left limit like max match_recognize matches median measures metadatasql min minute minutes msec millisecond milliseconds not null offset on or order outer output partition pattern prev prior regexp retain-union retain-intersection right rstream sec second seconds select set some snapshot sql stddev sum then true unidirectional until update variable weekday when where window"),
+    builtin: {},
+    atoms: set("false true null"),
+    operatorChars: /^[*+\-%<>!=&|^\/#@?~]/,
+    dateSQL: set("time"),
+    support: set("decimallessFloat zerolessFloat binaryNumber hexNumber")
+  });
+}());
+
+});
+
+/*
+  How Properties of Mime Types are used by SQL Mode
+  =================================================
+
+  keywords:
+    A list of keywords you want to be highlighted.
+  builtin:
+    A list of builtin types you want to be highlighted (if you want types to be of class "builtin" instead of "keyword").
+  operatorChars:
+    All characters that must be handled as operators.
+  client:
+    Commands parsed and executed by the client (not the server).
+  support:
+    A list of supported syntaxes which are not common, but are supported by more than 1 DBMS.
+    * ODBCdotTable: .tableName
+    * zerolessFloat: .1
+    * doubleQuote
+    * nCharCast: N'string'
+    * charsetCast: _utf8'string'
+    * commentHash: use # char for comments
+    * commentSlashSlash: use // for comments
+    * commentSpaceRequired: require a space after -- for comments
+  atoms:
+    Keywords that must be highlighted as atoms,. Some DBMS's support more atoms than others:
+    UNKNOWN, INFINITY, UNDERFLOW, NaN...
+  dateSQL:
+    Used for date/time SQL standard syntax, because not all DBMS's support same temporal types.
+*/
+
+
+/***/ }),
+
+/***/ "../../node_modules/codemirror/mode/xml/xml.js":
 /*!********************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/xml/xml.js ***!
   \********************************************************************************/
@@ -13682,7 +15132,7 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../../node_modules/codemirror/lib/codemirror.js"));
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "../../node_modules/codemirror/lib/codemirror.js"));
   else {}
 })(function(CodeMirror) {
 "use strict";
@@ -14079,14 +15529,14 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/fold/foldgutter.css":
+/***/ "../../node_modules/css-loader/index.js!../../node_modules/codemirror/addon/fold/foldgutter.css":
 /*!***************************************************************************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
   \***************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../../../css-loader/lib/css-base.js */ "../../../node_modules/css-loader/lib/css-base.js")(false);
+exports = module.exports = __webpack_require__(/*! ../../../css-loader/lib/css-base.js */ "../../node_modules/css-loader/lib/css-base.js")(false);
 // imports
 
 
@@ -14098,14 +15548,14 @@ exports.push([module.i, ".CodeMirror-foldmarker {\n  color: blue;\n  text-shadow
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/hint/show-hint.css":
+/***/ "../../node_modules/css-loader/index.js!../../node_modules/codemirror/addon/hint/show-hint.css":
 /*!**************************************************************************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
   \**************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../../../css-loader/lib/css-base.js */ "../../../node_modules/css-loader/lib/css-base.js")(false);
+exports = module.exports = __webpack_require__(/*! ../../../css-loader/lib/css-base.js */ "../../node_modules/css-loader/lib/css-base.js")(false);
 // imports
 
 
@@ -14117,14 +15567,14 @@ exports.push([module.i, ".CodeMirror-hints {\n  position: absolute;\n  z-index: 
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/lint/lint.css":
+/***/ "../../node_modules/css-loader/index.js!../../node_modules/codemirror/addon/lint/lint.css":
 /*!*********************************************************************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
   \*********************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../../../css-loader/lib/css-base.js */ "../../../node_modules/css-loader/lib/css-base.js")(false);
+exports = module.exports = __webpack_require__(/*! ../../../css-loader/lib/css-base.js */ "../../node_modules/css-loader/lib/css-base.js")(false);
 // imports
 
 
@@ -14136,14 +15586,14 @@ exports.push([module.i, "/* The lint marker gutter */\n.CodeMirror-lint-markers 
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/lib/codemirror.css":
+/***/ "../../node_modules/css-loader/index.js!../../node_modules/codemirror/lib/codemirror.css":
 /*!********************************************************************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
   \********************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../../css-loader/lib/css-base.js */ "../../../node_modules/css-loader/lib/css-base.js")(false);
+exports = module.exports = __webpack_require__(/*! ../../css-loader/lib/css-base.js */ "../../node_modules/css-loader/lib/css-base.js")(false);
 // imports
 
 
@@ -14155,7 +15605,7 @@ exports.push([module.i, "/* BASICS */\n\n.CodeMirror {\n  /* Set height, width, 
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/lib/css-base.js":
+/***/ "../../node_modules/css-loader/lib/css-base.js":
 /*!********************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
   \********************************************************************************/
@@ -14242,7 +15692,7 @@ function toComment(sourceMap) {
 
 /***/ }),
 
-/***/ "../../../node_modules/jquery/dist/jquery.js":
+/***/ "../../node_modules/jquery/dist/jquery.js":
 /*!***************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
   \***************************************************************************/
@@ -24618,19 +26068,19 @@ return jQuery;
 
 /***/ }),
 
-/***/ "../../../node_modules/jquery/dist/jquery.js-exposed":
+/***/ "../../node_modules/jquery/dist/jquery.js-exposed":
 /*!***********************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
   \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["jQuery"] = __webpack_require__(/*! -!./jquery.js */ "../../../node_modules/jquery/dist/jquery.js");
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "../../../node_modules/webpack/buildin/global.js")))
+/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["jQuery"] = __webpack_require__(/*! -!./jquery.js */ "../../node_modules/jquery/dist/jquery.js");
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "../../node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
-/***/ "../../../node_modules/js-beautify/js/lib/beautify-css.js":
+/***/ "../../node_modules/js-beautify/js/lib/beautify-css.js":
 /*!****************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify-css.js ***!
   \****************************************************************************************/
@@ -25680,7 +27130,7 @@ if (true) {
 
 /***/ }),
 
-/***/ "../../../node_modules/js-beautify/js/lib/beautify-html.js":
+/***/ "../../node_modules/js-beautify/js/lib/beautify-html.js":
 /*!*****************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify-html.js ***!
   \*****************************************************************************************/
@@ -27042,9 +28492,9 @@ var style_html = legacy_beautify_html;
 /* Footer */
 if (true) {
     // Add support for AMD ( https://github.com/amdjs/amdjs-api/wiki/AMD#defineamd-property- )
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, __webpack_require__(/*! ./beautify */ "../../../node_modules/js-beautify/js/lib/beautify.js"), __webpack_require__(/*! ./beautify-css */ "../../../node_modules/js-beautify/js/lib/beautify-css.js")], __WEBPACK_AMD_DEFINE_RESULT__ = (function(requireamd) {
-        var js_beautify = __webpack_require__(/*! ./beautify */ "../../../node_modules/js-beautify/js/lib/beautify.js");
-        var css_beautify = __webpack_require__(/*! ./beautify-css */ "../../../node_modules/js-beautify/js/lib/beautify-css.js");
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, __webpack_require__(/*! ./beautify */ "../../node_modules/js-beautify/js/lib/beautify.js"), __webpack_require__(/*! ./beautify-css */ "../../node_modules/js-beautify/js/lib/beautify-css.js")], __WEBPACK_AMD_DEFINE_RESULT__ = (function(requireamd) {
+        var js_beautify = __webpack_require__(/*! ./beautify */ "../../node_modules/js-beautify/js/lib/beautify.js");
+        var css_beautify = __webpack_require__(/*! ./beautify-css */ "../../node_modules/js-beautify/js/lib/beautify-css.js");
 
         return {
             html_beautify: function(html_source, options) {
@@ -27060,7 +28510,7 @@ if (true) {
 
 /***/ }),
 
-/***/ "../../../node_modules/js-beautify/js/lib/beautify.js":
+/***/ "../../node_modules/js-beautify/js/lib/beautify.js":
 /*!************************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify.js ***!
   \************************************************************************************/
@@ -29889,7 +31339,7 @@ if (true) {
 
 /***/ }),
 
-/***/ "../../../node_modules/jshint/dist/jshint.js":
+/***/ "../../node_modules/jshint/dist/jshint.js":
 /*!***************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jshint/dist/jshint.js ***!
   \***************************************************************************/
@@ -54430,11 +55880,11 @@ if (typeof exports === "object" && exports) {
 JSHINT = require('jshint').JSHINT;
 if (typeof exports === 'object' && exports) exports.JSHINT = JSHINT;
 }());
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "../../../node_modules/webpack/buildin/global.js")))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "../../node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
-/***/ "../../../node_modules/style-loader/lib/addStyles.js":
+/***/ "../../node_modules/style-loader/lib/addStyles.js":
 /*!***********************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/style-loader/lib/addStyles.js ***!
   \***********************************************************************************/
@@ -54504,7 +55954,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(/*! ./urls */ "../../../node_modules/style-loader/lib/urls.js");
+var	fixUrls = __webpack_require__(/*! ./urls */ "../../node_modules/style-loader/lib/urls.js");
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -54821,7 +56271,7 @@ function updateLink (link, options, obj) {
 
 /***/ }),
 
-/***/ "../../../node_modules/style-loader/lib/urls.js":
+/***/ "../../node_modules/style-loader/lib/urls.js":
 /*!******************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/style-loader/lib/urls.js ***!
   \******************************************************************************/
@@ -54921,7 +56371,7 @@ module.exports = function (css) {
 
 /***/ }),
 
-/***/ "../../../node_modules/webpack/buildin/global.js":
+/***/ "../../node_modules/webpack/buildin/global.js":
 /*!***********************************!*\
   !*** (webpack)/buildin/global.js ***!
   \***********************************/
@@ -54952,10 +56402,10 @@ module.exports = g;
 
 /***/ }),
 
-/***/ "../string/string.js":
-/*!***************************!*\
-  !*** ../string/string.js ***!
-  \***************************/
+/***/ "../components/logger/logger.js":
+/*!**************************************!*\
+  !*** ../components/logger/logger.js ***!
+  \**************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -54963,146 +56413,496 @@ module.exports = g;
 
 
 /* global require */
-// v 0.1.4: 2018-04-02: - check if already defined, make jQuery global if needed
-//                          The inline check won't work for more complex modules, but it is an easy way to address multiple endpoints that load this.
-// v 0.1.2: 2018-03-10: brought back htmlEncode/htmlDecode and jQuery dependency
+
+__webpack_require__(/*! ../string/string.js */ "../components/string/string.js");
 
 (function (ns, $) {
 
-	return ns.string = ns.string || {
-		version: "0.1.4",
-		htmlEncode: function htmlEncode(value) {
-			// create a in-memory div, set it's inner text(which jQuery
-			// automatically encodes)
-			// then grab the encoded contents back out. The div never exists on
-			// the page.
-			return $("<div/>").text(value).html();
-		},
-		htmlDecode: function htmlDecode(value) {
-			return $("<div/>").html(value).text();
-		},
-		format: function format() {
-			/// TODO: unit test, breaks in some cases
-			var args = arguments;
-			var tmpl = args[0];
-			for (var i = 0; i < args.length - 1; i++) {
-				var s = "\\{" + i + "\\}";
-				var reg1 = new RegExp(s, "g");
-				tmpl = tmpl.replace(reg1, encodeURIComponent(args[i + 1]));
-			}
-			try {
-				tmpl = decodeURIComponent(tmpl);
-			} catch (e) {
-				console && console.error(e);
-				throw e;
-			}
-
-			return tmpl;
-		},
-		startsWith: function startsWith(str1, str2) {
-			return str2.length > 0 && str1.substring(0, str2.length) === str2;
-		},
-		endsWith: function endsWith(str1, str2) {
-			return str2.length > 0 && str1 && str1.substring(str1.length - str2.length, str1.length) === str2;
-		},
-		trimEnd: function trimEnd(stringToTrim, charToRemove) {
-			var s = stringToTrim || ""; // make sure str1 is not null
-			var c = charToRemove;
-			var lastIndexOf = -1;
-			for (var i = s.length - 1; i >= 0; i--) {
-				if (s[i] === c) {
-					lastIndexOf = i;
-				} else {
-					break;
-				}
-			}
-			if (lastIndexOf > -1) s = s.substring(0, lastIndexOf);
-			return s;
-		},
-		trimStart: function trimStart(stringToTrim, sToRemove, opts) {
-			var exp = "^" + sToRemove + "+";
-			var reg = RegExp(exp, opts || "gi");
-
-			var res = stringToTrim.replace(reg, "");
-			return res;
-		},
-		trim: function trim(stringToTrim, sToRemove, opts) {
-			stringToTrim = this.trimStart(stringToTrim, sToRemove, opts);
-			stringToTrim = this.trimEnd(stringToTrim, sToRemove, opts);
-			return stringToTrim;
+	var logf = function logf() {
+		var msg = ns.string.format.apply(ns.string.format, arguments);
+		if (this && this.source) {
+			msg = this.source + ": " + msg;
 		}
+		window.console && console.log.apply(console, [msg]);
 	};
-})(window.spexplorerjs = window["spexplorerjs"] || {}, window.jQuery = window["jQuery"] || __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed"));
+	var log = function log() {
+		if (this && this.source) {
+			if (arguments.length === 1 && typeof arguments[0] == "string") {
+				logf("{0}: {1}", this.source, arguments[0]);
+			} else {
+				var obj = {};
+				obj[this.source] = arguments;
+				if (arguments.length === 1) obj[this.source] = arguments[0];
+				window.console && console.log.apply(console, [obj]);
+			}
+		}
+		//if (this && this.source && arguments.length === 1 && typeof arguments[0] == "string") {
+		//	let s = this.source + ": "; for (let i = 0; i < arguments.length; i++) {
+		//		s += `{${i}} `;
+		//	}
+		//	var msg = logf(s, arguments[0]);
+		//	console.log.apply(console, [msg]);
+		//	var obj = {};
+		//	obj[this.source] = arguments;
+		//	console.log.apply(console, [obj]);
+		//         }
+		else window.console && console.log.apply(console, arguments);
+		//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+	};
+	var error = function error() {
+		window.console && console.error.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+	};
+	var warn = function warn() {
+		window.console && console.warn.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+	};
+	var debug = function debug() {
+		window.console && console.log.apply(console, arguments);
+		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+	};
+
+	var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
+		var scopedLog = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.log.apply(scopedLog, arguments);
+				onTrace && onTrace({ type: "log", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedError = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.error.apply(scopedError, arguments);
+				onTrace && onTrace({ type: "error", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedDebug = new function () {
+			var d = function d() {
+				if (debugging) {
+					ns.logger && ns.logger.log.apply(scopedDebug, arguments);
+					onTrace && onTrace({ type: "debug", args: arguments });
+				}
+			};
+			d.source = source;
+			return d;
+		}();
+
+		var scopedWarn = new function () {
+			var d = function d() {
+				ns.logger && ns.logger.error.apply(scopedWarn, arguments);
+				onTrace && onTrace({ type: "warn", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+
+		return {
+			log: scopedLog,
+			error: scopedError,
+			debug: scopedDebug,
+			warn: scopedWarn
+		};
+	};
+
+	ns["logger"] = {
+		"version": "0.0.2",
+		get: defineScopedTracing,
+		/// TODO: this should be private
+		logf: logf, "log": log, "error": error, "warn": warn, "debug": debug
+	};
+	log("logger");
+	return ns.logger;
+
+	// both of these dependencies are resolved in string.js
+})(spexplorerjs, jQuery); // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
+// v 0.0.1: 2018-03-28  - debug, get
 
 /***/ }),
 
-/***/ "./xmleditor.js":
-/*!**********************!*\
-  !*** ./xmleditor.js ***!
-  \**********************/
+/***/ "../components/mirrors/jseditor.js":
+/*!*****************************************!*\
+  !*** ../components/mirrors/jseditor.js ***!
+  \*****************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+__webpack_require__(/*! ../string/string.js */ "../components/string/string.js");
 
-var _jquery2 = _interopRequireDefault(_jquery);
+__webpack_require__(/*! ../../../node_modules/codemirror/lib/codemirror.css */ "../../node_modules/codemirror/lib/codemirror.css");
 
-__webpack_require__(/*! ../string/string.js */ "../string/string.js");
-
-var _xmleditorTemplate = __webpack_require__(/*! ./xmleditor.template.html */ "./xmleditor.template.html");
-
-var _xmleditorTemplate2 = _interopRequireDefault(_xmleditorTemplate);
-
-__webpack_require__(/*! ../../../node_modules/codemirror/lib/codemirror.css */ "../../../node_modules/codemirror/lib/codemirror.css");
-
-var _jshint = __webpack_require__(/*! ../../../node_modules/jshint/dist/jshint.js */ "../../../node_modules/jshint/dist/jshint.js");
+var _jshint = __webpack_require__(/*! ../../../node_modules/jshint/dist/jshint.js */ "../../node_modules/jshint/dist/jshint.js");
 
 var _jshint2 = _interopRequireDefault(_jshint);
 
-var _codemirror = __webpack_require__(/*! ../../../node_modules/codemirror/lib/codemirror.js */ "../../../node_modules/codemirror/lib/codemirror.js");
+var _codemirror = __webpack_require__(/*! ../../../node_modules/codemirror/lib/codemirror.js */ "../../node_modules/codemirror/lib/codemirror.js");
 
 var _codemirror2 = _interopRequireDefault(_codemirror);
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/lint.css */ "../../../node_modules/codemirror/addon/lint/lint.css");
+__webpack_require__(/*! ../../../node_modules/codemirror/mode/javascript/javascript.js */ "../../node_modules/codemirror/mode/javascript/javascript.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldgutter.css */ "../../../node_modules/codemirror/addon/fold/foldgutter.css");
+__webpack_require__(/*! ../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js */ "../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/edit/closetag.js */ "../../../node_modules/codemirror/addon/edit/closetag.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/mode/css/css.js */ "../../node_modules/codemirror/mode/css/css.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/edit/matchtags */ "../../../node_modules/codemirror/addon/edit/matchtags.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/lint.css */ "../../node_modules/codemirror/addon/lint/lint.css");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/show-hint.css */ "../../../node_modules/codemirror/addon/hint/show-hint.css");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldgutter.css */ "../../node_modules/codemirror/addon/fold/foldgutter.css");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/anyword-hint.js */ "../../../node_modules/codemirror/addon/hint/anyword-hint.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/anyword-hint.js */ "../../node_modules/codemirror/addon/hint/anyword-hint.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/show-hint.js */ "../../../node_modules/codemirror/addon/hint/show-hint.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/css-hint.js */ "../../node_modules/codemirror/addon/hint/css-hint.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/xml-hint.js */ "../../../node_modules/codemirror/addon/hint/xml-hint.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/html-hint.js */ "../../node_modules/codemirror/addon/hint/html-hint.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js */ "../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/javascript-hint.js */ "../../node_modules/codemirror/addon/hint/javascript-hint.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/mode/xml/xml.js */ "../../../node_modules/codemirror/mode/xml/xml.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/show-hint.js */ "../../node_modules/codemirror/addon/hint/show-hint.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/brace-fold.js */ "../../../node_modules/codemirror/addon/fold/brace-fold.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/sql-hint.js */ "../../node_modules/codemirror/addon/hint/sql-hint.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/comment-fold.js */ "../../../node_modules/codemirror/addon/fold/comment-fold.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/xml-hint.js */ "../../node_modules/codemirror/addon/hint/xml-hint.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldcode.js */ "../../../node_modules/codemirror/addon/fold/foldcode.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/show-hint.css */ "../../node_modules/codemirror/addon/hint/show-hint.css");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldgutter.js */ "../../../node_modules/codemirror/addon/fold/foldgutter.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/brace-fold.js */ "../../node_modules/codemirror/addon/fold/brace-fold.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/indent-fold.js */ "../../../node_modules/codemirror/addon/fold/indent-fold.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/comment-fold.js */ "../../node_modules/codemirror/addon/fold/comment-fold.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/markdown-fold.js */ "../../../node_modules/codemirror/addon/fold/markdown-fold.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldcode.js */ "../../node_modules/codemirror/addon/fold/foldcode.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/xml-fold.js */ "../../../node_modules/codemirror/addon/fold/xml-fold.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldgutter.js */ "../../node_modules/codemirror/addon/fold/foldgutter.js");
 
-__webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/lint.js */ "../../../node_modules/codemirror/addon/lint/lint.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/indent-fold.js */ "../../node_modules/codemirror/addon/fold/indent-fold.js");
 
-var _beautifyHtml = __webpack_require__(/*! ../../../node_modules/js-beautify/js/lib/beautify-html.js */ "../../../node_modules/js-beautify/js/lib/beautify-html.js");
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/markdown-fold.js */ "../../node_modules/codemirror/addon/fold/markdown-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/xml-fold.js */ "../../node_modules/codemirror/addon/fold/xml-fold.js");
+
+var _beautify = __webpack_require__(/*! ../../../node_modules/js-beautify/js/lib/beautify.js */ "../../node_modules/js-beautify/js/lib/beautify.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/lint.js */ "../../node_modules/codemirror/addon/lint/lint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/javascript-lint.js */ "../../node_modules/codemirror/addon/lint/javascript-lint.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//import "../../../node_modules/codemirror/addon/lint/json-lint.js";
+//import "../../../node_modules/codemirror/addon/lint/yaml-lint.js";
+//import "../../../node_modules/codemirror/addon/lint/lint.css";
+
+//< !--lint -->
+//import "https://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js";
+//import "https://rawgithub.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js";
+//import "csslint.js";
+//v 0.1.3 : 2018-04-09: format function & autformat when calling set
+
+window.CodeMirror = _codemirror2.default;
+//import "../../../node_modules/codemirror/addon/lint/coffeescript-lint.js";
+//import "../../../node_modules/codemirror/addon/lint/css-lint.js";
+//import "../../../node_modules/codemirror/addon/lint/html-lint.js";
+
+//< !--end fold-- >
+
+//<!-- endhint -->
+//<!-- fold-->
+
+
+//<!-- hint -->
+
+//import "../../../components/js/vakata/libs/jquery.js";
+//import "https://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.4/jquery-ui.min.js";
+//import "../../../node_modules/jquery-ui-dist/jquery-ui.min.js";
+//import "../../../public/vendor/bootstrap/js/bootstrap.js";
+
+(function (ns, $) {
+	ns.widgets = ns.widgets || {};
+	ns.widgets.jseditorinit = function (ell) {
+		window.JSHINT = _jshint2.default.JSHINT;
+		var setupJS = function setupJS(el) {
+			var editor = el.CodeMirror;
+			if (editor) {
+				editor.toTextArea();
+			}
+			editor = _codemirror2.default.fromTextArea(el, {
+				mode: "javascript",
+				lineNumbers: true,
+				lineWrapping: true,
+				foldGutter: true,
+				gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+				lint: true
+			});
+
+			editor.setOption("extraKeys", {
+				"Ctrl-Q": function CtrlQ(cm) {
+
+					cm.foldCode(cm.getCursor());
+				},
+				"Alt-R": function AltR() /*cm*/{
+					$(el).trigger("run");
+				},
+				"Alt-F": function AltF(cm) {
+
+					cm.setValue((0, _beautify.js_beautify)(cm.getValue()));
+				},
+				"Enter": function Enter() /*e*/{
+					editor.replaceSelection("\n", "end");
+				}
+			});
+
+			$(el).data("CodeMirror", editor);
+		};
+
+		setupJS(ell);
+
+		var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+		var eventer = window[eventMethod];
+		var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+
+		// Listen to message from child IFrame window
+		var editor = $(ell).data("CodeMirror");
+		eventer(messageEvent, function (e) {
+			var elem = e.data; //JSON.parse(e.data);
+
+			if (elem.action == "set") {
+				var data = ns.string.htmlDecode(elem.data);
+				editor.setValue(data);
+				editor.refresh();
+			} else if (elem.action == "get") {
+				var val = editor.getValue();
+				window.parent.postMessage(JSON.stringify({ code: val, action: elem.action, id: window.location.href.split("=")[1] }), "*");
+			}
+		});
+
+		return {
+			format: function format() {
+				editor.setValue((0, _beautify.js_beautify)(editor.getValue()));
+			},
+			refresh: function refresh() {
+				editor.refresh();
+			},
+			set: function set(data) {
+				editor.setValue((0, _beautify.js_beautify)(data));
+			}, get: function get() {
+				return editor.getValue();
+			}
+
+		};
+	};
+	ns.widgets.jseditor = function (iframe) {
+
+		iframe.contentWindow.document.write("<html><body><textarea></textarea></body></html>");
+		var cont = $(iframe).contents().find("textarea");
+		ns.widgets.jseditorinit(cont);
+	};
+})(spexplorerjs, jQuery);
+
+/***/ }),
+
+/***/ "../components/mirrors/jsmirror.js":
+/*!*****************************************!*\
+  !*** ../components/mirrors/jsmirror.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! ./jseditor.js */ "../components/mirrors/jseditor.js");
+
+var _jsmirrorTemplate = __webpack_require__(/*! ./jsmirror.template.html */ "../components/mirrors/jsmirror.template.html");
+
+var _jsmirrorTemplate2 = _interopRequireDefault(_jsmirrorTemplate);
+
+__webpack_require__(/*! ../widget.base.js */ "../components/widget.base.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (ns, $, template) {
+
+	var debugging = window.location.href.search(/(localhost|debugjsmirror)/) > 0;
+	var trace = ns.logger.get("jsmirror", debugging);
+
+	var xjsmirror = function xjsmirror(ui, opts) {
+
+		trace.debug("xjsmirror.init");
+
+		var $el = $(ui);
+
+		var state = $("div.jsmirrorstate:first", $el).html().trim();
+		opts = $.extend({ defaultScript: state }, opts);
+
+		$el.html(template.trim());
+		var run = $("button", ui);
+
+		var runScript = function runScript(code) {
+			try {
+				trace.log({ runScript: code });
+				var script = "var log = console.log, clear = console.clear;\r\n\
+                    {0}\r\n".replace("{0}", code);
+
+				var args = [];
+				var vals = [];
+
+				for (var name in resourceHash) {
+					if (resourceHash.hasOwnProperty(name)) {
+						args.push(name);
+						vals.push(resourceHash[name]);
+					}
+				}
+
+				var tempFunction = new Function(args, script);
+				var res = tempFunction.apply(tempFunction, vals);
+				if (res) console.log(res);
+			} catch (e) {
+				trace.error(e.message);
+				throw e;
+			}
+		};
+
+		var editor = null;
+
+		(function iframeImplementation() {
+
+			var iframe = $("iframe", ui);
+			iframe[0].contentWindow.document.write("<html><body><textarea></textarea></body></html>");
+
+			var head = iframe.contents().find("head");
+			$("style").each(function () {
+				// cloneNode doesnt work in IE
+				//head.append(this.cloneNode(true));
+				var html = $(this).html().trim();
+				if (html.search("CodeMirror") > 0) $("<style type='text/css'>" + html + "</style>").appendTo(head);
+			});
+
+			var editorCtrl = iframe.contents().find("textarea")[0];
+			editor = ns.widgets.jseditorinit(editorCtrl);
+
+			$(editorCtrl).on("run", function () {
+				runScript(editor.get());
+			});
+
+			run.click(function () {
+				runScript(editor.get());
+				return false;
+			});
+		})();
+
+		if (opts.defaultScript) {
+			editor.set(opts.defaultScript);
+		}
+
+		var resourceHash = {};
+
+		return {
+			refresh: function refresh() {
+				editor.refresh();
+			},
+			setScript: function setScript(obj) {
+				editor.set(obj);
+			},
+			setScriptingObject: function setScriptingObject(name, obj) {
+				resourceHash[name] = obj;
+			}
+		};
+	};
+
+	ns.widgets.addWidget("xjsmirror", xjsmirror, "0.0.3").startup();
+})(spexplorerjs, jQuery, _jsmirrorTemplate2.default);
+// v 0.0.3 - 2018/04/09     -   new option: defaultScript, load script from 'state' html element selector: div.jsmirrorstate
+//                              
+// v 0.0.2 - 2018/04/04     -   setScriptingObject: new signature allows to name resource that will be avaialbel during function execution
+// v 0.0.1 - 2018/03/28     -   Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
+//                          -   setScript method
+//                          -   use Function constructor for code execution
+//                          -   refresh method
+
+/***/ }),
+
+/***/ "../components/mirrors/jsmirror.template.html":
+/*!****************************************************!*\
+  !*** ../components/mirrors/jsmirror.template.html ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<style type=\"text/css\">\r\n    .full {\r\n        width: 100%;\r\n        height: 100%;\r\n    }\r\n</style>\r\n\r\n<div class=\"full\">\r\n    <iframe src=\"#\" class=\"full jsmirror mirror\" style=\"resize:both\"></iframe>\r\n    <button type=\"button\">Run</button>\r\n</div>";
+
+/***/ }),
+
+/***/ "../components/mirrors/xmleditor.js":
+/*!******************************************!*\
+  !*** ../components/mirrors/xmleditor.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../string/string.js */ "../components/string/string.js");
+
+var _xmleditorTemplate = __webpack_require__(/*! ./xmleditor.template.html */ "../components/mirrors/xmleditor.template.html");
+
+var _xmleditorTemplate2 = _interopRequireDefault(_xmleditorTemplate);
+
+__webpack_require__(/*! ../../../node_modules/codemirror/lib/codemirror.css */ "../../node_modules/codemirror/lib/codemirror.css");
+
+var _jshint = __webpack_require__(/*! ../../../node_modules/jshint/dist/jshint.js */ "../../node_modules/jshint/dist/jshint.js");
+
+var _jshint2 = _interopRequireDefault(_jshint);
+
+var _codemirror = __webpack_require__(/*! ../../../node_modules/codemirror/lib/codemirror.js */ "../../node_modules/codemirror/lib/codemirror.js");
+
+var _codemirror2 = _interopRequireDefault(_codemirror);
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/lint.css */ "../../node_modules/codemirror/addon/lint/lint.css");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldgutter.css */ "../../node_modules/codemirror/addon/fold/foldgutter.css");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/edit/closetag.js */ "../../node_modules/codemirror/addon/edit/closetag.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/edit/matchtags */ "../../node_modules/codemirror/addon/edit/matchtags.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/show-hint.css */ "../../node_modules/codemirror/addon/hint/show-hint.css");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/anyword-hint.js */ "../../node_modules/codemirror/addon/hint/anyword-hint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/show-hint.js */ "../../node_modules/codemirror/addon/hint/show-hint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/hint/xml-hint.js */ "../../node_modules/codemirror/addon/hint/xml-hint.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js */ "../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/mode/xml/xml.js */ "../../node_modules/codemirror/mode/xml/xml.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/brace-fold.js */ "../../node_modules/codemirror/addon/fold/brace-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/comment-fold.js */ "../../node_modules/codemirror/addon/fold/comment-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldcode.js */ "../../node_modules/codemirror/addon/fold/foldcode.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/foldgutter.js */ "../../node_modules/codemirror/addon/fold/foldgutter.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/indent-fold.js */ "../../node_modules/codemirror/addon/fold/indent-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/markdown-fold.js */ "../../node_modules/codemirror/addon/fold/markdown-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/fold/xml-fold.js */ "../../node_modules/codemirror/addon/fold/xml-fold.js");
+
+__webpack_require__(/*! ../../../node_modules/codemirror/addon/lint/lint.js */ "../../node_modules/codemirror/addon/lint/lint.js");
+
+var _beautifyHtml = __webpack_require__(/*! ../../../node_modules/js-beautify/js/lib/beautify-html.js */ "../../node_modules/js-beautify/js/lib/beautify-html.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -55122,6 +56922,7 @@ window.CodeMirror = _codemirror2.default;
 
 
 //<!-- hint -->
+//v 0.1.3 : 2018-04-09: format function & autformat when calling set
 //v 0.1.1 : 2018-03-15: Support for IE
 //v 0.1.2 : 2018-03-28: - Autocomplete tag, highlight matching tag
 //                      - Shortcuts:
@@ -55214,11 +57015,14 @@ window.JSHINT = _jshint2.default.JSHINT;
 		var editor = $(ell).data("CodeMirror");
 
 		return {
+			format: function format() {
+				editor.setValue((0, _beautifyHtml.html_beautify)(editor.getValue()));
+			},
 			refresh: function refresh() {
 				editor.refresh();
 			},
 			set: function set(data) {
-				editor.setValue(data);
+				editor.setValue((0, _beautifyHtml.html_beautify)(data));
 			}, get: function get() {
 				return editor.getValue();
 			}
@@ -55247,14 +57051,364 @@ window.JSHINT = _jshint2.default.JSHINT;
 
 /***/ }),
 
-/***/ "./xmleditor.template.html":
-/*!*********************************!*\
-  !*** ./xmleditor.template.html ***!
-  \*********************************/
+/***/ "../components/mirrors/xmleditor.template.html":
+/*!*****************************************************!*\
+  !*** ../components/mirrors/xmleditor.template.html ***!
+  \*****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
 module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        html, body, textarea {\r\n            width: 99%;\r\n            height: 99%;\r\n        }\r\n\r\n        .CodeMirror {\r\n            width: 100%;\r\n            height: 100% !important;\r\n        }\r\n    </style>\r\n<textarea></textarea>\r\n</div>";
+
+/***/ }),
+
+/***/ "../components/mirrors/xmlmirror.js":
+/*!******************************************!*\
+  !*** ../components/mirrors/xmlmirror.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(/*! jquery */ "../../node_modules/jquery/dist/jquery.js-exposed");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+__webpack_require__(/*! ../widget.base.js */ "../components/widget.base.js");
+
+__webpack_require__(/*! ./xmleditor.js */ "../components/mirrors/xmleditor.js");
+
+var _xmlmirrorTemplate = __webpack_require__(/*! ./xmlmirror.template.html */ "../components/mirrors/xmlmirror.template.html");
+
+var _xmlmirrorTemplate2 = _interopRequireDefault(_xmlmirrorTemplate);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// v 0.1.6 - 2018-04-04:    - getXml is not longer a promise
+// v 0.1.5 - 2018-03-28:    - use widget declaration
+//                          - refresh method
+(function (ns, $) {
+
+	var debugging = window.location.href.search(/(localhost|debugxmlmirror)/) > 0;
+	var tracing = ns.logger.get("xmlmirror", debugging);
+	var log = tracing.log;
+	var debug = tracing.debug;
+	debug("xxmlmirror.loading");
+	//   var error = tracing.error;
+
+	var xxmlmirror = function xxmlmirror(ui, opts) {
+
+		log("xxmlmirror.init");
+
+		var $el = $(ui);
+		var state = $("div.xmlmirrorstate:first", $el).html().trim();
+		opts = $.extend({ defaultScript: state }, opts);
+
+		$el.html(_xmlmirrorTemplate2.default.trim());
+
+		var editor = null;
+		(function iframeImplementation() {
+			var iframe = $("iframe", ui);
+
+			editor = ns.widgets.xmleditorInitIframe(iframe);
+		})();
+
+		if (opts.defaultScript) {
+			editor.set(ns.string.htmlDecode(opts.defaultScript));
+		}
+
+		var me = {};
+		me.refresh = function () {
+			editor.refresh();
+		};
+		me.getXml = function () {
+			var code = editor.get();
+			return code;
+		};
+		me.setXml = function (xml) {
+			editor.set(xml);
+		};
+
+		return me;
+	};
+
+	var widgetInfo = ns.widgets.addWidget("xxmlmirror", xxmlmirror, "0.1.5");
+
+	widgetInfo.startup();
+})(window["spexplorerjs"], _jquery2.default);
+
+/***/ }),
+
+/***/ "../components/mirrors/xmlmirror.template.html":
+/*!*****************************************************!*\
+  !*** ../components/mirrors/xmlmirror.template.html ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<style type=\"text/css\">\r\n    .full {\r\n        width: 100%;\r\n        height: 100%;\r\n    }\r\n</style>\r\n<div class=\"full\">\r\n    <iframe src=\"#\" class=\"full xmlmirror mirror\" style=\"resize:both\"></iframe>\r\n</div>\r\n";
+
+/***/ }),
+
+/***/ "../components/string/string.js":
+/*!**************************************!*\
+  !*** ../components/string/string.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/* global require */
+// v 0.1.4: 2018-04-02: - check if already defined, make jQuery global if needed
+//                          The inline check won't work for more complex modules, but it is an easy way to address multiple endpoints that load this.
+// v 0.1.2: 2018-03-10: brought back htmlEncode/htmlDecode and jQuery dependency
+
+(function (ns, $) {
+
+	return ns.string = ns.string || {
+		version: "0.1.4",
+		htmlEncode: function htmlEncode(value) {
+			// create a in-memory div, set it's inner text(which jQuery
+			// automatically encodes)
+			// then grab the encoded contents back out. The div never exists on
+			// the page.
+			return $("<div/>").text(value).html();
+		},
+		htmlDecode: function htmlDecode(value) {
+			return $("<div/>").html(value).text();
+		},
+		format: function format() {
+			/// TODO: unit test, breaks in some cases
+			var args = arguments;
+			var tmpl = args[0];
+			for (var i = 0; i < args.length - 1; i++) {
+				var s = "\\{" + i + "\\}";
+				var reg1 = new RegExp(s, "g");
+				tmpl = tmpl.replace(reg1, encodeURIComponent(args[i + 1]));
+			}
+			try {
+				tmpl = decodeURIComponent(tmpl);
+			} catch (e) {
+				console && console.error(e);
+				throw e;
+			}
+
+			return tmpl;
+		},
+		startsWith: function startsWith(str1, str2) {
+			return str2.length > 0 && str1.substring(0, str2.length) === str2;
+		},
+		endsWith: function endsWith(str1, str2) {
+			return str2.length > 0 && str1 && str1.substring(str1.length - str2.length, str1.length) === str2;
+		},
+		trimEnd: function trimEnd(stringToTrim, charToRemove) {
+			var s = stringToTrim || ""; // make sure str1 is not null
+			var c = charToRemove;
+			var lastIndexOf = -1;
+			for (var i = s.length - 1; i >= 0; i--) {
+				if (s[i] === c) {
+					lastIndexOf = i;
+				} else {
+					break;
+				}
+			}
+			if (lastIndexOf > -1) s = s.substring(0, lastIndexOf);
+			return s;
+		},
+		trimStart: function trimStart(stringToTrim, sToRemove, opts) {
+			var exp = "^" + sToRemove + "+";
+			var reg = RegExp(exp, opts || "gi");
+
+			var res = stringToTrim.replace(reg, "");
+			return res;
+		},
+		trim: function trim(stringToTrim, sToRemove, opts) {
+			stringToTrim = this.trimStart(stringToTrim, sToRemove, opts);
+			stringToTrim = this.trimEnd(stringToTrim, sToRemove, opts);
+			return stringToTrim;
+		}
+	};
+})(window.spexplorerjs = window["spexplorerjs"] || {}, window.jQuery = window["jQuery"] || __webpack_require__(/*! jquery */ "../../node_modules/jquery/dist/jquery.js-exposed"));
+
+/***/ }),
+
+/***/ "../components/widget.base.js":
+/*!************************************!*\
+  !*** ../components/widget.base.js ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! ./logger/logger.js */ "../components/logger/logger.js");
+
+(function (ns, $) {
+
+	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
+	var tracing = ns.logger.get("widgets", debugging);
+	var log = tracing.log,
+	    debug = tracing.debug;
+
+	log("widgets.register");
+	ns.widgets = ns.widgets || {};
+
+	var defineWidget = function defineWidget(name, constructor, version) {
+
+		return {
+			publicName: name,
+			constructor: constructor,
+			version: version,
+			selector: "[data-widget=\"publicName\"]".replace("publicName", name),
+			startup: function startup(context, opts) {
+
+				debug(name + ".startup");
+				var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
+				debug("selector: " + selector);
+				var elems = $(selector, context || document);
+				debug("Elems: " + elems.length);
+				elems[name](opts);
+				/// TODO: set only info for current widget (not sub widgets)
+				$(".widgetinfo" + name, elems).html(version);
+
+				return elems;
+			}
+		};
+	};
+
+	var registerWidget = function registerWidget(widgetInfo) {
+
+		$.fn[widgetInfo.publicName] = function (opts) {
+			var args = arguments;
+			var result = this.each(function () {
+
+				var $el = $(this);
+
+				var me = $el.data(widgetInfo.publicName);
+
+				if (me) {
+					// object has been initialized before
+
+					if (opts == null) {// request for instance
+					} else if (me[opts]) {
+						if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
+					}
+				} else {
+					var obj = new widgetInfo.constructor(this, opts);
+					$(".version:first", this).html(widgetInfo.version);
+					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
+				}
+			});
+
+			return result;
+		};
+
+		ns.widgets[widgetInfo.publicName] = widgetInfo;
+		log(widgetInfo.publicName + ".registered");
+	};
+
+	var addWidget = function addWidget(name, constructor, version) {
+
+		var widgetInfo = defineWidget(name, constructor, version);
+		registerWidget(widgetInfo);
+		return widgetInfo;
+	};
+
+	ns.widgets.addWidget = addWidget;
+	ns.widgets.addSpWidget = function (name, constructor, version) {
+
+		var widgetInfo = addWidget(name, constructor, version);
+
+		ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
+
+		return widgetInfo;
+	};
+})(spexplorerjs, jQuery); // 0.1.2: 2018/03/23    -   addSpWidget for SharePoint components
+//                          add version number to elements with class widgetinfo
+// 0.1.1: 2018/03/28    -   selector property
+//                          log from tracing
+// 0.1.0: 2018/03/23    -   pass options to widget constructor
+
+
+(function (ns, $) {
+
+	/// Iterate over an expanding array
+	//  Example:
+	//  var arr = [1, 2];
+	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
+	//    if (item == 1) {
+	//        arr.push(3);
+	//    }
+	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
+	//});
+	/// arr: array to process
+	/// action: promise (argument: item removed from array)
+	var processAsQueue = function processAsQueue(arr, action) {
+		return $.Deferred(function (dfd) {
+			var doNext = function doNext() {
+				if (arr == null || arr.length == 0) {
+					dfd.resolve();
+				} else {
+					var item = arr.shift();
+					action(item).done(function () {
+						doNext();
+					});
+				}
+			};
+
+			if (typeof arr == "function") {
+				arr().done(function (items) {
+					arr = items;
+					doNext();
+				});
+			} else {
+				doNext();
+			}
+		}).promise();
+	};
+
+	var enumer = function enumer(values) {
+		var me = {};
+		for (var i = 0; i < values.length; i++) {
+			me[values[i]] = 1;
+		}
+		if (Object.freeze) {
+			me = Object.freeze(me);
+		}
+
+		return me;
+	};
+
+	ns.funcs = {
+		processAsQueue: processAsQueue,
+		enumeration: enumer
+	};
+})(spexplorerjs, jQuery);
+
+/***/ }),
+
+/***/ "./caml.js":
+/*!*****************!*\
+  !*** ./caml.js ***!
+  \*****************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! ../components/logger/logger.js */ "../components/logger/logger.js");
+
+__webpack_require__(/*! ../components/mirrors/xmlmirror.js */ "../components/mirrors/xmlmirror.js");
+
+__webpack_require__(/*! ../components/mirrors/jsmirror.js */ "../components/mirrors/jsmirror.js");
+
+__webpack_require__(/*! ../components/widget.base.js */ "../components/widget.base.js");
 
 /***/ })
 

@@ -72,9 +72,9 @@
 /******/ ({
 
 /***/ "../../../node_modules/jquery/dist/jquery.js":
-/*!*********************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
-  \*********************************************************************************/
+/*!***************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
+  \***************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10448,9 +10448,9 @@ return jQuery;
 /***/ }),
 
 /***/ "../../../node_modules/jquery/dist/jquery.js-exposed":
-/*!*****************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
-  \*****************************************************************************************/
+/*!***********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
+  \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10499,6 +10499,8 @@ module.exports = g;
 
 "use strict";
 
+
+/* global require */
 
 __webpack_require__(/*! ../string/string.js */ "../string/string.js");
 
@@ -10858,13 +10860,17 @@ __webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
 "use strict";
 
 
+/* global require */
+
 var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
 __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 // v 0.0.1 : 2018-03-11 - loadSpElem
 (function (ns, $) {
@@ -10945,26 +10951,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
 __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+/// TODO: Document
+// v 0.0.3: 2018-04-04 - remove direct dependency on jquery
+// v 0.0.2: 2018-03-28 - WebDal
+// v 0.0.1: 2018-03-11 - Added loadWeb function
 (function (ns, $) {
-	var debug = window.location.href.search(/[localhost|webapi]/) > 0;
-	var log = new function () {
-		var d = function d() {
-			ns.logger && ns.logger.log.apply(log, arguments);
-			if (debug) SP.UI.Notify.addNotification(arguments[0]);
-		};
-		d.source = "webapi";
-		return d;
-	}();
+
 	/// TODO: Document
 	var createWeb = function createWeb(parentWeb, title, url, template, inheritPermissions) {
 		return $.Deferred(function (dfd) {
@@ -11031,11 +11027,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		webTemplates: webTemplates,
 		createWeb: createWeb,
 		loadWeb: loadWeb,
-		version: "0.1.2"
+		version: "0.1.3"
 	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default); /// TODO: Document
-// v 0.0.2: 2018-03-28 - WebDal
-// v 0.0.1: 2018-03-11 - Added loadWeb function
+})(spexplorerjs, jQuery);
 
 /***/ }),
 

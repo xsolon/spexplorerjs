@@ -1,30 +1,120 @@
+/// <reference path="../../../node_modules/@types/microsoft-ajax/index.d.ts" />
+/// <reference path="../../../node_modules/@types/sharepoint/index.d.ts" />
 /// <reference path="../logger/logger.js" />
+/// <reference path="../widget.base.js" />
 
+/* global require */
+
+require("../logger/logger.js");
+
+require("./sp.base.js");
+
+// v 0.0.2: 2018-04-10  - argument can be a list
 // v 0.0.1: 2018-04-04  - fallback to trace logging if necessary
 //                      - new args.list parameter
 
-import "../logger/logger.js";
-import "./sp.base.js";
-
 (function (ns, $) {
 
-	var SpDal = function (args, log, error) {
+	var debugging = window.location.href.search(/(localhost|sp.list)/) > 0;
+	var trace = ns.logger.get("sp.list", debugging);
 
-		var ctx = null;
-		try {
-			ctx = new SP.ClientContext();
-		} catch (e) {
-			ctx = SP.ClientContext.get_current();
+	const getAll = function (splist /* SP.List */, spctx /*SP.ClientContext */, caml /* string */, folder/* string */, limit/* int */) {
+
+		limit = limit || 0;
+		var query = new SP.CamlQuery();
+
+		const queryXml = caml || "<View Scope='Recursive'>\
+        <ViewFields>\
+          <FieldRef Name='ID'></FieldRef>\
+        </ViewFields><RowLimit>1000</RowLimit>\
+      </View>";
+
+		if (folder) {
+			query.set_folderServerRelativeUrl(folder);
 		}
-		var web = ctx.get_web();
-		var lists = web.get_lists();
-		var list = args.list || null;
+
+		query.set_viewXml(queryXml);
+
+		var items = [],
+			spItems;
+
+		var parseRows = function (currrentItems) {
+			const itemsCount = currrentItems.get_count();
+			for (let i = 0; i < itemsCount; i++) {
+				const item = currrentItems.itemAt(i);
+				if (item) {
+					items.push(item);
+				}
+			}
+		};
+
+		var loadNext = function (pageInfo) {
+
+			trace.debug(`page: ${pageInfo}`);
+			pageInfo = pageInfo || "";
+
+			const pos = new SP.ListItemCollectionPosition();
+			pos.set_pagingInfo(pageInfo);
+			query.set_listItemCollectionPosition(pos);
+			spItems = splist.getItems(query);
+			spctx.load(spItems);
+
+			var onSuccess = function () /*sender, args*/ {
+				parseRows(spItems);
+				var position = spItems.get_listItemCollectionPosition();
+				if (position !== null && (limit === 0 || items.length < limit)) {
+					var info = position.get_pagingInfo();
+					loadNext(info);
+				} else {
+					dfd.resolve(items, splist, spctx);
+				}
+			};
+
+			spctx.executeQueryAsync(onSuccess, function (r, a) {
+
+				trace.error({ caml: caml, error: r, sender: a });
+				dfd.reject(r, a);
+			});
+		};
+		loadNext();
+
+		var dfd = $.Deferred();
+		return dfd.promise();
+	};
+
+	const spDal = function (args, log, error) {
+		var ctx = null;
+		var web = null;
+		var lists = null;
+		var list = null;
 		var items = null;
 		var listFields = null;
 
-		ctx.load(web, ["Id", "ServerRelativeUrl"]);
-		ctx.load(lists, "Include(Title, Fields.Include(Title))");
-		ctx.load(lists, "Include(Fields.Include(Title))");
+		(function () { //init
+
+			if (SP.List.isInstanceOfType(args)) {
+				list = args;
+			} else if (SP.List.isInstanceOfType(args.list)) {
+				list = args.list;
+			}
+
+			if (list != null) {
+				ctx = list.get_context();
+			} else {
+				try {
+					ctx = new SP.ClientContext();
+				} catch (e) {
+					ctx = SP.ClientContext.get_current();
+				}
+			}
+
+			web = ctx.get_web();
+			lists = web.get_lists();
+
+			ctx.load(web, ["Id", "ServerRelativeUrl"]);
+			ctx.load(lists, "Include(Title, Fields.Include(Title))");
+			ctx.load(lists, "Include(Fields.Include(Title))");
+		})();
 
 		var trace = ns.logger.get("spdal");
 		log = log || trace.log;
@@ -39,7 +129,7 @@ import "./sp.base.js";
 					var le = lists.getEnumerator();
 					while (le.moveNext()) {
 						var list = le.get_current();
-						if (list.get_title() == listTitle) {
+						if (list.get_title() === listTitle) {
 							result.exists = true;
 							result.list = list;
 							break;
@@ -47,38 +137,33 @@ import "./sp.base.js";
 					}
 					log({ listExists: listTitle, result: result });
 					dfd.resolve(result);
-
 				};
-				if (lists.get_data().length == 0) { // not initialized
+				if (lists.get_data().length === 0) {
+					// not initialized
 
 					var ctx = lists.get_context();
 
 					ctx.executeQueryAsync(function () {
 						onloaded();
-					},
-					function (r, a) { reqFailure(r, a, "listExists", dfd); });
+					}, function (r, a) {
+						reqFailure(r, a, "listExists", dfd);
+					});
 				} else {
 					onloaded();
 				}
 			}).promise();
-
 		};
 		var pathSteps = function (path) {
 			var bits = path.split("/");
 			var qu = [];
 			for (var i = bits.length; i > 0; i--) {
 				var current = bits.slice(0, i).join("/");
-				if (current == "") current = "/";
+				if (current === "") current = "/";
 				qu.push(current);
 			}
 			return qu;
 		};
 
-		//var emptyPromise = function () { // couldn't resist
-		//	return $.Deferred(function (dfd) {
-		//		dfd.resolve();
-		//	}).promise();
-		//};
 		var addItems = function (items, splist, spfields, folderUrl) {
 			var dfd = $.Deferred();
 
@@ -100,10 +185,10 @@ import "./sp.base.js";
 						for (var f in data) {
 							var fieldType = spfields[f].get_typeAsString();
 							var val = null;
-							if (fieldType == "URL") {
+							if (fieldType === "URL") {
 								val = new SP.FieldUrlValue();
 								val.set_url(data[f]);
-							} else if (fieldType.search("Lookup") == 0) {
+							} else if (fieldType.search("Lookup") === 0) {
 
 								var itemVal = data[f];
 								if (itemVal) {
@@ -124,7 +209,6 @@ import "./sp.base.js";
 							}
 
 							newspitem.set_item(f, val);
-
 						}
 						newspitem.update();
 						ctx.load(newspitem);
@@ -133,8 +217,9 @@ import "./sp.base.js";
 					ctx.executeQueryAsync(function () {
 						log("addItems done");
 						dfd.resolve(spItems);
-					},
-					function (r, a) { reqFailure(r, a, "addItems" + args.listTitle, dfd); });
+					}, function (r, a) {
+						reqFailure(r, a, "addItems" + args.listTitle, dfd);
+					});
 				} else {
 					dfd.resolve();
 				}
@@ -142,23 +227,13 @@ import "./sp.base.js";
 
 			return dfd.promise();
 		};
-		//var defaultItems = function (spfields) {
-		//	if (typeof args.DefaultItems == "function") {
-		//		args.DefaultItems(spfields, me).done(function (items) {
-		//			addItems(spfields, items);
-		//		});
-		//	} else {
-		//		addItems(spfields, args.DefaultItems);
-		//	}
-		//};
 		var handleOnReady = function (splist, dfd) {
 			log("OnListReady");
 			if (args.OnListReady) {
 				args.OnListReady(me, splist, ctx).done(function () {
 					dfd.resolve(splist);
 				});
-			} else
-				dfd.resolve(splist);
+			} else dfd.resolve(splist);
 		};
 		var handleOnCreated = function (splist, dfd) {
 			log("OnListCreated");
@@ -166,8 +241,7 @@ import "./sp.base.js";
 				args.OnListCreated(me, splist, ctx).done(function () {
 					dfd.resolve(splist);
 				});
-			} else
-				dfd.resolve(splist);
+			} else dfd.resolve(splist);
 		};
 
 		var clearActions = function () {
@@ -178,8 +252,9 @@ import "./sp.base.js";
 
 			ctx.executeQueryAsync(function () {
 				dfd.resolve(actions);
-			},
-			function (r, a) { reqFailure(r, a, "clearActions", dfd); });
+			}, function (r, a) {
+				reqFailure(r, a, "clearActions", dfd);
+			});
 
 			return dfd.promise();
 		};
@@ -193,7 +268,7 @@ import "./sp.base.js";
 					var parentFolderPath = parentFolders[1];
 					var bits = path.split("/");
 					var name = bits[bits.length - 1];
-					ensureFolder(parentFolderPath).done(function (/*parentSpFolder*/) {
+					ensureFolder(parentFolderPath).done(function () /*parentSpFolder*/ {
 						createFolder(name, parentFolderPath).done(function (folder) {
 							dfd.resolve(folder);
 						});
@@ -226,8 +301,7 @@ import "./sp.base.js";
 				} catch (e) {
 					dfd.resolve(false);
 				}
-			},
-			function (s, args) {
+			}, function (s, args) {
 				if (args.get_errorTypeName() === "System.IO.FileNotFoundException") {
 					// Folder doesn't exist at all.
 					//console.log("Folder does not exist.");
@@ -240,7 +314,6 @@ import "./sp.base.js";
 			});
 
 			return dfd.promise();
-
 		};
 		var createFolder = function (name, parentFolderPath) {
 			if (list) {
@@ -263,11 +336,11 @@ import "./sp.base.js";
 			ctx.load(folder);
 			ctx.executeQueryAsync(function () {
 				dfd.resolve(folder);
-			},
-			function (r, a) { reqFailure(r, a, "createFolder", dfd); });
+			}, function (r, a) {
+				reqFailure(r, a, "createFolder", dfd);
+			});
 
 			return dfd.promise();
-
 		};
 		var addCustomAction = function (location, ext, perms) {
 			var actions = list.get_userCustomActions();
@@ -285,8 +358,9 @@ import "./sp.base.js";
 			ctx.executeQueryAsync(function () {
 				log("addCustomAction.done");
 				dfd.resolve(action);
-			},
-			function (r, a) { reqFailure(r, a, "addCustomAction", dfd); });
+			}, function (r, a) {
+				reqFailure(r, a, "addCustomAction", dfd);
+			});
 
 			return dfd.promise();
 		};
@@ -306,37 +380,17 @@ import "./sp.base.js";
 
 			ctx.executeQueryAsync(function () {
 				dfd.resolve(action);
-			},
-			function (r, a) { reqFailure(r, a, "addScriptLink", dfd); });
+			}, function (r, a) {
+				reqFailure(r, a, "addScriptLink", dfd);
+			});
 
 			return dfd.promise();
-
 		};
-		//var getGroupsOld = function () {
-		//	return $.Deferred(function (dfd) {
-		//		var groupCollection = web.get_siteGroups();
-		//		ctx.load(groupCollection);
-
-		//		ctx.executeQueryAsync(function (sender/*, args*/) {
-		//			var res = {};
-		//			var le = groupCollection.getEnumerator();
-		//			while (le.moveNext()) {
-		//				var group = le.get_current();
-		//				var groupName = group.get_title();
-		//				res[groupName] = group;
-		//			}
-		//			dfd.resolve(res);
-		//		},
-		//		function (r, a) { reqFailure(r, a, "getGroups", dfd); });
-		//	}).promise();
-
-		//};
 		var breakRoleInheritance = function (copyRoleAssignments, clearSubscopes) {
 			list.breakRoleInheritance(copyRoleAssignments, clearSubscopes);
 			list.update();
 
 			return loadSpElem(list, ctx);
-
 		};
 
 		var breakItemRoleInheritance = function (copyRoleAssignments, clearSubscopes, item) {
@@ -345,7 +399,6 @@ import "./sp.base.js";
 			item.update();
 
 			return loadSpElem(item, ctx);
-
 		};
 		//var breakRoleInheritanceRest = function (copyRoleAssignments, clearSubscopes, webUrl, listName) {
 		//	webUrl = webUrl || web.get_serverRelativeUrl();
@@ -368,7 +421,7 @@ import "./sp.base.js";
 				parentWeb = parentWeb || web;
 				securable = securable || list;
 				var safePrincipal = principalIn;
-				var safeAddPermission = function (principal) {
+				var safeAddPermission = function safeAddPermission(principal) {
 
 					var collContribute = SP.RoleDefinitionBindingCollection.newObject(ctx);
 
@@ -389,12 +442,11 @@ import "./sp.base.js";
 
 					ctx.load(principal);
 
-					ctx.executeQueryAsync(
-						function (/*sender*//*, args*/) {
-							dfd.resolve(principal);
-						},
-						function (r, a) { reqFailure(r, a, "addPermission", dfd); });
-
+					ctx.executeQueryAsync(function () /*sender*/ /*, args*/ {
+						dfd.resolve(principal);
+					}, function (r, a) {
+						reqFailure(r, a, "addPermission", dfd);
+					});
 				};
 
 				if (SP.Group.isInstanceOfType(principalIn)) {
@@ -404,37 +456,10 @@ import "./sp.base.js";
 						safePrincipal = res;
 						safeAddPermission(safePrincipal);
 					});
-
 				}
 			}).promise();
 		};
 
-		var processAsQueue = function (arr, action) {
-			// make sure array doesn't change
-
-			return $.Deferred(function (dfd) {
-				var step = 0;
-				var doNext = function () {
-					if (arr == null || (step >= (arr.length))) {
-						dfd.resolve();
-					} else {
-						var item = arr[step++];
-						action(item, ctx, list, web).done(function () {
-							doNext();
-						});
-					}
-				};
-
-				if (typeof arr == "function") {
-					arr().done(function (items) {
-						arr = items;
-						doNext();
-					});
-				} else {
-					doNext();
-				}
-			}).promise();
-		};
 		var spGroups = null;
 		var getGroups = function (force) {
 			if (force) {
@@ -446,7 +471,7 @@ import "./sp.base.js";
 					var groupCollection = web.get_siteGroups();
 					ctx.load(groupCollection);
 
-					ctx.executeQueryAsync(function (/*sender, args*/) {
+					ctx.executeQueryAsync(function () /*sender, args*/ {
 						spGroups = {};
 						var le = groupCollection.getEnumerator();
 						while (le.moveNext()) {
@@ -456,14 +481,13 @@ import "./sp.base.js";
 						}
 						log("Loaded Groups: " + groupCollection.get_count());
 						dfd.resolve(spGroups);
-					},
-					function (r, a) { reqFailure(r, a, "getGroups", dfd); });
-
+					}, function (r, a) {
+						reqFailure(r, a, "getGroups", dfd);
+					});
 				} else {
 					dfd.resolve(spGroups);
 				}
 			}).promise();
-
 		};
 		var ensureGroup = function (name, desc) {
 			return $.Deferred(function (dfd) {
@@ -472,26 +496,29 @@ import "./sp.base.js";
 					if (spGroups[name]) {
 						dfd.resolve(spGroups[name]);
 					} else {
-						createGroup(name, desc).done(function (group) { dfd.resolve(group); });
+						createGroup(name, desc).done(function (group) {
+							dfd.resolve(group);
+						});
 					}
 				});
 			}).promise();
 		};
 		var ensureGroups = function (groups) {
 			return $.Deferred(function (dfdG) {
-				getGroups().done(function (/*spGroups*/) {
-					processAsQueue(groups,
-						function (group) {
-							return $.Deferred(function (dfd) {
-								ensureGroup(group.name, group.desc).done(function (spGroup) {
-									log("Adding permissions for " + group.name);
-									addPermission(spGroup, group.permissions, web).done(function () {
-										log("adding pemission is done");
-										dfd.resolve();
-									});
+				getGroups().done(function () /*spGroups*/ {
+					ns.funcs.processAsQueue(groups, function (group) {
+						return $.Deferred(function (dfd) {
+							ensureGroup(group.name, group.desc).done(function (spGroup) {
+								log("Adding permissions for " + group.name);
+								addPermission(spGroup, group.permissions, web).done(function () {
+									log("adding pemission is done");
+									dfd.resolve();
 								});
-							}).promise();
-						}).done(function () { dfdG.resolve(); });
+							});
+						}).promise();
+					}).done(function () {
+						dfdG.resolve();
+					});
 				}); //;
 			}).promise();
 		};
@@ -502,22 +529,22 @@ import "./sp.base.js";
 				var groupCollection = parentWeb.get_siteGroups();
 
 				log("creating group: " + name);
-				var spGroup = groupCollection.add((function () {
+				var spGroup = groupCollection.add(function () {
 					var membersGRP = new SP.GroupCreationInformation();
 					membersGRP.set_title(name);
 					membersGRP.set_description(desc);
 					return membersGRP;
-				})());
+				}());
 
 				spGroup.set_onlyAllowMembersViewMembership(false);
 				spGroup.update();
 				ctx.load(spGroup);
 				ctx.executeQueryAsync(function () {
 					dfd.resolve(spGroup);
-				},
-				function (r, a) { reqFailure(r, a, "createGroups", dfd); });
+				}, function (r, a) {
+					reqFailure(r, a, "createGroups", dfd);
+				});
 			}).promise();
-
 		};
 		var createList = function (listTitle, templateType) {
 			log("Creating list " + listTitle);
@@ -535,24 +562,18 @@ import "./sp.base.js";
 					log(args.ListTitle + " creation done");
 					list = oList;
 					handleOnCreated(list, dfd);
-				}, function (r, a) { reqFailure(r, a, "createList", dfd); });
-
+				}, function (r, a) {
+					reqFailure(r, a, "createList", dfd);
+				});
 			}).promise();
 		};
-		var reqFailure = function (req, reqargs, from, dfd) { // log context failure
+		var reqFailure = function (req, reqargs, from, dfd) {
+			// log context failure
 
-			var msg = from +
-                "(list:" +
-                args.ListTitle +
-                ") : Request failed " +
-                reqargs.get_message() +
-                "\n" +
-                reqargs.get_stackTrace();
+			var msg = from + "(list:" + args.ListTitle + ") : Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
 			error(msg);
 
-			if (dfd)
-				dfd.reject(msg);
-
+			if (dfd) dfd.reject(msg);
 		};
 		var ensureList = function (web, args) {
 			return $.Deferred(function (dfd) {
@@ -563,7 +584,7 @@ import "./sp.base.js";
 
 					lists = web.get_lists();
 
-					var done = function () {
+					var done = function done() {
 						log("lists loaded");
 						listExists(lists, args.ListTitle).done(function (res) {
 							if (res.exists) {
@@ -576,9 +597,7 @@ import "./sp.base.js";
 									ensureFields(list).done(function () {
 										dfd.resolve(list);
 									});
-
 								});
-
 							} else {
 								createList(args.ListTitle, args.ListTemplate).done(function (splist) {
 
@@ -586,7 +605,7 @@ import "./sp.base.js";
 									ctx.load(rootFolder, ["ServerRelativeUrl"]);
 									ctx.executeQueryAsync();
 
-									var defaultItems = function (spfields) {
+									var defaultItems = function defaultItems(spfields) {
 										if (typeof args.DefaultItems == "function") {
 											args.DefaultItems(spfields, me).done(function (items) {
 												addItems(items, splist, spfields);
@@ -602,13 +621,12 @@ import "./sp.base.js";
 										if (args.Permissions) {
 											breakRoleInheritance(false, true).done(function () {
 												log("done with inheritance");
-												processAsQueue(args.Permissions,
-													function (entry) {
-														var groupName = entry.name;
-														var perms = entry.permissions;
-														log("adding perm: " + groupName + " to " + args.ListTitle);
-														return addPermission(groupName, perms, splist);
-													}).done(function () {
+												ns.funcs.processAsQueue(args.Permissions, function (entry) {
+													var groupName = entry.name;
+													var perms = entry.permissions;
+													log("adding perm: " + groupName + " to " + args.ListTitle);
+													return addPermission(groupName, perms, splist);
+												}).done(function () {
 													log("done adding permissions");
 													handleOnReady(splist, dfd);
 												});
@@ -619,27 +637,27 @@ import "./sp.base.js";
 									}).fail(function (err) {
 										log(err);
 									});
-
 								}).fail(function (err) {
 
 									log(err);
 								});
 							}
-
 						});
 					};
 
 					log("loading lists...");
 					ctx.load(lists);
 
-					ctx.executeQueryAsync(done, function (r, a) { reqFailure(r, a, "ensureList", dfd); });
+					ctx.executeQueryAsync(done, function (r, a) {
+						reqFailure(r, a, "ensureList", dfd);
+					});
 				}
 			}).promise();
 		};
 		var ensureFields = function (list, fields) {
 			fields = fields || [];
 			var spfields = list.get_fields();
-			var getMarkup = function (field) {
+			var getMarkup = function getMarkup(field) {
 				return $.Deferred(function (dfd) {
 
 					var xml = field.markup;
@@ -653,7 +671,7 @@ import "./sp.base.js";
 				}).promise();
 			};
 			return $.Deferred(function (dfd) {
-				var done = function () {
+				var done = function done() {
 					spfields = list.get_fields();
 
 					ctx.load(spfields, "Include(Title,FieldTypeKind,TypeAsString,InternalName)");
@@ -670,25 +688,22 @@ import "./sp.base.js";
 					}, function onError(sender, args) {
 						dfd.reject("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
 					});
-
 				};
-				processAsQueue(fields,
-					function (field) {
-						return $.Deferred(function (fieldDfd) {
-							getMarkup(field).done(function (xml) {
+				ns.funcs.processAsQueue(fields, function (field) {
+					return $.Deferred(function (fieldDfd) {
+						getMarkup(field).done(function (xml) {
 
-								log("adding: " + xml);
-								var spField = spfields.addFieldAsXml(xml, true, SP.AddFieldOptions.defaultValue);
+							log("adding: " + xml);
+							var spField = spfields.addFieldAsXml(xml, true, SP.AddFieldOptions.defaultValue);
 
-								if (field.post) {
-									field.post(spField);
-								}
-								ctx.load(spField);
-								fieldDfd.resolve();
-							});
-						}).promise();
-					}).done(done);
-
+							if (field.post) {
+								field.post(spField);
+							}
+							ctx.load(spField);
+							fieldDfd.resolve();
+						});
+					}).promise();
+				}).done(done);
 			}).promise();
 		};
 
@@ -702,9 +717,9 @@ import "./sp.base.js";
 						listexists.list.deleteObject();
 						ctx.executeQueryAsync(function () {
 							dfd.resolve("list deleted");
-						},
-						function (r, a) { reqFailure(r, a, "deleteList", dfd); });
-
+						}, function (r, a) {
+							reqFailure(r, a, "deleteList", dfd);
+						});
 					} else {
 						dfd.resolve("list not found");
 					}
@@ -724,16 +739,14 @@ import "./sp.base.js";
 					for (var i = 0; i < elem.length; i++) {
 						sptx.load(elem[i]);
 					}
-				} else
-					sptx.load(elem);
+				} else sptx.load(elem);
 
 				sptx.executeQueryAsync(function () {
 					dfd.resolve(elem);
-				},
-				function (r, a) { reqFailure(r, a, caller || "loadSpElem", dfd); });
-
+				}, function (r, a) {
+					reqFailure(r, a, caller || "loadSpElem", dfd);
+				});
 			}).promise();
-
 		};
 		var getlist = function () {
 			return $.Deferred(function (dfd) {
@@ -743,25 +756,21 @@ import "./sp.base.js";
 					dfd.resolve(list, ctx, web);
 					//});
 				});
-
 			}).promise();
-
 		};
 		var getitems = function (caml) {
 			return $.Deferred(function (dfd) {
 				//var rootFolder = list.get_rootFolder();
 				var ctx = list.get_context();
 				//var scripts = [];
-				var queryXml = caml ||
-                    args.DefaultQuery ||
-                    "<View Scope='Recursive'>\
+				var queryXml = caml || args.DefaultQuery || "<View Scope='Recursive'>\
 <ViewFields>\
 <FieldRef Name='ID'></FieldRef>\
 <FieldRef Name='Title'></FieldRef>\
 </ViewFields><RowLimit>1000</RowLimit>\
 </View>";
 				//loadSpElem(rootFolder, ctx),
-				$.when(getAll(list, ctx, queryXml)).done(function (items) {
+				$.when(getAllItemsPaged(list, ctx, queryXml)).done(function (items) {
 					log(items);
 
 					if (args.itemParser) {
@@ -774,7 +783,6 @@ import "./sp.base.js";
 					error("getitems error");
 				});
 			}).promise();
-
 		};
 		var getItem = function (id) {
 			return $.Deferred(function (dfd) {
@@ -820,76 +828,19 @@ import "./sp.base.js";
 
 			return dfd.promise();
 		};
-		var getAll = function (splist, spctx, caml, folder, limit) {
+		var getAllItemsPaged = function (caml, folder, limit) {
 
 			limit = limit || 0;
-			splist = splist || list;
-			spctx = spctx || ctx;
-			var query = new SP.CamlQuery();
-
-			var queryXml = caml ||
-                "<View Scope='Recursive'>\
-        <ViewFields>\
-          <FieldRef Name='ID'></FieldRef>\
-        </ViewFields><RowLimit>1000</RowLimit>\
-      </View>";
-
-			if (folder) {
-				query.set_folderServerRelativeUrl(folder);
-			}
-			query.set_viewXml(queryXml);
-
-			var items = [], spItems;
-
-			getlist().done(function (splist) {
-
-				var loadNext = function (pageInfo) {
-
-					log("loading" + pageInfo);
-					pageInfo = pageInfo || "";
-
-					var pos = new SP.ListItemCollectionPosition();
-					pos.set_pagingInfo(pageInfo);
-					query.set_listItemCollectionPosition(pos);
-					spItems = splist.getItems(query);
-					spctx.load(spItems);
-
-					var onSuccess = function onSuccess(/*sender, args*/) {
-						parseRows(spItems);
-						var position = spItems.get_listItemCollectionPosition();
-						if (position !== null && (limit == 0 || items.length < limit)) {
-							var info = position.get_pagingInfo();
-							loadNext(info);
-						} else {
-							dfd.resolve(items, splist, listFields, web, ctx);
-						}
-					};
-
-					spctx.executeQueryAsync(onSuccess,
-						function (r, a) {
-
-							reqFailure(r, a, "getAll", dfd);
-							error("caml: " + caml);
-						});
-
-				};
-				var parseRows = function (spItems) {
-					var itemsCount = spItems.get_count();
-					for (var i = 0; i < itemsCount; i++) {
-						var item = spItems.itemAt(i);
-						if (item) {
-							items.push(item);
-						}
-					}
-				};
-
-				loadNext();
-
-			}).fail(function () {
-
-			});
 
 			var dfd = $.Deferred();
+			getlist().done(function (splist) {
+
+				getAll(splist, ctx, caml, folder, limit).done(function (allItems) {
+					dfd.resolve(allItems);
+				});
+
+			}).fail(function () { trace.error("error getAllPages"); });
+
 			return dfd.promise();
 		};
 
@@ -912,11 +863,10 @@ import "./sp.base.js";
 					var wpp = wp.get_webPart();
 					var props = wpp.get_properties();
 
-					loadSpElem([wp, wpp, props]).done(function (/*res*/) {
+					loadSpElem([wp, wpp, props]).done(function () /*res*/ {
 						dfd.resolve(wp);
 					});
 				});
-
 			});
 		};
 
@@ -925,7 +875,7 @@ import "./sp.base.js";
 			args: args,
 			deleteList: delTheList,
 			addWebPart: addWebPart,
-			getitems: function (force, caml) {
+			getitems: function (caml /*string*/, force /*bool*/) {
 				if (force) {
 					items = null;
 				}
@@ -933,25 +883,22 @@ import "./sp.base.js";
 
 					if (items) {
 						dfd.resolve(items);
-
 					} else {
-						getlist().done(function (/*list*/) {
+						getlist().done(function () /*list*/ {
 							getitems(caml).done(function (res) {
 								items = res;
 								dfd.resolve(items);
 							});
 						});
-
 					}
 				}).promise();
 			},
-			getitem: function (id) {
+			getitem: function getitem(id) {
 				return $.Deferred(function (dfd) {
 
 					getItem(id).done(function (el) {
 						dfd.resolve(el, list, web);
 					});
-
 				}).promise();
 			},
 			getlist: getlist,
@@ -964,9 +911,9 @@ import "./sp.base.js";
 			clearActions: clearActions,
 			createFolder: createFolder,
 			loadSpElem: loadSpElem,
-			processAsQueue: processAsQueue,
+			processAsQueue: ns.funcs.processAsQueue,
 			ensureFolder: ensureFolder,
-			getItems: getAll,
+			getItems: getAllItemsPaged,
 			addItems: addItems,
 			ctx: ctx,
 			list: list,
@@ -978,8 +925,9 @@ import "./sp.base.js";
 	};
 
 	ns.listapi = {
-		dal: SpDal,
-		version: "0.1"
+		getAll: getAll,
+		Dal: spDal,
+		version: "0.0.2"
 	};
 
 })(spexplorerjs, jQuery);

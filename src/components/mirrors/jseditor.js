@@ -1,3 +1,5 @@
+//v 0.1.3 : 2018-04-09: format function & autformat when calling set
+
 import "../string/string.js";
 //import "../../../components/js/vakata/libs/jquery.js";
 //import "https://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.4/jquery-ui.min.js";
@@ -112,12 +114,14 @@ window.CodeMirror = CodeMirror;
 		});
 
 		return {
+			format: function () {
+				editor.setValue(js_beautify(editor.getValue()));
+			},
 			refresh: function () {
-				
 				editor.refresh();
 			},
 			set: function (data) {
-				editor.setValue(data);
+				editor.setValue(js_beautify(data));
 			}, get: function () {
 				return editor.getValue();
 			}

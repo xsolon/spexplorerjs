@@ -1,9 +1,11 @@
 
-// v 0.0.2 - 2018/04/04     - setScriptingObject: new signature allows to name resource that will be avaialbel during function execution
-// v 0.0.1 - 2018/03/28     - Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
-//                          - setScript method
-//                          - use Function constructor for code execution
-//                          - refresh method
+// v 0.0.3 - 2018/04/09     -   new option: defaultScript, load script from 'state' html element selector: div.jsmirrorstate
+//                              
+// v 0.0.2 - 2018/04/04     -   setScriptingObject: new signature allows to name resource that will be avaialbel during function execution
+// v 0.0.1 - 2018/03/28     -   Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
+//                          -   setScript method
+//                          -   use Function constructor for code execution
+//                          -   refresh method
 import "./jseditor.js";
 import template from "./jsmirror.template.html";
 import "../widget.base.js";
@@ -13,12 +15,14 @@ import "../widget.base.js";
 	var debugging = window.location.href.search(/(localhost|debugjsmirror)/) > 0;
 	var trace = ns.logger.get("jsmirror", debugging);
 
-	var xjsmirror = function (ui/*, opts*/) {
+	var xjsmirror = function (ui, opts) {
 
 		trace.debug("xjsmirror.init");
 
 		var $el = $(ui);
-		//opts = $.extend({}, opts);
+
+		var state = $("div.jsmirrorstate:first", $el).html().trim();
+		opts = $.extend({ defaultScript: state }, opts);
 
 		$el.html(template.trim());
 		var run = $("button", ui);
@@ -79,7 +83,12 @@ import "../widget.base.js";
 
 		})();
 
+		if (opts.defaultScript) {
+			editor.set(opts.defaultScript);
+		}
+
 		var resourceHash = {};
+
 		return {
 			refresh: function () {
 				editor.refresh();
@@ -87,14 +96,13 @@ import "../widget.base.js";
 			setScript: function (obj) {
 				editor.set(obj);
 			},
-			setScriptingObject: function (name,obj) {
+			setScriptingObject: function (name, obj) {
 				resourceHash[name] = obj;
 			}
 		};
+
 	};
 
-	var widgetInfo = ns.widgets.addWidget("xjsmirror", xjsmirror, "0.0.1");
-
-	widgetInfo.startup();
+	ns.widgets.addWidget("xjsmirror", xjsmirror, "0.0.3").startup();
 
 })(spexplorerjs, jQuery, template);

@@ -72,9 +72,9 @@
 /******/ ({
 
 /***/ "../../../node_modules/jquery/dist/jquery.js":
-/*!*********************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
-  \*********************************************************************************/
+/*!***************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
+  \***************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10448,9 +10448,9 @@ return jQuery;
 /***/ }),
 
 /***/ "../../../node_modules/jquery/dist/jquery.js-exposed":
-/*!*****************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
-  \*****************************************************************************************/
+/*!***********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
+  \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 

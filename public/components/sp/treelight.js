@@ -72,9 +72,9 @@
 /******/ ({
 
 /***/ "../../../node_modules/css-loader/index.js!../../../node_modules/jstree/dist/themes/default/style.min.css":
-/*!*******************************************************************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
-  \*******************************************************************************************************************************************************************/
+/*!*******************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
+  \*******************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -92,9 +92,9 @@ exports.push([module.i, ".jstree-node,.jstree-children,.jstree-container-ul{disp
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../public/vendor/bootstrap/3.3.7/css/spexp.css":
-/*!*********************************************************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
-  \*********************************************************************************************************************************************************/
+/*!*********************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
+  \*********************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -112,9 +112,9 @@ exports.push([module.i, ".spexp {\r\n  /*!\r\n * Bootstrap v3.3.7 (http://getboo
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/lib/css-base.js":
-/*!**************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
-  \**************************************************************************************/
+/*!********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
+  \********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -199,9 +199,9 @@ function toComment(sourceMap) {
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/lib/url/escape.js":
-/*!****************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader/lib/url/escape.js ***!
-  \****************************************************************************************/
+/*!**********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader/lib/url/escape.js ***!
+  \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -226,9 +226,9 @@ module.exports = function escape(url) {
 /***/ }),
 
 /***/ "../../../node_modules/jquery/dist/jquery.js":
-/*!*********************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
-  \*********************************************************************************/
+/*!***************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
+  \***************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10602,9 +10602,9 @@ return jQuery;
 /***/ }),
 
 /***/ "../../../node_modules/jquery/dist/jquery.js-exposed":
-/*!*****************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
-  \*****************************************************************************************/
+/*!***********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
+  \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10614,9 +10614,9 @@ return jQuery;
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/jstree.js":
-/*!*********************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/jstree.js ***!
-  \*********************************************************************************/
+/*!***************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/jstree.js ***!
+  \***************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19211,9 +19211,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/32px.png":
-/*!***********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/32px.png ***!
-  \***********************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/32px.png ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19222,9 +19222,9 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAABgCAMAAABb
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/40px.png":
-/*!***********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/40px.png ***!
-  \***********************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/40px.png ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19233,9 +19233,9 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAAHgCAMAAACs
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/style.min.css":
-/*!****************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
-  \****************************************************************************************************/
+/*!**********************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
+  \**********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19263,9 +19263,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/throbber.gif":
-/*!***************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/throbber.gif ***!
-  \***************************************************************************************************/
+/*!*********************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/throbber.gif ***!
+  \*********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19274,9 +19274,9 @@ module.exports = "data:image/gif;base64,R0lGODlhEAAQAPMAAP////Dw8IqKiuDg4EZGRnp6
 /***/ }),
 
 /***/ "../../../node_modules/style-loader/lib/addStyles.js":
-/*!*****************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/style-loader/lib/addStyles.js ***!
-  \*****************************************************************************************/
+/*!***********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/style-loader/lib/addStyles.js ***!
+  \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19661,9 +19661,9 @@ function updateLink (link, options, obj) {
 /***/ }),
 
 /***/ "../../../node_modules/style-loader/lib/urls.js":
-/*!************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/style-loader/lib/urls.js ***!
-  \************************************************************************************/
+/*!******************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/style-loader/lib/urls.js ***!
+  \******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19792,9 +19792,9 @@ module.exports = g;
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/css/spexp.css":
-/*!******************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
-  \******************************************************************************************/
+/*!************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19822,9 +19822,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot":
-/*!*******************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot ***!
-  \*******************************************************************************************************************/
+/*!*************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot ***!
+  \*************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19833,9 +19833,9 @@ module.exports = "data:application/vnd.ms-fontobject;base64,n04AAEFNAAACAAIABAAA
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg":
-/*!*******************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg ***!
-  \*******************************************************************************************************************/
+/*!*************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg ***!
+  \*************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19844,9 +19844,9 @@ module.exports = "data:image/svg+xml;base64,bW9kdWxlLmV4cG9ydHMgPSAiZGF0YTppbWFn
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf":
-/*!*******************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf ***!
-  \*******************************************************************************************************************/
+/*!*************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf ***!
+  \*************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19855,9 +19855,9 @@ module.exports = "data:font/ttf;base64,AAEAAAAPAIAAAwBwRkZUTW0ql9wAAAD8AAAAHEdER
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff":
-/*!********************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff ***!
-  \********************************************************************************************************************/
+/*!**************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff ***!
+  \**************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19866,9 +19866,9 @@ module.exports = "data:application/font-woff;base64,d09GRgABAAAAAFuAAA8AAAAAsVwA
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2":
-/*!*********************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2 ***!
-  \*********************************************************************************************************************/
+/*!***************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2 ***!
+  \***************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -19877,9 +19877,9 @@ module.exports = "data:font/woff2;base64,d09GMgABAAAAAEZsAA8AAAAAsVwAAEYJAAECTQA
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js":
-/*!********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/js/bootstrap.js ***!
-  \********************************************************************************************/
+/*!**************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/js/bootstrap.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -22503,26 +22503,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
 __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+/// TODO: Document
+// v 0.0.3: 2018-04-04 - remove direct dependency on jquery
+// v 0.0.2: 2018-03-28 - WebDal
+// v 0.0.1: 2018-03-11 - Added loadWeb function
 (function (ns, $) {
-	var debug = window.location.href.search(/[localhost|webapi]/) > 0;
-	var log = new function () {
-		var d = function d() {
-			ns.logger && ns.logger.log.apply(log, arguments);
-			if (debug) SP.UI.Notify.addNotification(arguments[0]);
-		};
-		d.source = "webapi";
-		return d;
-	}();
+
 	/// TODO: Document
 	var createWeb = function createWeb(parentWeb, title, url, template, inheritPermissions) {
 		return $.Deferred(function (dfd) {
@@ -22589,11 +22579,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		webTemplates: webTemplates,
 		createWeb: createWeb,
 		loadWeb: loadWeb,
-		version: "0.1.2"
+		version: "0.1.3"
 	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default); /// TODO: Document
-// v 0.0.2: 2018-03-28 - WebDal
-// v 0.0.1: 2018-03-11 - Added loadWeb function
+})(spexplorerjs, jQuery);
 
 /***/ }),
 

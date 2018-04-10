@@ -72,9 +72,9 @@
 /******/ ({
 
 /***/ "../../../node_modules/codemirror/addon/edit/closetag.js":
-/*!*********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/edit/closetag.js ***!
-  \*********************************************************************************************/
+/*!***************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/edit/closetag.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -255,9 +255,9 @@
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/edit/matchtags.js":
-/*!**********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/edit/matchtags.js ***!
-  \**********************************************************************************************/
+/*!****************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/edit/matchtags.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -329,9 +329,9 @@
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/brace-fold.js":
-/*!***********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/brace-fold.js ***!
-  \***********************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/brace-fold.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -442,9 +442,9 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/comment-fold.js":
-/*!*************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/comment-fold.js ***!
-  \*************************************************************************************************/
+/*!*******************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/comment-fold.js ***!
+  \*******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -509,9 +509,9 @@ CodeMirror.registerGlobalHelper("fold", "comment", function(mode) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/foldcode.js":
-/*!*********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/foldcode.js ***!
-  \*********************************************************************************************/
+/*!***************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldcode.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -669,9 +669,9 @@ CodeMirror.registerGlobalHelper("fold", "comment", function(mode) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/foldgutter.css":
-/*!************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
-  \************************************************************************************************/
+/*!******************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -699,9 +699,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/foldgutter.js":
-/*!***********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.js ***!
-  \***********************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -853,9 +853,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/indent-fold.js":
-/*!************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/indent-fold.js ***!
-  \************************************************************************************************/
+/*!******************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/indent-fold.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -909,9 +909,9 @@ CodeMirror.registerHelper("fold", "indent", function(cm, start) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/markdown-fold.js":
-/*!**************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/markdown-fold.js ***!
-  \**************************************************************************************************/
+/*!********************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/markdown-fold.js ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -966,9 +966,9 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/fold/xml-fold.js":
-/*!*********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/xml-fold.js ***!
-  \*********************************************************************************************/
+/*!***************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/xml-fold.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1156,9 +1156,9 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/hint/anyword-hint.js":
-/*!*************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/anyword-hint.js ***!
-  \*************************************************************************************************/
+/*!*******************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/anyword-hint.js ***!
+  \*******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1205,9 +1205,9 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/hint/show-hint.css":
-/*!***********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
-  \***********************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1235,9 +1235,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/hint/show-hint.js":
-/*!**********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.js ***!
-  \**********************************************************************************************/
+/*!****************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1675,9 +1675,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/hint/xml-hint.js":
-/*!*********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/xml-hint.js ***!
-  \*********************************************************************************************/
+/*!***************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/xml-hint.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1793,9 +1793,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/lint/lint.css":
-/*!******************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
-  \******************************************************************************************/
+/*!************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1823,9 +1823,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/addon/lint/lint.js":
-/*!*****************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.js ***!
-  \*****************************************************************************************/
+/*!***********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.js ***!
+  \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2083,9 +2083,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/lib/codemirror.css":
-/*!*****************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
-  \*****************************************************************************************/
+/*!***********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
+  \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2113,9 +2113,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/lib/codemirror.js":
-/*!****************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/lib/codemirror.js ***!
-  \****************************************************************************************/
+/*!**********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.js ***!
+  \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11795,9 +11795,9 @@ return CodeMirror$1;
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/mode/css/css.js":
-/*!**************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/mode/css/css.js ***!
-  \**************************************************************************************/
+/*!********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/css/css.js ***!
+  \********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -12635,9 +12635,9 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js":
-/*!**************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/mode/htmlmixed/htmlmixed.js ***!
-  \**************************************************************************************************/
+/*!********************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/htmlmixed/htmlmixed.js ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -12795,9 +12795,9 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/mode/javascript/javascript.js":
-/*!****************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/mode/javascript/javascript.js ***!
-  \****************************************************************************************************/
+/*!**********************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/javascript/javascript.js ***!
+  \**********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13671,9 +13671,9 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 /***/ }),
 
 /***/ "../../../node_modules/codemirror/mode/xml/xml.js":
-/*!**************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/mode/xml/xml.js ***!
-  \**************************************************************************************/
+/*!********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/xml/xml.js ***!
+  \********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14080,9 +14080,9 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/fold/foldgutter.css":
-/*!***************************************************************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
-  \***************************************************************************************************************************************************************/
+/*!***************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
+  \***************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14099,9 +14099,9 @@ exports.push([module.i, ".CodeMirror-foldmarker {\n  color: blue;\n  text-shadow
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/hint/show-hint.css":
-/*!**************************************************************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
-  \**************************************************************************************************************************************************************/
+/*!**************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
+  \**************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14118,9 +14118,9 @@ exports.push([module.i, ".CodeMirror-hints {\n  position: absolute;\n  z-index: 
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/lint/lint.css":
-/*!*********************************************************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
-  \*********************************************************************************************************************************************************/
+/*!*********************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
+  \*********************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14137,9 +14137,9 @@ exports.push([module.i, "/* The lint marker gutter */\n.CodeMirror-lint-markers 
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/lib/codemirror.css":
-/*!********************************************************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
-  \********************************************************************************************************************************************************/
+/*!********************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
+  \********************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14156,9 +14156,9 @@ exports.push([module.i, "/* BASICS */\n\n.CodeMirror {\n  /* Set height, width, 
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../node_modules/jstree/dist/themes/default/style.min.css":
-/*!*******************************************************************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
-  \*******************************************************************************************************************************************************************/
+/*!*******************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
+  \*******************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14176,9 +14176,9 @@ exports.push([module.i, ".jstree-node,.jstree-children,.jstree-container-ul{disp
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../public/vendor/bootstrap/3.3.7/css/spexp.css":
-/*!*********************************************************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
-  \*********************************************************************************************************************************************************/
+/*!*********************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
+  \*********************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14196,9 +14196,9 @@ exports.push([module.i, ".spexp {\r\n  /*!\r\n * Bootstrap v3.3.7 (http://getboo
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/index.js!../../../public/vendor/select2/css/select2.css":
-/*!***************************************************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader!F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
-  \***************************************************************************************************************************************************/
+/*!***************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
+  \***************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14215,9 +14215,9 @@ exports.push([module.i, ".select2-container {\r\n  box-sizing: border-box;\r\n  
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/lib/css-base.js":
-/*!**************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
-  \**************************************************************************************/
+/*!********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
+  \********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -14302,9 +14302,9 @@ function toComment(sourceMap) {
 /***/ }),
 
 /***/ "../../../node_modules/css-loader/lib/url/escape.js":
-/*!****************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/css-loader/lib/url/escape.js ***!
-  \****************************************************************************************/
+/*!**********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader/lib/url/escape.js ***!
+  \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -14329,9 +14329,9 @@ module.exports = function escape(url) {
 /***/ }),
 
 /***/ "../../../node_modules/jquery/dist/jquery.js":
-/*!*********************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
-  \*********************************************************************************/
+/*!***************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
+  \***************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -24705,9 +24705,9 @@ return jQuery;
 /***/ }),
 
 /***/ "../../../node_modules/jquery/dist/jquery.js-exposed":
-/*!*****************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
-  \*****************************************************************************************/
+/*!***********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
+  \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -24717,9 +24717,9 @@ return jQuery;
 /***/ }),
 
 /***/ "../../../node_modules/js-beautify/js/lib/beautify-css.js":
-/*!**********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify-css.js ***!
-  \**********************************************************************************************/
+/*!****************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify-css.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -25767,9 +25767,9 @@ if (true) {
 /***/ }),
 
 /***/ "../../../node_modules/js-beautify/js/lib/beautify-html.js":
-/*!***********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify-html.js ***!
-  \***********************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify-html.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -27147,9 +27147,9 @@ if (true) {
 /***/ }),
 
 /***/ "../../../node_modules/js-beautify/js/lib/beautify.js":
-/*!******************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify.js ***!
-  \******************************************************************************************/
+/*!************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -29976,9 +29976,9 @@ if (true) {
 /***/ }),
 
 /***/ "../../../node_modules/jshint/dist/jshint.js":
-/*!*********************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jshint/dist/jshint.js ***!
-  \*********************************************************************************/
+/*!***************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jshint/dist/jshint.js ***!
+  \***************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -54521,9 +54521,9 @@ if (typeof exports === 'object' && exports) exports.JSHINT = JSHINT;
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/jstree.js":
-/*!*********************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/jstree.js ***!
-  \*********************************************************************************/
+/*!***************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/jstree.js ***!
+  \***************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -63118,9 +63118,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/32px.png":
-/*!***********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/32px.png ***!
-  \***********************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/32px.png ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -63129,9 +63129,9 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAABgCAMAAABb
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/40px.png":
-/*!***********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/40px.png ***!
-  \***********************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/40px.png ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -63140,9 +63140,9 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAAHgCAMAAACs
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/style.min.css":
-/*!****************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
-  \****************************************************************************************************/
+/*!**********************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
+  \**********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -63170,9 +63170,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../node_modules/jstree/dist/themes/default/throbber.gif":
-/*!***************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/jstree/dist/themes/default/throbber.gif ***!
-  \***************************************************************************************************/
+/*!*********************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/throbber.gif ***!
+  \*********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -63181,9 +63181,9 @@ module.exports = "data:image/gif;base64,R0lGODlhEAAQAPMAAP////Dw8IqKiuDg4EZGRnp6
 /***/ }),
 
 /***/ "../../../node_modules/style-loader/lib/addStyles.js":
-/*!*****************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/style-loader/lib/addStyles.js ***!
-  \*****************************************************************************************/
+/*!***********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/style-loader/lib/addStyles.js ***!
+  \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -63568,9 +63568,9 @@ function updateLink (link, options, obj) {
 /***/ }),
 
 /***/ "../../../node_modules/style-loader/lib/urls.js":
-/*!************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/node_modules/style-loader/lib/urls.js ***!
-  \************************************************************************************/
+/*!******************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/style-loader/lib/urls.js ***!
+  \******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -63699,9 +63699,9 @@ module.exports = g;
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/css/spexp.css":
-/*!******************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
-  \******************************************************************************************/
+/*!************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -63729,9 +63729,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot":
-/*!*******************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot ***!
-  \*******************************************************************************************************************/
+/*!*************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot ***!
+  \*************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -63740,9 +63740,9 @@ module.exports = "data:application/vnd.ms-fontobject;base64,n04AAEFNAAACAAIABAAA
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg":
-/*!*******************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg ***!
-  \*******************************************************************************************************************/
+/*!*************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg ***!
+  \*************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -63751,9 +63751,9 @@ module.exports = "data:image/svg+xml;base64,bW9kdWxlLmV4cG9ydHMgPSAiZGF0YTppbWFn
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf":
-/*!*******************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf ***!
-  \*******************************************************************************************************************/
+/*!*************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf ***!
+  \*************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -63762,9 +63762,9 @@ module.exports = "data:font/ttf;base64,AAEAAAAPAIAAAwBwRkZUTW0ql9wAAAD8AAAAHEdER
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff":
-/*!********************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff ***!
-  \********************************************************************************************************************/
+/*!**************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff ***!
+  \**************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -63773,9 +63773,9 @@ module.exports = "data:application/font-woff;base64,d09GRgABAAAAAFuAAA8AAAAAsVwA
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2":
-/*!*********************************************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2 ***!
-  \*********************************************************************************************************************/
+/*!***************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2 ***!
+  \***************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -63784,9 +63784,9 @@ module.exports = "data:font/woff2;base64,d09GMgABAAAAAEZsAA8AAAAAsVwAAEYJAAECTQA
 /***/ }),
 
 /***/ "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js":
-/*!********************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/bootstrap/3.3.7/js/bootstrap.js ***!
-  \********************************************************************************************/
+/*!**************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/js/bootstrap.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -65956,9 +65956,9 @@ if (typeof jQuery === "undefined") {
 /***/ }),
 
 /***/ "../../../public/vendor/select2/css/select2.css":
-/*!************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
-  \************************************************************************************/
+/*!******************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
+  \******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -65986,9 +65986,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../public/vendor/select2/js/select2.full.js":
-/*!***************************************************************************************!*\
-  !*** F:/data/sc/spexplorer2/js/spexplorerjs/public/vendor/select2/js/select2.full.js ***!
-  \***************************************************************************************/
+/*!*********************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/js/select2.full.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -74450,26 +74450,16 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 "use strict";
 
 
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
 __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+/// TODO: Document
+// v 0.0.3: 2018-04-04 - remove direct dependency on jquery
+// v 0.0.2: 2018-03-28 - WebDal
+// v 0.0.1: 2018-03-11 - Added loadWeb function
 (function (ns, $) {
-	var debug = window.location.href.search(/[localhost|webapi]/) > 0;
-	var log = new function () {
-		var d = function d() {
-			ns.logger && ns.logger.log.apply(log, arguments);
-			if (debug) SP.UI.Notify.addNotification(arguments[0]);
-		};
-		d.source = "webapi";
-		return d;
-	}();
+
 	/// TODO: Document
 	var createWeb = function createWeb(parentWeb, title, url, template, inheritPermissions) {
 		return $.Deferred(function (dfd) {
@@ -74536,11 +74526,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		webTemplates: webTemplates,
 		createWeb: createWeb,
 		loadWeb: loadWeb,
-		version: "0.1.2"
+		version: "0.1.3"
 	};
-})(window["spexplorerjs"] = window["spexplorerjs"] || {}, _jquery2.default); /// TODO: Document
-// v 0.0.2: 2018-03-28 - WebDal
-// v 0.0.1: 2018-03-11 - Added loadWeb function
+})(spexplorerjs, jQuery);
 
 /***/ }),
 

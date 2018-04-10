@@ -1,11 +1,13 @@
 module.exports = {
+    parser: "babel-eslint",
     "env": {
         "browser": true,
-        "es6": false
+        "es6": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
-        "sourceType": "module"
+        "sourceType": "module",
+        "ecmaVersion": 6
     },
     "rules": {
         "indent": [
@@ -24,10 +26,12 @@ module.exports = {
             "error",
             "always"
         ],
+        //"max-len": [1, 70, 2, { ignoreComments: true }],
         strict: ["error", "global"],
         "no-console": ["error", { allow: ["warn", "error", "log"] }]
 
-    }, "globals": {
+    },
+    "globals": {
         "jQuery": true,
         "SP": true,
         "CodeMirror": true,// TODO: shouldn't have to be global

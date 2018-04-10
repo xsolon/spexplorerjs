@@ -15,13 +15,14 @@ import template from "./xmlmirror.template.html";
 	debug("xxmlmirror.loading");
 	//   var error = tracing.error;
 
-	var xxmlmirror = function (ui/*, opts*/) {
+	var xxmlmirror = function (ui, opts) {
 
 		log("xxmlmirror.init");
 
 		var $el = $(ui);
+		var state = $("div.xmlmirrorstate:first", $el).html().trim();
+		opts = $.extend({ defaultScript: state }, opts);
 
-		//opts = $.extend({}, opts);
 		$el.html(template.trim());
 
 		var editor = null;
@@ -31,6 +32,10 @@ import template from "./xmlmirror.template.html";
 			editor = ns.widgets.xmleditorInitIframe(iframe);
 
 		})();
+
+		if (opts.defaultScript) {
+			editor.set(ns.string.htmlDecode(opts.defaultScript));
+		}
 
 		var me = {};
 		me.refresh = function () { editor.refresh(); };
