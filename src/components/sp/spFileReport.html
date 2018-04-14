@@ -11,12 +11,29 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-md-2 control-label" for="textinput">Query</label>
+                <label class="col-md-2 control-label" for="textinput">Recursive</label>
                 <div class="col-md-10 ">
+                    <input type="checkbox" class="chkRecursive" />
+                    <span class="help-block">Process sub webs</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="textinput">Query</label>
+                <div class="col-md-10 smallQuery">
                     <div data-widget="xxmlmirror">
                         <div class="xmlmirrorstate">
                             &lt;View Scope=&#39;Recursive&#39;&gt;
+                            &lt;Query&gt; &lt;Where&gt;
+                            &lt;Lt&gt;
+                                &lt;FieldRef Name=&#39;Modified&#39; /&gt;
+                                &lt;Value Type=&quot;DateTime&quot;&gt;
+                                    &lt;Today OffsetDays=&quot;-2190&quot; /&gt;
+                                &lt;/Value&gt;
+                            &lt;/Lt&gt;
+                            &lt;/Where&gt;
+                            &lt;/Query&gt;
                             &lt;ViewFields&gt;
+                            &lt;FieldRef Name=&#39;Author&#39; /&gt;
                             &lt;FieldRef Name=&#39;Title&#39; /&gt;
                             &lt;FieldRef Name=&#39;Modified&#39; /&gt;
                             &lt;FieldRef Name=&#39;Modified_x0020_By&#39; /&gt;
@@ -24,11 +41,29 @@
                             &lt;FieldRef Name=&#39;Created_x0020_By&#39; /&gt;
                             &lt;FieldRef Name=&#39;FileRef&#39; /&gt;
                             &lt;/ViewFields&gt;
-                            &lt;Query&gt;
-                            &lt;Where&gt;
-
-                            &lt;/Where&gt;
-                            &lt;/Query&gt;
+                            &lt;RowLimit&gt;1000&lt;/RowLimit&gt;
+                            &lt;/View&gt;
+                        </div>
+                    </div>
+                    <span class="help-block">Caml query to filter items.</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="textinput">Big List Query</label>
+                <div class="col-md-10 bigQuery">
+                    <div data-widget="xxmlmirror">
+                        <div class="xmlmirrorstate">
+                            &lt;View&gt;
+                            &lt;ViewFields&gt;
+                            &lt;FieldRef Name=&#39;Author&#39; /&gt;
+                            &lt;FieldRef Name=&#39;Title&#39; /&gt;
+                            &lt;FieldRef Name=&#39;Modified&#39; /&gt;
+                            &lt;FieldRef Name=&#39;Modified_x0020_By&#39; /&gt;
+                            &lt;FieldRef Name=&#39;Created&#39; /&gt;
+                            &lt;FieldRef Name=&#39;Created_x0020_By&#39; /&gt;
+                            &lt;FieldRef Name=&#39;FileRef&#39; /&gt;
+                            &lt;/ViewFields&gt;
+                            &lt;RowLimit&gt;1000&lt;/RowLimit&gt;
                             &lt;/View&gt;
                         </div>
                     </div>

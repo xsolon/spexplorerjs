@@ -676,7 +676,7 @@ CodeMirror.registerGlobalHelper("fold", "comment", function(mode) {
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader!./foldgutter.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/fold/foldgutter.css");
+var content = __webpack_require__(/*! !../../../css-loader??ref--6-1!./foldgutter.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/addon/fold/foldgutter.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -685,7 +685,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -1799,7 +1799,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader!./show-hint.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/hint/show-hint.css");
+var content = __webpack_require__(/*! !../../../css-loader??ref--6-1!./show-hint.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/addon/hint/show-hint.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -1808,7 +1808,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -2752,7 +2752,7 @@ if(false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader!./lint.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/lint/lint.css");
+var content = __webpack_require__(/*! !../../../css-loader??ref--6-1!./lint.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/addon/lint/lint.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -2761,7 +2761,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -3042,7 +3042,7 @@ if(false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../css-loader!./codemirror.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/lib/codemirror.css");
+var content = __webpack_require__(/*! !../../css-loader??ref--6-1!./codemirror.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/lib/codemirror.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -3051,7 +3051,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -15529,10 +15529,10 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/fold/foldgutter.css":
-/*!***************************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
-  \***************************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/addon/fold/foldgutter.css":
+/*!*************************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
+  \*************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15548,10 +15548,10 @@ exports.push([module.i, ".CodeMirror-foldmarker {\n  color: blue;\n  text-shadow
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/hint/show-hint.css":
-/*!**************************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
-  \**************************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/addon/hint/show-hint.css":
+/*!************************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
+  \************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15567,10 +15567,10 @@ exports.push([module.i, ".CodeMirror-hints {\n  position: absolute;\n  z-index: 
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/lint/lint.css":
-/*!*********************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
-  \*********************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/addon/lint/lint.css":
+/*!*******************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
+  \*******************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15586,10 +15586,10 @@ exports.push([module.i, "/* The lint marker gutter */\n.CodeMirror-lint-markers 
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/lib/codemirror.css":
-/*!********************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
-  \********************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/lib/codemirror.css":
+/*!******************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
+  \******************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15605,10 +15605,10 @@ exports.push([module.i, "/* BASICS */\n\n.CodeMirror {\n  /* Set height, width, 
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/jstree/dist/themes/default/style.min.css":
-/*!*******************************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
-  \*******************************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/jstree/dist/themes/default/style.min.css":
+/*!*****************************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
+  \*****************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15625,10 +15625,10 @@ exports.push([module.i, ".jstree-node,.jstree-children,.jstree-container-ul{disp
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../public/vendor/bootstrap/3.3.7/css/spexp.css":
-/*!*********************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
-  \*********************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../public/vendor/bootstrap/3.3.7/css/spexp.css":
+/*!*******************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
+  \*******************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15645,10 +15645,10 @@ exports.push([module.i, ".spexp {\r\n  /*!\r\n * Bootstrap v3.3.7 (http://getboo
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../public/vendor/select2/css/select2.css":
-/*!***************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
-  \***************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../public/vendor/select2/css/select2.css":
+/*!*************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
+  \*************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -64597,7 +64597,7 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAAHgCAMAAACs
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../css-loader!./style.min.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/jstree/dist/themes/default/style.min.css");
+var content = __webpack_require__(/*! !../../../../css-loader??ref--6-1!./style.min.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/jstree/dist/themes/default/style.min.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -64606,7 +64606,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -65156,7 +65156,7 @@ module.exports = g;
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../node_modules/css-loader!./spexp.css */ "../../../node_modules/css-loader/index.js!../../../public/vendor/bootstrap/3.3.7/css/spexp.css");
+var content = __webpack_require__(/*! !../../../../../node_modules/css-loader??ref--6-1!./spexp.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../public/vendor/bootstrap/3.3.7/css/spexp.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -65165,7 +65165,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -67413,7 +67413,7 @@ if (typeof jQuery === "undefined") {
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../node_modules/css-loader!./select2.css */ "../../../node_modules/css-loader/index.js!../../../public/vendor/select2/css/select2.css");
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader??ref--6-1!./select2.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../public/vendor/select2/css/select2.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -67422,7 +67422,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -73542,6 +73542,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 "use strict";
 
 
+/* global require */
+
 __webpack_require__(/*! ../string/string.js */ "../string/string.js");
 
 (function (ns, $) {
@@ -73728,6 +73730,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //import "https://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js";
 //import "https://rawgithub.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js";
 //import "csslint.js";
+//v 0.1.3 : 2018-04-09: format function & autformat when calling set
+
 window.CodeMirror = _codemirror2.default;
 //import "../../../node_modules/codemirror/addon/lint/coffeescript-lint.js";
 //import "../../../node_modules/codemirror/addon/lint/css-lint.js";
@@ -73806,12 +73810,14 @@ window.CodeMirror = _codemirror2.default;
 		});
 
 		return {
+			format: function format() {
+				editor.setValue((0, _beautify.js_beautify)(editor.getValue()));
+			},
 			refresh: function refresh() {
-
 				editor.refresh();
 			},
 			set: function set(data) {
-				editor.setValue(data);
+				editor.setValue((0, _beautify.js_beautify)(data));
 			}, get: function get() {
 				return editor.getValue();
 			}
@@ -73853,12 +73859,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	var debugging = window.location.href.search(/(localhost|debugjsmirror)/) > 0;
 	var trace = ns.logger.get("jsmirror", debugging);
 
-	var xjsmirror = function xjsmirror(ui /*, opts*/) {
+	var xjsmirror = function xjsmirror(ui, opts) {
 
 		trace.debug("xjsmirror.init");
 
 		var $el = $(ui);
-		//opts = $.extend({}, opts);
+
+		var state = ($("div.jsmirrorstate:first", $el).html() || "").trim();
+		opts = $.extend({ defaultScript: state }, opts);
 
 		$el.html(template.trim());
 		var run = $("button", ui);
@@ -73892,10 +73900,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 		(function iframeImplementation() {
 
-			var iframe = $("iframe", ui);
-			iframe[0].contentWindow.document.write("<html><body><textarea></textarea></body></html>");
+			var iframe = $("iframe", ui)[0];
+			iframe.src = "javascript:void((function(){var script = document.createElement('script');script.innerHTML = \"(function() {document.open();document.domain='" + document.domain + "';document.close();})();\";document.write(\"<head>\" + script.outerHTML + \"</head><body><style type='text/css'>div.CodeMirror{height: 100% !important;}</style><textarea style=width='100%'></textarea></body>\");})())";
 
-			var head = iframe.contents().find("head");
+			var head = $(iframe).contents().find("head");
+
 			$("style").each(function () {
 				// cloneNode doesnt work in IE
 				//head.append(this.cloneNode(true));
@@ -73903,7 +73912,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 				if (html.search("CodeMirror") > 0) $("<style type='text/css'>" + html + "</style>").appendTo(head);
 			});
 
-			var editorCtrl = iframe.contents().find("textarea")[0];
+			var editorCtrl = $(iframe).contents().find("textarea")[0];
 			editor = ns.widgets.jseditorinit(editorCtrl);
 
 			$(editorCtrl).on("run", function () {
@@ -73916,7 +73925,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			});
 		})();
 
+		if (opts.defaultScript) {
+			editor.set(opts.defaultScript);
+		}
+
 		var resourceHash = {};
+
 		return {
 			refresh: function refresh() {
 				editor.refresh();
@@ -73930,15 +73944,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		};
 	};
 
-	var widgetInfo = ns.widgets.addWidget("xjsmirror", xjsmirror, "0.0.1");
-
-	widgetInfo.startup();
+	ns.widgets.addWidget("xjsmirror", xjsmirror, "0.0.3").startup();
 })(spexplorerjs, jQuery, _jsmirrorTemplate2.default);
-// v 0.0.2 - 2018/04/04     - setScriptingObject: new signature allows to name resource that will be avaialbel during function execution
-// v 0.0.1 - 2018/03/28     - Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
-//                          - setScript method
-//                          - use Function constructor for code execution
-//                          - refresh method
+// v 0.0.4 - 2018/04/09     -   bug: don't write after iframe document is closed
+// v 0.0.3 - 2018/04/09     -   new option: defaultScript, load script from 'state' html element selector: div.jsmirrorstate
+//                              
+// v 0.0.2 - 2018/04/04     -   setScriptingObject: new signature allows to name resource that will be avaialbel during function execution
+// v 0.0.1 - 2018/03/28     -   Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
+//                          -   setScript method
+//                          -   use Function constructor for code execution
+//                          -   refresh method
 
 /***/ }),
 
@@ -73949,7 +73964,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n            width: 100%;\r\n            height: 100%;\r\n        }\r\n    </style>\r\n\r\n    <div class=\"full\">\r\n        <iframe src=\"#\" class=\"full jsmirror mirror\" style=\"resize:both\"></iframe>\r\n        <button type=\"button\">Run</button>\r\n    </div>\r\n</div>\r\n";
+module.exports = "<style type='text/css'>\r\n    .full {\r\n        width: 100%;\r\n        height: 100%;\r\n    }\r\n</style>\r\n\r\n<div class='full'>\r\n    <iframe class='full jsmirror mirror' style='resize:both'></iframe>\r\n    <button type='button'>Run</button>\r\n</div>";
 
 /***/ }),
 
@@ -74039,6 +74054,7 @@ window.CodeMirror = _codemirror2.default;
 
 
 //<!-- hint -->
+//v 0.1.3 : 2018-04-09: format function & autformat when calling set
 //v 0.1.1 : 2018-03-15: Support for IE
 //v 0.1.2 : 2018-03-28: - Autocomplete tag, highlight matching tag
 //                      - Shortcuts:
@@ -74131,11 +74147,14 @@ window.JSHINT = _jshint2.default.JSHINT;
 		var editor = $(ell).data("CodeMirror");
 
 		return {
+			format: function format() {
+				editor.setValue((0, _beautifyHtml.html_beautify)(editor.getValue()));
+			},
 			refresh: function refresh() {
 				editor.refresh();
 			},
 			set: function set(data) {
-				editor.setValue(data);
+				editor.setValue((0, _beautifyHtml.html_beautify)(data));
 			}, get: function get() {
 				return editor.getValue();
 			}
@@ -74211,13 +74230,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	debug("xxmlmirror.loading");
 	//   var error = tracing.error;
 
-	var xxmlmirror = function xxmlmirror(ui /*, opts*/) {
+	var xxmlmirror = function xxmlmirror(ui, opts) {
 
 		log("xxmlmirror.init");
 
 		var $el = $(ui);
+		var state = ($("div.xmlmirrorstate:first", $el).html() || "").trim();
+		opts = $.extend({ defaultScript: state }, opts);
 
-		//opts = $.extend({}, opts);
 		$el.html(_xmlmirrorTemplate2.default.trim());
 
 		var editor = null;
@@ -74226,6 +74246,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 			editor = ns.widgets.xmleditorInitIframe(iframe);
 		})();
+
+		if (opts.defaultScript) {
+			editor.set(ns.string.htmlDecode(opts.defaultScript));
+		}
 
 		var me = {};
 		me.refresh = function () {
@@ -74256,7 +74280,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n            width: 100%;\r\n            height: 100%;\r\n        }\r\n\r\n    </style>\r\n    <div class=\"full\">\r\n        <iframe src=\"#\" class=\"full xmlmirror mirror\" style=\"resize:both\"></iframe>\r\n    </div>\r\n</div>\r\n";
+module.exports = "<style type=\"text/css\">\r\n    .full {\r\n        width: 100%;\r\n        height: 100%;\r\n    }\r\n</style>\r\n<div class=\"full\">\r\n    <iframe src=\"#\" class=\"full xmlmirror mirror\" style=\"resize:both\"></iframe>\r\n</div>\r\n";
 
 /***/ }),
 
@@ -74342,6 +74366,91 @@ module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n 
 	};
 })(window.spexplorerjs = window["spexplorerjs"] || {}, window.jQuery = window["jQuery"] || __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed"));
 
+(function (ns, $) {
+
+	/// Iterate over an expanding array
+	//  Example:
+	//  var arr = [1, 2];
+	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
+	//    if (item == 1) {
+	//        arr.push(3);
+	//    }
+	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
+	//});
+	/// arr: array to process
+	/// action: promise (argument: item removed from array)
+	var processAsQueue = function processAsQueue(arr, action) {
+		return $.Deferred(function (dfd) {
+			var doNext = function doNext() {
+				if (arr == null || arr.length === 0) {
+					dfd.resolve();
+				} else {
+					var item = arr.shift();
+					action(item).done(function () {
+						doNext();
+					});
+				}
+			};
+
+			if (typeof arr == "function") {
+				arr().done(function (items) {
+					arr = items;
+					doNext();
+				});
+			} else {
+				doNext();
+			}
+		}).promise();
+	};
+
+	var enumer = function enumer(values) {
+		var me = {};
+		for (var i = 0; i < values.length; i++) {
+			me[values[i]] = 1;
+		}
+		if (Object.freeze) {
+			me = Object.freeze(me);
+		}
+
+		return me;
+	};
+
+	/**
+     * Divide array into an array of arrays of size groupSize
+     * @param {Array} arr
+     * @param {integer} groupSize
+     */
+	var groupBySize = function groupBySize(arr, groupSize) {
+		var groups = [];
+		groupSize = groupSize || 100;
+		arr.forEach(function (n, i) {
+			var index = Math.trunc(i / groupSize);
+			if (groups.length === index) {
+				groups.push([]);
+			}
+			groups[index].push(n);
+		});
+		return groups;
+	};
+
+	var getParameterByName = function getParameterByName(name, url) {
+		if (!url) url = window.location.href;
+		name = name.replace(/[[\]]/g, "\\$&");
+		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		    results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return "";
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
+	};
+
+	ns.funcs = {
+		getParameterByName: getParameterByName,
+		groupBySize: groupBySize,
+		processAsQueue: processAsQueue,
+		enumeration: enumer
+	};
+})(spexplorerjs, jQuery);
+
 /***/ }),
 
 /***/ "../widget.base.js":
@@ -74408,7 +74517,7 @@ __webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
 					}
 				} else {
 					var obj = new widgetInfo.constructor(this, opts);
-					$(".version:first", this).html(widgetInfo.version);
+					$(".xversion:last", this).html(widgetInfo.version);
 					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
 				}
 			});
@@ -74441,62 +74550,6 @@ __webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
 // 0.1.1: 2018/03/28    -   selector property
 //                          log from tracing
 // 0.1.0: 2018/03/23    -   pass options to widget constructor
-
-
-(function (ns, $) {
-
-	/// Iterate over an expanding array
-	//  Example:
-	//  var arr = [1, 2];
-	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
-	//    if (item == 1) {
-	//        arr.push(3);
-	//    }
-	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
-	//});
-	/// arr: array to process
-	/// action: promise (argument: item removed from array)
-	var processAsQueue = function processAsQueue(arr, action) {
-		return $.Deferred(function (dfd) {
-			var doNext = function doNext() {
-				if (arr == null || arr.length == 0) {
-					dfd.resolve();
-				} else {
-					var item = arr.shift();
-					action(item).done(function () {
-						doNext();
-					});
-				}
-			};
-
-			if (typeof arr == "function") {
-				arr().done(function (items) {
-					arr = items;
-					doNext();
-				});
-			} else {
-				doNext();
-			}
-		}).promise();
-	};
-
-	var enumer = function enumer(values) {
-		var me = {};
-		for (var i = 0; i < values.length; i++) {
-			me[values[i]] = 1;
-		}
-		if (Object.freeze) {
-			me = Object.freeze(me);
-		}
-
-		return me;
-	};
-
-	ns.funcs = {
-		processAsQueue: processAsQueue,
-		enumeration: enumer
-	};
-})(spexplorerjs, jQuery);
 
 /***/ }),
 
@@ -75202,7 +75255,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	var debugging = window.location.href.search(/(localhost|debugfieldsel)/) > 0;
 	var trace = ns.logger.get("fieldEditor", debugging);
 
-	+function loadPublicRefs() {
+	(function loadPublicRefs() {
 
 		if ($.fn.select2) {
 			trace.debug("select2 already loaded");
@@ -75211,7 +75264,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			__webpack_require__(/*! ../../../public/vendor/select2/js/select2.full.js */ "../../../public/vendor/select2/js/select2.full.js");
 			__webpack_require__(/*! ../../../public/vendor/select2/css/select2.css */ "../../../public/vendor/select2/css/select2.css");
 		}
-	}();
+	})();
 
 	var fieldLabel = function fieldLabel(field) {
 		var tmpl = _fieldSelectorFieldtemplate2.default.trim();
@@ -75513,6 +75566,8 @@ module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<
 
 __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
+__webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
+
 __webpack_require__(/*! ./sp.web.js */ "./sp.web.js");
 
 __webpack_require__(/*! ./treelight.js */ "./treelight.js");
@@ -75525,14 +75580,24 @@ __webpack_require__(/*! ../mirrors/jsmirror.js */ "../mirrors/jsmirror.js");
 
 __webpack_require__(/*! ../mirrors/xmlmirror.js */ "../mirrors/xmlmirror.js");
 
+__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
+
 var _listEditorTemplate = __webpack_require__(/*! ./list.editor.template.html */ "./list.editor.template.html");
 
 var _listEditorTemplate2 = _interopRequireDefault(_listEditorTemplate);
 
-__webpack_require__(/*! ../widget.base.js */ "../widget.base.js");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/// <reference path="../../components/logger/logger.js" />
+/// <reference path="../mirrors/xmlmirror.js" />
+
+// v 0.1.3 - 2018/04/03 - Updated to use trace, AddSpWidget
+// v 0.1.2 - 2018/03/28 - Renamed to list.editor (from list.selector)
+//                      - Bug: CodeMirror dimensions
+// v 0.1.1 - 2018/03/24 - Register through widgets.base
+//                      - Sync custom actions control with list selector
+
+/// TODO: Document
 (function (ns, $, template) {
 
 	var debugging = window.location.href.search(/(localhost|debuglisteditor)/) > 0;
@@ -75544,7 +75609,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		var $el = $(el),
 		    me = {}; //, ctx = null;
 		//opts = $.extend({}, opts);
-		$el.html($(template).html());
+		$el.html(template);
 
 		$("#btnAdd", $el).click(function () {});
 
@@ -75600,17 +75665,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		return me;
 	};
 
-	ns.widgets.addSpWidget("spListWidget", SPListWidget, "0.1.3");
-})(spexplorerjs, jQuery, _listEditorTemplate2.default); /// <reference path="../../components/logger/logger.js" />
-/// <reference path="../mirrors/xmlmirror.js" />
-
-// v 0.1.3 - 2018/04/03 - Updated to use trace, AddSpWidget
-// v 0.1.2 - 2018/03/28 - Renamed to list.editor (from list.selector)
-//                      - Bug: CodeMirror dimensions
-// v 0.1.1 - 2018/03/24 - Register through widgets.base
-//                      - Sync custom actions control with list selector
-
-/// TODO: Document
+	ns.widgets.addSpWidget("spListWidget", SPListWidget, "0.1.4");
+})(spexplorerjs, jQuery, _listEditorTemplate2.default);
 
 /***/ }),
 
@@ -75621,7 +75677,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .xxxnav-tabs > li .close {\r\n            margin: -2px 0 0 10px;\r\n            font-size: 18px;\r\n        }\r\n    </style>\r\n    <div>\r\n        <div class=\"form-horizontal\">\r\n            <fieldset>\r\n                <legend>List Editor</legend>\r\n                <div class=\"form-group listSelector\">\r\n                    <label class=\"col-md-2 control-label\" for=\"textinput\">List</label>\r\n                    <div class=\"col-md-10 listSelectorFirst\">\r\n                        <div data-widget=\"xSPTreeLight\"></div>\r\n                        <span class=\"help-block\">Select an existing list.</span>\r\n                    </div>\r\n                </div>\r\n            </fieldset>\r\n        </div>\r\n        <br />\r\n        <ul class=\"nav nav-tabs\" style=\"max-height:40px\">\r\n            <li class=\"active\"><a data-toggle=\"tab\" href=\"#splistinfo\">List Info</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistscripting\">Scripting</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistcustomactions\">Custom Actions</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistfiels\">Fields</a></li>\r\n        </ul>\r\n        <div class=\"tab-content col-md-12\">\r\n            <div id=\"splistinfo\" class=\"tab-pane fade in active\">\r\n                <div class=\"form-horizontal\">\r\n                    <fieldset>\r\n\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textinput\">Title</label>\r\n                            <div class=\"col-md-10\">\r\n                                <input id=\"title\" name=\"title\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" />\r\n                                <span class=\"help-block\">\r\n                                    A string that contains the title.\r\n                                </span>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textarea\">Schema</label>\r\n                            <div class=\"col-md-10\">\r\n                                <div class=\" listschema\">\r\n                                    <div data-widget=\"xxmlmirror\"></div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </fieldset>\r\n                </div>\r\n            </div>\r\n            <div id=\"splistscripting\" class=\"tab-pane fade\">\r\n                <b>Script:</b>\r\n                <div data-widget=\"xjsmirror\"></div>\r\n\r\n                <b>Caml Editor:</b>\r\n                <div class=\"scriptCaml\">\r\n                    <div data-widget=\"xxmlmirror\"></div>\r\n                </div>\r\n            </div>\r\n            <div id=\"splistcustomactions\" class=\"tab-pane fade\">\r\n                <div data-widget=\"spCustomActions\"></div>\r\n            </div>\r\n            <div id=\"splistfiels\" class=\"tab-pane fade\">\r\n                <div data-widget=\"xSPFieldSelector\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"widgetInfo\" style=\"font-size: small\">list <span>v0.1.2</span></div>\r\n</div>";
+module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .xxxnav-tabs > li .close {\r\n            margin: -2px 0 0 10px;\r\n            font-size: 18px;\r\n        }\r\n    </style>\r\n    <div>\r\n        <div class=\"form-horizontal\">\r\n            <fieldset>\r\n                <legend>List Editor</legend>\r\n                <div class=\"form-group listSelector\">\r\n                    <label class=\"col-md-2 control-label\" for=\"textinput\">List</label>\r\n                    <div class=\"col-md-10 listSelectorFirst\">\r\n                        <div data-widget=\"xSPTreeLight\"></div>\r\n                        <span class=\"help-block\">Select an existing list.</span>\r\n                    </div>\r\n                </div>\r\n            </fieldset>\r\n        </div>\r\n        <br />\r\n        <ul class=\"nav nav-tabs\" style=\"max-height:40px\">\r\n            <li class=\"active\"><a data-toggle=\"tab\" href=\"#splistinfo\">List Info</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistscripting\">Scripting</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistcustomactions\">Custom Actions</a></li>\r\n            <li><a data-toggle=\"tab\" href=\"#splistfiels\">Fields</a></li>\r\n        </ul>\r\n        <div class=\"tab-content col-md-12\">\r\n            <div id=\"splistinfo\" class=\"tab-pane fade in active\">\r\n                <div class=\"form-horizontal\">\r\n                    <fieldset>\r\n\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textinput\">Title</label>\r\n                            <div class=\"col-md-10\">\r\n                                <input id=\"title\" name=\"title\" type=\"text\" placeholder=\"placeholder\" class=\"form-control input-md\" />\r\n                                <span class=\"help-block\">\r\n                                    A string that contains the title.\r\n                                </span>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"form-group\">\r\n                            <label class=\"col-md-2 control-label\" for=\"textarea\">Schema</label>\r\n                            <div class=\"col-md-10\">\r\n                                <div class=\" listschema\">\r\n                                    <div data-widget=\"xxmlmirror\"></div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </fieldset>\r\n                </div>\r\n            </div>\r\n            <div id=\"splistscripting\" class=\"tab-pane fade\">\r\n                <b>Script:</b>\r\n                <div data-widget=\"xjsmirror\"></div>\r\n\r\n                <b>Caml Editor:</b>\r\n                <div class=\"scriptCaml\">\r\n                    <div data-widget=\"xxmlmirror\"></div>\r\n                </div>\r\n            </div>\r\n            <div id=\"splistcustomactions\" class=\"tab-pane fade\">\r\n                <div data-widget=\"spCustomActions\"></div>\r\n            </div>\r\n            <div id=\"splistfiels\" class=\"tab-pane fade\">\r\n                <div data-widget=\"xSPFieldSelector\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"widgetInfo\" style=\"font-size: small\"><span class=\"xversion\"></span></div>\r\n</div>";
 
 /***/ }),
 
@@ -75635,13 +75691,17 @@ module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .xxxnav-tabs
 "use strict";
 
 
+/* global require */
+
 var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
 __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 // v 0.0.1 : 2018-03-11 - loadSpElem
 (function (ns, $) {
@@ -75697,7 +75757,21 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			});
 		}).promise();
 	};
-
+	ns.sp.uploadAjax = function (buffer, webUrl, listTitle, fileName) {
+		return $.ajax({
+			url: webUrl + "../_api/web/lists/getByTitle('" + listTitle + "')/RootFolder/Files/add(url='" + fileName + "',overwrite='true')",
+			type: "POST",
+			data: buffer,
+			async: true,
+			processData: false,
+			contentType: false,
+			headers: {
+				"accept": "application/json;odata=verbose",
+				"X-RequestDigest": $("#__REQUESTDIGEST").val(),
+				"content-length": buffer.byteLength
+			}
+		});
+	};
 	ns.sp.reqFailure = function (req, reqargs, from, dfd) {
 		// log context failure
 
@@ -75712,6 +75786,195 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /***/ }),
 
+/***/ "./sp.folderapi.js":
+/*!*************************!*\
+  !*** ./sp.folderapi.js ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/// <reference path="../../../node_modules/@types/microsoft-ajax/index.d.ts" />
+/// <reference path="../../../node_modules/@types/sharepoint/index.d.ts" />
+/// <reference path="../logger/logger.js" />
+/// <reference path="../widget.base.js" />
+/// <reference path="./sp.base.js" />
+
+/* global require */
+
+__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
+
+__webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
+
+// v 0.0.2: 2018-04-10  - argument can be a list
+// v 0.0.1: 2018-04-04  - fallback to trace logging if necessary
+//                      - new args.list parameter
+
+(function (ns, $) {
+
+	var debugging = window.location.href.search(/(localhost|sp.folder)/) > 0;
+	var trace = ns.logger.get("sp.folder", debugging);
+
+	/**
+   * 
+   * @param {string} serverRelativeUrl
+   * @param {SP.ClientContext} ctx
+   * @param {SP.Web} web
+   */
+	var folderExists = function folderExists(serverRelativeUrl, ctx, web) {
+
+		if (ctx) {} else {
+			if (web) {
+				ctx = web.get_context();
+			} else {
+				ctx = new SP.ClientContext();
+			}
+		}
+		if (web) {} else {
+			web = ctx.get_web();
+		}
+		var dfd = $.Deferred();
+		var folder = web.getFolderByServerRelativeUrl(serverRelativeUrl);
+
+		trace.debug("probing for folder " + serverRelativeUrl);
+		ctx.load(folder, "Name", "ServerRelativeUrl");
+
+		ctx.executeQueryAsync(function () {
+			//if (folder.get_exists()) { // Not available in 2013
+			//    // Folder exists and isn't hidden from us. Print its name.
+			//    //console.log(folder.get_name());
+			//    dfd.resolve(folder);
+			//}
+			//else {
+			//    dfd.resolve(folder);
+			//    //console.log("Folder exists but is hidden (security-trimmed) for us.");
+			//}
+			try {
+				var url = folder.get_serverRelativeUrl();
+				dfd.resolve(folder);
+
+				trace.debug("folder exists" + url);
+			} catch (e) {
+				trace.debug("Folder does not exist.");
+				dfd.resolve(false);
+			}
+		}, function (s, args) {
+			if (args.get_errorTypeName() === "System.IO.FileNotFoundException") {
+				// Folder doesn't exist at all.
+				trace.debug("Folder does not exist.");
+				dfd.resolve(false);
+			} else {
+				// An unexpected error occurred.
+				trace.debug("Error: " + args.get_message());
+				dfd.resolve(false);
+			}
+		});
+
+		return dfd.promise();
+	};
+
+	var pathSteps = function pathSteps(path) {
+		var bits = path.split("/");
+		var qu = [];
+		for (var i = bits.length; i > 0; i--) {
+			var current = bits.slice(0, i).join("/");
+			if (current === "") current = "/";
+			qu.push(current);
+		}
+		return qu;
+	};
+
+	var createFolderInList = function createFolderInList(name, parentFolderPath, list, ctx) {
+		ctx = ctx || list.get_context();
+		list.set_enableFolderCreation(true);
+		list.update();
+
+		var itemCreateInfo = new SP.ListItemCreationInformation();
+		itemCreateInfo.set_underlyingObjectType(SP.FileSystemObjectType.folder);
+		itemCreateInfo.set_leafName(name);
+		if (parentFolderPath) {
+			itemCreateInfo.set_folderUrl(parentFolderPath);
+		}
+
+		var li = list.addItem(itemCreateInfo);
+		li.set_item("Title", name);
+		li.update();
+
+		var dfd = $.Deferred();
+		ctx.load(li);
+		var folder = li.get_folder();
+		ctx.load(folder);
+		ctx.executeQueryAsync(function () {
+			dfd.resolve(folder);
+		}, function (r, a) {
+			dfd.reject([r, a]);
+		});
+
+		return dfd.promise();
+	};
+
+	/**
+       * returns folder (creating it and its path if necessary)
+       * @param {string} serverRelativeUrl
+       */
+	var ensureFolderInList = function ensureFolderInList(serverRelativeUrl, list, ctx) {
+		var dfd = $.Deferred();
+
+		folderExists(serverRelativeUrl, list.get_parentWeb(), ctx).done(function (folder) {
+			if (folder === false) {
+
+				var parentFolders = pathSteps(serverRelativeUrl);
+				var parentFolderPath = parentFolders[1];
+				var bits = serverRelativeUrl.split("/");
+				var name = bits[bits.length - 1];
+				ensureFolderInList(parentFolderPath, list, ctx).done(function () /*parentSpFolder*/{
+					createFolderInList(name, parentFolderPath).done(function (folder) {
+						dfd.resolve(folder);
+					});
+				});
+			} else {
+				dfd.resolve(folder);
+			}
+		});
+		return dfd.promise();
+	};
+
+	var ensurePathNoLi = function ensurePathNoLi(path) {
+		// not safe for lists
+		var paths = toQueue(path);
+		var eventTemplatesDal = new ns.SpDal(ns.schema.eventTemplates, trace.log);
+		return eventTemplatesDal.processAsQueue(paths, function (path1) {
+
+			var pCreate = $.ajax({
+				"url": _spPageContextInfo.siteAbsoluteUrl + "/_api/Web/Folders/add('Lists/Events/" + path1 + "')",
+				"type": "POST",
+				"headers": {
+					"accept": "application/json; odata=verbose",
+					"content-type": "application/json; odata=verbose",
+					"X-RequestDigest": $("#__REQUESTDIGEST").val()
+				}
+			});
+
+			jQuery.when(pCreate).always(function (data) {
+				trace.log(data);
+			});
+
+			return pCreate;
+		});
+	};
+
+	ns.folderapi = {
+		ensureFolderInList: ensureFolderInList,
+		createFolderInList: createFolderInList,
+		folderExists: folderExists,
+		version: "0.0.1"
+	};
+})(spexplorerjs, jQuery);
+
+/***/ }),
+
 /***/ "./sp.list.js":
 /*!********************!*\
   !*** ./sp.list.js ***!
@@ -75722,34 +75985,124 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 "use strict";
 
 
-__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
-
-__webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
-
+/// <reference path="../../../node_modules/@types/microsoft-ajax/index.d.ts" />
+/// <reference path="../../../node_modules/@types/sharepoint/index.d.ts" />
 /// <reference path="../logger/logger.js" />
+/// <reference path="../widget.base.js" />
+/// <reference path="sp.folderapi.js" />
 
+/* global require */
+
+__webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
+__webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
+
+// v 0.0.2: 2018-04-10  - argument can be a list
 // v 0.0.1: 2018-04-04  - fallback to trace logging if necessary
 //                      - new args.list parameter
 
 (function (ns, $) {
 
-	var SpDal = function SpDal(args, log, error) {
+	var debugging = window.location.href.search(/(localhost|sp.list)/) > 0;
+	var trace = ns.logger.get("sp.list", debugging);
 
-		var ctx = null;
-		try {
-			ctx = new SP.ClientContext();
-		} catch (e) {
-			ctx = SP.ClientContext.get_current();
+	var getAll = function getAll(splist /* SP.List */, spctx /*SP.ClientContext */, caml /* string */, folder /* string */, limit /* int */) {
+
+		limit = limit || 0;
+		var query = new SP.CamlQuery();
+
+		var queryXml = caml || "<View Scope='Recursive'>\
+        <ViewFields>\
+          <FieldRef Name='ID'></FieldRef>\
+        </ViewFields><RowLimit>1000</RowLimit>\
+      </View>";
+
+		if (folder) {
+			query.set_folderServerRelativeUrl(folder);
 		}
-		var web = ctx.get_web();
-		var lists = web.get_lists();
-		var list = args.list || null;
+
+		query.set_viewXml(queryXml);
+
+		var items = [],
+		    spItems;
+
+		var parseRows = function parseRows(currrentItems) {
+			var itemsCount = currrentItems.get_count();
+			for (var i = 0; i < itemsCount; i++) {
+				var item = currrentItems.itemAt(i);
+				if (item) {
+					items.push(item);
+				}
+			}
+		};
+
+		var loadNext = function loadNext(pageInfo) {
+
+			trace.debug("page: " + pageInfo);
+			pageInfo = pageInfo || "";
+
+			var pos = new SP.ListItemCollectionPosition();
+			pos.set_pagingInfo(pageInfo);
+			query.set_listItemCollectionPosition(pos);
+			spItems = splist.getItems(query);
+			spctx.load(spItems);
+
+			var onSuccess = function onSuccess() /*sender, args*/{
+				parseRows(spItems);
+				var position = spItems.get_listItemCollectionPosition();
+				if (position !== null && (limit === 0 || items.length < limit)) {
+					var info = position.get_pagingInfo();
+					loadNext(info);
+				} else {
+					dfd.resolve(items, splist, spctx);
+				}
+			};
+
+			spctx.executeQueryAsync(onSuccess, function (r, a) {
+
+				trace.error({ caml: caml, error: r, sender: a });
+				dfd.reject(r, a);
+			});
+		};
+		loadNext();
+
+		var dfd = $.Deferred();
+		return dfd.promise();
+	};
+
+	var spDal = function spDal(args, log, error) {
+		var ctx = null;
+		var web = null;
+		var lists = null;
+		var list = null;
 		var items = null;
 		var listFields = null;
 
-		ctx.load(web, ["Id", "ServerRelativeUrl"]);
-		ctx.load(lists, "Include(Title, Fields.Include(Title))");
-		ctx.load(lists, "Include(Fields.Include(Title))");
+		(function () {
+			//init
+
+			if (SP.List.isInstanceOfType(args)) {
+				list = args;
+			} else if (SP.List.isInstanceOfType(args.list)) {
+				list = args.list;
+			}
+
+			if (list != null) {
+				ctx = list.get_context();
+			} else {
+				try {
+					ctx = new SP.ClientContext();
+				} catch (e) {
+					ctx = SP.ClientContext.get_current();
+				}
+			}
+
+			web = ctx.get_web();
+			lists = web.get_lists();
+
+			ctx.load(web, ["Id", "ServerRelativeUrl"]);
+			ctx.load(lists, "Include(Title, Fields.Include(Title))");
+			ctx.load(lists, "Include(Fields.Include(Title))");
+		})();
 
 		var trace = ns.logger.get("spdal");
 		log = log || trace.log;
@@ -75764,7 +76117,7 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 					var le = lists.getEnumerator();
 					while (le.moveNext()) {
 						var list = le.get_current();
-						if (list.get_title() == listTitle) {
+						if (list.get_title() === listTitle) {
 							result.exists = true;
 							result.list = list;
 							break;
@@ -75773,7 +76126,7 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 					log({ listExists: listTitle, result: result });
 					dfd.resolve(result);
 				};
-				if (lists.get_data().length == 0) {
+				if (lists.get_data().length === 0) {
 					// not initialized
 
 					var ctx = lists.get_context();
@@ -75793,17 +76146,86 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 			var qu = [];
 			for (var i = bits.length; i > 0; i--) {
 				var current = bits.slice(0, i).join("/");
-				if (current == "") current = "/";
+				if (current === "") current = "/";
 				qu.push(current);
 			}
 			return qu;
 		};
 
-		//var emptyPromise = function () { // couldn't resist
-		//	return $.Deferred(function (dfd) {
-		//		dfd.resolve();
-		//	}).promise();
-		//};
+		var ensureCtype = function ensureCtype(name, fieldLinks) {
+			return $.Deferred(function (dfd) {
+				var cTypes = list.get_contentTypes();
+				loadSpElem(cTypes).done(function () {
+
+					var matches = $.grep(ns.sp.collectionToArray(cTypes), function (n) {
+						return n.get_name() === name;
+					});
+					if (matches.length === 0) {
+						trace.debug("Adding ctype" + name);
+						addContentType(name, fieldLinks).done(function (ctype) {
+							dfd.resolve(ctype);
+						});
+					} else {
+						dfd.resolve(matches[0]);
+					}
+				});
+			}).promise();
+		};
+
+		var addContentType = function addContentType(name, fieldLinks) {
+			return $.Deferred(function (dfd) {
+				var webCTypes = web.get_contentTypes();
+
+				list.set_contentTypesEnabled(true);
+				list.update();
+
+				var listFields = list.get_fields();
+				loadSpElem([webCTypes, listFields]).done(function () {
+					var matches = $.grep(ns.sp.collectionToArray(webCTypes), function (n) {
+						return n.get_name() === name;
+					});
+
+					if (matches.length === 0) {
+						trace.error(name + " not found");
+					} else {
+						var webcType = matches[0];
+						var listCTypes = list.get_contentTypes();
+						listCTypes.addExistingContentType(webcType);
+
+						loadSpElem(listCTypes).done(function () {
+							var ctype = $.grep(ns.sp.collectionToArray(listCTypes), function (n) {
+								return n.get_name() === name;
+							})[0];
+
+							if (fieldLinks) {
+								listFields = ns.sp.collectionToArray(listFields);
+
+								fieldLinks.forEach(function (fieldName) {
+
+									trace.debug("---Addfield " + fieldName + " field link");
+
+									var localField = $.grep(listFields, function (n) {
+										return n.get_internalName() === fieldName;
+									})[0];
+
+									var fieldLink = new SP.FieldLinkCreationInformation();
+									fieldLink.set_field(localField);
+									ctype.get_fieldLinks().add(fieldLink);
+								});
+								ctype.update();
+								list.update();
+								loadSpElem(ctype).done(function () {
+									dfd.resolve(ctype);
+								});
+							} else {
+								dfd.resolve(ctype);
+							}
+						});
+					}
+				});
+			}).promise();
+		};
+
 		var addItems = function addItems(items, splist, spfields, folderUrl) {
 			var dfd = $.Deferred();
 
@@ -75825,10 +76247,10 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 						for (var f in data) {
 							var fieldType = spfields[f].get_typeAsString();
 							var val = null;
-							if (fieldType == "URL") {
+							if (fieldType === "URL") {
 								val = new SP.FieldUrlValue();
 								val.set_url(data[f]);
-							} else if (fieldType.search("Lookup") == 0) {
+							} else if (fieldType.search("Lookup") === 0) {
 
 								var itemVal = data[f];
 								if (itemVal) {
@@ -75867,15 +76289,6 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
 			return dfd.promise();
 		};
-		//var defaultItems = function (spfields) {
-		//	if (typeof args.DefaultItems == "function") {
-		//		args.DefaultItems(spfields, me).done(function (items) {
-		//			addItems(spfields, items);
-		//		});
-		//	} else {
-		//		addItems(spfields, args.DefaultItems);
-		//	}
-		//};
 		var handleOnReady = function handleOnReady(splist, dfd) {
 			log("OnListReady");
 			if (args.OnListReady) {
@@ -75907,15 +76320,20 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
 			return dfd.promise();
 		};
-		var ensureFolder = function ensureFolder(path) {
+
+		/**
+         * returns folder (creating it and its path if necessary)
+         * @param {string} serverRelativeUrl
+         */
+		var ensureFolder = function ensureFolder(serverRelativeUrl /*string*/) {
 			var dfd = $.Deferred();
 
-			folderExists(path).done(function (folder) {
+			folderExists(serverRelativeUrl).done(function (folder) {
 				if (folder == false) {
 
-					var parentFolders = pathSteps(path);
+					var parentFolders = pathSteps(serverRelativeUrl);
 					var parentFolderPath = parentFolders[1];
-					var bits = path.split("/");
+					var bits = serverRelativeUrl.split("/");
 					var name = bits[bits.length - 1];
 					ensureFolder(parentFolderPath).done(function () /*parentSpFolder*/{
 						createFolder(name, parentFolderPath).done(function (folder) {
@@ -75928,9 +76346,12 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 			});
 			return dfd.promise();
 		};
-		var folderExists = function folderExists(path) {
+		/**
+         * @param {string} serverRelativeUrl
+         */
+		var folderExists = function folderExists(serverRelativeUrl) {
 			var dfd = $.Deferred();
-			var folder = web.getFolderByServerRelativeUrl(path);
+			var folder = web.getFolderByServerRelativeUrl(serverRelativeUrl);
 
 			ctx.load(folder, "Name", "ServerRelativeUrl");
 
@@ -76035,25 +76456,6 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
 			return dfd.promise();
 		};
-		//var getGroupsOld = function () {
-		//	return $.Deferred(function (dfd) {
-		//		var groupCollection = web.get_siteGroups();
-		//		ctx.load(groupCollection);
-
-		//		ctx.executeQueryAsync(function (sender/*, args*/) {
-		//			var res = {};
-		//			var le = groupCollection.getEnumerator();
-		//			while (le.moveNext()) {
-		//				var group = le.get_current();
-		//				var groupName = group.get_title();
-		//				res[groupName] = group;
-		//			}
-		//			dfd.resolve(res);
-		//		},
-		//		function (r, a) { reqFailure(r, a, "getGroups", dfd); });
-		//	}).promise();
-
-		//};
 		var breakRoleInheritance = function breakRoleInheritance(copyRoleAssignments, clearSubscopes) {
 			list.breakRoleInheritance(copyRoleAssignments, clearSubscopes);
 			list.update();
@@ -76128,32 +76530,6 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 			}).promise();
 		};
 
-		var processAsQueue = function processAsQueue(arr, action) {
-			// make sure array doesn't change
-
-			return $.Deferred(function (dfd) {
-				var step = 0;
-				var doNext = function doNext() {
-					if (arr == null || step >= arr.length) {
-						dfd.resolve();
-					} else {
-						var item = arr[step++];
-						action(item, ctx, list, web).done(function () {
-							doNext();
-						});
-					}
-				};
-
-				if (typeof arr == "function") {
-					arr().done(function (items) {
-						arr = items;
-						doNext();
-					});
-				} else {
-					doNext();
-				}
-			}).promise();
-		};
 		var spGroups = null;
 		var getGroups = function getGroups(force) {
 			if (force) {
@@ -76200,7 +76576,7 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 		var ensureGroups = function ensureGroups(groups) {
 			return $.Deferred(function (dfdG) {
 				getGroups().done(function () /*spGroups*/{
-					processAsQueue(groups, function (group) {
+					ns.funcs.processAsQueue(groups, function (group) {
 						return $.Deferred(function (dfd) {
 							ensureGroup(group.name, group.desc).done(function (spGroup) {
 								log("Adding permissions for " + group.name);
@@ -76239,6 +76615,11 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 					reqFailure(r, a, "createGroups", dfd);
 				});
 			}).promise();
+		};
+		var ensureCTypes = function ensureCTypes(ctypes) {
+			return ns.funcs.processAsQueue(ctypes || [], function (ctype) {
+				return ensureCtype(ctype.Name, ctype.FieldLinks);
+			});
 		};
 		var createList = function createList(listTitle, templateType) {
 			log("Creating list " + listTitle);
@@ -76311,23 +76692,25 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 									log(args.ListTitle + ": creating fields");
 
 									ensureFields(splist, args.Fields || []).done(function (spfields) {
-										defaultItems(spfields);
-										if (args.Permissions) {
-											breakRoleInheritance(false, true).done(function () {
-												log("done with inheritance");
-												processAsQueue(args.Permissions, function (entry) {
-													var groupName = entry.name;
-													var perms = entry.permissions;
-													log("adding perm: " + groupName + " to " + args.ListTitle);
-													return addPermission(groupName, perms, splist);
-												}).done(function () {
-													log("done adding permissions");
-													handleOnReady(splist, dfd);
+										ensureCTypes(args.ContentTypes).done(function () {
+											defaultItems(spfields);
+											if (args.Permissions) {
+												breakRoleInheritance(false, true).done(function () {
+													log("done with inheritance");
+													ns.funcs.processAsQueue(args.Permissions, function (entry) {
+														var groupName = entry.name;
+														var perms = entry.permissions;
+														log("adding perm: " + groupName + " to " + args.ListTitle);
+														return addPermission(groupName, perms, splist);
+													}).done(function () {
+														log("done adding permissions");
+														handleOnReady(splist, dfd);
+													});
 												});
-											});
-										} else {
-											handleOnReady(splist, dfd);
-										}
+											} else {
+												handleOnReady(splist, dfd);
+											}
+										});
 									}).fail(function (err) {
 										log(err);
 									});
@@ -76383,7 +76766,7 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 						dfd.reject("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
 					});
 				};
-				processAsQueue(fields, function (field) {
+				ns.funcs.processAsQueue(fields, function (field) {
 					return $.Deferred(function (fieldDfd) {
 						getMarkup(field).done(function (xml) {
 
@@ -76464,7 +76847,7 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 </ViewFields><RowLimit>1000</RowLimit>\
 </View>";
 				//loadSpElem(rootFolder, ctx),
-				$.when(getAll(list, ctx, queryXml)).done(function (items) {
+				$.when(getAllItemsPaged(list, ctx, queryXml)).done(function (items) {
 					log(items);
 
 					if (args.itemParser) {
@@ -76522,72 +76905,69 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
 			return dfd.promise();
 		};
-		var getAll = function getAll(splist, spctx, caml, folder, limit) {
+		var getAllItemsPaged = function getAllItemsPaged(caml, folder, limit) {
 
 			limit = limit || 0;
-			splist = splist || list;
-			spctx = spctx || ctx;
-			var query = new SP.CamlQuery();
-
-			var queryXml = caml || "<View Scope='Recursive'>\
-        <ViewFields>\
-          <FieldRef Name='ID'></FieldRef>\
-        </ViewFields><RowLimit>1000</RowLimit>\
-      </View>";
-
-			if (folder) {
-				query.set_folderServerRelativeUrl(folder);
-			}
-			query.set_viewXml(queryXml);
-
-			var items = [],
-			    spItems;
-
-			getlist().done(function (splist) {
-
-				var loadNext = function loadNext(pageInfo) {
-
-					log("loading" + pageInfo);
-					pageInfo = pageInfo || "";
-
-					var pos = new SP.ListItemCollectionPosition();
-					pos.set_pagingInfo(pageInfo);
-					query.set_listItemCollectionPosition(pos);
-					spItems = splist.getItems(query);
-					spctx.load(spItems);
-
-					var onSuccess = function onSuccess() /*sender, args*/{
-						parseRows(spItems);
-						var position = spItems.get_listItemCollectionPosition();
-						if (position !== null && (limit == 0 || items.length < limit)) {
-							var info = position.get_pagingInfo();
-							loadNext(info);
-						} else {
-							dfd.resolve(items, splist, listFields, web, ctx);
-						}
-					};
-
-					spctx.executeQueryAsync(onSuccess, function (r, a) {
-
-						reqFailure(r, a, "getAll", dfd);
-						error("caml: " + caml);
-					});
-				};
-				var parseRows = function parseRows(spItems) {
-					var itemsCount = spItems.get_count();
-					for (var i = 0; i < itemsCount; i++) {
-						var item = spItems.itemAt(i);
-						if (item) {
-							items.push(item);
-						}
-					}
-				};
-
-				loadNext();
-			}).fail(function () {});
 
 			var dfd = $.Deferred();
+			getlist().done(function (splist) {
+
+				getAll(splist, ctx, caml, folder, limit).done(function (allItems) {
+					dfd.resolve(allItems);
+				});
+			}).fail(function () {
+				trace.error("error getAllPages");
+			});
+
 			return dfd.promise();
+		};
+
+		/**
+         * For large lists, get items on individual folders, ** very slow **
+         * @param {SP.ListItem} tFolder
+         */
+		var loadAllFilesFromAllFolders = function loadAllFilesFromAllFolders(caml) {
+
+			var folderQueue = [list.get_rootFolder()];
+			var allitems = [];
+
+			return $.Deferred(function (alldfd) {
+				ns.funcs.processAsQueue(folderQueue, function (folder) {
+
+					return $.Deferred(function (dfd) {
+
+						ctx.load(folder, ["ServerRelativeUrl"]);
+						loadSpElem(folder.get_folders()).done(function (folders) {
+							ns.sp.collectionToArray(folders).forEach(function (n) {
+								folderQueue.push(n);
+							});
+
+							var folderUrl = folder.get_serverRelativeUrl();
+							caml = caml || "<View><RowLimit>1000</RowLimit></View>";
+
+							getAllItemsPaged(caml, folderUrl).done(function (items) {
+
+								for (var i = 0; i < items.length; i++) {
+
+									var li = items[i];
+									var vls = li.get_fieldValues();
+
+									if (vls.FSObjType == "1") //folder
+										{
+											folderQueue.push(li);
+										} else {
+										allitems.push(li);
+									}
+								}
+
+								dfd.resolve();
+							});
+						});
+					}).promise();
+				}).done(function () {
+					alldfd.resolve(allitems);
+				});
+			}).promise();
 		};
 
 		var addWebPart = function addWebPart(serverRelativeFormUrl, wpXml, zone, position) {
@@ -76617,11 +76997,12 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 		};
 
 		var me = {
+			loadAllFilesFromAllFolders: loadAllFilesFromAllFolders,
 			addCustomAction: addCustomAction,
 			args: args,
 			deleteList: delTheList,
 			addWebPart: addWebPart,
-			getitems: function getitems(force, caml) {
+			getitems: function getitems(caml /*string*/, force /*bool*/) {
 				if (force) {
 					items = null;
 				}
@@ -76657,22 +77038,25 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 			clearActions: clearActions,
 			createFolder: createFolder,
 			loadSpElem: loadSpElem,
-			processAsQueue: processAsQueue,
+			processAsQueue: ns.funcs.processAsQueue,
 			ensureFolder: ensureFolder,
-			getItems: getAll,
+			getItems: getAllItemsPaged,
 			addItems: addItems,
 			ctx: ctx,
 			list: list,
 			spErrorHandler: reqFailure,
 			breakItemRoleInheritance: breakItemRoleInheritance,
-			breakRoleInheritance: breakRoleInheritance
+			breakRoleInheritance: breakRoleInheritance,
+			addContentType: addContentType,
+			ensureCtype: ensureCtype
 		};
 		return me;
 	};
 
 	ns.listapi = {
-		dal: SpDal,
-		version: "0.1"
+		getAll: getAll,
+		Dal: spDal,
+		version: "0.0.2"
 	};
 })(spexplorerjs, jQuery);
 

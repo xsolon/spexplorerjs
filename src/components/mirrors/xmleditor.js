@@ -119,14 +119,8 @@ window.JSHINT = JSHINT.JSHINT;
 
 		//https://www.kochan.io/javascript/how-to-dynamically-create-an-iframe.html
 		iframe.attr("src",
-			"javascript:void((function(){var script = document.createElement('script');" +
-            "script.innerHTML = \"(function() {" +
-            "document.open();document.domain='" + document.domain +
-            "';document.close();})();\";" +
-            "document.write(\"<head>\" + script.outerHTML + \"</head><body></body>\");})())"
+			`javascript:void((function(){var script = document.createElement('script');script.innerHTML = "(function() {document.open();document.domain='${document.domain}';document.close();})();";document.write("<head>" + script.outerHTML + "</head><body><style type='text/css'>div.CodeMirror{height: 100% !important;}</style><textarea style=width='100%'></textarea></body>");})())`
 		);
-
-		iframe[0].contentWindow.document.write(template);
 
 		var head = iframe.contents().find("head");
 		$("style").each(function () {

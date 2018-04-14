@@ -1,5 +1,3 @@
-
-
 /* global require */
 // v 0.1.4: 2018-04-02: - check if already defined, make jQuery global if needed
 //                          The inline check won't work for more complex modules, but it is an easy way to address multiple endpoints that load this.
@@ -71,3 +69,89 @@
 		}
 	};
 })(window.spexplorerjs = window["spexplorerjs"] || {}, window.jQuery = window["jQuery"] || require("jquery"));
+
+
+(function (ns, $) {
+
+	/// Iterate over an expanding array
+	//  Example:
+	//  var arr = [1, 2];
+	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
+	//    if (item == 1) {
+	//        arr.push(3);
+	//    }
+	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
+	//});
+	/// arr: array to process
+	/// action: promise (argument: item removed from array)
+	var processAsQueue = function (arr, action) {
+		return $.Deferred(function (dfd) {
+			var doNext = function () {
+				if (arr == null || arr.length === 0) {
+					dfd.resolve();
+				} else {
+					var item = arr.shift();
+					action(item).done(function () {
+						doNext();
+					});
+				}
+			};
+
+			if (typeof arr == "function") {
+				arr().done(function (items) {
+					arr = items;
+					doNext();
+				});
+			} else {
+				doNext();
+			}
+		}).promise();
+
+	};
+
+	var enumer = function (values) {
+		var me = {};
+		for (var i = 0; i < values.length; i++) {
+			me[values[i]] = 1;
+		}
+		if (Object.freeze) { me = Object.freeze(me); }
+
+		return me;
+	};
+
+	/**
+     * Divide array into an array of arrays of size groupSize
+     * @param {Array} arr
+     * @param {integer} groupSize
+     */
+	var groupBySize = function (arr, groupSize) {
+		var groups = [];
+		groupSize = groupSize || 100;
+		arr.forEach(function (n, i) {
+			var index = Math.trunc(i / groupSize);
+			if (groups.length === index) {
+				groups.push([]);
+			}
+			groups[index].push(n);
+		});
+		return groups;
+	};
+
+	var getParameterByName = function (name, url) {
+		if (!url) url = window.location.href;
+		name = name.replace(/[[\]]/g, "\\$&");
+		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+			results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return "";
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
+	};
+
+	ns.funcs = {
+		getParameterByName: getParameterByName,
+		groupBySize: groupBySize,
+		processAsQueue: processAsQueue,
+		enumeration: enumer
+	};
+
+})(spexplorerjs, jQuery);

@@ -2,12 +2,12 @@
 /// <reference path="../../../node_modules/@types/sharepoint/index.d.ts" />
 /// <reference path="../logger/logger.js" />
 /// <reference path="../widget.base.js" />
+/// <reference path="sp.folderapi.js" />
 
 /* global require */
 
 require("../logger/logger.js");
-
-require("./sp.base.js");
+require("./sp.folderapi.js");
 
 // v 0.0.2: 2018-04-10  - argument can be a list
 // v 0.0.1: 2018-04-04  - fallback to trace logging if necessary
@@ -164,6 +164,72 @@ require("./sp.base.js");
 			return qu;
 		};
 
+		var ensureCtype = function (name, fieldLinks) {
+			return $.Deferred(function (dfd) {
+				var cTypes = list.get_contentTypes();
+				loadSpElem(cTypes).done(function () {
+
+					var matches = $.grep(ns.sp.collectionToArray(cTypes), function (n) { return n.get_name() === name; });
+					if (matches.length === 0) {
+						trace.debug("Adding ctype" + name);
+						addContentType(name, fieldLinks).done(function (ctype) {
+							dfd.resolve(ctype);
+						});
+					} else {
+						dfd.resolve(matches[0]);
+					}
+				});
+			}).promise();
+		};
+
+		var addContentType = function (name, fieldLinks) {
+			return $.Deferred(function (dfd) {
+				var webCTypes = web.get_contentTypes();
+
+				list.set_contentTypesEnabled(true);
+				list.update();
+
+				var listFields = list.get_fields();
+				loadSpElem([webCTypes, listFields]).done(function () {
+					var matches = $.grep(ns.sp.collectionToArray(webCTypes), function (n) { return n.get_name() === name; });
+
+					if (matches.length === 0) {
+						trace.error(name + " not found");
+					} else {
+						var webcType = matches[0];
+						var listCTypes = list.get_contentTypes();
+						listCTypes.addExistingContentType(webcType);
+
+						loadSpElem(listCTypes).done(function () {
+							var ctype = $.grep(ns.sp.collectionToArray(listCTypes), function (n) { return n.get_name() === name; })[0];
+
+							if (fieldLinks) {
+								listFields = ns.sp.collectionToArray(listFields);
+								
+								fieldLinks.forEach(function (fieldName) {
+
+									trace.debug("---Addfield " + fieldName + " field link");
+
+									var localField = $.grep(listFields, function (n) { return n.get_internalName() === fieldName; })[0];
+
+									var fieldLink = new SP.FieldLinkCreationInformation();
+									fieldLink.set_field(localField);
+									ctype.get_fieldLinks().add(fieldLink);
+								});
+								ctype.update();
+								list.update();
+								loadSpElem(ctype).done(function () {
+									dfd.resolve(ctype);
+								});
+							} else {
+								dfd.resolve(ctype);
+							}
+						});
+					}
+				});
+			}).promise();
+		};
+
 		var addItems = function (items, splist, spfields, folderUrl) {
 			var dfd = $.Deferred();
 
@@ -258,15 +324,20 @@ require("./sp.base.js");
 
 			return dfd.promise();
 		};
-		var ensureFolder = function (path) {
+
+		/**
+         * returns folder (creating it and its path if necessary)
+         * @param {string} serverRelativeUrl
+         */
+		var ensureFolder = function (serverRelativeUrl/*string*/) {
 			var dfd = $.Deferred();
 
-			folderExists(path).done(function (folder) {
+			folderExists(serverRelativeUrl).done(function (folder) {
 				if (folder == false) {
 
-					var parentFolders = pathSteps(path);
+					var parentFolders = pathSteps(serverRelativeUrl);
 					var parentFolderPath = parentFolders[1];
-					var bits = path.split("/");
+					var bits = serverRelativeUrl.split("/");
 					var name = bits[bits.length - 1];
 					ensureFolder(parentFolderPath).done(function () /*parentSpFolder*/ {
 						createFolder(name, parentFolderPath).done(function (folder) {
@@ -279,9 +350,12 @@ require("./sp.base.js");
 			});
 			return dfd.promise();
 		};
-		var folderExists = function (path) {
+		/**
+         * @param {string} serverRelativeUrl
+         */
+		var folderExists = function (serverRelativeUrl) {
 			var dfd = $.Deferred();
-			var folder = web.getFolderByServerRelativeUrl(path);
+			var folder = web.getFolderByServerRelativeUrl(serverRelativeUrl);
 
 			ctx.load(folder, "Name", "ServerRelativeUrl");
 
@@ -546,6 +620,12 @@ require("./sp.base.js");
 				});
 			}).promise();
 		};
+		var ensureCTypes = function (ctypes) {
+			return ns.funcs.processAsQueue(ctypes || [],
+				function (ctype) {
+					return ensureCtype(ctype.Name, ctype.FieldLinks);
+				});
+		};
 		var createList = function (listTitle, templateType) {
 			log("Creating list " + listTitle);
 			return $.Deferred(function (dfd) {
@@ -617,23 +697,26 @@ require("./sp.base.js");
 									log(args.ListTitle + ": creating fields");
 
 									ensureFields(splist, args.Fields || []).done(function (spfields) {
-										defaultItems(spfields);
-										if (args.Permissions) {
-											breakRoleInheritance(false, true).done(function () {
-												log("done with inheritance");
-												ns.funcs.processAsQueue(args.Permissions, function (entry) {
-													var groupName = entry.name;
-													var perms = entry.permissions;
-													log("adding perm: " + groupName + " to " + args.ListTitle);
-													return addPermission(groupName, perms, splist);
-												}).done(function () {
-													log("done adding permissions");
-													handleOnReady(splist, dfd);
+										ensureCTypes(args.ContentTypes).done(function () {
+											defaultItems(spfields);
+											if (args.Permissions) {
+												breakRoleInheritance(false, true).done(function () {
+													log("done with inheritance");
+													ns.funcs.processAsQueue(args.Permissions, function (entry) {
+														var groupName = entry.name;
+														var perms = entry.permissions;
+														log("adding perm: " + groupName + " to " + args.ListTitle);
+														return addPermission(groupName, perms, splist);
+													}).done(function () {
+														log("done adding permissions");
+														handleOnReady(splist, dfd);
+													});
 												});
-											});
-										} else {
-											handleOnReady(splist, dfd);
-										}
+											} else {
+												handleOnReady(splist, dfd);
+											}
+
+										});
 									}).fail(function (err) {
 										log(err);
 									});
@@ -844,6 +927,56 @@ require("./sp.base.js");
 			return dfd.promise();
 		};
 
+		/**
+         * For large lists, get items on individual folders, ** very slow **
+         * @param {SP.ListItem} tFolder
+         */
+		var loadAllFilesFromAllFolders = function (caml) {
+
+			var folderQueue = [list.get_rootFolder()];
+			var allitems = [];
+
+			return $.Deferred(function (alldfd) {
+				ns.funcs.processAsQueue(folderQueue, function (folder) {
+
+					return $.Deferred(function (dfd) {
+
+						ctx.load(folder, ["ServerRelativeUrl"]);
+						loadSpElem(folder.get_folders()).done(function (folders) {
+							ns.sp.collectionToArray(folders).forEach(function (n) {
+								folderQueue.push(n);
+							});
+
+							var folderUrl = folder.get_serverRelativeUrl();
+							caml = caml || "<View><RowLimit>1000</RowLimit></View>";
+
+							getAllItemsPaged(caml, folderUrl).done(function (items) {
+
+								for (var i = 0; i < items.length; i++) {
+
+									var li = items[i];
+									var vls = li.get_fieldValues();
+
+									if (vls.FSObjType == "1") //folder
+									{
+										folderQueue.push(li);
+									} else {
+										allitems.push(li);
+									}
+								}
+
+								dfd.resolve();
+							});
+
+						});
+					}).promise();
+				}).done(function () {
+					alldfd.resolve(allitems);
+				});
+
+			}).promise();
+		};
+
 		var addWebPart = function (serverRelativeFormUrl, wpXml, zone, position) {
 
 			return $.Deferred(function (dfd) {
@@ -871,6 +1004,7 @@ require("./sp.base.js");
 		};
 
 		var me = {
+			loadAllFilesFromAllFolders: loadAllFilesFromAllFolders,
 			addCustomAction: addCustomAction,
 			args: args,
 			deleteList: delTheList,
@@ -919,7 +1053,9 @@ require("./sp.base.js");
 			list: list,
 			spErrorHandler: reqFailure,
 			breakItemRoleInheritance: breakItemRoleInheritance,
-			breakRoleInheritance: breakRoleInheritance
+			breakRoleInheritance: breakRoleInheritance,
+			addContentType: addContentType,
+			ensureCtype: ensureCtype
 		};
 		return me;
 	};

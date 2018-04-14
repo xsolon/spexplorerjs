@@ -676,7 +676,7 @@ CodeMirror.registerGlobalHelper("fold", "comment", function(mode) {
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader!./foldgutter.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/fold/foldgutter.css");
+var content = __webpack_require__(/*! !../../../css-loader??ref--6-1!./foldgutter.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/addon/fold/foldgutter.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -685,7 +685,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -1799,7 +1799,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader!./show-hint.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/hint/show-hint.css");
+var content = __webpack_require__(/*! !../../../css-loader??ref--6-1!./show-hint.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/addon/hint/show-hint.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -1808,7 +1808,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -2752,7 +2752,7 @@ if(false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader!./lint.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/lint/lint.css");
+var content = __webpack_require__(/*! !../../../css-loader??ref--6-1!./lint.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/addon/lint/lint.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -2761,7 +2761,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -3042,7 +3042,7 @@ if(false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../css-loader!./codemirror.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/lib/codemirror.css");
+var content = __webpack_require__(/*! !../../css-loader??ref--6-1!./codemirror.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/lib/codemirror.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -3051,7 +3051,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -15529,10 +15529,10 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/fold/foldgutter.css":
-/*!***************************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
-  \***************************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/addon/fold/foldgutter.css":
+/*!*************************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
+  \*************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15548,10 +15548,10 @@ exports.push([module.i, ".CodeMirror-foldmarker {\n  color: blue;\n  text-shadow
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/hint/show-hint.css":
-/*!**************************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
-  \**************************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/addon/hint/show-hint.css":
+/*!************************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
+  \************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15567,10 +15567,10 @@ exports.push([module.i, ".CodeMirror-hints {\n  position: absolute;\n  z-index: 
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/lint/lint.css":
-/*!*********************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
-  \*********************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/addon/lint/lint.css":
+/*!*******************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
+  \*******************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15586,10 +15586,10 @@ exports.push([module.i, "/* The lint marker gutter */\n.CodeMirror-lint-markers 
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/lib/codemirror.css":
-/*!********************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
-  \********************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/codemirror/lib/codemirror.css":
+/*!******************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
+  \******************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15605,10 +15605,10 @@ exports.push([module.i, "/* BASICS */\n\n.CodeMirror {\n  /* Set height, width, 
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/jstree/dist/themes/default/style.min.css":
-/*!*******************************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
-  \*******************************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/jstree/dist/themes/default/style.min.css":
+/*!*****************************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/jstree/dist/themes/default/style.min.css ***!
+  \*****************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15625,10 +15625,10 @@ exports.push([module.i, ".jstree-node,.jstree-children,.jstree-container-ul{disp
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../public/vendor/bootstrap/3.3.7/css/spexp.css":
-/*!*********************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
-  \*********************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../public/vendor/bootstrap/3.3.7/css/spexp.css":
+/*!*******************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.css ***!
+  \*******************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15645,10 +15645,10 @@ exports.push([module.i, ".spexp {\r\n  /*!\r\n * Bootstrap v3.3.7 (http://getboo
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../public/vendor/select2/css/select2.css":
-/*!***************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
-  \***************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--6-1!../../../public/vendor/select2/css/select2.css":
+/*!*************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--6-1!F:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
+  \*************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -64597,7 +64597,7 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAAHgCAMAAACs
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../css-loader!./style.min.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/jstree/dist/themes/default/style.min.css");
+var content = __webpack_require__(/*! !../../../../css-loader??ref--6-1!./style.min.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../node_modules/jstree/dist/themes/default/style.min.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -64606,7 +64606,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -65156,7 +65156,7 @@ module.exports = g;
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../node_modules/css-loader!./spexp.css */ "../../../node_modules/css-loader/index.js!../../../public/vendor/bootstrap/3.3.7/css/spexp.css");
+var content = __webpack_require__(/*! !../../../../../node_modules/css-loader??ref--6-1!./spexp.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../public/vendor/bootstrap/3.3.7/css/spexp.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -65165,7 +65165,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -67413,7 +67413,7 @@ if (typeof jQuery === "undefined") {
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../node_modules/css-loader!./select2.css */ "../../../node_modules/css-loader/index.js!../../../public/vendor/select2/css/select2.css");
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader??ref--6-1!./select2.css */ "../../../node_modules/css-loader/index.js??ref--6-1!../../../public/vendor/select2/css/select2.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -67422,7 +67422,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -73542,6 +73542,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 "use strict";
 
 
+/* global require */
+
 __webpack_require__(/*! ../string/string.js */ "../string/string.js");
 
 (function (ns, $) {
@@ -73728,6 +73730,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //import "https://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js";
 //import "https://rawgithub.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js";
 //import "csslint.js";
+//v 0.1.3 : 2018-04-09: format function & autformat when calling set
+
 window.CodeMirror = _codemirror2.default;
 //import "../../../node_modules/codemirror/addon/lint/coffeescript-lint.js";
 //import "../../../node_modules/codemirror/addon/lint/css-lint.js";
@@ -73806,12 +73810,14 @@ window.CodeMirror = _codemirror2.default;
 		});
 
 		return {
+			format: function format() {
+				editor.setValue((0, _beautify.js_beautify)(editor.getValue()));
+			},
 			refresh: function refresh() {
-
 				editor.refresh();
 			},
 			set: function set(data) {
-				editor.setValue(data);
+				editor.setValue((0, _beautify.js_beautify)(data));
 			}, get: function get() {
 				return editor.getValue();
 			}
@@ -73853,12 +73859,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	var debugging = window.location.href.search(/(localhost|debugjsmirror)/) > 0;
 	var trace = ns.logger.get("jsmirror", debugging);
 
-	var xjsmirror = function xjsmirror(ui /*, opts*/) {
+	var xjsmirror = function xjsmirror(ui, opts) {
 
 		trace.debug("xjsmirror.init");
 
 		var $el = $(ui);
-		//opts = $.extend({}, opts);
+
+		var state = ($("div.jsmirrorstate:first", $el).html() || "").trim();
+		opts = $.extend({ defaultScript: state }, opts);
 
 		$el.html(template.trim());
 		var run = $("button", ui);
@@ -73893,9 +73901,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		(function iframeImplementation() {
 
 			var iframe = $("iframe", ui);
-			iframe[0].contentWindow.document.write("<html><body><textarea></textarea></body></html>");
+			iframe.attr("src", "javascript:void((function(){var script = document.createElement('script');script.innerHTML = \"(function() {document.open();document.domain='" + document.domain + "';document.close();})();\";document.write(\"<head>\" + script.outerHTML + \"</head><body><style type='text/css'>div.CodeMirror{height: 100% !important;}</style><textarea style=width='100%'></textarea></body>\");})())");
 
 			var head = iframe.contents().find("head");
+
 			$("style").each(function () {
 				// cloneNode doesnt work in IE
 				//head.append(this.cloneNode(true));
@@ -73916,7 +73925,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			});
 		})();
 
+		if (opts.defaultScript) {
+			editor.set(opts.defaultScript);
+		}
+
 		var resourceHash = {};
+
 		return {
 			refresh: function refresh() {
 				editor.refresh();
@@ -73930,15 +73944,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		};
 	};
 
-	var widgetInfo = ns.widgets.addWidget("xjsmirror", xjsmirror, "0.0.1");
-
-	widgetInfo.startup();
+	ns.widgets.addWidget("xjsmirror", xjsmirror, "0.0.3").startup();
 })(spexplorerjs, jQuery, _jsmirrorTemplate2.default);
-// v 0.0.2 - 2018/04/04     - setScriptingObject: new signature allows to name resource that will be avaialbel during function execution
-// v 0.0.1 - 2018/03/28     - Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
-//                          - setScript method
-//                          - use Function constructor for code execution
-//                          - refresh method
+// v 0.0.4 - 2018/04/09     -   bug: don't write after iframe document is closed
+// v 0.0.3 - 2018/04/09     -   new option: defaultScript, load script from 'state' html element selector: div.jsmirrorstate
+//                              
+// v 0.0.2 - 2018/04/04     -   setScriptingObject: new signature allows to name resource that will be avaialbel during function execution
+// v 0.0.1 - 2018/03/28     -   Alt-Run to run code, Alt-F: format, Ctrl-Q: Collapse/Expand method
+//                          -   setScript method
+//                          -   use Function constructor for code execution
+//                          -   refresh method
 
 /***/ }),
 
@@ -73949,7 +73964,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n            width: 100%;\r\n            height: 100%;\r\n        }\r\n    </style>\r\n\r\n    <div class=\"full\">\r\n        <iframe src=\"#\" class=\"full jsmirror mirror\" style=\"resize:both\"></iframe>\r\n        <button type=\"button\">Run</button>\r\n    </div>\r\n</div>\r\n";
+module.exports = "<style type='text/css'>\r\n    .full {\r\n        width: 100%;\r\n        height: 100%;\r\n    }\r\n</style>\r\n\r\n<div class='full'>\r\n    <iframe class='full jsmirror mirror' style='resize:both'></iframe>\r\n    <button type='button'>Run</button>\r\n</div>";
 
 /***/ }),
 
@@ -74039,6 +74054,7 @@ window.CodeMirror = _codemirror2.default;
 
 
 //<!-- hint -->
+//v 0.1.3 : 2018-04-09: format function & autformat when calling set
 //v 0.1.1 : 2018-03-15: Support for IE
 //v 0.1.2 : 2018-03-28: - Autocomplete tag, highlight matching tag
 //                      - Shortcuts:
@@ -74110,9 +74126,7 @@ window.JSHINT = _jshint2.default.JSHINT;
 	ns.widgets.xmleditorInitIframe = function (iframe) {
 
 		//https://www.kochan.io/javascript/how-to-dynamically-create-an-iframe.html
-		iframe.attr("src", "javascript:void((function(){var script = document.createElement('script');" + "script.innerHTML = \"(function() {" + "document.open();document.domain='" + document.domain + "';document.close();})();\";" + "document.write(\"<head>\" + script.outerHTML + \"</head><body></body>\");})())");
-
-		iframe[0].contentWindow.document.write(template);
+		iframe.attr("src", "javascript:void((function(){var script = document.createElement('script');script.innerHTML = \"(function() {document.open();document.domain='" + document.domain + "';document.close();})();\";document.write(\"<head>\" + script.outerHTML + \"</head><body><style type='text/css'>div.CodeMirror{height: 100% !important;}</style><textarea style=width='100%'></textarea></body>\");})())");
 
 		var head = iframe.contents().find("head");
 		$("style").each(function () {
@@ -74131,11 +74145,14 @@ window.JSHINT = _jshint2.default.JSHINT;
 		var editor = $(ell).data("CodeMirror");
 
 		return {
+			format: function format() {
+				editor.setValue((0, _beautifyHtml.html_beautify)(editor.getValue()));
+			},
 			refresh: function refresh() {
 				editor.refresh();
 			},
 			set: function set(data) {
-				editor.setValue(data);
+				editor.setValue((0, _beautifyHtml.html_beautify)(data));
 			}, get: function get() {
 				return editor.getValue();
 			}
@@ -74211,13 +74228,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	debug("xxmlmirror.loading");
 	//   var error = tracing.error;
 
-	var xxmlmirror = function xxmlmirror(ui /*, opts*/) {
+	var xxmlmirror = function xxmlmirror(ui, opts) {
 
 		log("xxmlmirror.init");
 
 		var $el = $(ui);
+		var state = ($("div.xmlmirrorstate:first", $el).html() || "").trim();
+		opts = $.extend({ defaultScript: state }, opts);
 
-		//opts = $.extend({}, opts);
 		$el.html(_xmlmirrorTemplate2.default.trim());
 
 		var editor = null;
@@ -74226,6 +74244,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 			editor = ns.widgets.xmleditorInitIframe(iframe);
 		})();
+
+		if (opts.defaultScript) {
+			editor.set(ns.string.htmlDecode(opts.defaultScript));
+		}
 
 		var me = {};
 		me.refresh = function () {
@@ -74256,7 +74278,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n            width: 100%;\r\n            height: 100%;\r\n        }\r\n\r\n    </style>\r\n    <div class=\"full\">\r\n        <iframe src=\"#\" class=\"full xmlmirror mirror\" style=\"resize:both\"></iframe>\r\n    </div>\r\n</div>\r\n";
+module.exports = "<style type=\"text/css\">\r\n    .full {\r\n        width: 100%;\r\n        height: 100%;\r\n    }\r\n</style>\r\n<div class=\"full\">\r\n    <iframe src=\"#\" class=\"full xmlmirror mirror\" style=\"resize:both\"></iframe>\r\n</div>\r\n";
 
 /***/ }),
 
@@ -74342,6 +74364,91 @@ module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        .full {\r\n 
 	};
 })(window.spexplorerjs = window["spexplorerjs"] || {}, window.jQuery = window["jQuery"] || __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed"));
 
+(function (ns, $) {
+
+	/// Iterate over an expanding array
+	//  Example:
+	//  var arr = [1, 2];
+	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
+	//    if (item == 1) {
+	//        arr.push(3);
+	//    }
+	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
+	//});
+	/// arr: array to process
+	/// action: promise (argument: item removed from array)
+	var processAsQueue = function processAsQueue(arr, action) {
+		return $.Deferred(function (dfd) {
+			var doNext = function doNext() {
+				if (arr == null || arr.length === 0) {
+					dfd.resolve();
+				} else {
+					var item = arr.shift();
+					action(item).done(function () {
+						doNext();
+					});
+				}
+			};
+
+			if (typeof arr == "function") {
+				arr().done(function (items) {
+					arr = items;
+					doNext();
+				});
+			} else {
+				doNext();
+			}
+		}).promise();
+	};
+
+	var enumer = function enumer(values) {
+		var me = {};
+		for (var i = 0; i < values.length; i++) {
+			me[values[i]] = 1;
+		}
+		if (Object.freeze) {
+			me = Object.freeze(me);
+		}
+
+		return me;
+	};
+
+	/**
+     * Divide array into an array of arrays of size groupSize
+     * @param {Array} arr
+     * @param {integer} groupSize
+     */
+	var groupBySize = function groupBySize(arr, groupSize) {
+		var groups = [];
+		groupSize = groupSize || 100;
+		arr.forEach(function (n, i) {
+			var index = Math.trunc(i / groupSize);
+			if (groups.length === index) {
+				groups.push([]);
+			}
+			groups[index].push(n);
+		});
+		return groups;
+	};
+
+	var getParameterByName = function getParameterByName(name, url) {
+		if (!url) url = window.location.href;
+		name = name.replace(/[[\]]/g, "\\$&");
+		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		    results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return "";
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
+	};
+
+	ns.funcs = {
+		getParameterByName: getParameterByName,
+		groupBySize: groupBySize,
+		processAsQueue: processAsQueue,
+		enumeration: enumer
+	};
+})(spexplorerjs, jQuery);
+
 /***/ }),
 
 /***/ "../widget.base.js":
@@ -74408,7 +74515,7 @@ __webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
 					}
 				} else {
 					var obj = new widgetInfo.constructor(this, opts);
-					$(".version:first", this).html(widgetInfo.version);
+					$(".xversion:last", this).html(widgetInfo.version);
 					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
 				}
 			});
@@ -74441,62 +74548,6 @@ __webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
 // 0.1.1: 2018/03/28    -   selector property
 //                          log from tracing
 // 0.1.0: 2018/03/23    -   pass options to widget constructor
-
-
-(function (ns, $) {
-
-	/// Iterate over an expanding array
-	//  Example:
-	//  var arr = [1, 2];
-	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
-	//    if (item == 1) {
-	//        arr.push(3);
-	//    }
-	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
-	//});
-	/// arr: array to process
-	/// action: promise (argument: item removed from array)
-	var processAsQueue = function processAsQueue(arr, action) {
-		return $.Deferred(function (dfd) {
-			var doNext = function doNext() {
-				if (arr == null || arr.length == 0) {
-					dfd.resolve();
-				} else {
-					var item = arr.shift();
-					action(item).done(function () {
-						doNext();
-					});
-				}
-			};
-
-			if (typeof arr == "function") {
-				arr().done(function (items) {
-					arr = items;
-					doNext();
-				});
-			} else {
-				doNext();
-			}
-		}).promise();
-	};
-
-	var enumer = function enumer(values) {
-		var me = {};
-		for (var i = 0; i < values.length; i++) {
-			me[values[i]] = 1;
-		}
-		if (Object.freeze) {
-			me = Object.freeze(me);
-		}
-
-		return me;
-	};
-
-	ns.funcs = {
-		processAsQueue: processAsQueue,
-		enumeration: enumer
-	};
-})(spexplorerjs, jQuery);
 
 /***/ }),
 
@@ -74562,7 +74613,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	var debugging = window.location.href.search(/(localhost|debugfieldsel)/) > 0;
 	var trace = ns.logger.get("fieldEditor", debugging);
 
-	+function loadPublicRefs() {
+	(function loadPublicRefs() {
 
 		if ($.fn.select2) {
 			trace.debug("select2 already loaded");
@@ -74571,7 +74622,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			__webpack_require__(/*! ../../../public/vendor/select2/js/select2.full.js */ "../../../public/vendor/select2/js/select2.full.js");
 			__webpack_require__(/*! ../../../public/vendor/select2/css/select2.css */ "../../../public/vendor/select2/css/select2.css");
 		}
-	}();
+	})();
 
 	var fieldLabel = function fieldLabel(field) {
 		var tmpl = _fieldSelectorFieldtemplate2.default.trim();
@@ -74702,8 +74753,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 		$el.html(_fieldSelectorTemplate2.default.trim().replace("[label]", opts.label));
 
-		var xmlMirror = ns.widgets.xxmlmirror.startup($el).data("xwidget");
 		var jsMirror = ns.widgets.xjsmirror.startup($el).data("xwidget");
+		var xmlMirror = ns.widgets.xxmlmirror.startup($el).data("xwidget");
 
 		jsMirror.setScript("console.log(field);// field: reference to field");
 
@@ -74845,7 +74896,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		}();
 	};
 
-	ns.widgets.addSpWidget("xSPFieldSelector", xSPFieldSelector, "0.1.5");
+	ns.widgets.addSpWidget("xSPFieldSelector", xSPFieldSelector, "0.1.6");
 })(spexplorerjs, jQuery);
 
 /***/ }),
@@ -74857,7 +74908,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<style type=\"text/css\">\r\n    .select2-container{\r\n        z-index: 1600 !important; /* modal sharepoint dialogs are 1500*/\r\n    }\r\n</style>\r\n<div class=\"xwidgetui\">\r\n    <fieldset class=\"form-horizontal\">\r\n        <legend>[label]</legend>\r\n        <div class=\"form-group listSelector\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xSPTreeLight\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field</label>\r\n            <div class=\"col-md-10\">\r\n                <select class='fieldsDrp' style=\"width:100%\"></select>\r\n                <input type=\"checkbox\" class=\"ereadonly\" value=\"0\" />Exclude read only\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field Schema</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xxmlmirror\"></div>\r\n                <small class=\"widgetinfo\"></small>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Scripting</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xjsmirror\"></div>\r\n                <small>Modify the field through JSOM (variable for field: spelem)</small>\r\n            </div>\r\n        </div>\r\n\r\n    </fieldset>\r\n\r\n</div>";
+module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<style type=\"text/css\">\r\n    .select2-container{\r\n        z-index: 1600 !important; /* modal sharepoint dialogs are 1500*/\r\n    }\r\n</style>\r\n<div class=\"xwidgetui\">\r\n    <fieldset class=\"form-horizontal\">\r\n        <legend>[label]</legend>\r\n        <div class=\"form-group listSelector\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">List</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xSPTreeLight\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field</label>\r\n            <div class=\"col-md-10\">\r\n                <select class='fieldsDrp' style=\"width:100%\"></select>\r\n                <input type=\"checkbox\" class=\"ereadonly\" value=\"0\" />Exclude read only\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Field Schema</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xxmlmirror\"></div>\r\n                <small class=\"widgetinfo\"></small>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"col-md-2 control-label\" for=\"selectbasic\">Scripting</label>\r\n            <div class=\"col-md-10\">\r\n                <div data-widget=\"xjsmirror\"></div>\r\n                <small>Modify the field through JSOM (variable for field: spelem)</small>\r\n            </div>\r\n        </div>\r\n\r\n    </fieldset>\r\n    <div class=\"widgetInfo\" style=\"font-size: small\">fieldeditor <span class=\"xversion\"></span></div>\r\n</div>";
 
 /***/ }),
 
@@ -74871,13 +74922,17 @@ module.exports = "<div class=\"xwidgetstate\" style=\"display:none\"></div>\r\n<
 "use strict";
 
 
+/* global require */
+
 var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
 __webpack_require__(/*! ../logger/logger.js */ "../logger/logger.js");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 // v 0.0.1 : 2018-03-11 - loadSpElem
 (function (ns, $) {
@@ -74933,7 +74988,21 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			});
 		}).promise();
 	};
-
+	ns.sp.uploadAjax = function (buffer, webUrl, listTitle, fileName) {
+		return $.ajax({
+			url: webUrl + "../_api/web/lists/getByTitle('" + listTitle + "')/RootFolder/Files/add(url='" + fileName + "',overwrite='true')",
+			type: "POST",
+			data: buffer,
+			async: true,
+			processData: false,
+			contentType: false,
+			headers: {
+				"accept": "application/json;odata=verbose",
+				"X-RequestDigest": $("#__REQUESTDIGEST").val(),
+				"content-length": buffer.byteLength
+			}
+		});
+	};
 	ns.sp.reqFailure = function (req, reqargs, from, dfd) {
 		// log context failure
 

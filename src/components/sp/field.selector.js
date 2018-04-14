@@ -173,8 +173,8 @@ import "../mirrors/jsmirror.js";
 
 		$el.html(template.trim().replace("[label]", opts.label));
 
-		var xmlMirror = ns.widgets.xxmlmirror.startup($el).data("xwidget");
 		var jsMirror = ns.widgets.xjsmirror.startup($el).data("xwidget");
+		var xmlMirror = ns.widgets.xxmlmirror.startup($el).data("xwidget");
 
 		jsMirror.setScript("console.log(field);// field: reference to field");
 
@@ -321,6 +321,6 @@ import "../mirrors/jsmirror.js";
 		})();
 	};
 
-	ns.widgets.addSpWidget("xSPFieldSelector", xSPFieldSelector, "0.1.5");
+	ns.widgets.addSpWidget("xSPFieldSelector", xSPFieldSelector, "0.1.6");
 
 })(spexplorerjs, jQuery);

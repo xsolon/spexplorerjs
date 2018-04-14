@@ -60,7 +60,7 @@ import "./logger/logger.js";
 
 				} else {
 					var obj = new widgetInfo.constructor(this, opts);
-					$(".version:first", this).html(widgetInfo.version);
+					$(".xversion:last", this).html(widgetInfo.version);
 					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
 				}
 			});
@@ -90,60 +90,5 @@ import "./logger/logger.js";
 		return widgetInfo;
 	};
 
-
-})(spexplorerjs, jQuery);
-
-(function (ns, $) {
-
-	/// Iterate over an expanding array
-	//  Example:
-	//  var arr = [1, 2];
-	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
-	//    if (item == 1) {
-	//        arr.push(3);
-	//    }
-	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
-	//});
-	/// arr: array to process
-	/// action: promise (argument: item removed from array)
-	var processAsQueue = function (arr, action) {
-		return $.Deferred(function (dfd) {
-			var doNext = function () {
-				if (arr == null || arr.length == 0) {
-					dfd.resolve();
-				} else {
-					var item = arr.shift();
-					action(item).done(function () {
-						doNext();
-					});
-				}
-			};
-
-			if (typeof arr == "function") {
-				arr().done(function (items) {
-					arr = items;
-					doNext();
-				});
-			} else {
-				doNext();
-			}
-		}).promise();
-
-	};
-
-	var enumer = function (values) {
-		var me = {};
-		for (var i = 0; i < values.length; i++) {
-			me[values[i]] = 1;
-		}
-		if (Object.freeze) { me = Object.freeze(me); }
-
-		return me;
-	};
-
-	ns.funcs = {
-		processAsQueue: processAsQueue,
-		enumeration: enumer
-	};
 
 })(spexplorerjs, jQuery);

@@ -9,14 +9,15 @@
 
 /// TODO: Document
 import "./sp.base.js";
+import "./sp.folderapi.js";
 import "./sp.web.js";
 import "./treelight.js";
 import "./field.selector.js";
 import "./customaction.editor.js";
 import "../mirrors/jsmirror.js";
 import "../mirrors/xmlmirror.js";
-import template from "./list.editor.template.html";
 import "../widget.base.js";
+import template from "./list.editor.template.html";
 
 (function (ns, $, template) {
 
@@ -27,7 +28,7 @@ import "../widget.base.js";
 		trace.log("new instance");
 		var $el = $(el), me = {};//, ctx = null;
 		//opts = $.extend({}, opts);
-		$el.html($(template).html());
+		$el.html(template);
 
 		$("#btnAdd", $el).click(function () { });
 
@@ -82,6 +83,6 @@ import "../widget.base.js";
 		return me;
 	};
 
-	ns.widgets.addSpWidget("spListWidget", SPListWidget, "0.1.3");
+	ns.widgets.addSpWidget("spListWidget", SPListWidget, "0.1.4");
 
 })(spexplorerjs, jQuery, template);

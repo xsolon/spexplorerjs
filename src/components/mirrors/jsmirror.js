@@ -1,4 +1,5 @@
 
+// v 0.0.4 - 2018/04/09     -   bug: don't write after iframe document is closed
 // v 0.0.3 - 2018/04/09     -   new option: defaultScript, load script from 'state' html element selector: div.jsmirrorstate
 //                              
 // v 0.0.2 - 2018/04/04     -   setScriptingObject: new signature allows to name resource that will be avaialbel during function execution
@@ -21,7 +22,7 @@ import "../widget.base.js";
 
 		var $el = $(ui);
 
-		var state = $("div.jsmirrorstate:first", $el).html().trim();
+		var state = ($("div.jsmirrorstate:first", $el).html() || "").trim();
 		opts = $.extend({ defaultScript: state }, opts);
 
 		$el.html(template.trim());
@@ -58,9 +59,12 @@ import "../widget.base.js";
 		(function iframeImplementation() {
 
 			var iframe = $("iframe", ui);
-			iframe[0].contentWindow.document.write("<html><body><textarea></textarea></body></html>");
+			iframe.attr("src",
+				`javascript:void((function(){var script = document.createElement('script');script.innerHTML = "(function() {document.open();document.domain='${document.domain}';document.close();})();";document.write("<head>" + script.outerHTML + "</head><body><style type='text/css'>div.CodeMirror{height: 100% !important;}</style><textarea style=width='100%'></textarea></body>");})())`
+			);
 
 			var head = iframe.contents().find("head");
+
 			$("style").each(function () {
 				// cloneNode doesnt work in IE
 				//head.append(this.cloneNode(true));

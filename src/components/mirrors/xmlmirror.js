@@ -20,7 +20,7 @@ import template from "./xmlmirror.template.html";
 		log("xxmlmirror.init");
 
 		var $el = $(ui);
-		var state = $("div.xmlmirrorstate:first", $el).html().trim();
+		var state = ($("div.xmlmirrorstate:first", $el).html() || "").trim();
 		opts = $.extend({ defaultScript: state }, opts);
 
 		$el.html(template.trim());
