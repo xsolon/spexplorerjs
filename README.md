@@ -7,5 +7,6 @@ npm install --save-dev babel-loader
 npm install --save-dev babel-plugin-transform-flow-strip-types
 npm install --global flow-bin 
 npm install --save-dev babel-eslint
+npm install --save git-diff
 
 npm install @types/node
