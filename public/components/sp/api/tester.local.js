@@ -66,12 +66,12 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./string.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./tester.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "../../../node_modules/jquery/dist/jquery.js":
+/***/ "../../../../node_modules/jquery/dist/jquery.js":
 /*!***************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
   \***************************************************************************/
@@ -10447,19 +10447,19 @@ return jQuery;
 
 /***/ }),
 
-/***/ "../../../node_modules/jquery/dist/jquery.js-exposed":
+/***/ "../../../../node_modules/jquery/dist/jquery.js-exposed":
 /*!***********************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
   \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["jQuery"] = __webpack_require__(/*! -!./jquery.js */ "../../../node_modules/jquery/dist/jquery.js");
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "../../../node_modules/webpack/buildin/global.js")))
+/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["jQuery"] = __webpack_require__(/*! -!./jquery.js */ "../../../../node_modules/jquery/dist/jquery.js");
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "../../../../node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
-/***/ "../../../node_modules/webpack/buildin/global.js":
+/***/ "../../../../node_modules/webpack/buildin/global.js":
 /*!***********************************!*\
   !*** (webpack)/buildin/global.js ***!
   \***********************************/
@@ -10490,10 +10490,268 @@ module.exports = g;
 
 /***/ }),
 
-/***/ "./string.js":
-/*!*******************!*\
-  !*** ./string.js ***!
-  \*******************/
+/***/ "../../logger/logger.js":
+/*!************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/logger/logger.js ***!
+  \************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/* global require */
+// v 1.0.4: 2018-04-28  - move definition to modules
+// v 1.0.2: 2018-04-28  - match spexplorerjs.trace
+// v 0.0.3: 2018-04-28  - removed jQuery dependency
+// v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
+// v 0.0.1: 2018-03-28  - debug, get
+
+__webpack_require__(/*! ../string/funcs.js */ "../../string/funcs.js");
+
+(function (ns) {
+
+	var logf = function logf() {
+		var msg = ns.modules.string.format.apply(ns.modules.string.format, arguments);
+		if (this && this.source) {
+			msg = this.source + ": " + msg;
+		}
+		window.console && console.log.apply(console, [msg]);
+	};
+	var log = function log() {
+		if (this && this.source) {
+			if (arguments.length === 1 && typeof arguments[0] == "string") {
+				logf("{0}: {1}", this.source, arguments[0]);
+			} else {
+				var obj = {};
+				obj[this.source] = arguments;
+				if (arguments.length === 1) obj[this.source] = arguments[0];
+				window.console && console.log.apply(console, [obj]);
+			}
+		}
+		//if (this && this.source && arguments.length === 1 && typeof arguments[0] == "string") {
+		//	let s = this.source + ": "; for (let i = 0; i < arguments.length; i++) {
+		//		s += `{${i}} `;
+		//	}
+		//	var msg = logf(s, arguments[0]);
+		//	console.log.apply(console, [msg]);
+		//	var obj = {};
+		//	obj[this.source] = arguments;
+		//	console.log.apply(console, [obj]);
+		//         }
+		else window.console && console.log.apply(console, arguments);
+		//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+	};
+	var error = function error() {
+		window.console && console.error.apply(console, arguments);
+	};
+	var warn = function warn() {
+		window.console && console.warn.apply(console, arguments);
+	};
+	var debug = function debug() {
+		window.console && console.log.apply(console, arguments);
+	};
+
+	var logger = {
+		"version": "1.0.4",
+		logf: logf, "log": log, "error": error, "warn": warn, "debug": debug
+	};
+
+	var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
+		var scopedLog = new function () {
+			var d = function d() {
+				logger.log.apply(scopedLog, arguments);
+				onTrace && onTrace({ type: "log", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedError = new function () {
+			var d = function d() {
+				logger.error.apply(scopedError, arguments);
+				onTrace && onTrace({ type: "error", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedDebug = new function () {
+			var d = function d() {
+				if (debugging) {
+					logger.log.apply(scopedDebug, arguments);
+					onTrace && onTrace({ type: "debug", args: arguments });
+				}
+			};
+			d.source = source;
+			return d;
+		}();
+		var scopedWarn = new function () {
+			var d = function d() {
+				logger.error.apply(scopedWarn, arguments);
+				onTrace && onTrace({ type: "warn", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
+
+		return {
+			log: scopedLog,
+			error: scopedError,
+			debug: scopedDebug,
+			warn: scopedWarn
+		};
+	};
+
+	logger.get = defineScopedTracing;
+	/// TODO: this should be private
+	logger.trace = defineScopedTracing("logger", window.location.href.search(/local/i) > 0);
+	ns.modules.logger = logger;
+	ns.modules.logger.trace.debug(logger.version);
+
+	return ns.logger;
+
+	// both of these dependencies are resolved in string.js
+})(spexplorerjs);
+
+/***/ }),
+
+/***/ "../../string/funcs.js":
+/*!***********************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/string/funcs.js ***!
+  \***********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! ./string.js */ "../../string/string.js");
+
+(function (ns, $) {
+
+	/// Iterate over an expanding array
+	//  Example:
+	//  var arr = [1, 2];
+	//  spexplorerjs.funcs.processAsQueue(arr, function (item) {
+	//    if (item == 1) {
+	//        arr.push(3);
+	//    }
+	//    console.log(item); return jQuery.Deferred(function (dfd) { dfd.resolve(); }).promise();
+	//});
+	/// arr: array to process
+	/// action: promise (argument: item removed from array)
+	var processAsQueue = function processAsQueue(arr, action) {
+		return $.Deferred(function (dfd) {
+			var doNext = function doNext() {
+				if (arr == null || arr.length === 0) {
+					dfd.resolve();
+				} else {
+					var item = arr.shift();
+					action(item).done(function () {
+						doNext();
+					});
+				}
+			};
+
+			if (typeof arr == "function") {
+				arr().done(function (items) {
+					arr = items;
+					doNext();
+				});
+			} else {
+				doNext();
+			}
+		}).promise();
+	};
+	var arrayToDictionary = function arrayToDictionary(array, getKey, forceUnique) {
+		var dic = {};
+		for (var i = 0; i < array.length; i++) {
+			var element = array[i];
+			var key = getKey(element);
+			if (forceUnique && dic[key]) {
+				throw key + " already in dictionary";
+			} else dic[key] = element;
+		}
+		return dic;
+	};
+
+	var enumer = function enumer(values) {
+		var me = {};
+		for (var i = 0; i < values.length; i++) {
+			me[values[i]] = 1;
+		}
+		if (Object.freeze) {
+			me = Object.freeze(me);
+		}
+
+		return me;
+	};
+
+	/**
+     * Divide array into an array of arrays of size groupSize
+     * @param {Array} arr
+     * @param {integer} groupSize
+     */
+	var groupBySize = function groupBySize(arr, groupSize) {
+		var groups = [];
+		groupSize = groupSize || 100;
+		arr.forEach(function (n, i) {
+			var index = Math.trunc(i / groupSize);
+			if (groups.length === index) {
+				groups.push([]);
+			}
+			groups[index].push(n);
+		});
+		return groups;
+	};
+
+	var getParameterByName = function getParameterByName(name, url) {
+		if (!url) url = window.location.href;
+		name = name.replace(/[[\]]/g, "\\$&");
+		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		    results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return "";
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
+	};
+
+	var convertImagesToBase64 = function convertImagesToBase64(contentDocument) {
+		var regularImages = contentDocument.querySelectorAll("img");
+		var canvas = document.createElement("canvas");
+		var ctx = canvas.getContext("2d");
+		[].forEach.call(regularImages, function (imgElement) {
+			// preparing canvas for drawing
+			canvas.width = imgElement.width;
+			canvas.height = imgElement.height;
+
+			ctx.drawImage(imgElement, 0, 0, imgElement.width, imgElement.height);
+			// by default toDataURL() produces png image, but you can also export to jpeg
+			// checkout function's documentation for more details
+			var dataURL = canvas.toDataURL("image/png");
+			imgElement.setAttribute("src", dataURL);
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+		});
+
+		if (canvas.remove) canvas.remove();
+	};
+
+	var funcs = {
+		convertImagesToBase64: convertImagesToBase64,
+		arrayToDictionary: arrayToDictionary,
+		getParameterByName: getParameterByName,
+		groupBySize: groupBySize,
+		processAsQueue: processAsQueue,
+		enumeration: enumer
+	};
+
+	ns.modules.funcs = funcs;
+})(spexplorerjs, spexplorerjs.modules.jQuery); /// <reference path="string.js" />
+
+/***/ }),
+
+/***/ "../../string/string.js":
+/*!************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/string/string.js ***!
+  \************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10512,7 +10770,7 @@ module.exports = g;
 	if (ns.modules.string) {
 		// already loaded
 	} else {
-		var $ = ns.modules.jQuery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
+		var $ = ns.modules.jQuery = __webpack_require__(/*! jquery */ "../../../../node_modules/jquery/dist/jquery.js-exposed");
 
 		// avoid collisions with other jQuery versions
 		jQuery.noConflict();
@@ -10584,6 +10842,1710 @@ module.exports = g;
 		ns.modules.string = stringModule;
 	}
 })(window.spexplorerjs = window["spexplorerjs"] || { modules: {} });
+
+/***/ }),
+
+/***/ "../../widget.base.js":
+/*!**********************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/widget.base.js ***!
+  \**********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! ./logger/logger.js */ "../../logger/logger.js");
+
+(function (ns, $) {
+
+	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
+	var trace = ns.modules.logger.get("widgets", debugging);
+
+	trace.log("widgets.register");
+	ns.widgets = ns.widgets || {};
+
+	var defineWidget = function defineWidget(name, constructor, version) {
+
+		return {
+			publicName: name,
+			constructor: constructor,
+			version: version,
+			selector: "[data-widget=\"publicName\"]".replace("publicName", name),
+			startup: function startup(context, opts) {
+
+				trace.debug(name + ".startup");
+				var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
+				trace.debug("selector: " + selector);
+				var elems = $(selector, context || document);
+				trace.debug("Elems: " + elems.length);
+				elems[name](opts);
+				/// TODO: set only info for current widget (not sub widgets)
+				$(".widgetinfo" + name, elems).html(version);
+
+				return elems;
+			}
+		};
+	};
+
+	var registerWidget = function registerWidget(widgetInfo) {
+
+		$.fn[widgetInfo.publicName] = function (opts) {
+			var args = arguments;
+			var result = this.each(function () {
+
+				var $el = $(this);
+
+				var me = $el.data(widgetInfo.publicName);
+
+				if (me) {
+					// object has been initialized before
+
+					if (opts == null) {// request for instance
+					} else if (me[opts]) {
+						if (typeof me[opts] == "function") me[opts].apply(me, Array.prototype.slice.call(args, 1));else me[opts] = args[1];
+					}
+				} else {
+					var obj = new widgetInfo.constructor(this, opts);
+					$(".xversion:last", this).html(widgetInfo.version);
+					$el.data(widgetInfo.publicName, obj).data("xwidget", obj);
+				}
+			});
+
+			return result;
+		};
+
+		ns.widgets[widgetInfo.publicName] = widgetInfo;
+		trace.log(widgetInfo.publicName + ".registered");
+	};
+
+	var addWidget = function addWidget(name, constructor, version) {
+
+		var widgetInfo = defineWidget(name, constructor, version);
+		registerWidget(widgetInfo);
+		return widgetInfo;
+	};
+
+	ns.widgets.addWidget = addWidget;
+	ns.widgets.addSpWidget = function (name, constructor, version) {
+
+		var widgetInfo = addWidget(name, constructor, version);
+
+		ExecuteOrDelayUntilScriptLoaded(widgetInfo.startup, "sp.js");
+
+		return widgetInfo;
+	};
+})(spexplorerjs, spexplorerjs.modules.jQuery); // 0.1.3: 2018/04/28    -   modules
+// 0.1.2: 2018/03/23    -   addSpWidget for SharePoint components
+//                          add version number to elements with class widgetinfo
+// 0.1.1: 2018/03/28    -   selector property
+//                          log from tracing
+// 0.1.0: 2018/03/23    -   pass options to widget constructor
+
+/***/ }),
+
+/***/ "./api.js":
+/*!****************!*\
+  !*** ./api.js ***!
+  \****************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/* global require */
+__webpack_require__(/*! ./sp.list.js */ "./sp.list.js");
+__webpack_require__(/*! ./sp.web.js */ "./sp.web.js");
+
+/***/ }),
+
+/***/ "./sp.base.js":
+/*!********************!*\
+  !*** ./sp.base.js ***!
+  \********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/// <reference path="../../logger/logger.js" />
+/* global require */
+// v 0.0.2 : 2018-04-28 - update to newer infra
+// v 0.0.1 : 2018-03-11 - loadSpElem
+
+__webpack_require__(/*! ../../logger/logger.js */ "../../logger/logger.js");
+
+(function (ns, $) {
+
+	var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
+	var trace = ns.modules.logger.get("sp", debug);
+
+	trace.debug("v.0.0.2");
+
+	var utils = {
+		collectionToArray: function collectionToArray(spCollection) {
+
+			var result = [];
+
+			if (spCollection) {
+				var le = spCollection.getEnumerator();
+				while (le.moveNext()) {
+					var li = le.get_current();
+					result.push(li);
+				}
+			}
+
+			return result;
+		},
+		loadSpElem: function loadSpElem(elem, sptx, caller) {
+
+			sptx = sptx || utils.getCtx();
+			return $.Deferred(function (dfd) {
+
+				if (elem.length) {
+					for (var i = 0; i < elem.length; i++) {
+						sptx.load(elem[i]);
+					}
+				} else sptx.load(elem);
+
+				sptx.executeQueryAsync(function () {
+					dfd.resolve(elem, sptx);
+				}, function (r, a) {
+					ns.sp.reqFailure(r, a, caller || "loadSpElem", dfd);
+				});
+			}).promise();
+		},
+		uploadAjax: function uploadAjax(buffer, webUrl, listTitle, fileName) {
+			return $.ajax({
+				url: webUrl + "../_api/web/lists/getByTitle('" + listTitle + "')/RootFolder/Files/add(url='" + fileName + "',overwrite='true')",
+				type: "POST",
+				data: buffer,
+				async: true,
+				processData: false,
+				contentType: false,
+				headers: {
+					"accept": "application/json;odata=verbose",
+					"X-RequestDigest": $("#__REQUESTDIGEST").val(),
+					"content-length": buffer.byteLength
+				}
+			});
+		},
+		reqFailure: function reqFailure(req, reqargs, from, dfd) {
+			// log context failure
+
+			var msg = from + " Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
+
+			if (dfd) dfd.reject(msg);else {
+				// if there is no promise log at this level
+				trace.error(msg);
+			}
+		},
+		wsCall: function wsCall(body, action, url) {
+			return $.Deferred(function (dfd) {
+				$.ajax({
+					type: "POST",
+					beforeSend: function beforeSend(request) {
+						request.setRequestHeader("SOAPAction", action);
+					},
+					contentType: "text/xml; charset=utf-8",
+					url: url,
+					data: body,
+					statusCode: {
+						500: function _() /*jqXHR, textStatus, errorThrown*/{
+							dfd.reject($(arguments[0].responseXML).find("errorstring").html());
+						}
+					}
+				}).done(function (xml /*, status, jqXHR*/) {
+					var res = $($(xml).find("Body,soap\\:Body")[0].firstChild); // alernative selector for different browsers
+					res.xml = res[0].xml;
+					if (!res[0].xml && window.XMLSerializer) {
+						var ss = new XMLSerializer();
+						res.xml = ss.serializeToString(res[0]);
+					}
+					dfd.resolve(res);
+				}).fail(function (jqXHR, textStatus, errorThrown) {
+					if (jqXHR.status != 500) dfd.reject(errorThrown);
+				});
+			});
+		},
+		getCtx: function getCtx(url) {
+			var ctx;
+			ctx = new SP.ClientContext(url);
+			//try {
+			//  ctx = SP.ClientContext.get_current();
+			//} catch (e) {
+			//}
+			return ctx;
+		},
+		setformJsLink: function setformJsLink(url, ctx, bizJs) {
+			return $.Deferred(function (jslinkdfd) {
+
+				var web = ctx.get_web();
+				var oFile = web.getFileByServerRelativeUrl(url);
+
+				var lpm = oFile.getLimitedWebPartManager(SP.WebParts.PersonalizationScope.shared);
+
+				var wps = lpm.get_webParts();
+				ctx.load(wps, "Include(WebPart.Title)");
+
+				ctx.executeQueryAsync(function () {
+					var wp = wps.get_item(0);
+					var wpp = wp.get_webPart();
+					var props = wpp.get_properties();
+
+					ctx.load(wp);ctx.load(wpp);ctx.load(props);
+					ctx.executeQueryAsync(function () {
+						props.set_item("JSLink", bizJs);
+						wp.saveWebPartChanges();
+						ctx.executeQueryAsync(function () {
+							jslinkdfd.resolve();
+						});
+					}, function () /*r, a*/{});
+				}, function () /*r, a*/{});
+			}).promise();
+		}
+
+	};
+
+	ns.modules.spapi = utils;
+})(spexplorerjs, spexplorerjs.modules.jQuery);
+
+/***/ }),
+
+/***/ "./sp.folderapi.js":
+/*!*************************!*\
+  !*** ./sp.folderapi.js ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
+
+// v 0.0.3.1: 2018-04-28  - to modules, bug when calling folderExists
+// v 0.0.2: 2018-04-10  - argument can be a list
+// v 0.0.1: 2018-04-04  - fallback to trace logging if necessary
+//                      - new args.list parameter
+
+(function (ns, $) {
+
+	var debugging = window.location.href.search(/(local|sp.folder)/) > 0;
+	var trace = ns.modules.logger.get("sp.folder", debugging);
+
+	/**
+   * 
+   * @param {string} serverRelativeUrl
+   * @param {SP.ClientContext} ctx
+   * @param {SP.Web} web
+   */
+	var folderExists = function folderExists(serverRelativeUrl, ctx, web) {
+
+		if (ctx) {/*defined */} else {
+			if (web) {
+				ctx = web.get_context();
+			} else {
+				ctx = new SP.ClientContext();
+			}
+		}
+		if (web) {
+			//defined
+		} else {
+			web = ctx.get_web();
+		}
+		var dfd = $.Deferred();
+		var folder = web.getFolderByServerRelativeUrl(serverRelativeUrl);
+
+		trace.debug("probing for folder " + serverRelativeUrl);
+		ctx.load(folder, "Name", "ServerRelativeUrl");
+
+		ctx.executeQueryAsync(function () {
+			//if (folder.get_exists()) { // Not available in 2013
+			//    // Folder exists and isn't hidden from us. Print its name.
+			//    //console.log(folder.get_name());
+			//    dfd.resolve(folder);
+			//}
+			//else {
+			//    dfd.resolve(folder);
+			//    //console.log("Folder exists but is hidden (security-trimmed) for us.");
+			//}
+			try {
+				var url = folder.get_serverRelativeUrl();
+				trace.debug("folder exists:" + url);
+				dfd.resolve(folder);
+			} catch (e) {
+				trace.debug("Folder does not exist.");
+				dfd.resolve(false);
+			}
+		}, function (s, args) {
+			if (args.get_errorTypeName() === "System.IO.FileNotFoundException") {
+				// Folder doesn't exist at all.
+				trace.debug("Folder does not exist.");
+				dfd.resolve(false);
+			} else {
+				// An unexpected error occurred.
+				trace.debug("Error: " + args.get_message());
+				dfd.resolve(false);
+			}
+		});
+
+		return dfd.promise();
+	};
+
+	var pathSteps = function pathSteps(path) {
+		var bits = path.split("/");
+		var qu = [];
+		for (var i = bits.length; i > 0; i--) {
+			var current = bits.slice(0, i).join("/");
+			if (current === "") current = "/";
+			qu.push(current);
+		}
+		return qu;
+	};
+
+	var createFolderInList = function createFolderInList(name, parentFolderPath, list, ctx) {
+		ctx = ctx || list.get_context();
+		list.set_enableFolderCreation(true);
+		list.update();
+
+		var itemCreateInfo = new SP.ListItemCreationInformation();
+		itemCreateInfo.set_underlyingObjectType(SP.FileSystemObjectType.folder);
+		itemCreateInfo.set_leafName(name);
+		if (parentFolderPath) {
+			itemCreateInfo.set_folderUrl(parentFolderPath);
+		}
+
+		var li = list.addItem(itemCreateInfo);
+		li.set_item("Title", name);
+		li.update();
+
+		var dfd = $.Deferred();
+		ctx.load(li);
+		var folder = li.get_folder();
+		ctx.load(folder);
+		ctx.executeQueryAsync(function () {
+			dfd.resolve(folder);
+		}, function (r, a) {
+			dfd.reject([r, a]);
+		});
+
+		return dfd.promise();
+	};
+
+	/**
+       * returns folder (creating it and its path if necessary)
+       * @param {string} serverRelativeUrl
+       */
+	var ensureFolderInList = function ensureFolderInList(serverRelativeUrl, list, ctx) {
+		var dfd = $.Deferred();
+
+		folderExists(serverRelativeUrl, ctx, list.get_parentWeb()).done(function (folder) {
+			if (folder === false) {
+
+				var parentFolders = pathSteps(serverRelativeUrl);
+				var parentFolderPath = parentFolders[1];
+				var bits = serverRelativeUrl.split("/");
+				var name = bits[bits.length - 1];
+				ensureFolderInList(parentFolderPath, list, ctx).done(function () /*parentSpFolder*/{
+					createFolderInList(name, parentFolderPath, list, ctx).done(function (folder) {
+						dfd.resolve(folder);
+					});
+				});
+			} else {
+				dfd.resolve(folder);
+			}
+		});
+		return dfd.promise();
+	};
+
+	//var ensurePathNoLi = function (path) {
+	//	// not safe for lists
+	//	var paths = toQueue(path);
+	//	var eventTemplatesDal = new ns.SpDal(ns.schema.eventTemplates, trace.log);
+	//	return eventTemplatesDal.processAsQueue(paths,
+	//		function (path1) {
+
+	//			var pCreate = $.ajax({
+	//				"url": _spPageContextInfo.siteAbsoluteUrl + "/_api/Web/Folders/add('Lists/Events/" + path1 + "')",
+	//				"type": "POST",
+	//				"headers": {
+	//					"accept": "application/json; odata=verbose",
+	//					"content-type": "application/json; odata=verbose",
+	//					"X-RequestDigest": $("#__REQUESTDIGEST").val()
+	//				}
+	//			});
+
+	//			jQuery.when(pCreate).always(function (data) {
+	//				trace.log(data);
+	//			});
+
+	//			return pCreate;
+	//		});
+	//};
+
+	ns.modules.folderapi = {
+		ensureFolderInList: ensureFolderInList,
+		createFolderInList: createFolderInList,
+		folderExists: folderExists,
+		version: "0.0.3.1"
+	};
+})(spexplorerjs, spexplorerjs.modules.jQuery); /// <reference path="../../../../node_modules/@types/microsoft-ajax/index.d.ts" />
+/// <reference path="../../../../node_modules/@types/sharepoint/index.d.ts" />
+/// <reference path="../../logger/logger.js" />
+
+/***/ }),
+
+/***/ "./sp.list.js":
+/*!********************!*\
+  !*** ./sp.list.js ***!
+  \********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
+
+// v 0.0.4: 2018-04-28  - move to modules
+// v 0.0.2: 2018-04-10  - argument can be a list
+// v 0.0.1: 2018-04-04  - fallback to trace logging if necessary
+//                      - new args.list parameter
+
+(function (ns, $) {
+
+	var debugging = window.location.href.search(/(local|debugsplist)/) > 0;
+	var trace = ns.modules.logger.get("splist", debugging);
+
+	var getAll = function getAll(splist /* SP.List */, spctx /*SP.ClientContext */, caml /* string */, folder /* string */, limit /* int */) {
+
+		limit = limit || 0;
+		var query = new SP.CamlQuery();
+
+		var queryXml = caml || "<View Scope='Recursive'>\
+        <ViewFields>\
+          <FieldRef Name='ID'></FieldRef>\
+        </ViewFields><RowLimit>1000</RowLimit>\
+      </View>";
+
+		if (folder) {
+			query.set_folderServerRelativeUrl(folder);
+		}
+
+		query.set_viewXml(queryXml);
+
+		var items = [],
+		    spItems;
+
+		var parseRows = function parseRows(currrentItems) {
+			var itemsCount = currrentItems.get_count();
+			for (var i = 0; i < itemsCount; i++) {
+				var item = currrentItems.itemAt(i);
+				if (item) {
+					items.push(item);
+				}
+			}
+		};
+
+		var loadNext = function loadNext(pageInfo) {
+
+			trace.debug("page: " + pageInfo);
+			pageInfo = pageInfo || "";
+
+			var pos = new SP.ListItemCollectionPosition();
+			pos.set_pagingInfo(pageInfo);
+			query.set_listItemCollectionPosition(pos);
+			spItems = splist.getItems(query);
+			spctx.load(spItems);
+
+			var onSuccess = function onSuccess() /*sender, args*/{
+				parseRows(spItems);
+				var position = spItems.get_listItemCollectionPosition();
+				if (position !== null && (limit === 0 || items.length < limit)) {
+					var info = position.get_pagingInfo();
+					loadNext(info);
+				} else {
+					dfd.resolve(items, splist, spctx);
+				}
+			};
+
+			spctx.executeQueryAsync(onSuccess, function (sender, error) {
+
+				trace.error({ caml: caml, error: error, sender: sender });
+				dfd.reject(sender, error);
+			});
+		};
+		loadNext();
+
+		var dfd = $.Deferred();
+		return dfd.promise();
+	};
+
+	var spDal = function spDal(args, log, error) {
+		var ctx = null;
+		var web = null;
+		var lists = null;
+		var list = null;
+		var items = null;
+		var listFields = null;
+
+		(function () {
+			//init
+
+			if (SP.List.isInstanceOfType(args)) {
+				list = args;
+			} else if (SP.List.isInstanceOfType(args.list)) {
+				list = args.list;
+			}
+
+			if (list != null) {
+				ctx = list.get_context();
+			} else {
+				try {
+					ctx = new SP.ClientContext();
+				} catch (e) {
+					ctx = SP.ClientContext.get_current();
+				}
+			}
+
+			web = ctx.get_web();
+			lists = web.get_lists();
+
+			ctx.load(web, ["Id", "ServerRelativeUrl"]);
+			ctx.load(lists, "Include(Title, Fields.Include(Title))");
+			ctx.load(lists, "Include(Fields.Include(Title))");
+		})();
+
+		//var trace = ns.logger.get("spdal");
+		log = log || trace.log;
+		error = error || trace.error;
+
+		var listExists = function listExists(lists, listTitle) {
+
+			return $.Deferred(function (dfd) {
+				var onloaded = function onloaded() {
+					var result = { exists: false, list: null };
+
+					var le = lists.getEnumerator();
+					while (le.moveNext()) {
+						var list = le.get_current();
+						if (list.get_title() === listTitle) {
+							result.exists = true;
+							result.list = list;
+							break;
+						}
+					}
+					log({ listExists: listTitle, result: result });
+					dfd.resolve(result);
+				};
+				if (lists.get_data().length === 0) {
+					// not initialized
+
+					var ctx = lists.get_context();
+
+					ctx.executeQueryAsync(function () {
+						onloaded();
+					}, function (r, a) {
+						reqFailure(r, a, "listExists", dfd);
+					});
+				} else {
+					onloaded();
+				}
+			}).promise();
+		};
+		var pathSteps = function pathSteps(path) {
+			var bits = path.split("/");
+			var qu = [];
+			for (var i = bits.length; i > 0; i--) {
+				var current = bits.slice(0, i).join("/");
+				if (current === "") current = "/";
+				qu.push(current);
+			}
+			return qu;
+		};
+
+		var ensureCtype = function ensureCtype(name, fieldLinks) {
+			return $.Deferred(function (dfd) {
+				var cTypes = list.get_contentTypes();
+				loadSpElem(cTypes).done(function () {
+
+					var matches = $.grep(ns.sp.collectionToArray(cTypes), function (n) {
+						return n.get_name() === name;
+					});
+					if (matches.length === 0) {
+						trace.debug("Adding ctype" + name);
+						addContentType(name, fieldLinks).done(function (ctype) {
+							dfd.resolve(ctype);
+						});
+					} else {
+						dfd.resolve(matches[0]);
+					}
+				});
+			}).promise();
+		};
+
+		var addContentType = function addContentType(name, fieldLinks) {
+			return $.Deferred(function (dfd) {
+				var webCTypes = web.get_contentTypes();
+
+				list.set_contentTypesEnabled(true);
+				list.update();
+
+				var listFields = list.get_fields();
+				loadSpElem([webCTypes, listFields]).done(function () {
+					var matches = $.grep(ns.sp.collectionToArray(webCTypes), function (n) {
+						return n.get_name() === name;
+					});
+
+					if (matches.length === 0) {
+						trace.error(name + " not found");
+					} else {
+						var webcType = matches[0];
+						var listCTypes = list.get_contentTypes();
+						listCTypes.addExistingContentType(webcType);
+
+						loadSpElem(listCTypes).done(function () {
+							var ctype = $.grep(ns.sp.collectionToArray(listCTypes), function (n) {
+								return n.get_name() === name;
+							})[0];
+
+							if (fieldLinks) {
+								listFields = ns.sp.collectionToArray(listFields);
+
+								fieldLinks.forEach(function (fieldName) {
+
+									trace.debug("---Addfield " + fieldName + " field link");
+
+									var localField = $.grep(listFields, function (n) {
+										return n.get_internalName() === fieldName;
+									})[0];
+
+									var fieldLink = new SP.FieldLinkCreationInformation();
+									fieldLink.set_field(localField);
+									ctype.get_fieldLinks().add(fieldLink);
+								});
+								ctype.update();
+								list.update();
+								loadSpElem(ctype).done(function () {
+									dfd.resolve(ctype);
+								});
+							} else {
+								dfd.resolve(ctype);
+							}
+						});
+					}
+				});
+			}).promise();
+		};
+
+		var addItems = function addItems(items, splist, spfields, folderUrl) {
+			var dfd = $.Deferred();
+
+			getlist().done(function () {
+				splist = list;
+				spfields = spfields || listFields;
+
+				if (items && items.length > 0) {
+					var spItems = [];
+					for (var i = 0; i < items.length; i++) {
+
+						var data = items[i];
+						var itemCreateInfo = new SP.ListItemCreationInformation();
+						if (folderUrl) {
+							itemCreateInfo.set_folderUrl(folderUrl);
+						}
+
+						var newspitem = splist.addItem(itemCreateInfo);
+						for (var f in data) {
+							var fieldType = spfields[f].get_typeAsString();
+							var val = null;
+							if (fieldType === "URL") {
+								val = new SP.FieldUrlValue();
+								val.set_url(data[f]);
+							} else if (fieldType.search("Lookup") === 0) {
+
+								var itemVal = data[f];
+								if (itemVal) {
+									if (itemVal.length) {
+										val = [];
+										for (var j = 0; j < itemVal.length; j++) {
+											var iVal = new SP.FieldLookupValue();
+											iVal.set_lookupId(itemVal[j]);
+											val.push(iVal);
+										}
+									} else {
+										val = new SP.FieldLookupValue();
+										val.set_lookupId(itemVal);
+									}
+								}
+							} else {
+								val = data[f];
+							}
+
+							newspitem.set_item(f, val);
+						}
+						newspitem.update();
+						ctx.load(newspitem);
+						spItems.push(newspitem);
+					}
+					ctx.executeQueryAsync(function () {
+						log("addItems done");
+						dfd.resolve(spItems);
+					}, function (r, a) {
+						reqFailure(r, a, "addItems" + args.listTitle, dfd);
+					});
+				} else {
+					dfd.resolve();
+				}
+			});
+
+			return dfd.promise();
+		};
+		var handleOnReady = function handleOnReady(splist, dfd) {
+			log("OnListReady");
+			if (args.OnListReady) {
+				args.OnListReady(me, splist, ctx).done(function () {
+					dfd.resolve(splist);
+				});
+			} else dfd.resolve(splist);
+		};
+		var handleOnCreated = function handleOnCreated(splist, dfd) {
+			log("OnListCreated");
+			if (args.OnListCreated) {
+				args.OnListCreated(me, splist, ctx).done(function () {
+					dfd.resolve(splist);
+				});
+			} else dfd.resolve(splist);
+		};
+
+		var clearActions = function clearActions() {
+			var dfd = $.Deferred();
+			var actions = web.get_userCustomActions();
+			actions.clear();
+			ctx.load(actions);
+
+			ctx.executeQueryAsync(function () {
+				dfd.resolve(actions);
+			}, function (r, a) {
+				reqFailure(r, a, "clearActions", dfd);
+			});
+
+			return dfd.promise();
+		};
+
+		/**
+         * returns folder (creating it and its path if necessary)
+         * @param {string} serverRelativeUrl
+         */
+		var ensureFolder = function ensureFolder(serverRelativeUrl /*string*/) {
+			var dfd = $.Deferred();
+
+			folderExists(serverRelativeUrl).done(function (folder) {
+				if (folder == false) {
+
+					var parentFolders = pathSteps(serverRelativeUrl);
+					var parentFolderPath = parentFolders[1];
+					var bits = serverRelativeUrl.split("/");
+					var name = bits[bits.length - 1];
+					ensureFolder(parentFolderPath).done(function () /*parentSpFolder*/{
+						createFolder(name, parentFolderPath).done(function (folder) {
+							dfd.resolve(folder);
+						});
+					});
+				} else {
+					dfd.resolve(folder);
+				}
+			});
+			return dfd.promise();
+		};
+		/**
+         * @param {string} serverRelativeUrl
+         */
+		var folderExists = function folderExists(serverRelativeUrl) {
+			var dfd = $.Deferred();
+			var folder = web.getFolderByServerRelativeUrl(serverRelativeUrl);
+
+			ctx.load(folder, "Name", "ServerRelativeUrl");
+
+			ctx.executeQueryAsync(function () {
+				//if (folder.get_exists()) { // Not available in 2013
+				//    // Folder exists and isn't hidden from us. Print its name.
+				//    //console.log(folder.get_name());
+				//    dfd.resolve(folder);
+				//}
+				//else {
+				//    dfd.resolve(folder);
+				//    //console.log("Folder exists but is hidden (security-trimmed) for us.");
+				//}
+				try {
+					//var url = folder.get_serverRelativeUrl();
+					dfd.resolve(folder);
+				} catch (e) {
+					dfd.resolve(false);
+				}
+			}, function (s, args) {
+				if (args.get_errorTypeName() === "System.IO.FileNotFoundException") {
+					// Folder doesn't exist at all.
+					//console.log("Folder does not exist.");
+					dfd.resolve(false);
+				} else {
+					// An unexpected error occurred.
+					//console.log("Error: " + args.get_message());
+					dfd.resolve(false);
+				}
+			});
+
+			return dfd.promise();
+		};
+		var createFolder = function createFolder(name, parentFolderPath) {
+			if (list) {
+				list.set_enableFolderCreation(true);
+				list.update();
+			}
+			var itemCreateInfo = new SP.ListItemCreationInformation();
+			itemCreateInfo.set_underlyingObjectType(SP.FileSystemObjectType.folder);
+			itemCreateInfo.set_leafName(name);
+			if (parentFolderPath) {
+				itemCreateInfo.set_folderUrl(parentFolderPath);
+			}
+			var li = list.addItem(itemCreateInfo);
+			li.set_item("Title", name);
+			li.update();
+
+			var dfd = $.Deferred();
+			ctx.load(li);
+			var folder = li.get_folder();
+			ctx.load(folder);
+			ctx.executeQueryAsync(function () {
+				dfd.resolve(folder);
+			}, function (r, a) {
+				reqFailure(r, a, "createFolder", dfd);
+			});
+
+			return dfd.promise();
+		};
+		var addCustomAction = function addCustomAction(location, ext, perms) {
+			var actions = list.get_userCustomActions();
+
+			var action = actions.add();
+
+			action.set_location(location);
+			action.set_commandUIExtension(ext);
+			action.set_sequence(0);
+			if (perms) action.set_rights(perms);
+			action.update();
+			ctx.load(action);
+			var dfd = $.Deferred();
+
+			ctx.executeQueryAsync(function () {
+				log("addCustomAction.done");
+				dfd.resolve(action);
+			}, function (r, a) {
+				reqFailure(r, a, "addCustomAction", dfd);
+			});
+
+			return dfd.promise();
+		};
+		var addScriptLink = function addScriptLink(name, url, sequence) {
+			var dfd = $.Deferred();
+
+			var actions = ctx.get_site().get_userCustomActions();
+
+			var action = actions.add();
+			action.set_location("ScriptLink");
+			action.set_title(name);
+			action.set_scriptSrc(url);
+			action.set_sequence(sequence);
+			action.update();
+
+			ctx.load(action);
+
+			ctx.executeQueryAsync(function () {
+				dfd.resolve(action);
+			}, function (r, a) {
+				reqFailure(r, a, "addScriptLink", dfd);
+			});
+
+			return dfd.promise();
+		};
+		var breakRoleInheritance = function breakRoleInheritance(copyRoleAssignments, clearSubscopes) {
+			list.breakRoleInheritance(copyRoleAssignments, clearSubscopes);
+			list.update();
+
+			return loadSpElem(list, ctx);
+		};
+
+		var breakItemRoleInheritance = function breakItemRoleInheritance(copyRoleAssignments, clearSubscopes, item) {
+			item = item || list;
+			item.breakRoleInheritance(copyRoleAssignments, clearSubscopes);
+			item.update();
+
+			return loadSpElem(item, ctx);
+		};
+		//var breakRoleInheritanceRest = function (copyRoleAssignments, clearSubscopes, webUrl, listName) {
+		//	webUrl = webUrl || web.get_serverRelativeUrl();
+		//	listName = listName || args.ListTitle;
+		//	log("breakingRole Inheritance: " + listName);
+		//	var req = window.location.href.substring(0, window.location.href.indexOf(window.location.pathname)) +
+		//              "{0}/_api/web/lists/getByTitle('{1}')/breakroleinheritance(copyRoleAssignments={2},clearSubscopes={3})";
+		//	req = req.replace("{0}", webUrl).replace("{1}", listName).replace("{2}", copyRoleAssignments)
+		//		.replace("{3}", clearSubscopes);
+
+		//	return $.ajax({
+		//		url: req,
+		//		type: "POST",
+		//		headers: { "accept": "application/json;odata=verbose" },
+		//	});
+		//};
+
+		var addPermission = function addPermission(principalIn, permissions, securable, parentWeb) {
+			return $.Deferred(function (dfd) {
+				parentWeb = parentWeb || web;
+				securable = securable || list;
+				var safePrincipal = principalIn;
+				var safeAddPermission = function safeAddPermission(principal) {
+
+					var collContribute = SP.RoleDefinitionBindingCollection.newObject(ctx);
+
+					for (var i = 0; i < permissions.length; i++) {
+						var perm = permissions[i];
+						log("adding Permissions " + perm);
+
+						var rdContribute = parentWeb.get_roleDefinitions().getByName(perm);
+						// Create a new RoleDefinitionBindingCollection.
+						// Add the role to the collection.
+						collContribute.add(rdContribute);
+					}
+
+					// Get the RoleAssignmentCollection for the target web.
+					//var assignments = securable.get_roleAssignments();
+					// assign the group to the new RoleDefinitionBindingCollection.
+					//var roleAssignmentContribute = assignments.add(principal, collContribute);
+
+					ctx.load(principal);
+
+					ctx.executeQueryAsync(function () /*sender*/ /*, args*/{
+						dfd.resolve(principal);
+					}, function (r, a) {
+						reqFailure(r, a, "addPermission", dfd);
+					});
+				};
+
+				if (SP.Group.isInstanceOfType(principalIn)) {
+					safeAddPermission(safePrincipal);
+				} else {
+					ensureGroup(principalIn).done(function (res) {
+						safePrincipal = res;
+						safeAddPermission(safePrincipal);
+					});
+				}
+			}).promise();
+		};
+
+		var spGroups = null;
+		var getGroups = function getGroups(force) {
+			if (force) {
+				spGroups = null;
+			}
+			return $.Deferred(function (dfd) {
+
+				if (spGroups == null) {
+					var groupCollection = web.get_siteGroups();
+					ctx.load(groupCollection);
+
+					ctx.executeQueryAsync(function () /*sender, args*/{
+						spGroups = {};
+						var le = groupCollection.getEnumerator();
+						while (le.moveNext()) {
+							var group = le.get_current();
+							var groupName = group.get_title();
+							spGroups[groupName] = group;
+						}
+						log("Loaded Groups: " + groupCollection.get_count());
+						dfd.resolve(spGroups);
+					}, function (r, a) {
+						reqFailure(r, a, "getGroups", dfd);
+					});
+				} else {
+					dfd.resolve(spGroups);
+				}
+			}).promise();
+		};
+		var ensureGroup = function ensureGroup(name, desc) {
+			return $.Deferred(function (dfd) {
+
+				getGroups().done(function (spGroups) {
+					if (spGroups[name]) {
+						dfd.resolve(spGroups[name]);
+					} else {
+						createGroup(name, desc).done(function (group) {
+							dfd.resolve(group);
+						});
+					}
+				});
+			}).promise();
+		};
+		var ensureGroups = function ensureGroups(groups) {
+			return $.Deferred(function (dfdG) {
+				getGroups().done(function () /*spGroups*/{
+					ns.funcs.processAsQueue(groups, function (group) {
+						return $.Deferred(function (dfd) {
+							ensureGroup(group.name, group.desc).done(function (spGroup) {
+								log("Adding permissions for " + group.name);
+								addPermission(spGroup, group.permissions, web).done(function () {
+									log("adding pemission is done");
+									dfd.resolve();
+								});
+							});
+						}).promise();
+					}).done(function () {
+						dfdG.resolve();
+					});
+				}); //;
+			}).promise();
+		};
+		var createGroup = function createGroup(name, desc, parentWeb) {
+			return $.Deferred(function (dfd) {
+				parentWeb = parentWeb || web;
+				var ctx = parentWeb.get_context();
+				var groupCollection = parentWeb.get_siteGroups();
+
+				log("creating group: " + name);
+				var spGroup = groupCollection.add(function () {
+					var membersGRP = new SP.GroupCreationInformation();
+					membersGRP.set_title(name);
+					membersGRP.set_description(desc);
+					return membersGRP;
+				}());
+
+				spGroup.set_onlyAllowMembersViewMembership(false);
+				spGroup.update();
+				ctx.load(spGroup);
+				ctx.executeQueryAsync(function () {
+					dfd.resolve(spGroup);
+				}, function (r, a) {
+					reqFailure(r, a, "createGroups", dfd);
+				});
+			}).promise();
+		};
+		var ensureCTypes = function ensureCTypes(ctypes) {
+			return ns.funcs.processAsQueue(ctypes || [], function (ctype) {
+				return ensureCtype(ctype.Name, ctype.FieldLinks);
+			});
+		};
+		var createList = function createList(listTitle, templateType) {
+			log("Creating list " + listTitle);
+			return $.Deferred(function (dfd) {
+
+				var listCreationInfo = new SP.ListCreationInformation();
+				listCreationInfo.set_title(listTitle);
+				listCreationInfo.set_templateType(templateType);
+
+				var oList = web.get_lists().add(listCreationInfo);
+
+				ctx.load(oList);
+
+				ctx.executeQueryAsync(function () {
+					log(args.ListTitle + " creation done");
+					list = oList;
+					handleOnCreated(list, dfd);
+				}, function (r, a) {
+					reqFailure(r, a, "createList", dfd);
+				});
+			}).promise();
+		};
+		var reqFailure = function reqFailure(req, reqargs, from, dfd) {
+			// log context failure
+
+			var msg = from + "(list:" + args.ListTitle + ") : Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
+			error(msg);
+
+			if (dfd) dfd.reject(msg);
+		};
+		var ensureList = function ensureList(web, args) {
+			return $.Deferred(function (dfd) {
+
+				if (list != null) {
+					dfd.resolve(list);
+				} else {
+
+					lists = web.get_lists();
+
+					var done = function done() {
+						log("lists loaded");
+						listExists(lists, args.ListTitle).done(function (res) {
+							if (res.exists) {
+								log("list already exists");
+								list = res.list;
+
+								var rootFolder = list.get_rootFolder();
+								ctx.load(rootFolder, ["ServerRelativeUrl"]);
+								ctx.executeQueryAsync(function () {
+									ensureFields(list).done(function () {
+										dfd.resolve(list);
+									});
+								});
+							} else {
+								createList(args.ListTitle, args.ListTemplate).done(function (splist) {
+
+									var rootFolder = splist.get_rootFolder();
+									ctx.load(rootFolder, ["ServerRelativeUrl"]);
+									ctx.executeQueryAsync();
+
+									var defaultItems = function defaultItems(spfields) {
+										if (typeof args.DefaultItems == "function") {
+											args.DefaultItems(spfields, me).done(function (items) {
+												addItems(items, splist, spfields);
+											});
+										} else {
+											addItems(args.DefaultItems, splist, spfields);
+										}
+									};
+									log(args.ListTitle + ": creating fields");
+
+									ensureFields(splist, args.Fields || []).done(function (spfields) {
+										ensureCTypes(args.ContentTypes).done(function () {
+											defaultItems(spfields);
+											if (args.Permissions) {
+												breakRoleInheritance(false, true).done(function () {
+													log("done with inheritance");
+													ns.funcs.processAsQueue(args.Permissions, function (entry) {
+														var groupName = entry.name;
+														var perms = entry.permissions;
+														log("adding perm: " + groupName + " to " + args.ListTitle);
+														return addPermission(groupName, perms, splist);
+													}).done(function () {
+														log("done adding permissions");
+														handleOnReady(splist, dfd);
+													});
+												});
+											} else {
+												handleOnReady(splist, dfd);
+											}
+										});
+									}).fail(function (err) {
+										log(err);
+									});
+								}).fail(function (err) {
+
+									log(err);
+								});
+							}
+						});
+					};
+
+					log("loading lists...");
+					ctx.load(lists);
+
+					ctx.executeQueryAsync(done, function (r, a) {
+						reqFailure(r, a, "ensureList", dfd);
+					});
+				}
+			}).promise();
+		};
+		var ensureFields = function ensureFields(list, fields) {
+			fields = fields || [];
+			var spfields = list.get_fields();
+			var getMarkup = function getMarkup(field) {
+				return $.Deferred(function (dfd) {
+
+					var xml = field.markup;
+					if (typeof field.markup == "function") {
+						field.markup(ctx, list, spfields, lists, web).done(function (xml) {
+							dfd.resolve(xml);
+						});
+					} else {
+						dfd.resolve(xml);
+					}
+				}).promise();
+			};
+			return $.Deferred(function (dfd) {
+				var done = function done() {
+					spfields = list.get_fields();
+
+					ctx.load(spfields, "Include(Title,FieldTypeKind,TypeAsString,InternalName)");
+					ctx.executeQueryAsync(function () {
+						log("existing fields loaded");
+						var le = spfields.getEnumerator();
+						var parsed = {};
+						while (le.moveNext()) {
+							var field = le.get_current();
+							parsed[field.get_internalName()] = field;
+						}
+						listFields = parsed;
+						dfd.resolve(parsed);
+					}, function onError(sender, args) {
+						dfd.reject("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
+					});
+				};
+				ns.funcs.processAsQueue(fields, function (field) {
+					return $.Deferred(function (fieldDfd) {
+						getMarkup(field).done(function (xml) {
+
+							log("adding: " + xml);
+							var spField = spfields.addFieldAsXml(xml, true, SP.AddFieldOptions.defaultValue);
+
+							if (field.post) {
+								field.post(spField);
+							}
+							ctx.load(spField);
+							fieldDfd.resolve();
+						});
+					}).promise();
+				}).done(done);
+			}).promise();
+		};
+
+		var deleteList = function deleteList(lists, listTitle) {
+			log("deleting list " + listTitle);
+			return $.Deferred(function (dfd) {
+
+				listExists(lists, listTitle).done(function (listexists) {
+
+					if (listexists.exists) {
+						listexists.list.deleteObject();
+						ctx.executeQueryAsync(function () {
+							dfd.resolve("list deleted");
+						}, function (r, a) {
+							reqFailure(r, a, "deleteList", dfd);
+						});
+					} else {
+						dfd.resolve("list not found");
+					}
+				});
+			}).promise();
+		};
+		var delTheList = function delTheList() {
+			return deleteList(lists, args.ListTitle);
+		};
+
+		var loadSpElem = function loadSpElem(elem, sptx, caller) {
+
+			sptx = sptx || ctx;
+			return $.Deferred(function (dfd) {
+
+				if (elem.length) {
+					for (var i = 0; i < elem.length; i++) {
+						sptx.load(elem[i]);
+					}
+				} else sptx.load(elem);
+
+				sptx.executeQueryAsync(function () {
+					dfd.resolve(elem);
+				}, function (r, a) {
+					reqFailure(r, a, caller || "loadSpElem", dfd);
+				});
+			}).promise();
+		};
+		var getlist = function getlist() {
+			return $.Deferred(function (dfd) {
+
+				ensureList(web, args).done(function (list) {
+					//ensureFields(list).done(function () {
+					dfd.resolve(list, ctx, web);
+					//});
+				});
+			}).promise();
+		};
+		var _getitems = function _getitems(caml, folder, limit) {
+			return $.Deferred(function (dfd) {
+				//var rootFolder = list.get_rootFolder();
+				var ctx = list.get_context();
+				//var scripts = [];
+				var queryXml = caml || args.DefaultQuery || "<View Scope='Recursive'>\
+<ViewFields>\
+<FieldRef Name='ID'></FieldRef>\
+<FieldRef Name='Title'></FieldRef>\
+</ViewFields><RowLimit>1000</RowLimit>\
+</View>";
+				//loadSpElem(rootFolder, ctx),
+				$.when(getAllItemsPaged(queryXml, folder, limit)).done(function (items) {
+					log(items);
+					if (args.itemParser) {
+						dfd.resolve(args.itemParser(items), list, ctx);
+					} else {
+						dfd.resolve(items, list, ctx);
+					}
+				}).fail(function () {
+					error("getitems error");
+				});
+			}).promise();
+		};
+		var getItem = function getItem(id) {
+			return $.Deferred(function (dfd) {
+				getlist().done(function (list) {
+					var oListItem = list.getItemById(id);
+
+					loadSpElem(oListItem, ctx).done(function (el) {
+						dfd.resolve(el, list, web, ctx);
+					}).fail(function (err) {
+						dfd.reject(err);
+					});
+				});
+			}).promise();
+		};
+		var saveItem = function saveItem(id, title, desc, script) {
+			ctx = ctx || SP.ClientContext.get_current();
+
+			var dfd = $.Deferred();
+
+			var web = ctx.get_web();
+			var list = web.get_lists();
+			var targetList = list.getByTitle(args.ListTitle);
+			var oListItem = null;
+
+			if (id && id > 0) {
+				oListItem = targetList.getItemById(id);
+			} else {
+				var itemCreateInfo = new SP.ListItemCreationInformation();
+				oListItem = targetList.addItem(itemCreateInfo);
+			}
+
+			oListItem.set_item(args.FieldNames.title, title);
+			oListItem.set_item(args.FieldNames.desc, desc);
+			oListItem.set_item(args.FieldNames.script, script);
+
+			oListItem.update();
+
+			loadSpElem(oListItem, ctx).done(function (el) {
+				dfd.resolve(el);
+			}).fail(function (err) {
+				dfd.reject(err);
+			});
+
+			return dfd.promise();
+		};
+		var getAllItemsPaged = function getAllItemsPaged(caml, folder, limit) {
+
+			limit = limit || 0;
+
+			var dfd = $.Deferred();
+			getlist().done(function (splist) {
+
+				getAll(splist, ctx, caml, folder, limit).done(function (allItems) {
+					dfd.resolve(allItems);
+				});
+			}).fail(function () {
+				trace.error("error getAllPages");
+			});
+
+			return dfd.promise();
+		};
+
+		/**
+         * For large lists, get items on individual folders, ** very slow **
+         * @param {SP.ListItem} tFolder
+         */
+		var loadAllFilesFromAllFolders = function loadAllFilesFromAllFolders(caml) {
+
+			var folderQueue = [list.get_rootFolder()];
+			var allitems = [];
+
+			return $.Deferred(function (alldfd) {
+				ns.funcs.processAsQueue(folderQueue, function (folder) {
+
+					return $.Deferred(function (dfd) {
+
+						ctx.load(folder, ["ServerRelativeUrl"]);
+						loadSpElem(folder.get_folders()).done(function (folders) {
+							ns.sp.collectionToArray(folders).forEach(function (n) {
+								folderQueue.push(n);
+							});
+
+							var folderUrl = folder.get_serverRelativeUrl();
+							caml = caml || "<View><RowLimit>1000</RowLimit></View>";
+
+							getAllItemsPaged(caml, folderUrl).done(function (items) {
+
+								for (var i = 0; i < items.length; i++) {
+
+									var li = items[i];
+									var vls = li.get_fieldValues();
+
+									if (vls.FSObjType == "1") //folder
+										{
+											folderQueue.push(li);
+										} else {
+										allitems.push(li);
+									}
+								}
+
+								dfd.resolve();
+							});
+						});
+					}).promise();
+				}).done(function () {
+					alldfd.resolve(allitems);
+				});
+			}).promise();
+		};
+
+		var addWebPart = function addWebPart(serverRelativeFormUrl, wpXml, zone, position) {
+
+			return $.Deferred(function (dfd) {
+				var oFile = web.getFileByServerRelativeUrl(serverRelativeFormUrl);
+
+				var lpm = oFile.getLimitedWebPartManager(SP.WebParts.PersonalizationScope.shared);
+
+				var oWebPartDefinition = lpm.importWebPart(wpXml);
+				var oWebPart = oWebPartDefinition.get_webPart();
+
+				var wp = lpm.addWebPart(oWebPart, zone || "LeftColumn", position || 0);
+				var wps = lpm.get_webParts();
+				ctx.load(wps, "Include(WebPart.Title)");
+
+				loadSpElem([oWebPart, wp], ctx, "Add web part").done(function () {
+					wp = wps.getById(wp.get_id());
+					var wpp = wp.get_webPart();
+					var props = wpp.get_properties();
+
+					loadSpElem([wp, wpp, props]).done(function () /*res*/{
+						dfd.resolve(wp);
+					});
+				});
+			});
+		};
+
+		var me = {
+			loadAllFilesFromAllFolders: loadAllFilesFromAllFolders,
+			addCustomAction: addCustomAction,
+			args: args,
+			deleteList: delTheList,
+			addWebPart: addWebPart,
+			getitems: function getitems(caml /*string*/, force /*bool*/) {
+				if (force) {
+					items = null;
+				}
+				return $.Deferred(function (dfd) {
+
+					if (items) {
+						dfd.resolve(items);
+					} else {
+						getlist().done(function () /*list*/{
+							_getitems(caml).done(function (res) {
+								items = res;
+								dfd.resolve(items, list, ctx);
+							});
+						});
+					}
+				}).promise();
+			},
+			getitem: function getitem(id) {
+				return $.Deferred(function (dfd) {
+
+					getItem(id).done(function (el) {
+						dfd.resolve(el, list, web);
+					});
+				}).promise();
+			},
+			getlist: getlist,
+			createGroup: createGroup,
+			getGroups: getGroups,
+			ensureGroups: ensureGroups,
+			ensureGroup: ensureGroup,
+			save: saveItem,
+			addScriptLink: addScriptLink,
+			clearActions: clearActions,
+			createFolder: createFolder,
+			loadSpElem: loadSpElem,
+			processAsQueue: ns.funcs.processAsQueue,
+			ensureFolder: ensureFolder,
+			getItems: getAllItemsPaged,
+			addItems: addItems,
+			ctx: ctx,
+			list: list,
+			spErrorHandler: reqFailure,
+			breakItemRoleInheritance: breakItemRoleInheritance,
+			breakRoleInheritance: breakRoleInheritance,
+			addContentType: addContentType,
+			ensureCtype: ensureCtype
+		};
+		return me;
+	};
+
+	ns.modules.listapi = {
+		getAll: getAll,
+		Dal: spDal,
+		version: "0.0.4.2"
+	};
+})(spexplorerjs, spexplorerjs.modules.jQuery); /// <reference path="../../../../node_modules/@types/microsoft-ajax/index.d.ts" />
+/// <reference path="../../../../node_modules/@types/sharepoint/index.d.ts" />
+/// <reference path="../../logger/logger.js" />
+/// <reference path="sp.folderapi.js" />
+
+/***/ }),
+
+/***/ "./sp.web.js":
+/*!*******************!*\
+  !*** ./sp.web.js ***!
+  \*******************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
+
+(function (ns, $) {
+
+	/// TODO: Document
+	var createWeb = function createWeb(parentWeb, title, url, template, inheritPermissions) {
+		return $.Deferred(function (dfd) {
+			var ctx = SP.ClientContext.get_current();
+			parentWeb = parentWeb || ctx.get_web();
+			var wci = new SP.WebCreationInformation();
+			wci.set_webTemplate(template);
+			wci.set_title(title);
+			wci.set_url(url);
+			wci.set_language(1033);
+			wci.set_useSamePermissionsAsParentSite(inheritPermissions);
+			parentWeb.get_webs().add(wci);
+			parentWeb.update();
+			ctx.load(parentWeb);
+			ctx.executeQueryAsync(function () {
+				dfd.resolve((parentWeb.get_serverRelativeUrl() + "/" + url).replace(/\/\/*/g, "/"));
+			}, function onError(sender, args) {
+				dfd.reject("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
+			});
+		}).promise();
+	};
+
+	/**
+     * Load an existing site
+     * fails if site doesn't exist
+     * @param {string} url - site relative url of web
+     * @param {spsite} site- site reference, if null will load from current context
+     * @param {ClientContext} ctx - SharePoint client context, if null the current context will be used
+     * @param {function} loadFunc - function run before the web is loaded (web will be passed as argument)
+     */
+	var loadWeb = function loadWeb(url, site, ctx, loadFunc) {
+		return $.Deferred(function (dfd) {
+
+			ctx = ctx || SP.ClientContext.get_current();
+			site = site || ctx.get_site();
+			var web = url ? typeof url == "string" ? site.openWeb(url) : url : ctx.get_web();
+			var res = loadFunc && loadFunc(web) || ctx.load(web);
+
+			ctx.executeQueryAsync(function (sender, args) {
+				dfd.resolve(web, res, sender, args);
+			}, function onError(sender, args) {
+				dfd.reject({ sender: sender, args: args });
+				//dfd.reject('Request failed ' + args.get_message() + '\n' + args.get_stackTrace());
+			});
+		}).promise();
+	};
+
+	// TODO: Document
+	var webTemplates = function webTemplates(web, ctx) {
+		return $.Deferred(function (dfd) {
+
+			ctx = ctx || SP.ClientContext.get_current();
+			web = web || ctx.get_web();
+			var templates = web.getAvailableWebTemplates(1033, false);ctx.load(templates);ctx.executeQueryAsync(function () {
+				var templateArray = ns.sp.collectionToArray(templates);
+				dfd.resolve(templateArray);
+			}, function onError(sender, args) {
+				dfd.reject({ sender: sender, args: args });
+			});
+		}).promise();
+	};
+
+	ns.modules.webapi = {
+		webTemplates: webTemplates,
+		createWeb: createWeb,
+		loadWeb: loadWeb,
+		version: "0.0.4"
+	};
+})(spexplorerjs, spexplorerjs.modules.jQuery); /// TODO: Document
+// v 0.0.4: 2018-04-04 - to modules, api
+// v 0.0.3: 2018-04-04 - remove direct dependency on jquery
+// v 0.0.2: 2018-03-28 - WebDal
+// v 0.0.1: 2018-03-11 - Added loadWeb function
+
+/***/ }),
+
+/***/ "./tester.js":
+/*!*******************!*\
+  !*** ./tester.js ***!
+  \*******************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! ./api.js */ "./api.js");
+
+__webpack_require__(/*! ../../widget.base.js */ "../../widget.base.js");
+
+var _testerTemplate = __webpack_require__(/*! ./tester.template.html */ "./tester.template.html");
+
+var _testerTemplate2 = _interopRequireDefault(_testerTemplate);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (ns, $) {
+
+		var debugging = window.location.href.search(/(local|tester)/) > 0;
+		var trace = ns.modules.logger.get("api.tester", debugging);
+
+		trace.debug("tester 0.0.1");
+
+		var xApiTester = function xApiTester(ui /*, opts*/) {
+				var $el = $(ui);
+
+				trace.debug("new");
+
+				$el.html(_testerTemplate2.default.trim());
+				var txtCtrl = $("#txtPath", $el);
+
+				var spapi = ns.modules.spapi;
+				var ctx = spapi.getCtx();
+
+				var web = ctx.get_web();
+				var file = web.getFileByServerRelativeUrl(_spPageContextInfo.serverRequestPath);
+				var li = file.get_listItemAllFields();
+				var list = li.get_parentList();
+				var rootFolder = list.get_rootFolder();
+
+				spapi.loadSpElem(rootFolder, ctx).done(function () {
+						var url = rootFolder.get_serverRelativeUrl();
+						trace.debug(url);
+						txtCtrl.val(url);
+				});
+
+				$("button", $el).click(function () {
+
+						var path = txtCtrl.val();
+
+						SP.UI.Notify.addNotification("Ensure path:" + path);
+						ns.modules.folderapi.ensureFolderInList(path, list, ctx).done(function () {
+								SP.UI.Notify.addNotification("Ensure path done:" + path);
+						});
+				});
+		};
+
+		ns.widgets.addSpWidget("xApiTester", xApiTester, "0.1.6");
+})(spexplorerjs, spexplorerjs.modules.jQuery); /// <reference path="api.js" />
+/// <reference path="sp.folderapi.js" />
+/// <reference path="../../../typings/sharepoint/index.d.ts" />
+/// <reference path="../../widget.base.js" />
+/* global _spPageContextInfo */
+
+/***/ }),
+
+/***/ "./tester.template.html":
+/*!******************************!*\
+  !*** ./tester.template.html ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div>\r\n\r\n    <input type=\"text\" id=\"txtPath\"/>\r\n    <button type=\"button\">Ensure Folder Path</button>\r\n</div>";
 
 /***/ })
 

@@ -1,23 +1,18 @@
-/// <reference path="../../../node_modules/@types/microsoft-ajax/index.d.ts" />
-/// <reference path="../../../node_modules/@types/sharepoint/index.d.ts" />
-/// <reference path="../logger/logger.js" />
-/// <reference path="../widget.base.js" />
-/// <reference path="./sp.base.js" />
+/// <reference path="../../../../node_modules/@types/microsoft-ajax/index.d.ts" />
+/// <reference path="../../../../node_modules/@types/sharepoint/index.d.ts" />
+/// <reference path="../../logger/logger.js" />
 
-/* global require */
+import "./sp.base.js";
 
-require("../logger/logger.js");
-
-require("./sp.base.js");
-
+// v 0.0.3.1: 2018-04-28  - to modules, bug when calling folderExists
 // v 0.0.2: 2018-04-10  - argument can be a list
 // v 0.0.1: 2018-04-04  - fallback to trace logging if necessary
 //                      - new args.list parameter
 
 (function (ns, $) {
 
-	var debugging = window.location.href.search(/(localhost|sp.folder)/) > 0;
-	var trace = ns.logger.get("sp.folder", debugging);
+	var debugging = window.location.href.search(/(local|sp.folder)/) > 0;
+	var trace = ns.modules.logger.get("sp.folder", debugging);
 
 	/**
    * 
@@ -27,7 +22,7 @@ require("./sp.base.js");
    */
 	var folderExists = function (serverRelativeUrl, ctx, web) {
 
-		if (ctx) { } else {
+		if (ctx) { /*defined */ } else {
 			if (web) {
 				ctx = web.get_context();
 			}
@@ -36,7 +31,7 @@ require("./sp.base.js");
 			}
 		}
 		if (web) {
-
+			//defined
 		} else {
 			web = ctx.get_web();
 		}
@@ -58,9 +53,9 @@ require("./sp.base.js");
 			//}
 			try {
 				var url = folder.get_serverRelativeUrl();
+				trace.debug(`folder exists:${url}`);
 				dfd.resolve(folder);
 
-				trace.debug("folder exists" + url);
 			} catch (e) {
 				trace.debug("Folder does not exist.");
 				dfd.resolve(false);
@@ -129,7 +124,7 @@ require("./sp.base.js");
 	var ensureFolderInList = function (serverRelativeUrl, list, ctx) {
 		var dfd = $.Deferred();
 
-		folderExists(serverRelativeUrl, list.get_parentWeb(), ctx).done(function (folder) {
+		folderExists(serverRelativeUrl, ctx, list.get_parentWeb()).done(function (folder) {
 			if (folder === false) {
 
 				var parentFolders = pathSteps(serverRelativeUrl);
@@ -137,7 +132,7 @@ require("./sp.base.js");
 				var bits = serverRelativeUrl.split("/");
 				var name = bits[bits.length - 1];
 				ensureFolderInList(parentFolderPath, list, ctx).done(function () /*parentSpFolder*/ {
-					createFolderInList(name, parentFolderPath).done(function (folder) {
+					createFolderInList(name, parentFolderPath, list, ctx).done(function (folder) {
 						dfd.resolve(folder);
 					});
 				});
@@ -148,36 +143,36 @@ require("./sp.base.js");
 		return dfd.promise();
 	};
 
-	var ensurePathNoLi = function (path) {
-		// not safe for lists
-		var paths = toQueue(path);
-		var eventTemplatesDal = new ns.SpDal(ns.schema.eventTemplates, trace.log);
-		return eventTemplatesDal.processAsQueue(paths,
-			function (path1) {
+	//var ensurePathNoLi = function (path) {
+	//	// not safe for lists
+	//	var paths = toQueue(path);
+	//	var eventTemplatesDal = new ns.SpDal(ns.schema.eventTemplates, trace.log);
+	//	return eventTemplatesDal.processAsQueue(paths,
+	//		function (path1) {
 
-				var pCreate = $.ajax({
-					"url": _spPageContextInfo.siteAbsoluteUrl + "/_api/Web/Folders/add('Lists/Events/" + path1 + "')",
-					"type": "POST",
-					"headers": {
-						"accept": "application/json; odata=verbose",
-						"content-type": "application/json; odata=verbose",
-						"X-RequestDigest": $("#__REQUESTDIGEST").val()
-					}
-				});
+	//			var pCreate = $.ajax({
+	//				"url": _spPageContextInfo.siteAbsoluteUrl + "/_api/Web/Folders/add('Lists/Events/" + path1 + "')",
+	//				"type": "POST",
+	//				"headers": {
+	//					"accept": "application/json; odata=verbose",
+	//					"content-type": "application/json; odata=verbose",
+	//					"X-RequestDigest": $("#__REQUESTDIGEST").val()
+	//				}
+	//			});
 
-				jQuery.when(pCreate).always(function (data) {
-					trace.log(data);
-				});
+	//			jQuery.when(pCreate).always(function (data) {
+	//				trace.log(data);
+	//			});
 
-				return pCreate;
-			});
-	};
+	//			return pCreate;
+	//		});
+	//};
 
-	ns.folderapi = {
+	ns.modules.folderapi = {
 		ensureFolderInList: ensureFolderInList,
 		createFolderInList: createFolderInList,
 		folderExists: folderExists,
-		version: "0.0.1"
+		version: "0.0.3.1"
 	};
 
-})(spexplorerjs, jQuery);
+})(spexplorerjs, spexplorerjs.modules.jQuery);

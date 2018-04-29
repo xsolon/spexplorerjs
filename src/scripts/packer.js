@@ -9,6 +9,9 @@ var files = [
   //"./src/components/string/string.js"
   //,"./src/components/loader/loader.js"
   //, "./src/components/logger/logger.js"
+  //,
+   "./src/components/sp/api/api.js"
+   ,"./src/components/sp/api/tester.js"
   //,"./src/components/datatables/datatables.js"
   //,"./src/components/sp/sp.web.js"
   //,"./src/components/mirrors/jseditor.js"
@@ -27,7 +30,8 @@ var files = [
   //"./src/components/sp/sp.list.js"
   //"./src/components/sp/list.editor.js"
   //,
-  "./src/components/sp/field.selector.js"
+  //"./src/components/sp/field.selector.js"
+  //"./src/components/sp/masterpageselector.js"
   //, "./src/components/sp/customaction.selector.js"
   //,"./src/components/sp/customaction.editor.js"
   //, "./src/components/sp/ui.perms.js"
@@ -240,7 +244,7 @@ module.exports.updateAll = function () {
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
     runWebPack(true, file);
-    //runWebPack(false, file);
+    runWebPack(false, file);
   }
 };
 

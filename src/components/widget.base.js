@@ -1,3 +1,4 @@
+// 0.1.3: 2018/04/28    -   modules
 // 0.1.2: 2018/03/23    -   addSpWidget for SharePoint components
 //                          add version number to elements with class widgetinfo
 // 0.1.1: 2018/03/28    -   selector property
@@ -8,10 +9,9 @@ import "./logger/logger.js";
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
-	var tracing = ns.logger.get("widgets", debugging);
-	var log = tracing.log, debug = tracing.debug;
+	var trace = ns.modules.logger.get("widgets", debugging);
 
-	log("widgets.register");
+	trace.log("widgets.register");
 	ns.widgets = ns.widgets || {};
 
 	var defineWidget = function (name, constructor, version) {
@@ -23,11 +23,11 @@ import "./logger/logger.js";
 			selector: "[data-widget=\"publicName\"]".replace("publicName", name),
 			startup: function (context, opts) {
 
-				debug(name + ".startup");
+				trace.debug(name + ".startup");
 				var selector = "[data-widget=\"publicName\"]".replace("publicName", name);
-				debug("selector: " + selector);
+				trace.debug("selector: " + selector);
 				var elems = $(selector, context || document);
-				debug("Elems: " + elems.length);
+				trace.debug("Elems: " + elems.length);
 				elems[name](opts);
 				/// TODO: set only info for current widget (not sub widgets)
 				$(".widgetinfo" + name, elems).html(version);
@@ -69,7 +69,7 @@ import "./logger/logger.js";
 		};
 
 		ns.widgets[widgetInfo.publicName] = widgetInfo;
-		log(widgetInfo.publicName + ".registered");
+		trace.log(widgetInfo.publicName + ".registered");
 
 	};
 
@@ -91,4 +91,4 @@ import "./logger/logger.js";
 	};
 
 
-})(spexplorerjs, jQuery);
+})(spexplorerjs, spexplorerjs.modules.jQuery);

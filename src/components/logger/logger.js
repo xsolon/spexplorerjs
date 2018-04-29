@@ -1,17 +1,22 @@
 /* global require */
+// v 1.0.4: 2018-04-28  - move definition to modules
+// v 1.0.2: 2018-04-28  - match spexplorerjs.trace
+// v 0.0.3: 2018-04-28  - removed jQuery dependency
+// v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
+// v 0.0.1: 2018-03-28  - debug, get
 
-require("../string/string.js");
+require("../string/funcs.js");
 
-(function (ns, $) {
+(function (ns) {
 
-	var logf = function logf() {
-		var msg = ns.string.format.apply(ns.string.format, arguments);
+	var logf = function () {
+		var msg = ns.modules.string.format.apply(ns.modules.string.format, arguments);
 		if (this && this.source) {
 			msg = this.source + ": " + msg;
 		}
 		window.console && console.log.apply(console, [msg]);
 	};
-	var log = function log() {
+	var log = function () {
 		if (this && this.source) {
 			if (arguments.length === 1 && typeof arguments[0] == "string") {
 				logf("{0}: {1}", this.source, arguments[0]);
@@ -35,23 +40,25 @@ require("../string/string.js");
 		else window.console && console.log.apply(console, arguments);
 		//jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
-	var error = function error() {
+	var error = function () {
 		window.console && console.error.apply(console, arguments);
-		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
-	var warn = function warn() {
+	var warn = function () {
 		window.console && console.warn.apply(console, arguments);
-		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
 	};
-	var debug = function debug() {
+	var debug = function () {
 		window.console && console.log.apply(console, arguments);
-		$("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
+	};
+
+	var logger = {
+		"version": "1.0.4",
+		logf: logf, "log": log, "error": error, "warn": warn, "debug": debug
 	};
 
 	var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
 		var scopedLog = new function () {
 			var d = function d() {
-				ns.logger && ns.logger.log.apply(scopedLog, arguments);
+				logger.log.apply(scopedLog, arguments);
 				onTrace && onTrace({ type: "log", args: arguments });
 			};
 			d.source = source;
@@ -59,7 +66,7 @@ require("../string/string.js");
 		}();
 		var scopedError = new function () {
 			var d = function d() {
-				ns.logger && ns.logger.error.apply(scopedError, arguments);
+				logger.error.apply(scopedError, arguments);
 				onTrace && onTrace({ type: "error", args: arguments });
 			};
 			d.source = source;
@@ -68,17 +75,16 @@ require("../string/string.js");
 		var scopedDebug = new function () {
 			var d = function d() {
 				if (debugging) {
-					ns.logger && ns.logger.log.apply(scopedDebug, arguments);
+					logger.log.apply(scopedDebug, arguments);
 					onTrace && onTrace({ type: "debug", args: arguments });
 				}
 			};
 			d.source = source;
 			return d;
 		}();
-
 		var scopedWarn = new function () {
 			var d = function d() {
-				ns.logger && ns.logger.error.apply(scopedWarn, arguments);
+				logger.error.apply(scopedWarn, arguments);
 				onTrace && onTrace({ type: "warn", args: arguments });
 			};
 			d.source = source;
@@ -93,15 +99,13 @@ require("../string/string.js");
 		};
 	};
 
-	ns["logger"] = {
-		"version": "0.0.2",
-		get: defineScopedTracing,
-		/// TODO: this should be private
-		logf: logf, "log": log, "error": error, "warn": warn, "debug": debug
-	};
-	log("logger");
+	logger.get = defineScopedTracing;
+	/// TODO: this should be private
+	logger.trace = defineScopedTracing("logger", window.location.href.search(/local/i) > 0);
+	ns.modules.logger = logger;
+	ns.modules.logger.trace.debug(logger.version);
+
 	return ns.logger;
 
 	// both of these dependencies are resolved in string.js
-})(spexplorerjs, jQuery); // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
-// v 0.0.1: 2018-03-28  - debug, get
+})(spexplorerjs);

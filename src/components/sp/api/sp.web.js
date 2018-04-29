@@ -1,8 +1,8 @@
 /// TODO: Document
+// v 0.0.4: 2018-04-04 - to modules, api
 // v 0.0.3: 2018-04-04 - remove direct dependency on jquery
 // v 0.0.2: 2018-03-28 - WebDal
 // v 0.0.1: 2018-03-11 - Added loadWeb function
-import "../logger/logger.js";
 import "./sp.base.js";
 
 (function (ns, $) {
@@ -74,11 +74,11 @@ import "./sp.base.js";
 
 	};
 
-	ns.webapi = {
+	ns.modules.webapi = {
 		webTemplates: webTemplates,
 		createWeb: createWeb,
 		loadWeb: loadWeb,
-		version: "0.1.3"
+		version: "0.0.4"
 	};
 
-})(spexplorerjs, jQuery);
+})(spexplorerjs, spexplorerjs.modules.jQuery);

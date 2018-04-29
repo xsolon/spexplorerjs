@@ -1,22 +1,19 @@
-/// <reference path="../../../node_modules/@types/microsoft-ajax/index.d.ts" />
-/// <reference path="../../../node_modules/@types/sharepoint/index.d.ts" />
-/// <reference path="../logger/logger.js" />
-/// <reference path="../widget.base.js" />
+/// <reference path="../../../../node_modules/@types/microsoft-ajax/index.d.ts" />
+/// <reference path="../../../../node_modules/@types/sharepoint/index.d.ts" />
+/// <reference path="../../logger/logger.js" />
 /// <reference path="sp.folderapi.js" />
 
-/* global require */
+import "./sp.folderapi.js";
 
-require("../logger/logger.js");
-require("./sp.folderapi.js");
-
+// v 0.0.4: 2018-04-28  - move to modules
 // v 0.0.2: 2018-04-10  - argument can be a list
 // v 0.0.1: 2018-04-04  - fallback to trace logging if necessary
 //                      - new args.list parameter
 
 (function (ns, $) {
 
-	var debugging = window.location.href.search(/(localhost|sp.list)/) > 0;
-	var trace = ns.logger.get("sp.list", debugging);
+	var debugging = window.location.href.search(/(local|debugsplist)/) > 0;
+	var trace = ns.modules.logger.get("splist", debugging);
 
 	const getAll = function (splist /* SP.List */, spctx /*SP.ClientContext */, caml /* string */, folder/* string */, limit/* int */) {
 
@@ -70,10 +67,10 @@ require("./sp.folderapi.js");
 				}
 			};
 
-			spctx.executeQueryAsync(onSuccess, function (r, a) {
+			spctx.executeQueryAsync(onSuccess, function (sender, error) {
 
-				trace.error({ caml: caml, error: r, sender: a });
-				dfd.reject(r, a);
+				trace.error({ caml: caml, error: error, sender: sender });
+				dfd.reject(sender, error);
 			});
 		};
 		loadNext();
@@ -116,7 +113,7 @@ require("./sp.folderapi.js");
 			ctx.load(lists, "Include(Fields.Include(Title))");
 		})();
 
-		var trace = ns.logger.get("spdal");
+		//var trace = ns.logger.get("spdal");
 		log = log || trace.log;
 		error = error || trace.error;
 
@@ -205,7 +202,7 @@ require("./sp.folderapi.js");
 
 							if (fieldLinks) {
 								listFields = ns.sp.collectionToArray(listFields);
-								
+
 								fieldLinks.forEach(function (fieldName) {
 
 									trace.debug("---Addfield " + fieldName + " field link");
@@ -841,7 +838,7 @@ require("./sp.folderapi.js");
 				});
 			}).promise();
 		};
-		var getitems = function (caml) {
+		var getitems = function (caml, folder, limit) {
 			return $.Deferred(function (dfd) {
 				//var rootFolder = list.get_rootFolder();
 				var ctx = list.get_context();
@@ -853,16 +850,14 @@ require("./sp.folderapi.js");
 </ViewFields><RowLimit>1000</RowLimit>\
 </View>";
 				//loadSpElem(rootFolder, ctx),
-				$.when(getAllItemsPaged(list, ctx, queryXml)).done(function (items) {
+				$.when(getAllItemsPaged(queryXml, folder, limit)).done(function (items) {
 					log(items);
-
 					if (args.itemParser) {
-						dfd.resolve(args.itemParser(items));
+						dfd.resolve(args.itemParser(items), list, ctx);
 					} else {
-						dfd.resolve(items);
+						dfd.resolve(items, list, ctx);
 					}
 				}).fail(function () {
-
 					error("getitems error");
 				});
 			}).promise();
@@ -1021,7 +1016,7 @@ require("./sp.folderapi.js");
 						getlist().done(function () /*list*/ {
 							getitems(caml).done(function (res) {
 								items = res;
-								dfd.resolve(items);
+								dfd.resolve(items, list, ctx);
 							});
 						});
 					}
@@ -1060,10 +1055,10 @@ require("./sp.folderapi.js");
 		return me;
 	};
 
-	ns.listapi = {
+	ns.modules.listapi = {
 		getAll: getAll,
 		Dal: spDal,
-		version: "0.0.2"
+		version: "0.0.4.2"
 	};
 
-})(spexplorerjs, jQuery);
+})(spexplorerjs, spexplorerjs.modules.jQuery);
