@@ -10447,49 +10447,6 @@ return jQuery;
 
 /***/ }),
 
-/***/ "../../../../node_modules/jquery/dist/jquery.js-exposed":
-/*!***********************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["jQuery"] = __webpack_require__(/*! -!./jquery.js */ "../../../../node_modules/jquery/dist/jquery.js");
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "../../../../node_modules/webpack/buildin/global.js")))
-
-/***/ }),
-
-/***/ "../../../../node_modules/webpack/buildin/global.js":
-/*!***********************************!*\
-  !*** (webpack)/buildin/global.js ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1, eval)("this");
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-
 /***/ "../../logger/logger.js":
 /*!************************************************************************!*\
   !*** F:/sc/spexplorer/js/spexplorerjs/src/components/logger/logger.js ***!
@@ -10770,10 +10727,10 @@ __webpack_require__(/*! ./string.js */ "../../string/string.js");
 	if (ns.modules.string) {
 		// already loaded
 	} else {
-		var $ = ns.modules.jQuery = __webpack_require__(/*! jquery */ "../../../../node_modules/jquery/dist/jquery.js-exposed");
+		var $ = ns.modules.jQuery = __webpack_require__(/*! ../../../node_modules/jquery/dist/jquery.js */ "../../../../node_modules/jquery/dist/jquery.js");
 
 		// avoid collisions with other jQuery versions
-		jQuery.noConflict();
+		//jQuery.noConflict();
 
 		var stringModule = {
 			version: "0.1.4",
@@ -10902,7 +10859,7 @@ __webpack_require__(/*! ../../logger/logger.js */ "../../logger/logger.js");
 		},
 		loadSpElem: function loadSpElem(elem, sptx, caller) {
 
-			sptx = sptx || utils.getCtx();
+			sptx = sptx || elem.get_context && elem.get_context() || utils.getCtx();
 			return $.Deferred(function (dfd) {
 
 				if (elem.length) {
@@ -11320,7 +11277,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 			ctx.load(lists, "Include(Fields.Include(Title))");
 		})();
 
-		//var trace = ns.logger.get("spdal");
+		//var trace = ns.modules.logger.get("spdal");
 		log = log || trace.log;
 		error = error || trace.error;
 

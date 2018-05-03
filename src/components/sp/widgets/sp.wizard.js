@@ -7,7 +7,7 @@ import modaltemplate from "./sp.wizard.modaltemplate.html";
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugspWizard)/) > 0;
-	var trace = ns.logger.get("spWizard", debugging);
+	var trace = ns.modules.logger.get("spWizard", debugging);
 
 	trace.log("0.0.2");
 

@@ -10,10 +10,10 @@
 	if (ns.modules.string) {
 		// already loaded
 	} else {
-		var $ = ns.modules.jQuery = require("jquery");
+		var $ = ns.modules.jQuery = require("../../../node_modules/jquery/dist/jquery.js");
 
 		// avoid collisions with other jQuery versions
-		jQuery.noConflict();
+		//jQuery.noConflict();
 
 		var stringModule = {
 			version: "0.1.4",

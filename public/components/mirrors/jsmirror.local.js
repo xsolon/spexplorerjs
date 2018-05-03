@@ -54019,7 +54019,7 @@ __webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
-	var tracing = ns.logger.get("widgets", debugging);
+	var tracing = ns.modules.logger.get("widgets", debugging);
 	var log = tracing.log,
 	    debug = tracing.debug;
 
@@ -54309,7 +54309,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (function (ns, $, template) {
 
 	var debugging = window.location.href.search(/(localhost|debugjsmirror)/) > 0;
-	var trace = ns.logger.get("jsmirror", debugging);
+	var trace = ns.modules.logger.get("jsmirror", debugging);
 
 	var xjsmirror = function xjsmirror(ui, opts) {
 

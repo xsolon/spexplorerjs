@@ -4,7 +4,7 @@ import "../../components/logger/logger.js";
 
 (function (ns, $) {
 
-	var trace = ns.logger.get("index", true);
+	var trace = ns.modules.logger.get("index", true);
 
 	trace.log("0.0.1");
 

@@ -83479,7 +83479,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugxmlmirror)/) > 0;
-	var tracing = ns.logger.get("xmlmirror", debugging);
+	var tracing = ns.modules.logger.get("xmlmirror", debugging);
 	var log = tracing.log;
 	var debug = tracing.debug;
 	debug("xxmlmirror.loading");
@@ -83638,7 +83638,7 @@ __webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
-	var tracing = ns.logger.get("widgets", debugging);
+	var tracing = ns.modules.logger.get("widgets", debugging);
 	var log = tracing.log,
 	    debug = tracing.debug;
 
@@ -83930,7 +83930,7 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|sp.list)/) > 0;
-	var trace = ns.logger.get("sp.list", debugging);
+	var trace = ns.modules.logger.get("sp.list", debugging);
 
 	var getAll = function getAll(splist /* SP.List */, spctx /*SP.ClientContext */, caml /* string */, folder /* string */, limit /* int */) {
 
@@ -84031,7 +84031,7 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 			ctx.load(lists, "Include(Fields.Include(Title))");
 		})();
 
-		var trace = ns.logger.get("spdal");
+		var trace = ns.modules.logger.get("spdal");
 		log = log || trace.log;
 		error = error || trace.error;
 
@@ -85129,7 +85129,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /// <reference path="sp.list.js" />
 (function (ns, $, moment) {
 
-	var trace = ns.logger.get("FileReport", true);
+	var trace = ns.modules.logger.get("FileReport", true);
 
 	/**
      * 
@@ -85441,7 +85441,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 (function (ns, $, template) {
 	var debugging = window.location.href.search(/(localhost|debugtreelight)/) > 0;
-	var trace = ns.logger.get("treelight", debugging);
+	var trace = ns.modules.logger.get("treelight", debugging);
 
 	+function loadPublicRefs() {
 		if ($.fn.carousel) {

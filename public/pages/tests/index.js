@@ -13633,7 +13633,7 @@ __webpack_require__(/*! ../../components/logger/logger.js */ "../../components/l
 
 (function (ns, $) {
 
-	var trace = ns.logger.get("index", true);
+	var trace = ns.modules.logger.get("index", true);
 
 	trace.log("0.0.1");
 

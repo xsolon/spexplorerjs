@@ -14,7 +14,7 @@ import "../widget.base.js";
 (function (ns, $, template) {
 
 	var debugging = window.location.href.search(/(localhost|debugjsmirror)/) > 0;
-	var trace = ns.logger.get("jsmirror", debugging);
+	var trace = ns.modules.logger.get("jsmirror", debugging);
 
 	var xjsmirror = function (ui, opts) {
 
@@ -109,4 +109,4 @@ import "../widget.base.js";
 
 	ns.widgets.addWidget("xjsmirror", xjsmirror, "0.0.3").startup();
 
-})(spexplorerjs, jQuery, template);
+})(spexplorerjs, spexplorerjs.modules.jQuery, template);

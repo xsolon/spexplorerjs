@@ -1,44 +1,47 @@
-/// <reference path="../logger/logger.js" />
-/// <reference path="../widget.base.js" />
+/// <reference path="../../logger/logger.js" />
+/// <reference path="../../../typings/sharepoint/index.d.ts" />
+/// <reference path="../../widget.base.js" />
 /* global require */
 
+// v 0.1.6: 2018-05-01  -   Use jquery from modules, upgrade to use modules
+//                          close drop down on item selection
 // v 0.1.5: 2018-04-02  -   Use addSpWidget, use 'trace'
 //                          Probe before loading jstree,bootstrap
 // v 0.1.4: 2018-03-28  - Used widget registration, use local images for list/web collection nodes
 //                      - Selectable option
 //                      - loadTree uses processAsQueue
+
 //import "../../../public/vendor/bootstrap/js/bootstrap.js";
 //import "../../../public/vendor/bootstrap/css/spexpjs.css";
 //import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
 //import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
-import "../widget.base.js";
-import "./sp.base.js";
-import "./sp.web.js";
+import "../../widget.base.js";
+import "../api/sp.base.js";
 import template from "./treelight.template.html";
 
 (function (ns, $, template) {
-	var debugging = window.location.href.search(/(localhost|debugtreelight)/) > 0;
-	var trace = ns.logger.get("treelight", debugging);
+	var debugging = window.location.href.search(/(local|debugtreelight)/) > 0;
+	var trace = ns.modules.logger.get("treelight", debugging);
 
-	+function loadPublicRefs() {
+	(function loadPublicRefs() {
 		if ($.fn.carousel) {
 			trace.debug("bootstrap already loaded");
 		} else {
 			trace.log("loading bootstrap");
-			require("../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js");
-			require("../../../public/vendor/bootstrap/3.3.7/css/spexp.css");
+			require("../../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js");
+			require("../../../../public/vendor/bootstrap/3.3.7/css/spexp.min.css");
 		}
 
 		if ($.fn.jstree) {
 			trace.debug("jstree already loaded");
 		} else {
 			trace.log("loading jstree");
-			require("jstree");
-			require("../../../node_modules/jstree/dist/themes/default/style.min.css");
+			require("../../../../node_modules/jstree/dist/jstree.js");
+			require("../../../../node_modules/jstree/dist/themes/default/style.min.css");
 		}
-	}();
+	})();
 
-	var xSPTreeLight = function (ui, opts) {
+	var xSpTreeLight = function (ui, opts) {
 
 		var $el = $(ui).html(template.trim());
 		var selectedSpElement = null;
@@ -49,7 +52,7 @@ import template from "./treelight.template.html";
 			load: $el.attr("data-load") || "All"
 		}, opts);
 
-		opts.selectable = ns.funcs.enumeration(opts.selectable.split("|"));
+		opts.selectable = ns.modules.funcs.enumeration(opts.selectable.split("|"));
 
 		var selectionChanged = function (spElem) {
 			selectedSpElement = spElem;
@@ -66,6 +69,7 @@ import template from "./treelight.template.html";
 			$el.trigger("listchange", [spElem]);
 
 			$(".dropdown.open .dropdown-toggle", $el).dropdown("toggle");
+			$(".dropdown-menu:first").hide(); // manually hide drop down :(
 		};
 
 		var tree = (function (treeElem) {
@@ -235,8 +239,9 @@ import template from "./treelight.template.html";
 					while (lenum.moveNext()) {
 						var list = lenum.get_current();
 
+						var nodeText = `${list.get_title()} (${list.get_itemCount()})`;
 						var node = {
-							children: false, text: ns.string.format("{0} ({1})", list.get_title(), list.get_itemCount()),
+							children: false, text: nodeText,
 							id: list.get_id().toString(), data: list, icon: list.get_imageUrl()
 						};
 						spLists.push(node);
@@ -256,15 +261,15 @@ import template from "./treelight.template.html";
 					}, "data": function (node, cb) {
 						ns.node = node;
 						trace.log({ tree_data_node: node });
-						if (node.id == "#")
+						if (node.id === "#")
 							cb([]);
-						else if (node.text == "Site Groups") {
+						else if (node.text === "Site Groups") {
 							loadGroups(node, cb);
 						}
-						else if (node.text == "Lists") {
+						else if (node.text === "Lists") {
 							loadLists(node, cb);
 						}
-						else if (node.text == "Site Users") {
+						else if (node.text === "Site Users") {
 							loadSiteUsers(node, cb);
 						}
 						else if (SP.List.isInstanceOfType(node.data)) {
@@ -293,14 +298,14 @@ import template from "./treelight.template.html";
 							"expand": {
 								"label": "Expand tree",
 								"action": function (data) {
-									var inst = jQuery.jstree.reference(data.reference), obj = inst.get_node(data.reference);
+									var inst = $.jstree.reference(data.reference), obj = inst.get_node(data.reference);
 									inst.open_all(obj);
 								}
 							}
 							, "collapse": {
 								"label": "Collapse tree",
 								"action": function (data) {
-									var inst = jQuery.jstree.reference(data.reference), obj = inst.get_node(data.reference);
+									var inst = $.jstree.reference(data.reference), obj = inst.get_node(data.reference);
 									inst.close_all(obj);
 								}
 							}
@@ -365,14 +370,14 @@ import template from "./treelight.template.html";
 			}).promise();
 		};
 
-		ns.funcs.processAsQueue(websToProcess, function (iterNode) {
+		ns.modules.funcs.processAsQueue(websToProcess, function (iterNode) {
 			return $.Deferred(function (dfd) {
 				var web = iterNode.web;
 
 				ctx.load(web, "Id", "Title", "HasUniqueRoleAssignments", "ServerRelativeUrl");
 				var subs = web.getSubwebsForCurrentUser();
 
-				ns.sp.loadSpElem(subs).done(function () {
+				ns.modules.spapi.loadSpElem(subs).done(function () {
 					iterNode.subs = subs;
 					addWebNode(web, iterNode.parentNode, iterNode.subs).done(function () {
 						dfd.resolve();
@@ -417,6 +422,6 @@ import template from "./treelight.template.html";
 		})();
 	};
 
-	ns.widgets.addSpWidget("xSPTreeLight", xSPTreeLight, "0.1.5");
+	ns.widgets.addSpWidget("xSPTreeLight", xSpTreeLight, "0.1.6");
 
-})(spexplorerjs, jQuery, template);
+})(spexplorerjs, spexplorerjs.modules.jQuery, template);

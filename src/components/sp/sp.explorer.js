@@ -13,7 +13,7 @@ import "../widget.base.js";
 (function (ns, $, template) {
 
 	var debugging = window.location.href.search(/(localhost|spexplorer)/) > 0;
-	var trace = ns.logger.get("spexplorer", debugging);
+	var trace = ns.modules.logger.get("spexplorer", debugging);
 
 	var SpExplorer = function (el/*, opts*/) {// constructor
 		var $el = $(el), me = {};

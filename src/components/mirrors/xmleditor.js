@@ -5,7 +5,6 @@
 //                          - Alt-f: format
 //                          - Ctrl-J: jump to matching tag
 //                          - Ctrl-Q: collapse/expand tag
-import jQuery from "jquery";
 import "../string/string.js";
 import template from "./xmleditor.template.html";
 
@@ -174,4 +173,4 @@ window.JSHINT = JSHINT.JSHINT;
 
 		//iframe.contentWindow.document.write('<div>foo</div>');
 	};
-})(window["spexplorerjs"], jQuery, template);
+})(window["spexplorerjs"], spexplorerjs.modules.jQuery, template);

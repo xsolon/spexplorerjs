@@ -1,33 +1,21 @@
 
-import $ from "jquery";
-import "../../../public/vendor/select2/js/select2.full.js";
-import "../../../public/vendor/select2/css/select2.css";
-import "../widget.base.js";
+import "../../widget.base.js";
 import template from "./ui.perms.template.html";
 
 (function (ns, $) {
-	var debug = window.location.href.search(/[localhost|debugcustomactions]/) > 0;
-	var log = new function () {
-		var d = function () {
-			ns.logger && ns.logger.log.apply(log, arguments);
-			if (debug)
-				SP.UI.Notify.addNotification(arguments[0]);
-		};
-		d.source = "permissions";
-		return d;
-	};
+	var debug = window.location.href.search(/[local|debugcustomactions]/) > 0;
+	var trace = ns.modules.logger.get("perms", debug);
 
 	var PermissionUI = function (el/*, opts*/) {// constructor
 		var $el = $(el), me = {};
 		//opts = $.extend({
 		//}, opts);
 		$el.html($(template).html());
-		$el.data(widgetInfo.publicName, me);
 
 		var perms = null;
 		var select = $("[name=\"Permissions\"]").change(function () {
 			var vals = $(this).val();
-			log(vals);
+			trace.log(vals);
 			perms = new SP.BasePermissions();
 			for (var i = 0; i < vals.length; i++) {
 				perms.set(parseInt(vals[i]));
@@ -59,14 +47,6 @@ import template from "./ui.perms.template.html";
 		return me;
 	};
 
-	var widgetInfo = ns.widgets.addWidget("spPermsSelector", PermissionUI, "0.1.0");
+	ns.widgets.addSpWidget("spPermsSelector", PermissionUI, "0.1.1");
 
-	if (window["ExecuteOrDelayUntilScriptLoaded"]) {
-		ExecuteOrDelayUntilScriptLoaded(function () {
-			widgetInfo.startup();
-		}, "sp.js");
-		SP.SOD.executeFunc("sp.js", "SP.ClientContext", function () { });
-	}
-	else widgetInfo.startup();
-
-})(spexplorerjs, $);
+})(spexplorerjs, spexplorerjs.modules.jQuery);

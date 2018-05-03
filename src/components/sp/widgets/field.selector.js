@@ -1,7 +1,8 @@
-/// <reference path="../logger/logger.js" />
-/// <reference path="../widget.base.js" />
+/// <reference path="../../logger/logger.js" />
+/// <reference path="../../widget.base.js" />
 /* global require */
 
+// v 0.1.7: 2018-05-01 - Update to modules
 // v 0.1.5: 2018-04-02 - Probe before loading select2
 // v 0.1.4: 2018-03-15 - Added option to hide list selector
 
@@ -11,19 +12,19 @@
 //import "../../../public/vendor/bootstrap/css/spexpjs.css";
 //import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
 //import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
-import "../logger/logger.js";
-import "./sp.base.js";
-import "../mirrors/xmlmirror.js";
+import "../../logger/logger.js";
+import "../api/sp.base.js";
+import "../../mirrors/xmlmirror.js";
 import template from "./field.selector.template.html";
 import fieldtemplate from "./field.selector.fieldtemplate.html";
 import "./treelight.js"; // loads jstree, bootstrap
-import "../widget.base.js";
-import "../mirrors/jsmirror.js";
+import "../../widget.base.js";
+import "../../mirrors/jsmirror.js";
 
 (function (ns, $) {
 
-	var debugging = window.location.href.search(/(localhost|debugfieldsel)/) > 0;
-	var trace = ns.logger.get("fieldEditor", debugging);
+	var debugging = window.location.href.search(/(local|debugfieldsel)/) > 0;
+	var trace = ns.modules.logger.get("fieldEditor", debugging);
 
 	(function loadPublicRefs() {
 
@@ -31,14 +32,14 @@ import "../mirrors/jsmirror.js";
 			trace.debug("select2 already loaded");
 		} else {
 			trace.log("loading select2");
-			require("../../../public/vendor/select2/js/select2.full.js");
-			require("../../../public/vendor/select2/css/select2.css");
+			require("../../../../public/vendor/select2/js/select2.full.js");
+			require("../../../../public/vendor/select2/css/select2.css");
 		}
 	})();
 
 	var fieldLabel = function (field) {
 		var tmpl = fieldtemplate.trim();
-		var valu = ns.string.format(tmpl, field.get_title(),
+		var valu = ns.modules.string.format(tmpl, field.get_title(),
 			field.get_internalName(),
 			field.get_staticName(),
 			field.get_id().toString());
@@ -119,9 +120,7 @@ import "../mirrors/jsmirror.js";
 
 		for (var i = 0; i < fields.length; i++) {
 			var field = fields[i];
-			var opt = $(ns.string.format("<option value=\"{1}\">{0}|{1}</option>",
-				field.get_internalName().toString(),
-				field.get_title()));
+      var opt = $(`<option value=\"${field.get_title()}\">${field.get_internalName().toString()}|${field.get_title()}</option>`);
 			opt.prop("data-field", field);
 
 			if (excludereadonly && field.get_readOnlyField()) {
@@ -203,7 +202,7 @@ import "../mirrors/jsmirror.js";
 					if (list.isPropertyAvailable("ParentWebUrl")) {
 						done();
 					} else {
-						ns.sp.loadSpElem(list, list.get_context()).done(done);
+						ns.modules.spapi.loadSpElem(list, list.get_context()).done(done);
 					}
 				})();
 
@@ -234,7 +233,7 @@ import "../mirrors/jsmirror.js";
 		var loadList = function (listTitle) {
 			return $.Deferred(function (dfd) {
 
-				trace.debug(`loading list${listTitle}`);
+				trace.debug(`loading list ${listTitle}`);
 
 				spdal.getList(listTitle).done(function (list) {
 					onListChange(list);
@@ -307,7 +306,7 @@ import "../mirrors/jsmirror.js";
 					delete state.list; // complex object
 
 					var statectrl = $(".xwidgetstate:first", $el);
-					if (statectrl.length == 0) {
+					if (statectrl.length === 0) {
 						statectrl = $("<div class=\"xwidgetstate\" style=\"display:none\"/>");
 					}
 					statectrl.html(JSON.stringify(state));
@@ -321,6 +320,6 @@ import "../mirrors/jsmirror.js";
 		})();
 	};
 
-	ns.widgets.addSpWidget("xSPFieldSelector", xSPFieldSelector, "0.1.6");
+	ns.widgets.addSpWidget("xSPFieldSelector", xSPFieldSelector, "0.1.7");
 
-})(spexplorerjs, jQuery);
+})(spexplorerjs, spexplorerjs.modules.jQuery);

@@ -1,6 +1,7 @@
-/// <reference path="../../components/logger/logger.js" />
-/// <reference path="../mirrors/xmlmirror.js" />
+/// <reference path="../../logger/logger.js" />
+/// <reference path="../../mirrors/xmlmirror.js" />
 
+// v 0.1.5 - 2018/05/01 - Modules update
 // v 0.1.3 - 2018/04/03 - Updated to use trace, AddSpWidget
 // v 0.1.2 - 2018/03/28 - Renamed to list.editor (from list.selector)
 //                      - Bug: CodeMirror dimensions
@@ -8,9 +9,7 @@
 //                      - Sync custom actions control with list selector
 
 /// TODO: Document
-import "./sp.base.js";
-import "./sp.folderapi.js";
-import "./sp.web.js";
+import "../api/api.js";
 import "./treelight.js";
 import "./field.selector.js";
 import "./customaction.editor.js";
@@ -21,8 +20,8 @@ import template from "./list.editor.template.html";
 
 (function (ns, $, template) {
 
-	var debugging = window.location.href.search(/(localhost|debuglisteditor)/) > 0;
-	var trace = ns.logger.get("list.selector", debugging);
+	var debugging = window.location.href.search(/(local|debuglisteditor)/) > 0;
+	var trace = ns.modules.logger.get("list.selector", debugging);
 
 	var SPListWidget = function (el/*, opts*/) {// constructor
 		trace.log("new instance");
@@ -83,6 +82,6 @@ import template from "./list.editor.template.html";
 		return me;
 	};
 
-	ns.widgets.addSpWidget("spListWidget", SPListWidget, "0.1.4");
+	ns.widgets.addSpWidget("spListWidget", SPListWidget, "0.1.5");
 
 })(spexplorerjs, jQuery, template);

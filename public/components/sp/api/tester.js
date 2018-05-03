@@ -11419,7 +11419,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 			ctx.load(lists, "Include(Fields.Include(Title))");
 		})();
 
-		//var trace = ns.logger.get("spdal");
+		//var trace = ns.modules.logger.get("spdal");
 		log = log || trace.log;
 		error = error || trace.error;
 

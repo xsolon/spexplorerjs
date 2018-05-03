@@ -10709,7 +10709,7 @@ __webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
-	var tracing = ns.logger.get("widgets", debugging);
+	var tracing = ns.modules.logger.get("widgets", debugging);
 	var log = tracing.log,
 	    debug = tracing.debug;
 
@@ -11062,7 +11062,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugspWizard)/) > 0;
-	var trace = ns.logger.get("spWizard", debugging);
+	var trace = ns.modules.logger.get("spWizard", debugging);
 
 	trace.log("0.0.2");
 

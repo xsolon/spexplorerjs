@@ -13,7 +13,7 @@ import template from "./spFileReport.html";
 
 (function (ns, $, moment) {
 
-	var trace = ns.logger.get("FileReport", true);
+	var trace = ns.modules.logger.get("FileReport", true);
 
 	/**
      * 

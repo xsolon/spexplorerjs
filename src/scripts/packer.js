@@ -10,15 +10,16 @@ var files = [
   //,"./src/components/loader/loader.js"
   //, "./src/components/logger/logger.js"
   //,
-   "./src/components/sp/api/api.js"
-   ,"./src/components/sp/api/tester.js"
+  //"./src/components/sp/api/api.js"
+  //,
+  //,"./src/components/sp/api/tester.js"
   //,"./src/components/datatables/datatables.js"
   //,"./src/components/sp/sp.web.js"
   //,"./src/components/mirrors/jseditor.js"
   //"./src/components/mirrors/jsmirror.js"
-  //,"./src/components/mirrors/xmleditor.js"
-  //, "./src/components/mirrors/xmlmirror.js"
-  //,"./src/components/sp/treelight.js"
+  //"./src/components/mirrors/xmleditor.js"
+  // , "./src/components/mirrors/xmlmirror.js"
+  //"./src/components/sp/widgets/treelight.js"
   //,
   //"./src/components/sp/spFileReport.js"
   //,
@@ -30,11 +31,12 @@ var files = [
   //"./src/components/sp/sp.list.js"
   //"./src/components/sp/list.editor.js"
   //,
-  //"./src/components/sp/field.selector.js"
-  //"./src/components/sp/masterpageselector.js"
-  //, "./src/components/sp/customaction.selector.js"
-  //,"./src/components/sp/customaction.editor.js"
-  //, "./src/components/sp/ui.perms.js"
+  //"./src/components/sp/widgets/field.selector.js"
+  //"./src/components/sp/widgets/masterpageselector.js"
+  "./src/components/sp/widgets/web.editor.js"
+  //"./src/components/sp/widgets/customaction.selector.js"
+  //"./src/components/sp/widgets/customaction.editor.js"
+  //"./src/components/sp/widgets/ui.perms.js"
   //"./src/pages/tests/index.js"
   //,"./src/pages/caml.js"
 ];
@@ -110,13 +112,13 @@ var runWebPack = function (debug, filePath) {
     },
     module: {
       rules: [
-        {
-          test: require.resolve('jquery'),
-          use: [{
-            loader: 'expose-loader',
-            options: 'jQuery'
-          }]
-        },
+        //{
+        //  test: require.resolve('jquery'),
+        //  use: [{
+        //    loader: 'expose-loader',
+        //    options: 'jQuery'
+        //  }]
+        //},
         {
           test: /\.html$/,
           use: [{
@@ -147,7 +149,7 @@ var runWebPack = function (debug, filePath) {
             options: {
               emitError: true,
               emitWarning: true,
-              fix: true
+              fix:false 
             }
           }
           ]
@@ -244,7 +246,7 @@ module.exports.updateAll = function () {
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
     runWebPack(true, file);
-    runWebPack(false, file);
+    //runWebPack(false, file);
   }
 };
 

@@ -676,7 +676,7 @@ CodeMirror.registerGlobalHelper("fold", "comment", function(mode) {
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader!./foldgutter.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/fold/foldgutter.css");
+var content = __webpack_require__(/*! !../../../css-loader??ref--5-1!./foldgutter.css */ "../../../node_modules/css-loader/index.js??ref--5-1!../../../node_modules/codemirror/addon/fold/foldgutter.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -685,7 +685,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -1212,7 +1212,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader!./show-hint.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/hint/show-hint.css");
+var content = __webpack_require__(/*! !../../../css-loader??ref--5-1!./show-hint.css */ "../../../node_modules/css-loader/index.js??ref--5-1!../../../node_modules/codemirror/addon/hint/show-hint.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -1221,7 +1221,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -1800,7 +1800,7 @@ if(false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader!./lint.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/lint/lint.css");
+var content = __webpack_require__(/*! !../../../css-loader??ref--5-1!./lint.css */ "../../../node_modules/css-loader/index.js??ref--5-1!../../../node_modules/codemirror/addon/lint/lint.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -1809,7 +1809,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -2090,7 +2090,7 @@ if(false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../css-loader!./codemirror.css */ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/lib/codemirror.css");
+var content = __webpack_require__(/*! !../../css-loader??ref--5-1!./codemirror.css */ "../../../node_modules/css-loader/index.js??ref--5-1!../../../node_modules/codemirror/lib/codemirror.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -2099,7 +2099,7 @@ var insertInto;
 
 
 
-var options = {"hmr":true}
+var options = {"sourceMap":false,"hmr":true}
 
 options.transform = transform
 options.insertInto = undefined;
@@ -14079,10 +14079,10 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/fold/foldgutter.css":
-/*!***************************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
-  \***************************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--5-1!../../../node_modules/codemirror/addon/fold/foldgutter.css":
+/*!*************************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
+  \*************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14098,10 +14098,10 @@ exports.push([module.i, ".CodeMirror-foldmarker {\n  color: blue;\n  text-shadow
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/hint/show-hint.css":
-/*!**************************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
-  \**************************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--5-1!../../../node_modules/codemirror/addon/hint/show-hint.css":
+/*!************************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
+  \************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14117,10 +14117,10 @@ exports.push([module.i, ".CodeMirror-hints {\n  position: absolute;\n  z-index: 
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/addon/lint/lint.css":
-/*!*********************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
-  \*********************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--5-1!../../../node_modules/codemirror/addon/lint/lint.css":
+/*!*******************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
+  \*******************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14136,10 +14136,10 @@ exports.push([module.i, "/* The lint marker gutter */\n.CodeMirror-lint-markers 
 
 /***/ }),
 
-/***/ "../../../node_modules/css-loader/index.js!../../../node_modules/codemirror/lib/codemirror.css":
-/*!********************************************************************************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
-  \********************************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/index.js??ref--5-1!../../../node_modules/codemirror/lib/codemirror.css":
+/*!******************************************************************************************************************************************************!*\
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
+  \******************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -24615,18 +24615,6 @@ if ( !noGlobal ) {
 return jQuery;
 } );
 
-
-/***/ }),
-
-/***/ "../../../node_modules/jquery/dist/jquery.js-exposed":
-/*!***********************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js-exposed ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["jQuery"] = __webpack_require__(/*! -!./jquery.js */ "../../../node_modules/jquery/dist/jquery.js");
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "../../../node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
@@ -54963,76 +54951,89 @@ module.exports = g;
 
 
 /* global require */
+// v 0.1.5: 2018-04-28: - definition to modules, move funcs to new file
 // v 0.1.4: 2018-04-02: - check if already defined, make jQuery global if needed
 //                          The inline check won't work for more complex modules, but it is an easy way to address multiple endpoints that load this.
 // v 0.1.2: 2018-03-10: brought back htmlEncode/htmlDecode and jQuery dependency
 
-(function (ns, $) {
+(function (ns) {
 
-	return ns.string = ns.string || {
-		version: "0.1.4",
-		htmlEncode: function htmlEncode(value) {
-			// create a in-memory div, set it's inner text(which jQuery
-			// automatically encodes)
-			// then grab the encoded contents back out. The div never exists on
-			// the page.
-			return $("<div/>").text(value).html();
-		},
-		htmlDecode: function htmlDecode(value) {
-			return $("<div/>").html(value).text();
-		},
-		format: function format() {
-			/// TODO: unit test, breaks in some cases
-			var args = arguments;
-			var tmpl = args[0];
-			for (var i = 0; i < args.length - 1; i++) {
-				var s = "\\{" + i + "\\}";
-				var reg1 = new RegExp(s, "g");
-				tmpl = tmpl.replace(reg1, encodeURIComponent(args[i + 1]));
-			}
-			try {
-				tmpl = decodeURIComponent(tmpl);
-			} catch (e) {
-				console && console.error(e);
-				throw e;
-			}
+	//var $ = window.jQuery = window["jQuery"] || require("jquery");
+	if (ns.modules.string) {
+		// already loaded
+	} else {
+		var $ = ns.modules.jQuery = __webpack_require__(/*! ../../../node_modules/jquery/dist/jquery.js */ "../../../node_modules/jquery/dist/jquery.js");
 
-			return tmpl;
-		},
-		startsWith: function startsWith(str1, str2) {
-			return str2.length > 0 && str1.substring(0, str2.length) === str2;
-		},
-		endsWith: function endsWith(str1, str2) {
-			return str2.length > 0 && str1 && str1.substring(str1.length - str2.length, str1.length) === str2;
-		},
-		trimEnd: function trimEnd(stringToTrim, charToRemove) {
-			var s = stringToTrim || ""; // make sure str1 is not null
-			var c = charToRemove;
-			var lastIndexOf = -1;
-			for (var i = s.length - 1; i >= 0; i--) {
-				if (s[i] === c) {
-					lastIndexOf = i;
-				} else {
-					break;
+		// avoid collisions with other jQuery versions
+		//jQuery.noConflict();
+
+		var stringModule = {
+			version: "0.1.4",
+			htmlEncode: function htmlEncode(value) {
+				// create a in-memory div, set it's inner text(which jQuery
+				// automatically encodes)
+				// then grab the encoded contents back out. The div never exists on
+				// the page.
+				return $("<div/>").text(value).html();
+			},
+			htmlDecode: function htmlDecode(value) {
+				return $("<div/>").html(value).text();
+			},
+			format: function format() {
+				/// TODO: unit test, breaks in some cases
+				var args = arguments;
+				var tmpl = args[0];
+				for (var i = 0; i < args.length - 1; i++) {
+					var s = "\\{" + i + "\\}";
+					var reg1 = new RegExp(s, "g");
+					tmpl = tmpl.replace(reg1, encodeURIComponent(args[i + 1]));
 				}
-			}
-			if (lastIndexOf > -1) s = s.substring(0, lastIndexOf);
-			return s;
-		},
-		trimStart: function trimStart(stringToTrim, sToRemove, opts) {
-			var exp = "^" + sToRemove + "+";
-			var reg = RegExp(exp, opts || "gi");
+				try {
+					tmpl = decodeURIComponent(tmpl);
+				} catch (e) {
+					console && console.error(e);
+					throw e;
+				}
 
-			var res = stringToTrim.replace(reg, "");
-			return res;
-		},
-		trim: function trim(stringToTrim, sToRemove, opts) {
-			stringToTrim = this.trimStart(stringToTrim, sToRemove, opts);
-			stringToTrim = this.trimEnd(stringToTrim, sToRemove, opts);
-			return stringToTrim;
-		}
-	};
-})(window.spexplorerjs = window["spexplorerjs"] || {}, window.jQuery = window["jQuery"] || __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed"));
+				return tmpl;
+			},
+			startsWith: function startsWith(str1, str2) {
+				return str2.length > 0 && str1.substring(0, str2.length) === str2;
+			},
+			endsWith: function endsWith(str1, str2) {
+				return str2.length > 0 && str1 && str1.substring(str1.length - str2.length, str1.length) === str2;
+			},
+			trimEnd: function trimEnd(stringToTrim, charToRemove) {
+				var s = stringToTrim || ""; // make sure str1 is not null
+				var c = charToRemove;
+				var lastIndexOf = -1;
+				for (var i = s.length - 1; i >= 0; i--) {
+					if (s[i] === c) {
+						lastIndexOf = i;
+					} else {
+						break;
+					}
+				}
+				if (lastIndexOf > -1) s = s.substring(0, lastIndexOf);
+				return s;
+			},
+			trimStart: function trimStart(stringToTrim, sToRemove, opts) {
+				var exp = "^" + sToRemove + "+";
+				var reg = RegExp(exp, opts || "gi");
+
+				var res = stringToTrim.replace(reg, "");
+				return res;
+			},
+			trim: function trim(stringToTrim, sToRemove, opts) {
+				stringToTrim = this.trimStart(stringToTrim, sToRemove, opts);
+				stringToTrim = this.trimEnd(stringToTrim, sToRemove, opts);
+				return stringToTrim;
+			}
+		};
+
+		ns.modules.string = stringModule;
+	}
+})(window.spexplorerjs = window["spexplorerjs"] || { modules: {} });
 
 /***/ }),
 
@@ -55045,10 +55046,6 @@ module.exports = g;
 
 "use strict";
 
-
-var _jquery = __webpack_require__(/*! jquery */ "../../../node_modules/jquery/dist/jquery.js-exposed");
-
-var _jquery2 = _interopRequireDefault(_jquery);
 
 __webpack_require__(/*! ../string/string.js */ "../string/string.js");
 
@@ -55112,6 +55109,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //import "../../../node_modules/codemirror/addon/lint/javascript-lint.js";
 //import "../../../node_modules/codemirror/addon/lint/json-lint.js";
 //import "../../../node_modules/codemirror/addon/lint/yaml-lint.js";
+//v 0.1.3 : 2018-04-09: format function & autformat when calling set
+//v 0.1.1 : 2018-03-15: Support for IE
+//v 0.1.2 : 2018-03-28: - Autocomplete tag, highlight matching tag
+//                      - Shortcuts:
+//                          - Alt-f: format
+//                          - Ctrl-J: jump to matching tag
+//                          - Ctrl-Q: collapse/expand tag
 window.CodeMirror = _codemirror2.default;
 //< !--end fold-- >
 //< !--lint -->
@@ -55122,12 +55126,6 @@ window.CodeMirror = _codemirror2.default;
 
 
 //<!-- hint -->
-//v 0.1.1 : 2018-03-15: Support for IE
-//v 0.1.2 : 2018-03-28: - Autocomplete tag, highlight matching tag
-//                      - Shortcuts:
-//                          - Alt-f: format
-//                          - Ctrl-J: jump to matching tag
-//                          - Ctrl-Q: collapse/expand tag
 
 window.JSHINT = _jshint2.default.JSHINT;
 (function (ns, $, template) {
@@ -55193,9 +55191,7 @@ window.JSHINT = _jshint2.default.JSHINT;
 	ns.widgets.xmleditorInitIframe = function (iframe) {
 
 		//https://www.kochan.io/javascript/how-to-dynamically-create-an-iframe.html
-		iframe.attr("src", "javascript:void((function(){var script = document.createElement('script');" + "script.innerHTML = \"(function() {" + "document.open();document.domain='" + document.domain + "';document.close();})();\";" + "document.write(\"<head>\" + script.outerHTML + \"</head><body></body>\");})())");
-
-		iframe[0].contentWindow.document.write(template);
+		iframe.attr("src", "javascript:void((function(){var script = document.createElement('script');script.innerHTML = \"(function() {document.open();document.domain='" + document.domain + "';document.close();})();\";document.write(\"<head>\" + script.outerHTML + \"</head><body><style type='text/css'>div.CodeMirror{height: 100% !important;}</style><textarea style=width='100%'></textarea></body>\");})())");
 
 		var head = iframe.contents().find("head");
 		$("style").each(function () {
@@ -55214,11 +55210,14 @@ window.JSHINT = _jshint2.default.JSHINT;
 		var editor = $(ell).data("CodeMirror");
 
 		return {
+			format: function format() {
+				editor.setValue((0, _beautifyHtml.html_beautify)(editor.getValue()));
+			},
 			refresh: function refresh() {
 				editor.refresh();
 			},
 			set: function set(data) {
-				editor.setValue(data);
+				editor.setValue((0, _beautifyHtml.html_beautify)(data));
 			}, get: function get() {
 				return editor.getValue();
 			}
@@ -55243,7 +55242,7 @@ window.JSHINT = _jshint2.default.JSHINT;
 
 		//iframe.contentWindow.document.write('<div>foo</div>');
 	};
-})(window["spexplorerjs"], _jquery2.default, _xmleditorTemplate2.default);
+})(window["spexplorerjs"], spexplorerjs.modules.jQuery, _xmleditorTemplate2.default);
 
 /***/ }),
 

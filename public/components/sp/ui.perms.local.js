@@ -17427,7 +17427,7 @@ __webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
-	var tracing = ns.logger.get("widgets", debugging);
+	var tracing = ns.modules.logger.get("widgets", debugging);
 	var log = tracing.log,
 	    debug = tracing.debug;
 

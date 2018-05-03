@@ -73857,7 +73857,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (function (ns, $, template) {
 
 	var debugging = window.location.href.search(/(localhost|debugjsmirror)/) > 0;
-	var trace = ns.logger.get("jsmirror", debugging);
+	var trace = ns.modules.logger.get("jsmirror", debugging);
 
 	var xjsmirror = function xjsmirror(ui, opts) {
 
@@ -74224,7 +74224,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugxmlmirror)/) > 0;
-	var tracing = ns.logger.get("xmlmirror", debugging);
+	var tracing = ns.modules.logger.get("xmlmirror", debugging);
 	var log = tracing.log;
 	var debug = tracing.debug;
 	debug("xxmlmirror.loading");
@@ -74468,7 +74468,7 @@ __webpack_require__(/*! ./logger/logger.js */ "../logger/logger.js");
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugwidget)/) > 0;
-	var tracing = ns.logger.get("widgets", debugging);
+	var tracing = ns.modules.logger.get("widgets", debugging);
 	var log = tracing.log,
 	    debug = tracing.debug;
 
@@ -74799,7 +74799,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (function (ns, $, template) {
 
 	var debugging = window.location.href.search(/(localhost|debugcustomactions)/) > 0;
-	var tracing = ns.logger.get("customactionEditor", debugging);
+	var tracing = ns.modules.logger.get("customactionEditor", debugging);
 	var log = tracing.log,
 	    debug = tracing.debug;
 	//var error = tracing.error;
@@ -75253,7 +75253,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugfieldsel)/) > 0;
-	var trace = ns.logger.get("fieldEditor", debugging);
+	var trace = ns.modules.logger.get("fieldEditor", debugging);
 
 	(function loadPublicRefs() {
 
@@ -75601,7 +75601,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (function (ns, $, template) {
 
 	var debugging = window.location.href.search(/(localhost|debuglisteditor)/) > 0;
-	var trace = ns.logger.get("list.selector", debugging);
+	var trace = ns.modules.logger.get("list.selector", debugging);
 
 	var SPListWidget = function SPListWidget(el /*, opts*/) {
 		// constructor
@@ -75815,7 +75815,7 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|sp.folder)/) > 0;
-	var trace = ns.logger.get("sp.folder", debugging);
+	var trace = ns.modules.logger.get("sp.folder", debugging);
 
 	/**
    * 
@@ -76003,7 +76003,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|sp.list)/) > 0;
-	var trace = ns.logger.get("sp.list", debugging);
+	var trace = ns.modules.logger.get("sp.list", debugging);
 
 	var getAll = function getAll(splist /* SP.List */, spctx /*SP.ClientContext */, caml /* string */, folder /* string */, limit /* int */) {
 
@@ -76104,7 +76104,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 			ctx.load(lists, "Include(Fields.Include(Title))");
 		})();
 
-		var trace = ns.logger.get("spdal");
+		var trace = ns.modules.logger.get("spdal");
 		log = log || trace.log;
 		error = error || trace.error;
 
@@ -77191,7 +77191,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //import "../../../public/vendor/bootstrap/3.3.7/css/spexp.css";
 (function (ns, $, template) {
 	var debugging = window.location.href.search(/(localhost|debugtreelight)/) > 0;
-	var trace = ns.logger.get("treelight", debugging);
+	var trace = ns.modules.logger.get("treelight", debugging);
 
 	+function loadPublicRefs() {
 		if ($.fn.carousel) {

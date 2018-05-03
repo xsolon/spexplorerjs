@@ -113,7 +113,7 @@ import "./sp.folderapi.js";
 			ctx.load(lists, "Include(Fields.Include(Title))");
 		})();
 
-		//var trace = ns.logger.get("spdal");
+		//var trace = ns.modules.logger.get("spdal");
 		log = log || trace.log;
 		error = error || trace.error;
 
@@ -413,7 +413,8 @@ import "./sp.folderapi.js";
 
 			return dfd.promise();
 		};
-		var addCustomAction = function (location, ext, perms) {
+    var addCustomAction = function (location, ext, perms) {
+
 			var actions = list.get_userCustomActions();
 
 			var action = actions.add();
@@ -426,12 +427,10 @@ import "./sp.folderapi.js";
 			ctx.load(action);
 			var dfd = $.Deferred();
 
-			ctx.executeQueryAsync(function () {
+		  ns.modules.loadSpElem(action).done(function() {
 				log("addCustomAction.done");
 				dfd.resolve(action);
-			}, function (r, a) {
-				reqFailure(r, a, "addCustomAction", dfd);
-			});
+		  });
 
 			return dfd.promise();
 		};

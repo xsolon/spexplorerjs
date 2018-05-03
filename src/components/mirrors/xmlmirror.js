@@ -1,7 +1,6 @@
 // v 0.1.6 - 2018-04-04:    - getXml is not longer a promise
 // v 0.1.5 - 2018-03-28:    - use widget declaration
 //                          - refresh method
-import $ from "jquery";
 import "../widget.base.js";
 import "./xmleditor.js";
 import template from "./xmlmirror.template.html";
@@ -9,14 +8,14 @@ import template from "./xmlmirror.template.html";
 (function (ns, $) {
 
 	var debugging = window.location.href.search(/(localhost|debugxmlmirror)/) > 0;
-	var tracing = ns.logger.get("xmlmirror", debugging);
+	var tracing = ns.modules.logger.get("xmlmirror", debugging);
 	var log = tracing.log;
 	var debug = tracing.debug;
 	debug("xxmlmirror.loading");
 	//   var error = tracing.error;
 
 	var xxmlmirror = function (ui, opts) {
-
+    
 		log("xxmlmirror.init");
 
 		var $el = $(ui);
@@ -50,8 +49,8 @@ import template from "./xmlmirror.template.html";
 		return me;
 	};
 
-	var widgetInfo = ns.widgets.addWidget("xxmlmirror", xxmlmirror, "0.1.5");
+	var widgetInfo = ns.widgets.addWidget("xxmlmirror", xxmlmirror, "0.1.6");
 
 	widgetInfo.startup();
 
-})(window["spexplorerjs"], $);
+})(window["spexplorerjs"], spexplorerjs.modules.jQuery);

@@ -136,4 +136,4 @@ window.CodeMirror = CodeMirror;
 		ns.widgets.jseditorinit(cont);
 	};
 
-})(spexplorerjs, jQuery);
+})(spexplorerjs, spexplorerjs.modules.jQuery);
