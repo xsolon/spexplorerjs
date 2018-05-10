@@ -33,9 +33,10 @@ var files = [
   //,
   //"./src/components/sp/widgets/field.selector.js"
   //"./src/components/sp/widgets/masterpageselector.js"
-  "./src/components/sp/widgets/web.editor.js"
+  //"./src/components/sp/widgets/web.editor.js"
+//,
   //"./src/components/sp/widgets/customaction.selector.js"
-  //"./src/components/sp/widgets/customaction.editor.js"
+  "./src/components/sp/widgets/customaction.editor.js"
   //"./src/components/sp/widgets/ui.perms.js"
   //"./src/pages/tests/index.js"
   //,"./src/pages/caml.js"

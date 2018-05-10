@@ -110,10 +110,12 @@ import "./treelight.js";
 
       return $.Deferred(function (dfd) {
         container = selection;
-        opts.listtitle = container.get_title();
+
+        opts.listtitle = (selection.get_title) ? selection.get_title() : selection.constructor.getName();
 
         (function loadWebUrl() {
-          if (SP.Web.isInstanceOfType(container)) {
+          if (SP.Site.isInstanceOfType(container)) {
+          } else if (SP.Web.isInstanceOfType(container)) {
             var doneWeb = function () {
               opts.weburl = container.get_url();
             };
@@ -140,7 +142,7 @@ import "./treelight.js";
 
     };
 
-    var listCtrl = $("[data-widget=\"xSPTreeLight\"]", $el).xSPTreeLight().on("listchange", function (e, list) {
+    var listCtrl = $("[data-widget='xSPTreeLight']", $el).xSPTreeLight().on("listchange", function (e, list) {
       onListChange(list);
     });
 
@@ -238,7 +240,7 @@ import "./treelight.js";
     })();
   };
 
-  ns.widgets.addSpWidget("xSPCustomActionSelector", xSPCustomActionSelector, "0.1.6");
+  ns.widgets.addSpWidget("xSPCustomActionSelector", xSPCustomActionSelector, "0.1.7");
 
 })(spexplorerjs, spexplorerjs.modules.jQuery, template, itemtemplate);
 

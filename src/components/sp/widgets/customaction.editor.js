@@ -48,6 +48,19 @@ import "../../mirrors/xmlmirror.js";
 
     if (!opts.showSelector) $(".listSelector", actionSelector).hide(); // hide treelight section
 
+    $("#btnRemove", $el).click(function () {
+      var caSelCtrl = actionSelector.data(ns.widgets.xSPCustomActionSelector.publicName);
+
+      var selectedAction = caSelCtrl.value();
+
+      if (selectedAction != null) {
+        SP.UI.Notify.addNotification("Removing custom action");
+        selectedAction.deleteObject();
+        var ctx = selectedAction.get_context();
+        ctx.executeQueryAsync();
+      }
+
+    });
     $("#btnAdd", $el).click(function () {
       var caSelCtrl = actionSelector.data(ns.widgets.xSPCustomActionSelector.publicName);
 
@@ -58,7 +71,7 @@ import "../../mirrors/xmlmirror.js";
       var location = $("#Location", $el).val();
       var sequence = $("#Sequence", $el).val();
       var title = $("#Title", $el).val();
-      var desc= $("#Description", $el).val();
+      var desc = $("#Description", $el).val();
       var permissions = permissionsCtrl.getSpPerms();
       var src = $("#Src", $el).val();
 
@@ -81,8 +94,8 @@ import "../../mirrors/xmlmirror.js";
       }
       else {
         selectedAction.set_title(title);
-        selectedAction.set_location(location );
-        selectedAction.set_sequence(sequence|| 0);
+        selectedAction.set_location(location);
+        selectedAction.set_sequence(sequence || 0);
         selectedAction.set_rights(permissions);
         selectedAction.set_scriptSrc(src || "");
         selectedAction.set_description(desc);

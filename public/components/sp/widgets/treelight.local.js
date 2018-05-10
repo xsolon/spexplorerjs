@@ -22485,137 +22485,137 @@ __webpack_require__(/*! ../../logger/logger.js */ "../../logger/logger.js");
 
 (function (ns, $) {
 
-	var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
-	var trace = ns.modules.logger.get("sp", debug);
+  var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
+  var trace = ns.modules.logger.get("sp", debug);
 
-	trace.debug("v.0.0.2");
+  trace.debug("v.0.0.2");
 
-	var utils = {
-		collectionToArray: function collectionToArray(spCollection) {
+  var utils = {
+    collectionToArray: function collectionToArray(spCollection) {
 
-			var result = [];
+      var result = [];
 
-			if (spCollection) {
-				var le = spCollection.getEnumerator();
-				while (le.moveNext()) {
-					var li = le.get_current();
-					result.push(li);
-				}
-			}
+      if (spCollection) {
+        var le = spCollection.getEnumerator();
+        while (le.moveNext()) {
+          var li = le.get_current();
+          result.push(li);
+        }
+      }
 
-			return result;
-		},
-		loadSpElem: function loadSpElem(elem, sptx, caller) {
+      return result;
+    },
+    loadSpElem: function loadSpElem(elem, sptx, caller) {
 
-			sptx = sptx || elem.get_context && elem.get_context() || utils.getCtx();
-			return $.Deferred(function (dfd) {
+      sptx = sptx || elem.get_context && elem.get_context() || utils.getCtx();
+      return $.Deferred(function (dfd) {
 
-				if (elem.length) {
-					for (var i = 0; i < elem.length; i++) {
-						sptx.load(elem[i]);
-					}
-				} else sptx.load(elem);
+        if (elem.length) {
+          for (var i = 0; i < elem.length; i++) {
+            sptx.load(elem[i]);
+          }
+        } else sptx.load(elem);
 
-				sptx.executeQueryAsync(function () {
-					dfd.resolve(elem, sptx);
-				}, function (r, a) {
-					ns.sp.reqFailure(r, a, caller || "loadSpElem", dfd);
-				});
-			}).promise();
-		},
-		uploadAjax: function uploadAjax(buffer, webUrl, listTitle, fileName) {
-			return $.ajax({
-				url: webUrl + "../_api/web/lists/getByTitle('" + listTitle + "')/RootFolder/Files/add(url='" + fileName + "',overwrite='true')",
-				type: "POST",
-				data: buffer,
-				async: true,
-				processData: false,
-				contentType: false,
-				headers: {
-					"accept": "application/json;odata=verbose",
-					"X-RequestDigest": $("#__REQUESTDIGEST").val(),
-					"content-length": buffer.byteLength
-				}
-			});
-		},
-		reqFailure: function reqFailure(req, reqargs, from, dfd) {
-			// log context failure
+        sptx.executeQueryAsync(function () {
+          dfd.resolve(elem, sptx);
+        }, function (r, a) {
+          utils.reqFailure(r, a, caller || "loadSpElem", dfd);
+        });
+      }).promise();
+    },
+    uploadAjax: function uploadAjax(buffer, webUrl, listTitle, fileName) {
+      return $.ajax({
+        url: webUrl + "../_api/web/lists/getByTitle('" + listTitle + "')/RootFolder/Files/add(url='" + fileName + "',overwrite='true')",
+        type: "POST",
+        data: buffer,
+        async: true,
+        processData: false,
+        contentType: false,
+        headers: {
+          "accept": "application/json;odata=verbose",
+          "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+          "content-length": buffer.byteLength
+        }
+      });
+    },
+    reqFailure: function reqFailure(req, reqargs, from, dfd) {
+      // log context failure
 
-			var msg = from + " Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
+      var msg = from + " Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
 
-			if (dfd) dfd.reject(msg);else {
-				// if there is no promise log at this level
-				trace.error(msg);
-			}
-		},
-		wsCall: function wsCall(body, action, url) {
-			return $.Deferred(function (dfd) {
-				$.ajax({
-					type: "POST",
-					beforeSend: function beforeSend(request) {
-						request.setRequestHeader("SOAPAction", action);
-					},
-					contentType: "text/xml; charset=utf-8",
-					url: url,
-					data: body,
-					statusCode: {
-						500: function _() /*jqXHR, textStatus, errorThrown*/{
-							dfd.reject($(arguments[0].responseXML).find("errorstring").html());
-						}
-					}
-				}).done(function (xml /*, status, jqXHR*/) {
-					var res = $($(xml).find("Body,soap\\:Body")[0].firstChild); // alernative selector for different browsers
-					res.xml = res[0].xml;
-					if (!res[0].xml && window.XMLSerializer) {
-						var ss = new XMLSerializer();
-						res.xml = ss.serializeToString(res[0]);
-					}
-					dfd.resolve(res);
-				}).fail(function (jqXHR, textStatus, errorThrown) {
-					if (jqXHR.status != 500) dfd.reject(errorThrown);
-				});
-			});
-		},
-		getCtx: function getCtx(url) {
-			var ctx;
-			ctx = new SP.ClientContext(url);
-			//try {
-			//  ctx = SP.ClientContext.get_current();
-			//} catch (e) {
-			//}
-			return ctx;
-		},
-		setformJsLink: function setformJsLink(url, ctx, bizJs) {
-			return $.Deferred(function (jslinkdfd) {
+      if (dfd) dfd.reject(msg);else {
+        // if there is no promise log at this level
+        trace.error(msg);
+      }
+    },
+    wsCall: function wsCall(body, action, url) {
+      return $.Deferred(function (dfd) {
+        $.ajax({
+          type: "POST",
+          beforeSend: function beforeSend(request) {
+            request.setRequestHeader("SOAPAction", action);
+          },
+          contentType: "text/xml; charset=utf-8",
+          url: url,
+          data: body,
+          statusCode: {
+            500: function _() /*jqXHR, textStatus, errorThrown*/{
+              dfd.reject($(arguments[0].responseXML).find("errorstring").html());
+            }
+          }
+        }).done(function (xml /*, status, jqXHR*/) {
+          var res = $($(xml).find("Body,soap\\:Body")[0].firstChild); // alernative selector for different browsers
+          res.xml = res[0].xml;
+          if (!res[0].xml && window.XMLSerializer) {
+            var ss = new XMLSerializer();
+            res.xml = ss.serializeToString(res[0]);
+          }
+          dfd.resolve(res);
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+          if (jqXHR.status != 500) dfd.reject(errorThrown);
+        });
+      });
+    },
+    getCtx: function getCtx(url) {
+      var ctx;
+      ctx = new SP.ClientContext(url);
+      //try {
+      //  ctx = SP.ClientContext.get_current();
+      //} catch (e) {
+      //}
+      return ctx;
+    },
+    setformJsLink: function setformJsLink(url, ctx, bizJs) {
+      return $.Deferred(function (jslinkdfd) {
 
-				var web = ctx.get_web();
-				var oFile = web.getFileByServerRelativeUrl(url);
+        var web = ctx.get_web();
+        var oFile = web.getFileByServerRelativeUrl(url);
 
-				var lpm = oFile.getLimitedWebPartManager(SP.WebParts.PersonalizationScope.shared);
+        var lpm = oFile.getLimitedWebPartManager(SP.WebParts.PersonalizationScope.shared);
 
-				var wps = lpm.get_webParts();
-				ctx.load(wps, "Include(WebPart.Title)");
+        var wps = lpm.get_webParts();
+        ctx.load(wps, "Include(WebPart.Title)");
 
-				ctx.executeQueryAsync(function () {
-					var wp = wps.get_item(0);
-					var wpp = wp.get_webPart();
-					var props = wpp.get_properties();
+        ctx.executeQueryAsync(function () {
+          var wp = wps.get_item(0);
+          var wpp = wp.get_webPart();
+          var props = wpp.get_properties();
 
-					ctx.load(wp);ctx.load(wpp);ctx.load(props);
-					ctx.executeQueryAsync(function () {
-						props.set_item("JSLink", bizJs);
-						wp.saveWebPartChanges();
-						ctx.executeQueryAsync(function () {
-							jslinkdfd.resolve();
-						});
-					}, function () /*r, a*/{});
-				}, function () /*r, a*/{});
-			}).promise();
-		}
+          ctx.load(wp);ctx.load(wpp);ctx.load(props);
+          ctx.executeQueryAsync(function () {
+            props.set_item("JSLink", bizJs);
+            wp.saveWebPartChanges();
+            ctx.executeQueryAsync(function () {
+              jslinkdfd.resolve();
+            });
+          }, function () /*r, a*/{});
+        }, function () /*r, a*/{});
+      }).promise();
+    }
 
-	};
+  };
 
-	ns.modules.spapi = utils;
+  ns.modules.spapi = utils;
 })(spexplorerjs, spexplorerjs.modules.jQuery);
 
 /***/ }),
@@ -22641,8 +22641,8 @@ var _treelightTemplate2 = _interopRequireDefault(_treelightTemplate);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (function (ns, $, template) {
-  var debugging = window.location.href.search(/(local|debugtreelight)/) > 0;
-  var trace = ns.modules.logger.get("treelight", debugging);
+  var debug = window.location.href.search(/(local|debugtreelight)/) > 0;
+  var trace = ns.modules.logger.get("treelight", debug);
 
   (function loadPublicRefs() {
     if ($.fn.carousel) {
@@ -22666,10 +22666,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
     var $el = $(ui).html(template.trim());
     var selectedSpElement = null;
-    var ctx = SP.ClientContext.get_current();
+    var ctx = ns.modules.spapi.getCtx();
 
     opts = $.extend({
-      selectable: $el.attr("data-selectable") || "SP.List|SP.Web",
+      selectable: $el.attr("data-selectable") || "SP.List|SP.Web|SP.Site",
       load: $el.attr("data-load") || "All"
     }, opts);
 
@@ -22689,9 +22689,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
       // backwards support
       $el.trigger("listchange", [spElem]);
 
-      debugger;
       $(".dropdown.open .dropdown-toggle", $el).dropdown("toggle");
-      $(".dropdown-menu:first").hide();
+      $(".dropdown-menu:first").hide(); // manually hide drop down :(
     };
 
     var tree = function (treeElem) {
@@ -22941,7 +22940,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
       return jTree.data("jstree");
     }($el.find(".tree"));
 
-    var websToProcess = [{ web: ctx.get_web(), parentNode: null }];
+    tree.create_node(null, {
+      id: "currentsitecol", text: "Site Collection", data: ctx.get_site()
+    }, "last");
+
+    var websToProcess = [{ web: ctx.get_web(), parentNode: tree.get_node("currentsitecol") }];
 
     var addWebNode = function addWebNode(curWeb, parentNode, subs) {
       return $.Deferred(function (dfd) {
@@ -23028,13 +23031,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     }();
   };
 
-  ns.widgets.addSpWidget("xSPTreeLight", xSpTreeLight, "0.1.6");
+  ns.widgets.addSpWidget("xSPTreeLight", xSpTreeLight, "0.1.7");
 })(spexplorerjs, spexplorerjs.modules.jQuery, _treelightTemplate2.default); /// <reference path="../../logger/logger.js" />
 /// <reference path="../../../typings/sharepoint/index.d.ts" />
 /// <reference path="../../widget.base.js" />
 /* global require */
 
+// v 0.1.7: 2018-05-04  -   Allow selection of site collection
 // v 0.1.6: 2018-05-01  -   Use jquery from modules, upgrade to use modules
+//                          close drop down on item selection
 // v 0.1.5: 2018-04-02  -   Use addSpWidget, use 'trace'
 //                          Probe before loading jstree,bootstrap
 // v 0.1.4: 2018-03-28  - Used widget registration, use local images for list/web collection nodes

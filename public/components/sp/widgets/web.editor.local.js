@@ -75748,55 +75748,53 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 (function (ns, $) {
 
-	var debugging = window.location.href.search(/(local|debugwebeditor)/) > 0;
-	var trace = ns.modules.logger.get("webeditor", debugging);
+  var debugging = window.location.href.search(/(local|debugwebeditor)/) > 0;
+  var trace = ns.modules.logger.get("webeditor", debugging);
 
-	var props = {
-		MasterUrl: { set: "set_masterUrl", get: "get_masterUrl", name: "MasterUrl", widget: "xSpMastePageSelector" },
-		CustomMasterUrl: { set: "set_customMasterUrl", get: "get_customMasterUrl", name: "CustomMasterUrl", widget: "xSpMastePageSelector" },
-		UserCustomActions: { type: "collection", name: "UserCustomActions", widget: "spCustomActions", get: "get_userCustomActions" }
+  var props = {
+    MasterUrl: { set: "set_masterUrl", get: "get_masterUrl", name: "MasterUrl", widget: "xSpMastePageSelector" },
+    CustomMasterUrl: { set: "set_customMasterUrl", get: "get_customMasterUrl", name: "CustomMasterUrl", widget: "xSpMastePageSelector" },
+    UserCustomActions: { type: "collection", name: "UserCustomActions", widget: "spCustomActions", get: "get_userCustomActions" }
 
-	};
+  };
 
-	var xSpWebEditor = function xSpWebEditor(ui /*, opts*/) {
-		trace.debug("init");
+  var xSpWebEditor = function xSpWebEditor(ui /*, opts*/) {
+    trace.debug("init");
 
-		var $el = $(ui);
+    var $el = $(ui);
 
-		$el.html(_webEditor2.default.trim());
+    $el.html(_webEditor2.default.trim());
 
-		var ctx = ns.modules.spapi.getCtx();
-		var web = ctx.get_web();
+    var ctx = ns.modules.spapi.getCtx();
+    var web = ctx.get_web();
 
-		$("button:last", $el).click(function () {
-			web.update();
-			SP.UI.Notify.addNotification("Saving changes to web...");
-			ns.modules.spapi.loadSpElem(web).done(function () {
-				trace.debug(web);
-				SP.UI.Notify.addNotification("Done!");
-			}).fail(function () {
-				SP.UI.Notify.addNotification("Error");
-			});
-		});
+    $("button:last", $el).click(function () {
+      web.update();
+      SP.UI.Notify.addNotification("Saving changes to web...");
+      ns.modules.spapi.loadSpElem(web).done(function () {
+        trace.debug(web);
+        SP.UI.Notify.addNotification("Done!");
+      }).fail(function () {
+        SP.UI.Notify.addNotification("Error");
+      });
+    });
 
-		ns.modules.spapi.loadSpElem(web).done(function () {
-			trace.debug(web);
-			$("[data-prop]", $el).each(function () {
-				var ui = $(this);
-				var prop = props[ui.attr("data-prop")];
-				var widget = ns.widgets[prop.widget];
-				widget.startup(ui, { prop: prop, elem: web /*, showSelector:false*/ });
-			});
-		});
+    ns.modules.spapi.loadSpElem(web).done(function () {
+      trace.debug(web);
+      $("[data-prop]", $el).each(function () {
+        var ui = $(this);
+        var prop = props[ui.attr("data-prop")];
+        var widget = ns.widgets[prop.widget];
+        widget.startup(ui, { prop: prop, elem: web, showSelector: false });
+      });
+    });
 
-		//var caCtrl = ns.widgets.spCustomActions.startup($el, { showSelector: false, container: web }).data("xwidget");
+    var me = {};
 
-		var me = {};
+    return me;
+  };
 
-		return me;
-	};
-
-	ns.widgets.addSpWidget("xSpWebEditor", xSpWebEditor, "0.0.2");
+  ns.widgets.addSpWidget("xSpWebEditor", xSpWebEditor, "0.0.2");
 })(spexplorerjs, spexplorerjs.modules.jQuery); // loads jstree, bootstrap
 /// <reference path="../api/sp.list.js" />
 /// <reference path="../../../../node_modules/@types/sharepoint/index.d.ts" />
