@@ -28,6 +28,30 @@ import "../../widget.base.js";
     var ctx = ns.modules.spapi.getCtx();
     var web = ctx.get_web();
 
+    $("button.recreate", $el).click(function () {
+
+      var config = web.get_configuration();
+      var template = web.get_webTemplate();
+      template = template + "#" + config;
+      var title = web.get_title();
+      var bits = web.get_url().split("/");
+      var webName = bits[bits.length - 1];
+
+      var parentWebInfo = web.get_parentWeb();
+
+      web.deleteObject();
+
+      ns.modules.spapi.loadSpElem(parentWebInfo).done(function () {
+        var site = ctx.get_site();
+        var pWeb = site.openWebById(parentWebInfo.get_id());
+        ns.modules.webapi.createWeb(pWeb, title, webName, template).done(function () {
+          trace.log("done");
+        });
+
+      });
+
+    });
+
     $("button:last", $el).click(function () {
       web.update();
       SP.UI.Notify.addNotification("Saving changes to web...");
@@ -39,14 +63,21 @@ import "../../widget.base.js";
       });
     });
 
-    ns.modules.spapi.loadSpElem(web).done(function () {
-      trace.debug(web);
-      $("[data-prop]", $el).each(function () {
-        var ui = $(this);
-        var prop = props[ui.attr("data-prop")];
-        var widget = ns.widgets[prop.widget];
-        widget.startup(ui, { prop: prop, elem: web, showSelector: false });
+    ns.widgets.xSPTreeLight.startup($(".webSelector", $el)).on("listchange", function (event, list) {
+
+      web = list;
+      ctx = web.get_context();
+
+      ns.modules.spapi.loadSpElem(web).done(function () {
+        trace.debug(web);
+        $("[data-prop]", $el).each(function () {
+          var ui = $(this);
+          var prop = props[ui.attr("data-prop")];
+          var widget = ns.widgets[prop.widget];
+          widget.startup(ui, { prop: prop, elem: web, showSelector: false });
+        });
       });
+
     });
 
     var me = {};

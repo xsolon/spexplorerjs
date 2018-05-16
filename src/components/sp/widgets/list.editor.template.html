@@ -12,7 +12,7 @@
                 <div class="form-group listSelector">
                     <label class="col-md-2 control-label" for="textinput">List</label>
                     <div class="col-md-10 listSelectorFirst">
-                        <div data-widget="xSPTreeLight"></div>
+                        <div data-widget="xSPTreeLight" data-selectable="SP.List"></div>
                         <span class="help-block">Select an existing list.</span>
                     </div>
                 </div>
@@ -24,6 +24,7 @@
             <li><a data-toggle="tab" href="#splistscripting">Scripting</a></li>
             <li><a data-toggle="tab" href="#splistcustomactions">Custom Actions</a></li>
             <li><a data-toggle="tab" href="#splistfiels">Fields</a></li>
+            <li><a data-toggle="tab" href="#splistitems">Query</a></li>
         </ul>
         <div class="tab-content col-md-12">
             <div id="splistinfo" class="tab-pane fade in active">
@@ -52,11 +53,44 @@
             </div>
             <div id="splistscripting" class="tab-pane fade">
                 <b>Script:</b>
-                <div data-widget="xjsmirror"></div>
+                <div data-widget="xjsmirror">
+                    <div class="jsmirrorstate">
+                        console.log(list); // spelem: reference to selected node
+                        console.log(caml()); //caml: function that returns xml in 'caml' editor
+
+                        var ctx = list.get_context();
+                        var query = new SP.CamlQuery();
+
+                        query.set_viewXml(caml());
+                        var items = list.getItems(query);
+
+                        ctx.load(items);
+
+                        ctx.executeQueryAsync(function(){
+                        console.log(items.get_count());
+                        });
+
+                    </div>
+                </div>
 
                 <b>Caml Editor:</b>
                 <div class="scriptCaml">
-                    <div data-widget="xxmlmirror"></div>
+                    <div data-widget="xxmlmirror">
+                        <div class="xmlmirrorstate">
+                            &lt;View&gt;
+                            &lt;Query&gt;
+                            &lt;Where&gt;
+                            &lt;Lt&gt;
+                            &lt;FieldRef Name=&#39;Modified&#39; /&gt;
+                            &lt;Value Type=&quot;DateTime&quot;&gt;
+                            &lt;Today OffsetDays=&quot;-100&quot; /&gt;
+                            &lt;/Value&gt;
+                            &lt;/Lt&gt;
+                            &lt;/Where&gt;
+                            &lt;/Query&gt;
+                            &lt;/View&gt;
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="splistcustomactions" class="tab-pane fade">
@@ -64,6 +98,9 @@
             </div>
             <div id="splistfiels" class="tab-pane fade">
                 <div data-widget="xSPFieldSelector"></div>
+            </div>
+            <div id="splistitems" class="tab-pane fade">
+                <div data-widget="querybuilder"></div>
             </div>
         </div>
     </div>

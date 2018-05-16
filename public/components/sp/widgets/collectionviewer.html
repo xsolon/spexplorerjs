@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>CustomAction.List.Editor</title>
+</head>
+<body>
+
+    <div class="spexp">
+        <div data-widget="colviewer"></div>
+    </div>
+    <script src="collectionviewer.local.js"></script>
+
+    <script>
+        (function (ns) {
+            var $ = ns.modules.jQuery;
+            var moment = ns.modules.moment;
+
+            ui = spexplorerjs.widgets.colviewer.startup('.spexp');
+            var ctrl = ui.data("xwidget");
+            debugger;
+            var dataSet = [
+                {
+                    name: "Tiger Nixon",
+                    title: "System Architect",
+                    office: "Edinburgh",
+                    age: "5421",
+                    startdate: new Date(),
+                    salary: "$320,800"
+                },
+                {
+                    name: "Tiger Nixon",
+                    title: "System Architect",
+                    office: "Edinburgh",
+                    age: "5421",
+                    startdate: new Date(),
+                    salary: "$320,800"
+                }
+            ];
+
+            var opts = {
+                destroy: true,
+                select: true,
+                data: dataSet,
+                columns: [
+                    { title: "Name", bSearchable: true, mData: 'name' },
+                    { title: "Position", bSearchable: true, mData: 'title' },
+                    { title: "Office", mData: 'office' },
+                    {
+                        title: "Extn.",
+                        mData: "age"
+                    },
+                    {
+                        title: 'Start Date',
+                        mData: "startdate",
+                        sType: "date",
+                        "bSearchable": true,
+                        render: function (data, type, full) {
+                            if (data) {
+                                var dtStart = data; // new Date(data);
+                                var dtStartWrapper = moment(dtStart);
+                                return dtStartWrapper.format('MM/DD/YYYY');
+                            } else {
+                                return "";
+                            }
+                        }
+                    },
+                    { title: "Salary", mData: 'salary' }
+                ]
+            };
+
+            ctrl.render(opts);
+
+        })(spexplorerjs);
+    </script>
+</body>
+</html>

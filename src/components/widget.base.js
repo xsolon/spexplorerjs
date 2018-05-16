@@ -1,3 +1,4 @@
+/*globals ExecuteOrDelayUntilScriptLoaded */
 // 0.1.3: 2018/04/28    -   modules
 // 0.1.2: 2018/03/23    -   addSpWidget for SharePoint components
 //                          add version number to elements with class widgetinfo
@@ -37,11 +38,11 @@ import "./logger/logger.js";
 		};
 	};
 
-	var registerWidget = function (widgetInfo) {
+	var registerWidget = function(widgetInfo) {
 
-		$.fn[widgetInfo.publicName] = function (opts) {
+		$.fn[widgetInfo.publicName] = function(opts) {
 			var args = arguments;
-			var result = this.each(function () {
+			var result = this.each(function() {
 
 				var $el = $(this);
 
@@ -50,8 +51,7 @@ import "./logger/logger.js";
 				if (me) { // object has been initialized before
 
 					if (opts == null) { // request for instance
-					} else
-					if (me[opts]) {
+					} else if (me[opts]) {
 						if (typeof me[opts] == "function")
 							me[opts].apply(me, Array.prototype.slice.call(args, 1));
 						else
@@ -69,7 +69,7 @@ import "./logger/logger.js";
 		};
 
 		ns.widgets[widgetInfo.publicName] = widgetInfo;
-		trace.log(widgetInfo.publicName + ".registered");
+		trace.log(`${widgetInfo.publicName}.${widgetInfo.version} registered`);
 
 	};
 

@@ -1,0 +1,80 @@
+﻿<div>
+    <div class="form-group hide">
+        <div class="form-group listSelector">
+            <label class="col-md-2 control-label" for="selectbasic">List</label>
+            <div class="col-md-10">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+
+        <label class="col-md-2 control-label" for="Fields">Fields</label>
+        <div class="col-md-10">
+            <div data-widget="uifield"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="Scope">Scope</label>
+        <div class="col-md-10">
+            <select name="QueryScope" id="QueryScope" class="form-control input-md">
+                <option value="0">Default Value</option>
+                <option value="1">Recursive</option>
+                <option value="2">RecursiveAll</option>
+                <option value="3">Files Only</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="Folder">Folder</label>
+        <div class="col-md-10">
+            <input type="text" class="form-control input-md" id="Folder" name="Folder" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="ItemLimit">Item Limit</label>
+        <div class="col-md-10">
+            <input type="text" class="form-control input-md" value="0" id="ItemLimit" name="ItemLimit" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="Caml">Caml</label>
+        <div class="col-md-10">
+            <div data-widget="xxmlmirror" id="Caml">
+                <div class="xmlmirrorstate">
+                    &lt;View&gt;
+                    &lt;Query&gt;
+                    &lt;Where&gt;
+                    &lt;Lt&gt;
+                    &lt;FieldRef Name=&#39;Modified&#39; /&gt;
+                    &lt;Value Type=&quot;DateTime&quot;&gt;
+                    &lt;Today OffsetDays=&quot;-100&quot; /&gt;
+                    &lt;/Value&gt;
+                    &lt;/Lt&gt;
+                    &lt;/Where&gt;
+                    &lt;/Query&gt;
+                    &lt;/View&gt;
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="Caml">Caml</label>
+        <div class="col-md-10">
+            <button type="button" id="btnQuery">Get All Items</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="Results">Results</label>
+        <div class="col-md-10">
+            <div data-widget="colviewer" id="Results"></div>
+        </div>
+    </div>
+
+</div>

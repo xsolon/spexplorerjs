@@ -120,7 +120,7 @@ import "../../mirrors/jsmirror.js";
 
 		for (var i = 0; i < fields.length; i++) {
 			var field = fields[i];
-      var opt = $(`<option value=\"${field.get_title()}\">${field.get_internalName().toString()}|${field.get_title()}</option>`);
+			var opt = $(`<option value=\"${field.get_title()}\">${field.get_internalName().toString()}|${field.get_title()}</option>`);
 			opt.prop("data-field", field);
 
 			if (excludereadonly && field.get_readOnlyField()) {
@@ -158,7 +158,9 @@ import "../../mirrors/jsmirror.js";
 			weburl: $el.attr("data-siteurl"),
 			listtitle: $el.attr("data-list"),
 			excludereadonly: $el.attr("data-excludereadonly"),
-			showSelector: true
+      showSelector: true,
+      fieldLabel: $el.attr('data-fieldlabel') || "Field",
+      multipleSelection: false
 		}, opts);
 
 		try {
@@ -172,12 +174,15 @@ import "../../mirrors/jsmirror.js";
 
 		$el.html(template.trim().replace("[label]", opts.label));
 
+	  $("[name='FieldLabel']", $el).html(opts.fieldLabel);
+
 		var jsMirror = ns.widgets.xjsmirror.startup($el).data("xwidget");
 		var xmlMirror = ns.widgets.xxmlmirror.startup($el).data("xwidget");
 
 		jsMirror.setScript("console.log(field);// field: reference to field");
 
-		var spdal = new SPDAL(opts.weburl);
+    var spdal = new SPDAL(opts.weburl);
+
 		var fieldSel = $(".fieldsDrp", ui).on("change", function () {
 			var field = fieldSel.find(":selected").prop("data-field");
 			if (field) {
@@ -244,7 +249,8 @@ import "../../mirrors/jsmirror.js";
 
 			}).promise();
 
-		};
+    };
+
 		if (opts.listtitle) {
 			loadList(opts.listtitle).done(function () {
 				$el.trigger("xwidget.init");
@@ -256,9 +262,7 @@ import "../../mirrors/jsmirror.js";
 		return (function register() {
 			var me = {
 				setList: function (list) {
-					//onListChange(list);
 					listCtrl.data("xSPTreeLight").value(list);
-					//container = list;
 				},
 				value: function () {
 					var field = fieldSel.find(":selected").prop("data-field");

@@ -5,16 +5,32 @@
     }
 </style>
 <div class="xwidgetui">
+
     <fieldset class="form-horizontal">
         <legend>Web Properties</legend>
+        <div class="col-md-10 webSelector">
+            <div data-widget="xSPTreeLight"></div>
+            <span class="help-block">Select a Web to edit</span>
+        </div>
         <div class="title"></div>
-        <div data-prop="MasterUrl"><div data-widget="xSpMastePageSelector"></div></div>
-        <div data-prop="CustomMasterUrl"><div data-widget="xSpMastePageSelector"></div></div>
+        <div data-prop="MasterUrl">
+            <div data-widget="xSpMastePageSelector"></div>
+        </div>
+        <div data-prop="CustomMasterUrl">
+            <div data-widget="xSpMastePageSelector"></div>
+        </div>
 
-        <div class="form-group"  data-prop="UserCustomActions">
+        <div class="form-group" data-prop="UserCustomActions">
             <label class="col-md-2 control-label" for="selectbasic">Custom Actions</label>
             <div class="col-md-10">
                 <div data-widget="spCustomActions"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <button type="button" class="recreate">ReCreate</button>
+                <small>Delete and create the site with the same template</small>
             </div>
         </div>
         <div class="form-group">

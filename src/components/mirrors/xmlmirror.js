@@ -33,7 +33,7 @@ import template from "./xmlmirror.template.html";
 		})();
 
 		if (opts.defaultScript) {
-			editor.set(ns.string.htmlDecode(opts.defaultScript));
+			editor.set(ns.modules.string.htmlDecode(opts.defaultScript));
 		}
 
 		var me = {};

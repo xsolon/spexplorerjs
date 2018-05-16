@@ -29,14 +29,17 @@ var files = [
   //, "./src/components/sp/sp.wizard.js"
   //,
   //"./src/components/sp/sp.list.js"
-  //"./src/components/sp/list.editor.js"
+  "./src/components/sp/widgets/list.editor.js"
   //,
   //"./src/components/sp/widgets/field.selector.js"
   //"./src/components/sp/widgets/masterpageselector.js"
+  //"./src/components/sp/widgets/collectionviewer.js"
+  //"./src/components/sp/widgets/ui.fields.js"
+  //"./src/components/sp/widgets/querybuilder.js"
   //"./src/components/sp/widgets/web.editor.js"
 //,
   //"./src/components/sp/widgets/customaction.selector.js"
-  "./src/components/sp/widgets/customaction.editor.js"
+  //"./src/components/sp/widgets/customaction.editor.js"
   //"./src/components/sp/widgets/ui.perms.js"
   //"./src/pages/tests/index.js"
   //,"./src/pages/caml.js"
@@ -150,7 +153,7 @@ var runWebPack = function (debug, filePath) {
             options: {
               emitError: true,
               emitWarning: true,
-              fix:false 
+              fix:false
             }
           }
           ]
