@@ -143,6 +143,8 @@ var cdnScriptSimple = function (widgetPath, execPath) {
 
   var prodwidgetPath = widgetPath.replace("src", "public");
 
+  console.log("WidgetPath: " + prodwidgetPath);
+
   var fileContent = fs.readFileSync(prodwidgetPath, "utf8");
 
   fs.writeFileSync(prodwidgetPath.replace(".js", ".local.js"), fileContent);

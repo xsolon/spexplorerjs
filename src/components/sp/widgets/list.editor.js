@@ -1,6 +1,5 @@
 /// <reference path="../../logger/logger.js" />
 /// <reference path="../../mirrors/xmlmirror.js" />
-/// <reference path="collectionviewer.js" />
 
 // v 0.1.5 - 2018/05/15 - Used internal jQuery
 // v 0.1.5 - 2018/05/01 - Modules update
@@ -18,7 +17,6 @@ import "./customaction.editor.js";
 import "../../mirrors/jsmirror.js";
 import "../../mirrors/xmlmirror.js";
 import "../../widget.base.js";
-import "./collectionviewer.js";
 import "./querybuilder.js";
 import template from "./list.editor.template.html";
 

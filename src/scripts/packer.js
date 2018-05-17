@@ -15,7 +15,7 @@ var files = [
   //,"./src/components/sp/api/tester.js"
   //,"./src/components/datatables/datatables.js"
   //,"./src/components/sp/sp.web.js"
-  //,"./src/components/mirrors/jseditor.js"
+  //"./src/components/mirrors/jseditor.js"
   //"./src/components/mirrors/jsmirror.js"
   //"./src/components/mirrors/xmleditor.js"
   // , "./src/components/mirrors/xmlmirror.js"
@@ -29,15 +29,15 @@ var files = [
   //, "./src/components/sp/sp.wizard.js"
   //,
   //"./src/components/sp/sp.list.js"
-  "./src/components/sp/widgets/list.editor.js"
+  //"./src/components/sp/widgets/list.editor.js"
   //,
   //"./src/components/sp/widgets/field.selector.js"
   //"./src/components/sp/widgets/masterpageselector.js"
   //"./src/components/sp/widgets/collectionviewer.js"
   //"./src/components/sp/widgets/ui.fields.js"
-  //"./src/components/sp/widgets/querybuilder.js"
+  "./src/components/sp/widgets/querybuilder.js"
   //"./src/components/sp/widgets/web.editor.js"
-//,
+  //,
   //"./src/components/sp/widgets/customaction.selector.js"
   //"./src/components/sp/widgets/customaction.editor.js"
   //"./src/components/sp/widgets/ui.perms.js"
@@ -153,7 +153,7 @@ var runWebPack = function (debug, filePath) {
             options: {
               emitError: true,
               emitWarning: true,
-              fix:false
+              fix: false
             }
           }
           ]
@@ -188,6 +188,7 @@ var runWebPack = function (debug, filePath) {
     } else {
 
       widgetTransforms.createWidget(filePath, execPath);
+
       if (module && module.spPage) {
         module.localTemplatePath = localTemplatePath;
         module.filePath = filePath;

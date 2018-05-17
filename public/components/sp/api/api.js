@@ -10871,7 +10871,7 @@ __webpack_require__(/*! ../../logger/logger.js */ "../../logger/logger.js");
 				sptx.executeQueryAsync(function () {
 					dfd.resolve(elem, sptx);
 				}, function (r, a) {
-					ns.sp.reqFailure(r, a, caller || "loadSpElem", dfd);
+					utils.reqFailure(r, a, caller || "loadSpElem", dfd);
 				});
 			}).promise();
 		},
@@ -11168,6 +11168,7 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
 __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 
+// v 0.0.5: 2018-05-16  - When adding new items, skip columns not found in the list
 // v 0.0.4: 2018-04-28  - move to modules
 // v 0.0.2: 2018-04-10  - argument can be a list
 // v 0.0.1: 2018-04-04  - fallback to trace logging if necessary
@@ -11178,9 +11179,9 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 	var debugging = window.location.href.search(/(local|debugsplist)/) > 0;
 	var trace = ns.modules.logger.get("splist", debugging);
 
-	var getAll = function getAll(splist /* SP.List */, spctx /*SP.ClientContext */, caml /* string */, folder /* string */, limit /* int */) {
+	var getQuery = function getQuery(caml /* string */
+	, folder /* string */) {
 
-		limit = limit || 0;
 		var query = new SP.CamlQuery();
 
 		var queryXml = caml || "<View Scope='Recursive'>\
@@ -11194,6 +11195,10 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 		}
 
 		query.set_viewXml(queryXml);
+		return query;
+	};
+	var runAllQuery = function runAllQuery(query, splist, spctx, limit) {
+		spctx = spctx || splist.get_context();
 
 		var items = [],
 		    spItems;
@@ -11232,14 +11237,37 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 
 			spctx.executeQueryAsync(onSuccess, function (sender, error) {
 
-				trace.error({ caml: caml, error: error, sender: sender });
+				trace.error({ query: query, error: error, sender: sender });
 				dfd.reject(sender, error);
 			});
 		};
+
 		loadNext();
 
 		var dfd = $.Deferred();
 		return dfd.promise();
+	};
+	var getAll = function getAll(splist /* SP.List */, spctx /*SP.ClientContext */, caml /* string */, folder /* string */, limit /* int */) {
+
+		var query = getQuery(caml, folder);
+
+		return runAllQuery(query, splist, spctx, limit);
+	};
+
+	var getFields = function getFields(splist) {
+
+		return $.Deferred(function (dfd) {
+
+			var ctx = splist.get_context();
+			var fields = splist.get_fields();
+			ns.modules.spapi.loadSpElem(fields, ctx).done(function () {
+				var spfields = ns.modules.spapi.collectionToArray(fields);
+				spfields.sort(function (x, y) {
+					return x.get_title().localeCompare(y.get_title());
+				});
+				dfd.resolve(spfields);
+			});
+		}).promise();
 	};
 
 	var spDal = function spDal(args, log, error) {
@@ -11418,6 +11446,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 
 						var newspitem = splist.addItem(itemCreateInfo);
 						for (var f in data) {
+							if (!spfields[f]) continue;
 							var fieldType = spfields[f].get_typeAsString();
 							var val = null;
 							if (fieldType === "URL") {
@@ -11586,6 +11615,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 			return dfd.promise();
 		};
 		var addCustomAction = function addCustomAction(location, ext, perms) {
+
 			var actions = list.get_userCustomActions();
 
 			var action = actions.add();
@@ -11598,11 +11628,9 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 			ctx.load(action);
 			var dfd = $.Deferred();
 
-			ctx.executeQueryAsync(function () {
+			ns.modules.loadSpElem(action).done(function () {
 				log("addCustomAction.done");
 				dfd.resolve(action);
-			}, function (r, a) {
-				reqFailure(r, a, "addCustomAction", dfd);
 			});
 
 			return dfd.promise();
@@ -12225,14 +12253,18 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 	};
 
 	ns.modules.listapi = {
+		runAllQuery: runAllQuery,
+		getQuery: getQuery,
 		getAll: getAll,
+		getFields: getFields,
 		Dal: spDal,
-		version: "0.0.4.2"
+		version: "0.0.5"
 	};
 })(spexplorerjs, spexplorerjs.modules.jQuery); /// <reference path="../../../../node_modules/@types/microsoft-ajax/index.d.ts" />
 /// <reference path="../../../../node_modules/@types/sharepoint/index.d.ts" />
 /// <reference path="../../logger/logger.js" />
 /// <reference path="sp.folderapi.js" />
+/// <reference path="sp.base.js" />
 
 /***/ }),
 
