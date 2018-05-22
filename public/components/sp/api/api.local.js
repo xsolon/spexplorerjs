@@ -10853,13 +10853,9 @@ __webpack_require__(/*! ./sp.web.js */ "./sp.web.js");
 
 
 /// <reference path="../../logger/logger.js" />
-<<<<<<< HEAD
 /* global require,ExecuteOrDelayUntilScriptLoaded */
 // v 0.0.3 : 2018-05-22 - add loadSpElem to Sp.ClientContext
-=======
-/* global require */
 // v 0.0.3 : 2018-05-17 - getFieldMap
->>>>>>> 73e48c6d67914982d4b7c0a20f7348d2335e12d9
 // v 0.0.2 : 2018-04-28 - update to newer infra
 // v 0.0.1 : 2018-03-11 - loadSpElem
 
@@ -11323,7 +11319,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 	};
 
 	var getByTitle = function getByTitle(listTitle, ctx) {
-		ctx = ctx || ns.spapi.getCtx();
+		ctx = ctx || ns.modules.spapi.getCtx();
 		return ctx.get_web().get_lists().getByTitle(listTitle);
 	};
 	var spDal = function spDal(args, log, error) {

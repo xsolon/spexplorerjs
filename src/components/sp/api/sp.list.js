@@ -107,7 +107,7 @@ import "./sp.folderapi.js";
 	};
 
 	var getByTitle = function(listTitle, ctx) {
-		ctx = ctx || ns.spapi.getCtx();
+		ctx = ctx || ns.modules.spapi.getCtx();
 		return ctx.get_web().get_lists().getByTitle(listTitle);
 	};
 	const spDal = function (args, log, error) {

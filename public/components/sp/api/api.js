@@ -11319,7 +11319,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 	};
 
 	var getByTitle = function getByTitle(listTitle, ctx) {
-		ctx = ctx || ns.spapi.getCtx();
+		ctx = ctx || ns.modules.spapi.getCtx();
 		return ctx.get_web().get_lists().getByTitle(listTitle);
 	};
 	var spDal = function spDal(args, log, error) {
