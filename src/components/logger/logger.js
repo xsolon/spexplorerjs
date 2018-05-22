@@ -1,4 +1,5 @@
 /* global require */
+// v 1.0.6: 2018-05-17  - assert, addOnTraceHandler allows additional event hanlders for trace
 // v 1.0.4: 2018-04-28  - move definition to modules
 // v 1.0.2: 2018-04-28  - match spexplorerjs.trace
 // v 0.0.3: 2018-04-28  - removed jQuery dependency
@@ -46,18 +47,37 @@ require("../string/funcs.js");
 	var warn = function () {
 		window.console && console.warn.apply(console, arguments);
 	};
+	var assert = function () {
+		window.console && console.assert.apply(console, arguments);
+	};
 	var debug = function () {
 		window.console && console.log.apply(console, arguments);
 	};
 
 	var logger = {
-		"version": "1.0.4",
-		logf: logf, "log": log, "error": error, "warn": warn, "debug": debug
+		"version": "1.0.6",
+		logf: logf, "log": log, "error": error, "warn": warn, "debug": debug, "assert": assert
 	};
 
-	var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
+	var defineScopedTracing = function defineScopedTracing(source, debugging, onTraceH) {
+		var onTraceArray = [];
+		(onTraceH && onTraceArray.push(onTraceH));
+		var onTrace = function () {
+			var args = arguments;
+			onTraceArray.forEach(function (n) {
+				n(args);
+			});
+		};
+		var scopedAssert = new function () {
+			var d = function () {
+				logger.assert.apply(scopedAssert, arguments);
+				onTrace && onTrace({ type: "assert", args: arguments });
+			};
+			d.source = source;
+			return d;
+		};
 		var scopedLog = new function () {
-			var d = function d() {
+			var d = function () {
 				logger.log.apply(scopedLog, arguments);
 				onTrace && onTrace({ type: "log", args: arguments });
 			};
@@ -92,10 +112,14 @@ require("../string/funcs.js");
 		}();
 
 		return {
+			addOnTraceHandler: function (handler) {
+				(handler && onTraceArray.push(handler));
+			},
 			log: scopedLog,
 			error: scopedError,
 			debug: scopedDebug,
-			warn: scopedWarn
+			warn: scopedWarn,
+			assert: scopedAssert
 		};
 	};
 

@@ -83,14 +83,14 @@ import fieldtemplate from "./field.selector.fieldtemplate.html";
 		});
 
 		me.bindToList = function (splist) {
-      fieldContainer = splist || fieldContainer;
+			fieldContainer = splist || fieldContainer;
 
 		  return $.Deferred(function(dfd) {
-			ns.modules.listapi.getFields(fieldContainer).done(function (fields) {
-        bindFieldSelect(select, fields, opts.excludereadonly);
+				ns.modules.listapi.getFields(fieldContainer).done(function (fields) {
+					bindFieldSelect(select, fields, opts.excludereadonly);
 
 			  dfd.resolve();
-			});
+				});
 
 		  }).promise();
 		};
@@ -98,7 +98,7 @@ import fieldtemplate from "./field.selector.fieldtemplate.html";
 		me.set = function (fields) {
 
 			$("option", $el).each(function () {
-        var opti = $(this);
+				var opti = $(this);
 			  var internalName = opti.prop("data-field").get_internalName();
 			  var has = fields.indexOf(internalName) > -1;
 				opti.prop("selected", has);

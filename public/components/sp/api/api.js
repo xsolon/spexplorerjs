@@ -10458,6 +10458,7 @@ return jQuery;
 
 
 /* global require */
+// v 1.0.6: 2018-05-17  - assert, addOnTraceHandler allows additional event hanlders for trace
 // v 1.0.4: 2018-04-28  - move definition to modules
 // v 1.0.2: 2018-04-28  - match spexplorerjs.trace
 // v 0.0.3: 2018-04-28  - removed jQuery dependency
@@ -10505,16 +10506,35 @@ __webpack_require__(/*! ../string/funcs.js */ "../../string/funcs.js");
 	var warn = function warn() {
 		window.console && console.warn.apply(console, arguments);
 	};
+	var assert = function assert() {
+		window.console && console.assert.apply(console, arguments);
+	};
 	var debug = function debug() {
 		window.console && console.log.apply(console, arguments);
 	};
 
 	var logger = {
-		"version": "1.0.4",
-		logf: logf, "log": log, "error": error, "warn": warn, "debug": debug
+		"version": "1.0.6",
+		logf: logf, "log": log, "error": error, "warn": warn, "debug": debug, "assert": assert
 	};
 
-	var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
+	var defineScopedTracing = function defineScopedTracing(source, debugging, onTraceH) {
+		var onTraceArray = [];
+		onTraceH && onTraceArray.push(onTraceH);
+		var onTrace = function onTrace() {
+			var args = arguments;
+			onTraceArray.forEach(function (n) {
+				n(args);
+			});
+		};
+		var scopedAssert = new function () {
+			var d = function d() {
+				logger.assert.apply(scopedAssert, arguments);
+				onTrace && onTrace({ type: "assert", args: arguments });
+			};
+			d.source = source;
+			return d;
+		}();
 		var scopedLog = new function () {
 			var d = function d() {
 				logger.log.apply(scopedLog, arguments);
@@ -10551,10 +10571,14 @@ __webpack_require__(/*! ../string/funcs.js */ "../../string/funcs.js");
 		}();
 
 		return {
+			addOnTraceHandler: function addOnTraceHandler(handler) {
+				handler && onTraceArray.push(handler);
+			},
 			log: scopedLog,
 			error: scopedError,
 			debug: scopedDebug,
-			warn: scopedWarn
+			warn: scopedWarn,
+			assert: scopedAssert
 		};
 	};
 
@@ -10830,6 +10854,7 @@ __webpack_require__(/*! ./sp.web.js */ "./sp.web.js");
 
 /// <reference path="../../logger/logger.js" />
 /* global require */
+// v 0.0.3 : 2018-05-17 - getFieldMap
 // v 0.0.2 : 2018-04-28 - update to newer infra
 // v 0.0.1 : 2018-03-11 - loadSpElem
 
@@ -10840,7 +10865,7 @@ __webpack_require__(/*! ../../logger/logger.js */ "../../logger/logger.js");
 	var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
 	var trace = ns.modules.logger.get("sp", debug);
 
-	trace.debug("v.0.0.2");
+	trace.debug("v.0.0.3");
 
 	var utils = {
 		collectionToArray: function collectionToArray(spCollection) {
@@ -10963,6 +10988,19 @@ __webpack_require__(/*! ../../logger/logger.js */ "../../logger/logger.js");
 					}, function () /*r, a*/{});
 				}, function () /*r, a*/{});
 			}).promise();
+		},
+		getFieldMap: function getFieldMap() {
+			var res = {};
+			$("td.ms-formbody").each(function () {
+				var html = $(this).html().replace(/\n/g, "");
+				if (html.indexOf("FieldInternalName=\"") < 0) return;
+				var start = html.indexOf("FieldInternalName=\"") + "FieldInternalName=\"".length;
+				html = html.substring(start);
+				var stopp = html.indexOf("\"");
+				var nm = html.substring(0, stopp);
+				res[nm] = this.parentNode;
+			});
+			return res;
 		}
 
 	};
@@ -11168,6 +11206,7 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
 __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 
+// v 0.0.6: 2018-05-17  - getByTitle
 // v 0.0.5: 2018-05-16  - When adding new items, skip columns not found in the list
 // v 0.0.4: 2018-04-28  - move to modules
 // v 0.0.2: 2018-04-10  - argument can be a list
@@ -11270,6 +11309,10 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 		}).promise();
 	};
 
+	var getByTitle = function getByTitle(listTitle, ctx) {
+		ctx = ctx || ns.spapi.getCtx();
+		return ctx.get_web().get_lists().getByTitle(listTitle);
+	};
 	var spDal = function spDal(args, log, error) {
 		var ctx = null;
 		var web = null;
@@ -12253,6 +12296,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 	};
 
 	ns.modules.listapi = {
+		getByTitle: getByTitle,
 		runAllQuery: runAllQuery,
 		getQuery: getQuery,
 		getAll: getAll,

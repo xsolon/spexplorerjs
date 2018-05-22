@@ -28,7 +28,7 @@ module.exports = {
         ],
         //"max-len": [1, 70, 2, { ignoreComments: true }],
         strict: ["error", "global"],
-        "no-console": ["error", { allow: ["warn", "error", "log"] }]
+        "no-console": ["error", { allow: ["warn", "error", "log", "assert"] }]
 
     },
     "globals": {

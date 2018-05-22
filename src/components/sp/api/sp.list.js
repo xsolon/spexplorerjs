@@ -6,6 +6,7 @@
 
 import "./sp.folderapi.js";
 
+// v 0.0.6: 2018-05-17  - getByTitle
 // v 0.0.5: 2018-05-16  - When adding new items, skip columns not found in the list
 // v 0.0.4: 2018-04-28  - move to modules
 // v 0.0.2: 2018-04-10  - argument can be a list
@@ -105,6 +106,10 @@ import "./sp.folderapi.js";
 		}).promise();
 	};
 
+	var getByTitle = function(listTitle, ctx) {
+		ctx = ctx || ns.spapi.getCtx();
+		return ctx.get_web().get_lists().getByTitle(listTitle);
+	};
 	const spDal = function (args, log, error) {
 		var ctx = null;
 		var web = null;
@@ -1082,6 +1087,7 @@ import "./sp.folderapi.js";
 	};
 
 	ns.modules.listapi = {
+		getByTitle: getByTitle,
 		runAllQuery: runAllQuery,
 		getQuery: getQuery,
 		getAll: getAll,

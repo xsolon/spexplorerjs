@@ -148,11 +148,11 @@ import "./collectionviewer.js";
 		me.setList = function (splist) {
 			list = splist;
 			fieldSelector.bindToList(list).done(function() {
-        var view = splist.get_defaultView();
+				var view = splist.get_defaultView();
 			  var fields = view.get_viewFields();
 			  spexplorerjs.modules.spapi.loadSpElem([view,fields], view.get_context()).done(function() {
-          fields = spexplorerjs.modules.spapi.collectionToArray(fields);
-			    debugger;
+					fields = spexplorerjs.modules.spapi.collectionToArray(fields);
+			    
 			    fieldSelector.set(fields);
 			  });       
 			});

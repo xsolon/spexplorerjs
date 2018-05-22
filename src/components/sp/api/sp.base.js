@@ -1,5 +1,6 @@
 /// <reference path="../../logger/logger.js" />
 /* global require */
+// v 0.0.3 : 2018-05-17 - getFieldMap
 // v 0.0.2 : 2018-04-28 - update to newer infra
 // v 0.0.1 : 2018-03-11 - loadSpElem
 
@@ -10,7 +11,7 @@ require("../../logger/logger.js");
 	var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
 	var trace = ns.modules.logger.get("sp", debug);
 
-	trace.debug("v.0.0.2");
+	trace.debug("v.0.0.3");
 
 	var utils = {
 		collectionToArray: function (spCollection) {
@@ -141,6 +142,19 @@ require("../../logger/logger.js");
 				}, function (/*r, a*/) { });
 
 			}).promise();
+		},
+		getFieldMap: function () {
+			var res = {};
+			$("td.ms-formbody").each(function () {
+				var html = $(this).html().replace(/\n/g, "");
+				if (html.indexOf("FieldInternalName=\"") < 0) return;
+				var start = html.indexOf("FieldInternalName=\"") + "FieldInternalName=\"".length;
+				html = html.substring(start);
+				var stopp = html.indexOf("\"");
+				var nm = html.substring(0, stopp);
+				res[nm] = this.parentNode;
+			});
+			return res;
 		}
 
 	};
