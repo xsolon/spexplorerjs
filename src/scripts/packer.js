@@ -35,8 +35,12 @@ var files = [
   //"./src/components/sp/widgets/masterpageselector.js"
   //"./src/components/sp/widgets/collectionviewer.js"
   //"./src/components/sp/widgets/ui.fields.js"
+<<<<<<< HEAD
   //  "./src/components/sp/widgets/querybuilder.js"
   //  ,
+=======
+  //"./src/components/sp/widgets/querybuilder.js"
+>>>>>>> 73e48c6d67914982d4b7c0a20f7348d2335e12d9
   //"./src/components/sp/widgets/web.editor.js"
   //,
   //"./src/components/sp/widgets/customaction.selector.js"

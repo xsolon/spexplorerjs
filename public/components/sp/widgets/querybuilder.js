@@ -91175,6 +91175,7 @@ module.exports = "data:image/gif;base64,R0lGODlhEAAQAPMAAP////Dw8IqKiuDg4EZGRnp6
 
 
 /* global require */
+// v 1.0.5: 2018-05-17  - addOnTraceHandler allows additional event hanlders for trace
 // v 1.0.4: 2018-04-28  - move definition to modules
 // v 1.0.2: 2018-04-28  - match spexplorerjs.trace
 // v 0.0.3: 2018-04-28  - removed jQuery dependency
@@ -91231,7 +91232,15 @@ __webpack_require__(/*! ../string/funcs.js */ "../../string/funcs.js");
 		logf: logf, "log": log, "error": error, "warn": warn, "debug": debug
 	};
 
-	var defineScopedTracing = function defineScopedTracing(source, debugging, onTrace) {
+	var defineScopedTracing = function defineScopedTracing(source, debugging, onTraceH) {
+		var onTraceArray = [];
+		onTraceH && onTraceArray.push(onTraceH);
+		var onTrace = function onTrace() {
+			var args = arguments;
+			onTraceArray.forEach(function (n) {
+				n(args);
+			});
+		};
 		var scopedLog = new function () {
 			var d = function d() {
 				logger.log.apply(scopedLog, arguments);
@@ -91268,6 +91277,9 @@ __webpack_require__(/*! ../string/funcs.js */ "../../string/funcs.js");
 		}();
 
 		return {
+			addOnTraceHandler: function addOnTraceHandler(handler) {
+				handler && onTraceArray.push(handler);
+			},
 			log: scopedLog,
 			error: scopedError,
 			debug: scopedDebug,
