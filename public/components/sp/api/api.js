@@ -73,7 +73,7 @@
 
 /***/ "../../../../node_modules/jquery/dist/jquery.js":
 /*!***************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
+  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
   \***************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -10449,7 +10449,7 @@ return jQuery;
 
 /***/ "../../logger/logger.js":
 /*!************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/logger/logger.js ***!
+  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/logger/logger.js ***!
   \************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -10573,7 +10573,7 @@ __webpack_require__(/*! ../string/funcs.js */ "../../string/funcs.js");
 
 /***/ "../../string/funcs.js":
 /*!***********************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/string/funcs.js ***!
+  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/string/funcs.js ***!
   \***********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -10707,7 +10707,7 @@ __webpack_require__(/*! ./string.js */ "../../string/string.js");
 
 /***/ "../../string/string.js":
 /*!************************************************************************!*\
-  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/string/string.js ***!
+  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/string/string.js ***!
   \************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -10829,7 +10829,8 @@ __webpack_require__(/*! ./sp.web.js */ "./sp.web.js");
 
 
 /// <reference path="../../logger/logger.js" />
-/* global require */
+/* global require,ExecuteOrDelayUntilScriptLoaded */
+// v 0.0.3 : 2018-05-22 - add loadSpElem to Sp.ClientContext
 // v 0.0.2 : 2018-04-28 - update to newer infra
 // v 0.0.1 : 2018-03-11 - loadSpElem
 
@@ -10840,7 +10841,7 @@ __webpack_require__(/*! ../../logger/logger.js */ "../../logger/logger.js");
 	var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
 	var trace = ns.modules.logger.get("sp", debug);
 
-	trace.debug("v.0.0.2");
+	trace.debug("v.0.0.3");
 
 	var utils = {
 		collectionToArray: function collectionToArray(spCollection) {
@@ -10968,6 +10969,14 @@ __webpack_require__(/*! ../../logger/logger.js */ "../../logger/logger.js");
 	};
 
 	ns.modules.spapi = utils;
+
+	ExecuteOrDelayUntilScriptLoaded(function () {
+		SP.ClientContext.prototype.loadSpElem = function () {
+			var args = Array.prototype.slice.call(arguments);
+			args.push(this);
+			return utils.loadSpElem.apply(utils.loadSpElem, args);
+		};
+	}, "sp.js");
 })(spexplorerjs, spexplorerjs.modules.jQuery);
 
 /***/ }),

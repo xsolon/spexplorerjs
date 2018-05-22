@@ -3,6 +3,7 @@
 /// <reference path="../../widget.base.js" />
 /* global require */
 
+// v 0.1.8: 2018-05-21  -   Internal version of dependencies
 // v 0.1.7: 2018-05-04  -   Allow selection of site collection
 // v 0.1.6: 2018-05-01  -   Use jquery from modules, upgrade to use modules
 //                          close drop down on item selection
@@ -37,8 +38,8 @@ import template from "./treelight.template.html";
 			trace.debug("jstree already loaded");
 		} else {
 			trace.log("loading jstree");
-			require("../../../../node_modules/jstree/dist/jstree.js");
-			require("../../../../node_modules/jstree/dist/themes/default/style.min.css");
+			require("../../../vendor/jstree/jstree.js");
+			require("../../../vendor/jstree/themes/default/style.min.css");
 		}
 	})();
 
@@ -429,6 +430,6 @@ import template from "./treelight.template.html";
 		})();
 	};
 
-	ns.widgets.addSpWidget("xSPTreeLight", xSpTreeLight, "0.1.7");
+	ns.widgets.addSpWidget("xSPTreeLight", xSpTreeLight, "0.1.8");
 
 })(spexplorerjs, spexplorerjs.modules.jQuery, template);

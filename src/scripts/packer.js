@@ -10,7 +10,7 @@ var files = [
   //,"./src/components/loader/loader.js"
   //, "./src/components/logger/logger.js"
   //,
-  //"./src/components/sp/api/api.js"
+  "./src/components/sp/api/api.js"
   //,
   //,"./src/components/sp/api/tester.js"
   //,"./src/components/datatables/datatables.js"
@@ -35,7 +35,8 @@ var files = [
   //"./src/components/sp/widgets/masterpageselector.js"
   //"./src/components/sp/widgets/collectionviewer.js"
   //"./src/components/sp/widgets/ui.fields.js"
-  "./src/components/sp/widgets/querybuilder.js"
+  //  "./src/components/sp/widgets/querybuilder.js"
+  //  ,
   //"./src/components/sp/widgets/web.editor.js"
   //,
   //"./src/components/sp/widgets/customaction.selector.js"
@@ -153,7 +154,7 @@ var runWebPack = function (debug, filePath) {
             options: {
               emitError: true,
               emitWarning: true,
-              fix: false
+              fix: true
             }
           }
           ]

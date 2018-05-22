@@ -3661,8 +3661,8 @@
 						var checkChildren = (
 							option.children != null &&
               !wrapper({
-								results: option.children
-							}, true)
+              	results: option.children
+              }, true)
 						);
 
 						var optionText = (option.text || "").toUpperCase();
