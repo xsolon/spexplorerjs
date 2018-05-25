@@ -1,10 +1,10 @@
+// v 0.0.3 - 2018/05/23 - Load additional nodes
 // v 0.0.2 - 2018/04/09 - Added caml editor
 // v 0.0.1 - 2018/03/24 - v 1
 
 /// TODO: Document
-import "./treelight.js";
-import "./sp.web.js";
-import "./sp.list.js";
+import "./widgets/treelight.js";
+import "./api/api.js";
 import "../mirrors/xmlmirror.js";
 import "../mirrors/jsmirror.js";
 import template from "./sp.explorer.template.html";
@@ -35,6 +35,6 @@ import "../widget.base.js";
 		return me;
 	};
 
-	ns.widgets.addSpWidget("xSpExplorer", SpExplorer, "0.0.2");
+	ns.widgets.addSpWidget("xSpExplorer", SpExplorer, "0.0.3");
 
-})(spexplorerjs, jQuery, template);
+})(spexplorerjs, spexplorerjs.modules.jQuery, template);

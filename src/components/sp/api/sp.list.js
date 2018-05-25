@@ -6,6 +6,7 @@
 
 import "./sp.folderapi.js";
 
+// v 0.0.7: 2018-05-24  - add getAll to List prototype
 // v 0.0.6: 2018-05-17  - getByTitle
 // v 0.0.5: 2018-05-16  - When adding new items, skip columns not found in the list
 // v 0.0.4: 2018-04-28  - move to modules
@@ -17,6 +18,7 @@ import "./sp.folderapi.js";
 
 	var debugging = window.location.href.search(/(local|debugsplist)/) > 0;
 	var trace = ns.modules.logger.get("splist", debugging);
+	var spapi = ns.modules.spapi;
 
 	const getQuery = function (caml /* string */,
 		folder /* string */) {
@@ -197,7 +199,7 @@ import "./sp.folderapi.js";
 				var cTypes = list.get_contentTypes();
 				loadSpElem(cTypes).done(function () {
 
-					var matches = $.grep(ns.sp.collectionToArray(cTypes), function (n) { return n.get_name() === name; });
+					var matches = $.grep(spapi.collectionToArray(cTypes), function (n) { return n.get_name() === name; });
 					if (matches.length === 0) {
 						trace.debug("Adding ctype" + name);
 						addContentType(name, fieldLinks).done(function (ctype) {
@@ -219,7 +221,7 @@ import "./sp.folderapi.js";
 
 				var listFields = list.get_fields();
 				loadSpElem([webCTypes, listFields]).done(function () {
-					var matches = $.grep(ns.sp.collectionToArray(webCTypes), function (n) { return n.get_name() === name; });
+					var matches = $.grep(spapi.collectionToArray(webCTypes), function (n) { return n.get_name() === name; });
 
 					if (matches.length === 0) {
 						trace.error(name + " not found");
@@ -229,10 +231,10 @@ import "./sp.folderapi.js";
 						listCTypes.addExistingContentType(webcType);
 
 						loadSpElem(listCTypes).done(function () {
-							var ctype = $.grep(ns.sp.collectionToArray(listCTypes), function (n) { return n.get_name() === name; })[0];
+							var ctype = $.grep(spapi.collectionToArray(listCTypes), function (n) { return n.get_name() === name; })[0];
 
 							if (fieldLinks) {
-								listFields = ns.sp.collectionToArray(listFields);
+								listFields = spapi.collectionToArray(listFields);
 
 								fieldLinks.forEach(function (fieldName) {
 
@@ -969,7 +971,7 @@ import "./sp.folderapi.js";
 
 						ctx.load(folder, ["ServerRelativeUrl"]);
 						loadSpElem(folder.get_folders()).done(function (folders) {
-							ns.sp.collectionToArray(folders).forEach(function (n) {
+							spapi.collectionToArray(folders).forEach(function (n) {
 								folderQueue.push(n);
 							});
 
@@ -1093,7 +1095,17 @@ import "./sp.folderapi.js";
 		getAll: getAll,
 		getFields: getFields,
 		Dal: spDal,
-		version: "0.0.5"
+		version: "0.0.7"
 	};
 
+	ExecuteOrDelayUntilScriptLoaded(function () {
+
+		SP.List.prototype.getAll = function () {
+			var args = Array.prototype.slice.call(arguments);
+			args.unshift(this.get_context());
+			args.unshift(this);
+			return getAll.apply(getAll, args);
+		};
+
+	}, "sp.js");
 })(spexplorerjs, spexplorerjs.modules.jQuery);

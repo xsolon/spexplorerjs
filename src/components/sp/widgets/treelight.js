@@ -56,6 +56,8 @@ import template from "./treelight.template.html";
 
 		opts.selectable = ns.modules.funcs.enumeration(opts.selectable.split("|"));
 
+		trace.debug(opts);
+
 		var selectionChanged = function (spElem) {
 			selectedSpElement = spElem;
 
@@ -203,7 +205,7 @@ import template from "./treelight.template.html";
 			var loadCType = function (node, cb) {
 				var list = node.data;
 				var items = [];
-				items.push({ text: "Field Links", id: list.get_id() + "_FieldLinks", data: list.get_fieldLinks(), children: true, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/application-icon-large-icon.png" });
+				items.push({ text: "Field Links", id: list.get_id() + "_FieldLinks", data: list.get_fieldLinks(), children: true, icon: "/_layouts/15/images/HLTHINFO.PNG" });
 				items.push({ text: "Fields", id: list.get_id() + "_Fields", data: list.get_fields(), children: true, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-menu-icon.png" });
 
 				cb(items);
@@ -213,7 +215,7 @@ import template from "./treelight.template.html";
 				trace.log({ list: list });
 				var items = [];
 				if (list.get_hasUniqueRoleAssignments()) {
-					items.push({ text: "Security", id: list.get_id() + "_Security", data: list.get_roleAssignments(), icon: "http://icons.iconarchive.com/icons/kyo-tux/phuzion/16/Misc-Security-icon.png" });
+					items.push({ text: "Security", id: list.get_id() + "_Security", data: list.get_roleAssignments(), icon: "/_layouts/15/images/sharethissite.png" });
 				}
 
 				if (list.get_itemCount() > 0) {
@@ -221,7 +223,7 @@ import template from "./treelight.template.html";
 				}
 
 				//items.push( { text: 'Meta', id: list.get_id() + "_Meta", icon: 'http://icons.iconarchive.com/icons/fatcow/farm-fresh/16/database-table-icon.png' });
-				items.push({ text: "Content Types", id: list.get_id() + "_ContentTypes", data: list.get_contentTypes(), children: true, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/application-icon-large-icon.png" });
+				items.push({ text: "Content Types", id: list.get_id() + "_ContentTypes", data: list.get_contentTypes(), children: true, icon: "/_layouts/15/images/HLTHINFO.PNG" });
 				items.push({ text: "Fields", id: list.get_id() + "_Fields", data: list.get_fields(), children: true, icon: "http://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-menu-icon.png" });
 
 				cb(items);
@@ -234,7 +236,7 @@ import template from "./treelight.template.html";
 				var lists = web.get_lists();
 				ctx.load(lists, "Include(Id,Title,HasUniqueRoleAssignments,ImageUrl,ItemCount,DefaultViewUrl)");
 				ctx.executeQueryAsync(function () {
-					trace.log("lists loaded");
+					trace.debug("lists loaded");
 					var lenum = lists.getEnumerator();
 					var spLists = [];
 
@@ -243,7 +245,7 @@ import template from "./treelight.template.html";
 
 						var nodeText = `${list.get_title()} (${list.get_itemCount()})`;
 						var node = {
-							children: false, text: nodeText,
+							children: true, text: nodeText,
 							id: list.get_id().toString(), data: list, icon: list.get_imageUrl()
 						};
 						spLists.push(node);
@@ -322,7 +324,7 @@ import template from "./treelight.template.html";
 					var spElem = data.node.data;
 					if (spElem) {
 						var type = spElem.constructor.getName();
-						if (opts.selectable[type]) {
+						if (opts.selectable["All"] || opts.selectable[type]) {
 							// && SP.List.isInstanceOfType(spElem)) {
 							selectionChanged(spElem);
 						}
@@ -339,7 +341,7 @@ import template from "./treelight.template.html";
 
 		tree.create_node(null,
 			{
-				id : "currentsitecol", text:"Site Collection", data: ctx.get_site()
+				id: "currentsitecol", text: "Site Collection", data: ctx.get_site()
 			},
 			"last");
 
@@ -358,11 +360,11 @@ import template from "./treelight.template.html";
 					tree.create_node(id, { text: "Lists", children: true, id: id + "_Lists", icon: "/_layouts/15/images/itgen.png?rev=23" });
 					tree.create_node(id, { text: "Webs", id: id + "_Webs", icon: "/_layouts/15/images/siteicon_16x16.png" });
 
-					//if (opts.load["SP.ContentType"]) {
-
-					//}
+					tree.create_node(id, { text: "Content Types", id: id + "_ContentTypes", data: curWeb.get_availableContentTypes(), children: true, icon: "/_layouts/15/images/HLTHINFO.PNG" });
+					tree.create_node(id, { text: "Fields", id: id + "_Fields", data: curWeb.get_availableFields(), children: true, icon: "/_layouts/15/images/HLTHINFO.PNG" });
 
 					var nWeb = tree.get_node(id);
+
 					trace.debug(nWeb);
 
 					(function doWebs() {
@@ -430,6 +432,6 @@ import template from "./treelight.template.html";
 		})();
 	};
 
-	ns.widgets.addSpWidget("xSPTreeLight", xSpTreeLight, "0.1.8");
+	ns.widgets.addSpWidget("xSPTreeLight", xSpTreeLight, "0.1.9");
 
 })(spexplorerjs, spexplorerjs.modules.jQuery, template);
