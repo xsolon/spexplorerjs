@@ -9,12 +9,12 @@ require("../../logger/logger.js");
 
 (function (ns, $) {
 
-	var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
+	var debug = window.location.href.search(/(local|debugsp)/) > 0;
 	var trace = ns.modules.logger.get("sp", debug);
 
-	trace.debug("v.0.0.3");
 
 	var utils = {
+		version: "v0.0.5",
 		collectionToArray: function (spCollection) {
 
 			var result = [];
@@ -162,12 +162,16 @@ require("../../logger/logger.js");
 
 	ns.modules.spapi = utils;
 
-	ExecuteOrDelayUntilScriptLoaded(function () {
+	trace.debug(utils.version);
+
+	RegisterSod("sp.js", "~site/_layouts/15/sp.js");
+	SP.SOD.executeFunc("sp.js", null, function () {
+		trace.debug("sp.loaded");
 		SP.ClientContext.prototype.loadSpElem = function () {
 			var args = Array.prototype.slice.call(arguments);
 			args.push(this);
 			return utils.loadSpElem.apply(utils.loadSpElem, args);
 		};
-	}, "sp.js");
+	});
 
 })(spexplorerjs, spexplorerjs.modules.jQuery);

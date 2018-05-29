@@ -29,7 +29,8 @@ var files = [
     //, "./src/components/sp/sp.wizard.js"
     //,
     //"./src/components/sp/sp.list.js"
-    //"./src/components/sp/widgets/list.editor.js"
+    ,
+    "./src/components/sp/widgets/list.editor.js"
     //,
     //"./src/components/sp/widgets/field.selector.js"
     //"./src/components/sp/widgets/masterpageselector.js"

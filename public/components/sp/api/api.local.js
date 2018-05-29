@@ -10863,158 +10863,161 @@ __webpack_require__(/*! ../../logger/logger.js */ "../../logger/logger.js");
 
 (function (ns, $) {
 
-	var debug = window.location.href.search(/[localhost|debugsp]/) > 0;
-	var trace = ns.modules.logger.get("sp", debug);
+    var debug = window.location.href.search(/(local|debugsp)/) > 0;
+    var trace = ns.modules.logger.get("sp", debug);
 
-	trace.debug("v.0.0.3");
+    var utils = {
+        version: "v0.0.5",
+        collectionToArray: function collectionToArray(spCollection) {
 
-	var utils = {
-		collectionToArray: function collectionToArray(spCollection) {
+            var result = [];
 
-			var result = [];
+            if (spCollection) {
+                var le = spCollection.getEnumerator();
+                while (le.moveNext()) {
+                    var li = le.get_current();
+                    result.push(li);
+                }
+            }
 
-			if (spCollection) {
-				var le = spCollection.getEnumerator();
-				while (le.moveNext()) {
-					var li = le.get_current();
-					result.push(li);
-				}
-			}
+            return result;
+        },
+        loadSpElem: function loadSpElem(elem, sptx, caller) {
 
-			return result;
-		},
-		loadSpElem: function loadSpElem(elem, sptx, caller) {
+            sptx = sptx || elem.get_context && elem.get_context() || utils.getCtx();
+            return $.Deferred(function (dfd) {
 
-			sptx = sptx || elem.get_context && elem.get_context() || utils.getCtx();
-			return $.Deferred(function (dfd) {
+                if (elem.length) {
+                    for (var i = 0; i < elem.length; i++) {
+                        sptx.load(elem[i]);
+                    }
+                } else sptx.load(elem);
 
-				if (elem.length) {
-					for (var i = 0; i < elem.length; i++) {
-						sptx.load(elem[i]);
-					}
-				} else sptx.load(elem);
+                sptx.executeQueryAsync(function () {
+                    dfd.resolve(elem, sptx);
+                }, function (r, a) {
+                    utils.reqFailure(r, a, caller || "loadSpElem", dfd);
+                });
+            }).promise();
+        },
+        uploadAjax: function uploadAjax(buffer, webUrl, listTitle, fileName) {
+            return $.ajax({
+                url: webUrl + "../_api/web/lists/getByTitle('" + listTitle + "')/RootFolder/Files/add(url='" + fileName + "',overwrite='true')",
+                type: "POST",
+                data: buffer,
+                async: true,
+                processData: false,
+                contentType: false,
+                headers: {
+                    "accept": "application/json;odata=verbose",
+                    "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+                    "content-length": buffer.byteLength
+                }
+            });
+        },
+        reqFailure: function reqFailure(req, reqargs, from, dfd) {
+            // log context failure
 
-				sptx.executeQueryAsync(function () {
-					dfd.resolve(elem, sptx);
-				}, function (r, a) {
-					utils.reqFailure(r, a, caller || "loadSpElem", dfd);
-				});
-			}).promise();
-		},
-		uploadAjax: function uploadAjax(buffer, webUrl, listTitle, fileName) {
-			return $.ajax({
-				url: webUrl + "../_api/web/lists/getByTitle('" + listTitle + "')/RootFolder/Files/add(url='" + fileName + "',overwrite='true')",
-				type: "POST",
-				data: buffer,
-				async: true,
-				processData: false,
-				contentType: false,
-				headers: {
-					"accept": "application/json;odata=verbose",
-					"X-RequestDigest": $("#__REQUESTDIGEST").val(),
-					"content-length": buffer.byteLength
-				}
-			});
-		},
-		reqFailure: function reqFailure(req, reqargs, from, dfd) {
-			// log context failure
+            var msg = from + " Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
 
-			var msg = from + " Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
+            if (dfd) dfd.reject(msg);else {
+                // if there is no promise log at this level
+                trace.error(msg);
+            }
+        },
+        wsCall: function wsCall(body, action, url) {
+            return $.Deferred(function (dfd) {
+                $.ajax({
+                    type: "POST",
+                    beforeSend: function beforeSend(request) {
+                        request.setRequestHeader("SOAPAction", action);
+                    },
+                    contentType: "text/xml; charset=utf-8",
+                    url: url,
+                    data: body,
+                    statusCode: {
+                        500: function _() /*jqXHR, textStatus, errorThrown*/{
+                            dfd.reject($(arguments[0].responseXML).find("errorstring").html());
+                        }
+                    }
+                }).done(function (xml /*, status, jqXHR*/) {
+                    var res = $($(xml).find("Body,soap\\:Body")[0].firstChild); // alernative selector for different browsers
+                    res.xml = res[0].xml;
+                    if (!res[0].xml && window.XMLSerializer) {
+                        var ss = new XMLSerializer();
+                        res.xml = ss.serializeToString(res[0]);
+                    }
+                    dfd.resolve(res);
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.status != 500) dfd.reject(errorThrown);
+                });
+            });
+        },
+        getCtx: function getCtx(url) {
+            var ctx;
+            ctx = new SP.ClientContext(url);
+            //try {
+            //  ctx = SP.ClientContext.get_current();
+            //} catch (e) {
+            //}
+            return ctx;
+        },
+        setformJsLink: function setformJsLink(url, ctx, bizJs) {
+            return $.Deferred(function (jslinkdfd) {
 
-			if (dfd) dfd.reject(msg);else {
-				// if there is no promise log at this level
-				trace.error(msg);
-			}
-		},
-		wsCall: function wsCall(body, action, url) {
-			return $.Deferred(function (dfd) {
-				$.ajax({
-					type: "POST",
-					beforeSend: function beforeSend(request) {
-						request.setRequestHeader("SOAPAction", action);
-					},
-					contentType: "text/xml; charset=utf-8",
-					url: url,
-					data: body,
-					statusCode: {
-						500: function _() /*jqXHR, textStatus, errorThrown*/{
-							dfd.reject($(arguments[0].responseXML).find("errorstring").html());
-						}
-					}
-				}).done(function (xml /*, status, jqXHR*/) {
-					var res = $($(xml).find("Body,soap\\:Body")[0].firstChild); // alernative selector for different browsers
-					res.xml = res[0].xml;
-					if (!res[0].xml && window.XMLSerializer) {
-						var ss = new XMLSerializer();
-						res.xml = ss.serializeToString(res[0]);
-					}
-					dfd.resolve(res);
-				}).fail(function (jqXHR, textStatus, errorThrown) {
-					if (jqXHR.status != 500) dfd.reject(errorThrown);
-				});
-			});
-		},
-		getCtx: function getCtx(url) {
-			var ctx;
-			ctx = new SP.ClientContext(url);
-			//try {
-			//  ctx = SP.ClientContext.get_current();
-			//} catch (e) {
-			//}
-			return ctx;
-		},
-		setformJsLink: function setformJsLink(url, ctx, bizJs) {
-			return $.Deferred(function (jslinkdfd) {
+                var web = ctx.get_web();
+                var oFile = web.getFileByServerRelativeUrl(url);
 
-				var web = ctx.get_web();
-				var oFile = web.getFileByServerRelativeUrl(url);
+                var lpm = oFile.getLimitedWebPartManager(SP.WebParts.PersonalizationScope.shared);
 
-				var lpm = oFile.getLimitedWebPartManager(SP.WebParts.PersonalizationScope.shared);
+                var wps = lpm.get_webParts();
+                ctx.load(wps, "Include(WebPart.Title)");
 
-				var wps = lpm.get_webParts();
-				ctx.load(wps, "Include(WebPart.Title)");
+                ctx.executeQueryAsync(function () {
+                    var wp = wps.get_item(0);
+                    var wpp = wp.get_webPart();
+                    var props = wpp.get_properties();
 
-				ctx.executeQueryAsync(function () {
-					var wp = wps.get_item(0);
-					var wpp = wp.get_webPart();
-					var props = wpp.get_properties();
+                    ctx.load(wp);ctx.load(wpp);ctx.load(props);
+                    ctx.executeQueryAsync(function () {
+                        props.set_item("JSLink", bizJs);
+                        wp.saveWebPartChanges();
+                        ctx.executeQueryAsync(function () {
+                            jslinkdfd.resolve();
+                        });
+                    }, function () /*r, a*/{});
+                }, function () /*r, a*/{});
+            }).promise();
+        },
+        getFieldMap: function getFieldMap() {
+            var res = {};
+            $("td.ms-formbody").each(function () {
+                var html = $(this).html().replace(/\n/g, "");
+                if (html.indexOf("FieldInternalName=\"") < 0) return;
+                var start = html.indexOf("FieldInternalName=\"") + "FieldInternalName=\"".length;
+                html = html.substring(start);
+                var stopp = html.indexOf("\"");
+                var nm = html.substring(0, stopp);
+                res[nm] = this.parentNode;
+            });
+            return res;
+        }
 
-					ctx.load(wp);ctx.load(wpp);ctx.load(props);
-					ctx.executeQueryAsync(function () {
-						props.set_item("JSLink", bizJs);
-						wp.saveWebPartChanges();
-						ctx.executeQueryAsync(function () {
-							jslinkdfd.resolve();
-						});
-					}, function () /*r, a*/{});
-				}, function () /*r, a*/{});
-			}).promise();
-		},
-		getFieldMap: function getFieldMap() {
-			var res = {};
-			$("td.ms-formbody").each(function () {
-				var html = $(this).html().replace(/\n/g, "");
-				if (html.indexOf("FieldInternalName=\"") < 0) return;
-				var start = html.indexOf("FieldInternalName=\"") + "FieldInternalName=\"".length;
-				html = html.substring(start);
-				var stopp = html.indexOf("\"");
-				var nm = html.substring(0, stopp);
-				res[nm] = this.parentNode;
-			});
-			return res;
-		}
+    };
 
-	};
+    ns.modules.spapi = utils;
 
-	ns.modules.spapi = utils;
+    trace.debug(utils.version);
 
-	ExecuteOrDelayUntilScriptLoaded(function () {
-		SP.ClientContext.prototype.loadSpElem = function () {
-			var args = Array.prototype.slice.call(arguments);
-			args.push(this);
-			return utils.loadSpElem.apply(utils.loadSpElem, args);
-		};
-	}, "sp.js");
+    RegisterSod("sp.js", "~site/_layouts/15/sp.js");
+    SP.SOD.executeFunc("sp.js", null, function () {
+        trace.debug("sp.loaded");
+        SP.ClientContext.prototype.loadSpElem = function () {
+            var args = Array.prototype.slice.call(arguments);
+            args.push(this);
+            return utils.loadSpElem.apply(utils.loadSpElem, args);
+        };
+    });
 })(spexplorerjs, spexplorerjs.modules.jQuery);
 
 /***/ }),

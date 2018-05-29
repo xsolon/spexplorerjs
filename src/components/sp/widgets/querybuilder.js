@@ -41,7 +41,10 @@ import "./collectionviewer.js";
 			if (selectedFields && selectedFields.length > 0) {
 				viewFields = "<ViewFields>";
 				selectedFields.forEach(function (n) {
-					viewFields += `<FieldRef Name='${n.get_internalName()}'/>`;
+					var internalName = n.get_internalName().replace("LinkTitle2", "Title")
+						.replace("LinkTitle", "Title");
+
+					viewFields += `<FieldRef Name='${internalName}'/>`;
 				});
 				viewFields += "</ViewFields>";
 			}
@@ -70,12 +73,12 @@ import "./collectionviewer.js";
 
 		$("#btnQuery", $el).click(function () {
 			me.getItems().done(function (items) {
-				trace.log(items);
 
 				var spitems = [];
-				items.forEach(function (n) {
-					spitems.push(n.get_fieldValues());
-				});
+
+				items.forEach(function (n) { spitems.push(n.get_fieldValues()); });
+
+				trace.log(spitems);
 
 				var dtopts = {
 					destroy: true,
@@ -92,11 +95,11 @@ import "./collectionviewer.js";
 						//{ title: "Salary", mData: 'salary' }
 					]
 				};
-
 				
 				selectedFields.forEach(function (n) {
 					var title = n.get_title();
-					var internalName = n.get_internalName();
+					var internalName = n.get_internalName().replace("LinkTitle2", "Title")
+						.replace("LinkTitle", "Title");
 
 					var colInfo = { title: title, bSearchable: true, mData: internalName };
 
@@ -161,6 +164,6 @@ import "./collectionviewer.js";
 		return me;
 	};
 
-	ns.widgets.addSpWidget(name, qBuild, "0.0.2");
+	ns.widgets.addSpWidget(name, qBuild, "0.0.3");
 
 })(spexplorerjs, spexplorerjs.modules.jQuery, template);

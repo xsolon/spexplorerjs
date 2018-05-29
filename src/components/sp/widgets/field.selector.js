@@ -158,9 +158,9 @@ import "../../mirrors/jsmirror.js";
 			weburl: $el.attr("data-siteurl"),
 			listtitle: $el.attr("data-list"),
 			excludereadonly: $el.attr("data-excludereadonly"),
-      showSelector: true,
-      fieldLabel: $el.attr('data-fieldlabel') || "Field",
-      multipleSelection: false
+			showSelector: true,
+			fieldLabel: $el.attr("data-fieldlabel") || "Field",
+			multipleSelection: false
 		}, opts);
 
 		try {
@@ -181,7 +181,7 @@ import "../../mirrors/jsmirror.js";
 
 		jsMirror.setScript("console.log(field);// field: reference to field");
 
-    var spdal = new SPDAL(opts.weburl);
+		var spdal = new SPDAL(opts.weburl);
 
 		var fieldSel = $(".fieldsDrp", ui).on("change", function () {
 			var field = fieldSel.find(":selected").prop("data-field");
@@ -249,7 +249,7 @@ import "../../mirrors/jsmirror.js";
 
 			}).promise();
 
-    };
+		};
 
 		if (opts.listtitle) {
 			loadList(opts.listtitle).done(function () {
