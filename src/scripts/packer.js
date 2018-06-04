@@ -254,7 +254,7 @@ module.exports.updateAll = function () {
 
     for (var i = 0; i < files.length; i++) {
         var file = files[i];
-        runWebPack(true, file);
+        //runWebPack(true, file);
         runWebPack(false, file);
     }
 };
