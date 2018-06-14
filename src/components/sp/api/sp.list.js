@@ -6,6 +6,7 @@
 
 import "./sp.folderapi.js";
 
+// v 0.0.8: 2018-06-01  - getitems default force to true
 // v 0.0.7: 2018-05-24  - add getAll to List prototype
 // v 0.0.6: 2018-05-17  - getByTitle
 // v 0.0.5: 2018-05-16  - When adding new items, skip columns not found in the list
@@ -108,7 +109,7 @@ import "./sp.folderapi.js";
 		}).promise();
 	};
 
-	var getByTitle = function(listTitle, ctx) {
+	var getByTitle = function (listTitle, ctx) {
 		ctx = ctx || ns.modules.spapi.getCtx();
 		return ctx.get_web().get_lists().getByTitle(listTitle);
 	};
@@ -458,10 +459,9 @@ import "./sp.folderapi.js";
 			action.set_sequence(0);
 			if (perms) action.set_rights(perms);
 			action.update();
-			ctx.load(action);
 			var dfd = $.Deferred();
 
-			ns.modules.loadSpElem(action).done(function () {
+			ctx.loadSpElem(action).done(function () {
 				log("addCustomAction.done");
 				dfd.resolve(action);
 			});
@@ -689,7 +689,13 @@ import "./sp.folderapi.js";
 			return $.Deferred(function (dfd) {
 
 				if (list != null) {
-					dfd.resolve(list);
+					var rootFolder = list.get_rootFolder();
+					ctx.load(rootFolder, ["ServerRelativeUrl"]);
+					ctx.loadSpElem(list).done(function () {
+						ensureFields(list).done(function () {
+							dfd.resolve(list);
+						});
+					});
 				} else {
 
 					lists = web.get_lists();
@@ -863,11 +869,8 @@ import "./sp.folderapi.js";
 		};
 		var getlist = function () {
 			return $.Deferred(function (dfd) {
-
 				ensureList(web, args).done(function (list) {
-					//ensureFields(list).done(function () {
 					dfd.resolve(list, ctx, web);
-					//});
 				});
 			}).promise();
 		};
@@ -1038,6 +1041,9 @@ import "./sp.folderapi.js";
 			deleteList: delTheList,
 			addWebPart: addWebPart,
 			getitems: function (caml /*string*/, force /*bool*/) {
+				if (arguments.length == 1) {
+					force = true;
+				}
 				if (force) {
 					items = null;
 				}
@@ -1098,14 +1104,23 @@ import "./sp.folderapi.js";
 		version: "0.0.7"
 	};
 
-	ExecuteOrDelayUntilScriptLoaded(function () {
+	var updateApi = function () {
+		if (window.SP && SP.List) {
+			SP.List.prototype.getAll = function () {
+				var args = Array.prototype.slice.call(arguments);
+				args.unshift(this.get_context());
+				args.unshift(this);
+				return getAll.apply(getAll, args);
+			};
+		}
+	};
 
-		SP.List.prototype.getAll = function () {
-			var args = Array.prototype.slice.call(arguments);
-			args.unshift(this.get_context());
-			args.unshift(this);
-			return getAll.apply(getAll, args);
-		};
+	updateApi();
 
+	SP.SOD.executeOrDelayUntilScriptLoaded(function () {
+		trace.debug("splist.loaded");
+		updateApi();
 	}, "sp.js");
+	SP.SOD.executeFunc("sp.js", null, null);
+
 })(spexplorerjs, spexplorerjs.modules.jQuery);

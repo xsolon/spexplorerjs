@@ -27,7 +27,7 @@ var rules = {
         "semi": [
             "error",
             "always"
-        ],
+        ], "no-mixed-spaces-and-tabs": ["ignore", "smart-tabs"],
         strict: ["error", "global"],
         "no-console": ["error", { allow: ["warn", "error", "log"] }]
 

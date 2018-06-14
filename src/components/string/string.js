@@ -10,7 +10,8 @@
 	if (ns.modules.string) {
 		// already loaded
 	} else {
-		var $ = ns.modules.jQuery = require("../../../node_modules/jquery/dist/jquery.js");
+		//var $ = ns.modules.jQuery = require("../../../node_modules/jquery/dist/jquery.js");
+		var $ = ns.modules.jQuery = require("../../vendor/jquery/2.2.4/jquery.js");
 
 		// avoid collisions with other jQuery versions
 		//jQuery.noConflict();

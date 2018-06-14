@@ -1,6 +1,7 @@
 /// <reference path="../../logger/logger.js" />
 /* global require,ExecuteOrDelayUntilScriptLoaded */
-// v 0.0.3 : 2018-05-22 - add loadSpElem to Sp.ClientContext
+// v 0.0.5 : 2018-06-01 - bug in ctx.prototyp.loadSpElem
+// v 0.0.4 : 2018-05-22 - add loadSpElem to Sp.ClientContext
 // v 0.0.3 : 2018-05-17 - getFieldMap
 // v 0.0.2 : 2018-04-28 - update to newer infra
 // v 0.0.1 : 2018-03-11 - loadSpElem
@@ -164,14 +165,22 @@ require("../../logger/logger.js");
 
 	trace.debug(utils.version);
 
-	RegisterSod("sp.js", "~site/_layouts/15/sp.js");
-	SP.SOD.executeFunc("sp.js", null, function () {
+	var updateClientContext = function () {
+		if (window.SP && SP.ClientContext) {
+			SP.ClientContext.prototype.loadSpElem = function () {
+				var args = Array.prototype.slice.call(arguments);
+				args.splice(1, 0, this);
+				return utils.loadSpElem.apply(utils.loadSpElem, args);
+			};
+		}
+	};
+
+	updateClientContext();
+
+	SP.SOD.executeOrDelayUntilScriptLoaded(function () {
 		trace.debug("sp.loaded");
-		SP.ClientContext.prototype.loadSpElem = function () {
-			var args = Array.prototype.slice.call(arguments);
-			args.push(this);
-			return utils.loadSpElem.apply(utils.loadSpElem, args);
-		};
-	});
+		updateClientContext();
+	}, "sp.js");
+	SP.SOD.executeFunc("sp.js", null, null);
 
 })(spexplorerjs, spexplorerjs.modules.jQuery);
