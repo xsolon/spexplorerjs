@@ -7,6 +7,7 @@
 import "./sp.folderapi.js";
 
 // v 0.0.8: 2018-06-01  - getitems default force to true
+// v 0.0.8: 2018-06-04  - bugfixes
 // v 0.0.7: 2018-05-24  - add getAll to List prototype
 // v 0.0.6: 2018-05-17  - getByTitle
 // v 0.0.5: 2018-05-16  - When adding new items, skip columns not found in the list
@@ -109,7 +110,7 @@ import "./sp.folderapi.js";
 		}).promise();
 	};
 
-	var getByTitle = function (listTitle, ctx) {
+	var getByTitle = function(listTitle, ctx) {
 		ctx = ctx || ns.modules.spapi.getCtx();
 		return ctx.get_web().get_lists().getByTitle(listTitle);
 	};
@@ -459,8 +460,10 @@ import "./sp.folderapi.js";
 			action.set_sequence(0);
 			if (perms) action.set_rights(perms);
 			action.update();
+			ctx.load(action);
 			var dfd = $.Deferred();
 
+			ns.modules.loadSpElem(action).done(function () {
 			ctx.loadSpElem(action).done(function () {
 				log("addCustomAction.done");
 				dfd.resolve(action);
@@ -610,7 +613,7 @@ import "./sp.folderapi.js";
 		var ensureGroups = function (groups) {
 			return $.Deferred(function (dfdG) {
 				getGroups().done(function () /*spGroups*/ {
-					ns.funcs.processAsQueue(groups, function (group) {
+					ns.modules.funcs.processAsQueue(groups, function (group) {
 						return $.Deferred(function (dfd) {
 							ensureGroup(group.name, group.desc).done(function (spGroup) {
 								log("Adding permissions for " + group.name);
@@ -651,7 +654,7 @@ import "./sp.folderapi.js";
 			}).promise();
 		};
 		var ensureCTypes = function (ctypes) {
-			return ns.funcs.processAsQueue(ctypes || [],
+			return ns.modules.funcs.processAsQueue(ctypes || [],
 				function (ctype) {
 					return ensureCtype(ctype.Name, ctype.FieldLinks);
 				});
@@ -738,7 +741,7 @@ import "./sp.folderapi.js";
 											if (args.Permissions) {
 												breakRoleInheritance(false, true).done(function () {
 													log("done with inheritance");
-													ns.funcs.processAsQueue(args.Permissions, function (entry) {
+													ns.modules.funcs.processAsQueue(args.Permissions, function (entry) {
 														var groupName = entry.name;
 														var perms = entry.permissions;
 														log("adding perm: " + groupName + " to " + args.ListTitle);
@@ -808,7 +811,7 @@ import "./sp.folderapi.js";
 						dfd.reject("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
 					});
 				};
-				ns.funcs.processAsQueue(fields, function (field) {
+				ns.modules.funcs.processAsQueue(fields, function (field) {
 					return $.Deferred(function (fieldDfd) {
 						getMarkup(field).done(function (xml) {
 
@@ -968,7 +971,7 @@ import "./sp.folderapi.js";
 			var allitems = [];
 
 			return $.Deferred(function (alldfd) {
-				ns.funcs.processAsQueue(folderQueue, function (folder) {
+				ns.modules.funcs.processAsQueue(folderQueue, function (folder) {
 
 					return $.Deferred(function (dfd) {
 
@@ -1079,7 +1082,7 @@ import "./sp.folderapi.js";
 			clearActions: clearActions,
 			createFolder: createFolder,
 			loadSpElem: loadSpElem,
-			processAsQueue: ns.funcs.processAsQueue,
+			processAsQueue: ns.modules.funcs.processAsQueue,
 			ensureFolder: ensureFolder,
 			getItems: getAllItemsPaged,
 			addItems: addItems,
@@ -1101,7 +1104,7 @@ import "./sp.folderapi.js";
 		getAll: getAll,
 		getFields: getFields,
 		Dal: spDal,
-		version: "0.0.7"
+		version: "0.0.8"
 	};
 
 	var updateApi = function () {

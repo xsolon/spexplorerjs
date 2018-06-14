@@ -73,7 +73,7 @@
 
 /***/ "../../../../node_modules/codemirror/addon/edit/closetag.js":
 /*!***************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/edit/closetag.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/edit/closetag.js ***!
   \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -256,7 +256,7 @@
 
 /***/ "../../../../node_modules/codemirror/addon/edit/matchtags.js":
 /*!****************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/edit/matchtags.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/edit/matchtags.js ***!
   \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -330,7 +330,7 @@
 
 /***/ "../../../../node_modules/codemirror/addon/fold/brace-fold.js":
 /*!*****************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/brace-fold.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/brace-fold.js ***!
   \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -443,7 +443,7 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
 
 /***/ "../../../../node_modules/codemirror/addon/fold/comment-fold.js":
 /*!*******************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/comment-fold.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/comment-fold.js ***!
   \*******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -510,7 +510,7 @@ CodeMirror.registerGlobalHelper("fold", "comment", function(mode) {
 
 /***/ "../../../../node_modules/codemirror/addon/fold/foldcode.js":
 /*!***************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldcode.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldcode.js ***!
   \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -670,7 +670,7 @@ CodeMirror.registerGlobalHelper("fold", "comment", function(mode) {
 
 /***/ "../../../../node_modules/codemirror/addon/fold/foldgutter.css":
 /*!******************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
   \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -700,7 +700,7 @@ if(false) {}
 
 /***/ "../../../../node_modules/codemirror/addon/fold/foldgutter.js":
 /*!*****************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.js ***!
   \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -854,7 +854,7 @@ if(false) {}
 
 /***/ "../../../../node_modules/codemirror/addon/fold/indent-fold.js":
 /*!******************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/indent-fold.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/indent-fold.js ***!
   \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -910,7 +910,7 @@ CodeMirror.registerHelper("fold", "indent", function(cm, start) {
 
 /***/ "../../../../node_modules/codemirror/addon/fold/markdown-fold.js":
 /*!********************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/markdown-fold.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/markdown-fold.js ***!
   \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -967,7 +967,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 
 /***/ "../../../../node_modules/codemirror/addon/fold/xml-fold.js":
 /*!***************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/xml-fold.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/xml-fold.js ***!
   \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -1108,14 +1108,12 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
   CodeMirror.registerHelper("fold", "xml", function(cm, start) {
     var iter = new Iter(cm, start.line, 0);
     for (;;) {
-      var openTag = toNextTag(iter)
-      if (!openTag || iter.line != start.line) return
-      var end = toTagEnd(iter)
-      if (!end) return
+      var openTag = toNextTag(iter), end;
+      if (!openTag || !(end = toTagEnd(iter)) || iter.line != start.line) return;
       if (!openTag[1] && end != "selfClose") {
         var startPos = Pos(iter.line, iter.ch);
         var endPos = findMatchingClose(iter, openTag[2]);
-        return endPos && cmp(endPos.from, startPos) > 0 ? {from: startPos, to: endPos.from} : null
+        return endPos && {from: startPos, to: endPos.from};
       }
     }
   });
@@ -1159,7 +1157,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 
 /***/ "../../../../node_modules/codemirror/addon/hint/anyword-hint.js":
 /*!*******************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/anyword-hint.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/anyword-hint.js ***!
   \*******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -1208,7 +1206,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 
 /***/ "../../../../node_modules/codemirror/addon/hint/css-hint.js":
 /*!***************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/css-hint.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/css-hint.js ***!
   \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -1276,7 +1274,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 
 /***/ "../../../../node_modules/codemirror/addon/hint/html-hint.js":
 /*!****************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/html-hint.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/html-hint.js ***!
   \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -1632,7 +1630,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 
 /***/ "../../../../node_modules/codemirror/addon/hint/javascript-hint.js":
 /*!**********************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/javascript-hint.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/javascript-hint.js ***!
   \**********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -1668,9 +1666,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
     // Find the token at the cursor
     var cur = editor.getCursor(), token = getToken(editor, cur);
     if (/\b(?:string|comment)\b/.test(token.type)) return;
-    var innerMode = CodeMirror.innerMode(editor.getMode(), token.state);
-    if (innerMode.mode.helperType === "json") return;
-    token.state = innerMode.state;
+    token.state = CodeMirror.innerMode(editor.getMode(), token.state).state;
 
     // If it's not a 'word-style' token, ignore the token.
     if (!/^[\w$_]*$/.test(token.string)) {
@@ -1797,7 +1793,7 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
 
 /***/ "../../../../node_modules/codemirror/addon/hint/show-hint.css":
 /*!*****************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
   \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -1827,7 +1823,7 @@ if(false) {}
 
 /***/ "../../../../node_modules/codemirror/addon/hint/show-hint.js":
 /*!****************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.js ***!
   \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -2228,13 +2224,12 @@ if(false) {}
   });
 
   CodeMirror.registerHelper("hint", "fromList", function(cm, options) {
-    var cur = cm.getCursor(), token = cm.getTokenAt(cur)
-    var term, from = CodeMirror.Pos(cur.line, token.start), to = cur
-    if (token.start < cur.ch && /\w/.test(token.string.charAt(cur.ch - token.start - 1))) {
-      term = token.string.substr(0, cur.ch - token.start)
+    var cur = cm.getCursor(), token = cm.getTokenAt(cur);
+    var to = CodeMirror.Pos(cur.line, token.end);
+    if (token.string && /\w/.test(token.string[token.string.length - 1])) {
+      var term = token.string, from = CodeMirror.Pos(cur.line, token.start);
     } else {
-      term = ""
-      from = cur
+      var term = "", from = to;
     }
     var found = [];
     for (var i = 0; i < options.words.length; i++) {
@@ -2268,7 +2263,7 @@ if(false) {}
 
 /***/ "../../../../node_modules/codemirror/addon/hint/sql-hint.js":
 /*!***************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/sql-hint.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/sql-hint.js ***!
   \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -2547,23 +2542,10 @@ if(false) {}
     if (search.charAt(0) == "." || search.charAt(0) == identifierQuote) {
       start = nameCompletion(cur, token, result, editor);
     } else {
-      addMatches(result, search, defaultTable, function(w) {return {text:w, className: "CodeMirror-hint-table CodeMirror-hint-default-table"};});
-      addMatches(
-          result,
-          search,
-          tables,
-          function(w) {
-              if (typeof w === 'object') {
-                  w.className =  "CodeMirror-hint-table";
-              } else {
-                  w = {text: w, className: "CodeMirror-hint-table"};
-              }
-
-              return w;
-          }
-      );
+      addMatches(result, search, defaultTable, function(w) {return w;});
+      addMatches(result, search, tables, function(w) {return w;});
       if (!disableKeywords)
-        addMatches(result, search, keywords, function(w) {return {text: w.toUpperCase(), className: "CodeMirror-hint-keyword"};});
+        addMatches(result, search, keywords, function(w) {return w.toUpperCase();});
     }
 
     return {list: result, from: Pos(cur.line, start), to: Pos(cur.line, end)};
@@ -2575,7 +2557,7 @@ if(false) {}
 
 /***/ "../../../../node_modules/codemirror/addon/hint/xml-hint.js":
 /*!***************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/xml-hint.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/xml-hint.js ***!
   \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -2693,7 +2675,7 @@ if(false) {}
 
 /***/ "../../../../node_modules/codemirror/addon/lint/javascript-lint.js":
 /*!**********************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/javascript-lint.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/javascript-lint.js ***!
   \**********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -2764,7 +2746,7 @@ if(false) {}
 
 /***/ "../../../../node_modules/codemirror/addon/lint/lint.css":
 /*!************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
   \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -2794,7 +2776,7 @@ if(false) {}
 
 /***/ "../../../../node_modules/codemirror/addon/lint/lint.js":
 /*!***********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.js ***!
   \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -3054,7 +3036,7 @@ if(false) {}
 
 /***/ "../../../../node_modules/codemirror/lib/codemirror.css":
 /*!***********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
   \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -3084,7 +3066,7 @@ if(false) {}
 
 /***/ "../../../../node_modules/codemirror/lib/codemirror.js":
 /*!**********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.js ***!
   \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -7886,7 +7868,7 @@ function addChangeToHistory(doc, change, selAfter, opId) {
 
   if ((hist.lastOp == opId ||
        hist.lastOrigin == change.origin && change.origin &&
-       ((change.origin.charAt(0) == "+" && hist.lastModTime > time - (doc.cm ? doc.cm.options.historyEventDelay : 500)) ||
+       ((change.origin.charAt(0) == "+" && doc.cm && hist.lastModTime > time - doc.cm.options.historyEventDelay) ||
         change.origin.charAt(0) == "*")) &&
       (cur = lastChangeEvent(hist, hist.lastOp == opId))) {
     // Merge this change into the last event
@@ -8500,7 +8482,7 @@ function makeChangeSingleDocInEditor(cm, change, spans) {
 function replaceRange(doc, code, from, to, origin) {
   if (!to) { to = from; }
   if (cmp(to, from) < 0) { var assign;
-    (assign = [to, from], from = assign[0], to = assign[1]); }
+    (assign = [to, from], from = assign[0], to = assign[1], assign); }
   if (typeof code == "string") { code = doc.splitLines(code); }
   makeChange(doc, {from: from, to: to, text: code, origin: origin});
 }
@@ -8596,10 +8578,10 @@ function LeafChunk(lines) {
 }
 
 LeafChunk.prototype = {
-  chunkSize: function() { return this.lines.length },
+  chunkSize: function chunkSize() { return this.lines.length },
 
   // Remove the n lines at offset 'at'.
-  removeInner: function(at, n) {
+  removeInner: function removeInner(at, n) {
     var this$1 = this;
 
     for (var i = at, e = at + n; i < e; ++i) {
@@ -8612,13 +8594,13 @@ LeafChunk.prototype = {
   },
 
   // Helper used to collapse a small branch into a single leaf.
-  collapse: function(lines) {
+  collapse: function collapse(lines) {
     lines.push.apply(lines, this.lines);
   },
 
   // Insert the given array of lines at offset 'at', count them as
   // having the given height.
-  insertInner: function(at, lines, height) {
+  insertInner: function insertInner(at, lines, height) {
     var this$1 = this;
 
     this.height += height;
@@ -8627,7 +8609,7 @@ LeafChunk.prototype = {
   },
 
   // Used to iterate over a part of the tree.
-  iterN: function(at, n, op) {
+  iterN: function iterN(at, n, op) {
     var this$1 = this;
 
     for (var e = at + n; at < e; ++at)
@@ -8651,9 +8633,9 @@ function BranchChunk(children) {
 }
 
 BranchChunk.prototype = {
-  chunkSize: function() { return this.size },
+  chunkSize: function chunkSize() { return this.size },
 
-  removeInner: function(at, n) {
+  removeInner: function removeInner(at, n) {
     var this$1 = this;
 
     this.size -= n;
@@ -8679,13 +8661,13 @@ BranchChunk.prototype = {
     }
   },
 
-  collapse: function(lines) {
+  collapse: function collapse(lines) {
     var this$1 = this;
 
     for (var i = 0; i < this.children.length; ++i) { this$1.children[i].collapse(lines); }
   },
 
-  insertInner: function(at, lines, height) {
+  insertInner: function insertInner(at, lines, height) {
     var this$1 = this;
 
     this.size += lines.length;
@@ -8714,7 +8696,7 @@ BranchChunk.prototype = {
   },
 
   // When a node has grown, check whether it should be split.
-  maybeSpill: function() {
+  maybeSpill: function maybeSpill() {
     if (this.children.length <= 10) { return }
     var me = this;
     do {
@@ -8736,7 +8718,7 @@ BranchChunk.prototype = {
     me.parent.maybeSpill();
   },
 
-  iterN: function(at, n, op) {
+  iterN: function iterN(at, n, op) {
     var this$1 = this;
 
     for (var i = 0; i < this.children.length; ++i) {
@@ -10414,8 +10396,8 @@ function leftButtonStartDrag(cm, event, pos, behavior) {
   var dragEnd = operation(cm, function (e) {
     if (webkit) { display.scroller.draggable = false; }
     cm.state.draggingText = false;
-    off(display.wrapper.ownerDocument, "mouseup", dragEnd);
-    off(display.wrapper.ownerDocument, "mousemove", mouseMove);
+    off(document, "mouseup", dragEnd);
+    off(document, "mousemove", mouseMove);
     off(display.scroller, "dragstart", dragStart);
     off(display.scroller, "drop", dragEnd);
     if (!moved) {
@@ -10424,7 +10406,7 @@ function leftButtonStartDrag(cm, event, pos, behavior) {
         { extendSelection(cm.doc, pos, null, null, behavior.extend); }
       // Work around unexplainable focus problem in IE9 (#2127) and Chrome (#3081)
       if (webkit || ie && ie_version == 9)
-        { setTimeout(function () {display.wrapper.ownerDocument.body.focus(); display.input.focus();}, 20); }
+        { setTimeout(function () {document.body.focus(); display.input.focus();}, 20); }
       else
         { display.input.focus(); }
     }
@@ -10439,8 +10421,8 @@ function leftButtonStartDrag(cm, event, pos, behavior) {
   dragEnd.copy = !behavior.moveOnDrag;
   // IE's approach to draggable
   if (display.scroller.dragDrop) { display.scroller.dragDrop(); }
-  on(display.wrapper.ownerDocument, "mouseup", dragEnd);
-  on(display.wrapper.ownerDocument, "mousemove", mouseMove);
+  on(document, "mouseup", dragEnd);
+  on(document, "mousemove", mouseMove);
   on(display.scroller, "dragstart", dragStart);
   on(display.scroller, "drop", dragEnd);
 
@@ -10572,8 +10554,8 @@ function leftButtonSelect(cm, event, start, behavior) {
     counter = Infinity;
     e_preventDefault(e);
     display.input.focus();
-    off(display.wrapper.ownerDocument, "mousemove", move);
-    off(display.wrapper.ownerDocument, "mouseup", up);
+    off(document, "mousemove", move);
+    off(document, "mouseup", up);
     doc.history.lastSelOrigin = null;
   }
 
@@ -10583,8 +10565,8 @@ function leftButtonSelect(cm, event, start, behavior) {
   });
   var up = operation(cm, done);
   cm.state.selectingText = up;
-  on(display.wrapper.ownerDocument, "mousemove", move);
-  on(display.wrapper.ownerDocument, "mouseup", up);
+  on(document, "mousemove", move);
+  on(document, "mouseup", up);
 }
 
 // Used when mouse-selecting to adjust the anchor to the proper side
@@ -12107,7 +12089,7 @@ ContentEditableInput.prototype.setUneditable = function (node) {
 };
 
 ContentEditableInput.prototype.onKeyPress = function (e) {
-  if (e.charCode == 0 || this.composing) { return }
+  if (e.charCode == 0) { return }
   e.preventDefault();
   if (!this.cm.isReadOnly())
     { operation(this.cm, applyTextInput)(this.cm, String.fromCharCode(e.charCode == null ? e.keyCode : e.charCode), 0); }
@@ -12289,10 +12271,13 @@ TextareaInput.prototype.init = function (display) {
     var this$1 = this;
 
   var input = this, cm = this.cm;
-  this.createField(display);
-  var te = this.textarea;
 
-  display.wrapper.insertBefore(this.wrapper, display.wrapper.firstChild);
+  // Wraps and hides input textarea
+  var div = this.wrapper = hiddenTextarea();
+  // The semihidden textarea that is focused when the editor is
+  // focused, and receives input.
+  var te = this.textarea = div.firstChild;
+  display.wrapper.insertBefore(div, display.wrapper.firstChild);
 
   // Needed to hide big blue blinking cursor on Mobile Safari (doesn't seem to work in iOS 8 anymore)
   if (ios) { te.style.width = "0px"; }
@@ -12357,14 +12342,6 @@ TextareaInput.prototype.init = function (display) {
       input.composing = null;
     }
   });
-};
-
-TextareaInput.prototype.createField = function (_display) {
-  // Wraps and hides input textarea
-  this.wrapper = hiddenTextarea();
-  // The semihidden textarea that is focused when the editor is
-  // focused, and receives input.
-  this.textarea = this.wrapper.firstChild;
 };
 
 TextareaInput.prototype.prepareSelection = function () {
@@ -12760,7 +12737,7 @@ CodeMirror$1.fromTextArea = fromTextArea;
 
 addLegacyProps(CodeMirror$1);
 
-CodeMirror$1.version = "5.37.0";
+CodeMirror$1.version = "5.35.0";
 
 return CodeMirror$1;
 
@@ -12771,7 +12748,7 @@ return CodeMirror$1;
 
 /***/ "../../../../node_modules/codemirror/mode/css/css.js":
 /*!********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/css/css.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/css/css.js ***!
   \********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -13611,7 +13588,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
 
 /***/ "../../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js":
 /*!********************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/htmlmixed/htmlmixed.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/htmlmixed/htmlmixed.js ***!
   \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -13771,7 +13748,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
 
 /***/ "../../../../node_modules/codemirror/mode/javascript/javascript.js":
 /*!**********************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/javascript/javascript.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/javascript/javascript.js ***!
   \**********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -13901,7 +13878,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
           var kw = keywords[word]
           return ret(kw.type, kw.style, word)
         }
-        if (word == "async" && stream.match(/^(\s|\/\*.*?\*\/)*[\[\(\w]/, false))
+        if (word == "async" && stream.match(/^(\s|\/\*.*?\*\/)*[\(\w]/, false))
           return ret("async", "keyword", word)
       }
       return ret("variable", "variable", word)
@@ -14131,9 +14108,6 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       } else if (isTS && value == "namespace") {
         cx.marked = "keyword"
         return cont(pushlex("form"), expression, block, poplex)
-      } else if (isTS && value == "abstract") {
-        cx.marked = "keyword"
-        return cont(statement)
       } else {
         return cont(pushlex("stat"), maybelabel);
       }
@@ -14338,19 +14312,19 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     }
   }
   function typeexpr(type, value) {
-    if (value == "keyof" || value == "typeof") {
-      cx.marked = "keyword"
-      return cont(value == "keyof" ? typeexpr : expressionNoComma)
-    }
     if (type == "variable" || value == "void") {
-      cx.marked = "type"
-      return cont(afterType)
+      if (value == "keyof") {
+        cx.marked = "keyword"
+        return cont(typeexpr)
+      } else {
+        cx.marked = "type"
+        return cont(afterType)
+      }
     }
     if (type == "string" || type == "number" || type == "atom") return cont(afterType);
     if (type == "[") return cont(pushlex("]"), commasep(typeexpr, "]", ","), poplex, afterType)
     if (type == "{") return cont(pushlex("}"), commasep(typeprop, "}", ",;"), poplex, afterType)
     if (type == "(") return cont(commasep(typearg, ")"), maybeReturnType)
-    if (type == "<") return cont(commasep(typeexpr, ">"), typeexpr)
   }
   function maybeReturnType(type) {
     if (type == "=>") return cont(typeexpr)
@@ -14367,10 +14341,9 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       return cont(expression, maybetype, expect("]"), typeprop)
     }
   }
-  function typearg(type, value) {
-    if (type == "variable" && cx.stream.match(/^\s*[?:]/, false) || value == "?") return cont(typearg)
-    if (type == ":") return cont(typeexpr)
-    return pass(typeexpr)
+  function typearg(type) {
+    if (type == "variable") return cont(typearg)
+    else if (type == ":") return cont(typeexpr)
   }
   function afterType(type, value) {
     if (value == "<") return cont(pushlex(">"), commasep(typeexpr, ">"), poplex, afterType)
@@ -14651,7 +14624,7 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 
 /***/ "../../../../node_modules/codemirror/mode/sql/sql.js":
 /*!********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/sql/sql.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/sql/sql.js ***!
   \********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -14677,9 +14650,7 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
       support        = parserConfig.support || {},
       hooks          = parserConfig.hooks || {},
       dateSQL        = parserConfig.dateSQL || {"date" : true, "time" : true, "timestamp" : true},
-      backslashStringEscapes = parserConfig.backslashStringEscapes !== false,
-      brackets       = parserConfig.brackets || /^[\{}\(\)\[\]]/,
-      punctuation    = parserConfig.punctuation || /^[;.,:]/
+      backslashStringEscapes = parserConfig.backslashStringEscapes !== false
 
   function tokenBase(stream, state) {
     var ch = stream.next();
@@ -14722,6 +14693,9 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
       // charset casting: _utf8'str', N'str', n'str'
       // ref: http://dev.mysql.com/doc/refman/5.5/en/string-literals.html
       return "keyword";
+    } else if (/^[\(\),\;\[\]]/.test(ch)) {
+      // no highlighting
+      return null;
     } else if (support.commentSlashSlash && ch == "/" && stream.eat("/")) {
       // 1-line comment
       stream.skipToEnd();
@@ -14750,15 +14724,7 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
     } else if (operatorChars.test(ch)) {
       // operators
       stream.eatWhile(operatorChars);
-      return "operator";
-    } else if (brackets.test(ch)) {
-      // brackets
-      stream.eatWhile(brackets);
-      return "bracket";
-    } else if (punctuation.test(ch)) {
-      // punctuation
-      stream.eatWhile(punctuation);
-      return "punctuation";
+      return null;
     } else if (ch == '{' &&
         (stream.match(/^( )*(d|D|t|T|ts|TS)( )*'[^']*'( )*}/) || stream.match(/^( )*(d|D|t|T|ts|TS)( )*"[^"]*"( )*}/))) {
       // dates (weird ODBC syntax)
@@ -14856,8 +14822,7 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
 
     blockCommentStart: "/*",
     blockCommentEnd: "*/",
-    lineComment: support.commentSlashSlash ? "//" : support.commentHash ? "#" : "--",
-    closeBrackets: "()[]{}''\"\"``"
+    lineComment: support.commentSlashSlash ? "//" : support.commentHash ? "#" : "--"
   };
 });
 
@@ -14951,13 +14916,11 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
 
   CodeMirror.defineMIME("text/x-mssql", {
     name: "sql",
-    client: set("$partition binary_checksum checksum connectionproperty context_info current_request_id error_line error_message error_number error_procedure error_severity error_state formatmessage get_filestream_transaction_context getansinull host_id host_name isnull isnumeric min_active_rowversion newid newsequentialid rowcount_big xact_state object_id"),
-    keywords: set(sqlKeywords + "begin trigger proc view index for add constraint key primary foreign collate clustered nonclustered declare exec go if use index holdlock nolock nowait paglock readcommitted readcommittedlock readpast readuncommitted repeatableread rowlock serializable snapshot tablock tablockx updlock with"),
+    client: set("charset clear connect edit ego exit go help nopager notee nowarning pager print prompt quit rehash source status system tee"),
+    keywords: set(sqlKeywords + "begin trigger proc view index for add constraint key primary foreign collate clustered nonclustered declare exec"),
     builtin: set("bigint numeric bit smallint decimal smallmoney int tinyint money float real char varchar text nchar nvarchar ntext binary varbinary image cursor timestamp hierarchyid uniqueidentifier sql_variant xml table "),
-    atoms: set("is not null like and or in left right between inner outer join all any some cross unpivot pivot exists"),
-    operatorChars: /^[*+\-%<>!=^\&|\/]/,
-    brackets: /^[\{}\(\)]/,
-    punctuation: /^[;.,:/]/,
+    atoms: set("false true null unknown"),
+    operatorChars: /^[*+\-%<>!=]/,
     backslashStringEscapes: false,
     dateSQL: set("date datetimeoffset datetime2 smalldatetime datetime time"),
     hooks: {
@@ -15159,7 +15122,7 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
 
 /***/ "../../../../node_modules/codemirror/mode/xml/xml.js":
 /*!********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/xml/xml.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/mode/xml/xml.js ***!
   \********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -15568,7 +15531,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 /***/ "../../../../node_modules/css-loader/index.js??ref--5-1!../../../../node_modules/codemirror/addon/fold/foldgutter.css":
 /*!*************************************************************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/fold/foldgutter.css ***!
   \*************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -15587,7 +15550,7 @@ exports.push([module.i, ".CodeMirror-foldmarker {\n  color: blue;\n  text-shadow
 
 /***/ "../../../../node_modules/css-loader/index.js??ref--5-1!../../../../node_modules/codemirror/addon/hint/show-hint.css":
 /*!************************************************************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/hint/show-hint.css ***!
   \************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -15606,7 +15569,7 @@ exports.push([module.i, ".CodeMirror-hints {\n  position: absolute;\n  z-index: 
 
 /***/ "../../../../node_modules/css-loader/index.js??ref--5-1!../../../../node_modules/codemirror/addon/lint/lint.css":
 /*!*******************************************************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/addon/lint/lint.css ***!
   \*******************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -15625,7 +15588,7 @@ exports.push([module.i, "/* The lint marker gutter */\n.CodeMirror-lint-markers 
 
 /***/ "../../../../node_modules/css-loader/index.js??ref--5-1!../../../../node_modules/codemirror/lib/codemirror.css":
 /*!******************************************************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!D:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!F:/sc/spexplorer/js/spexplorerjs/node_modules/codemirror/lib/codemirror.css ***!
   \******************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -15644,7 +15607,7 @@ exports.push([module.i, "/* BASICS */\n\n.CodeMirror {\n  /* Set height, width, 
 
 /***/ "../../../../node_modules/css-loader/index.js??ref--5-1!../../../../public/vendor/bootstrap/3.3.7/css/spexp.min.css":
 /*!***********************************************************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!D:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.min.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.min.css ***!
   \***********************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -15664,7 +15627,7 @@ exports.push([module.i, ".spexp html{font-family:sans-serif;-webkit-text-size-ad
 
 /***/ "../../../../node_modules/css-loader/index.js??ref--5-1!../../../../public/vendor/datatables/css/jquery.datatables.min.css":
 /*!******************************************************************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!D:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/css/jquery.datatables.min.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!F:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/css/jquery.datatables.min.css ***!
   \******************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -15675,7 +15638,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "table.dataTable{width:100%;margin:0 auto;clear:both;border-collapse:separate;border-spacing:0}table.dataTable thead th,table.dataTable tfoot th{font-weight:bold}table.dataTable thead th,table.dataTable thead td{padding:10px 18px;border-bottom:1px solid #111}table.dataTable thead th:active,table.dataTable thead td:active{outline:none}table.dataTable tfoot th,table.dataTable tfoot td{padding:10px 18px 6px 18px;border-top:1px solid #111}table.dataTable thead .sorting,table.dataTable thead .sorting_asc,table.dataTable thead .sorting_desc,table.dataTable thead .sorting_asc_disabled,table.dataTable thead .sorting_desc_disabled{cursor:pointer;*cursor:hand;background-repeat:no-repeat;background-position:center right}table.dataTable thead .sorting{background-image:url(" + escape(__webpack_require__(/*! ../images/sort_both.png */ "../../../../public/vendor/datatables/images/sort_both.png")) + ")}table.dataTable thead .sorting_asc{background-image:url(" + escape(__webpack_require__(/*! ../images/sort_asc.png */ "../../../../public/vendor/datatables/images/sort_asc.png")) + ")}table.dataTable thead .sorting_desc{background-image:url(" + escape(__webpack_require__(/*! ../images/sort_desc.png */ "../../../../public/vendor/datatables/images/sort_desc.png")) + ")}table.dataTable thead .sorting_asc_disabled{background-image:url(" + escape(__webpack_require__(/*! ../images/sort_asc_disabled.png */ "../../../../public/vendor/datatables/images/sort_asc_disabled.png")) + ")}table.dataTable thead .sorting_desc_disabled{background-image:url(" + escape(__webpack_require__(/*! ../images/sort_desc_disabled.png */ "../../../../public/vendor/datatables/images/sort_desc_disabled.png")) + ")}table.dataTable tbody tr{background-color:#ffffff}table.dataTable tbody tr.selected{background-color:#B0BED9}table.dataTable tbody th,table.dataTable tbody td{padding:8px 10px}table.dataTable.row-border tbody th,table.dataTable.row-border tbody td,table.dataTable.display tbody th,table.dataTable.display tbody td{border-top:1px solid #ddd}table.dataTable.row-border tbody tr:first-child th,table.dataTable.row-border tbody tr:first-child td,table.dataTable.display tbody tr:first-child th,table.dataTable.display tbody tr:first-child td{border-top:none}table.dataTable.cell-border tbody th,table.dataTable.cell-border tbody td{border-top:1px solid #ddd;border-right:1px solid #ddd}table.dataTable.cell-border tbody tr th:first-child,table.dataTable.cell-border tbody tr td:first-child{border-left:1px solid #ddd}table.dataTable.cell-border tbody tr:first-child th,table.dataTable.cell-border tbody tr:first-child td{border-top:none}table.dataTable.stripe tbody tr.odd,table.dataTable.display tbody tr.odd{background-color:#f9f9f9}table.dataTable.stripe tbody tr.odd.selected,table.dataTable.display tbody tr.odd.selected{background-color:#acbad4}table.dataTable.hover tbody tr:hover,table.dataTable.display tbody tr:hover{background-color:#f6f6f6}table.dataTable.hover tbody tr:hover.selected,table.dataTable.display tbody tr:hover.selected{background-color:#aab7d1}table.dataTable.order-column tbody tr>.sorting_1,table.dataTable.order-column tbody tr>.sorting_2,table.dataTable.order-column tbody tr>.sorting_3,table.dataTable.display tbody tr>.sorting_1,table.dataTable.display tbody tr>.sorting_2,table.dataTable.display tbody tr>.sorting_3{background-color:#fafafa}table.dataTable.order-column tbody tr.selected>.sorting_1,table.dataTable.order-column tbody tr.selected>.sorting_2,table.dataTable.order-column tbody tr.selected>.sorting_3,table.dataTable.display tbody tr.selected>.sorting_1,table.dataTable.display tbody tr.selected>.sorting_2,table.dataTable.display tbody tr.selected>.sorting_3{background-color:#acbad5}table.dataTable.display tbody tr.odd>.sorting_1,table.dataTable.order-column.stripe tbody tr.odd>.sorting_1{background-color:#f1f1f1}table.dataTable.display tbody tr.odd>.sorting_2,table.dataTable.order-column.stripe tbody tr.odd>.sorting_2{background-color:#f3f3f3}table.dataTable.display tbody tr.odd>.sorting_3,table.dataTable.order-column.stripe tbody tr.odd>.sorting_3{background-color:whitesmoke}table.dataTable.display tbody tr.odd.selected>.sorting_1,table.dataTable.order-column.stripe tbody tr.odd.selected>.sorting_1{background-color:#a6b4cd}table.dataTable.display tbody tr.odd.selected>.sorting_2,table.dataTable.order-column.stripe tbody tr.odd.selected>.sorting_2{background-color:#a8b5cf}table.dataTable.display tbody tr.odd.selected>.sorting_3,table.dataTable.order-column.stripe tbody tr.odd.selected>.sorting_3{background-color:#a9b7d1}table.dataTable.display tbody tr.even>.sorting_1,table.dataTable.order-column.stripe tbody tr.even>.sorting_1{background-color:#fafafa}table.dataTable.display tbody tr.even>.sorting_2,table.dataTable.order-column.stripe tbody tr.even>.sorting_2{background-color:#fcfcfc}table.dataTable.display tbody tr.even>.sorting_3,table.dataTable.order-column.stripe tbody tr.even>.sorting_3{background-color:#fefefe}table.dataTable.display tbody tr.even.selected>.sorting_1,table.dataTable.order-column.stripe tbody tr.even.selected>.sorting_1{background-color:#acbad5}table.dataTable.display tbody tr.even.selected>.sorting_2,table.dataTable.order-column.stripe tbody tr.even.selected>.sorting_2{background-color:#aebcd6}table.dataTable.display tbody tr.even.selected>.sorting_3,table.dataTable.order-column.stripe tbody tr.even.selected>.sorting_3{background-color:#afbdd8}table.dataTable.display tbody tr:hover>.sorting_1,table.dataTable.order-column.hover tbody tr:hover>.sorting_1{background-color:#eaeaea}table.dataTable.display tbody tr:hover>.sorting_2,table.dataTable.order-column.hover tbody tr:hover>.sorting_2{background-color:#ececec}table.dataTable.display tbody tr:hover>.sorting_3,table.dataTable.order-column.hover tbody tr:hover>.sorting_3{background-color:#efefef}table.dataTable.display tbody tr:hover.selected>.sorting_1,table.dataTable.order-column.hover tbody tr:hover.selected>.sorting_1{background-color:#a2aec7}table.dataTable.display tbody tr:hover.selected>.sorting_2,table.dataTable.order-column.hover tbody tr:hover.selected>.sorting_2{background-color:#a3b0c9}table.dataTable.display tbody tr:hover.selected>.sorting_3,table.dataTable.order-column.hover tbody tr:hover.selected>.sorting_3{background-color:#a5b2cb}table.dataTable.no-footer{border-bottom:1px solid #111}table.dataTable.nowrap th,table.dataTable.nowrap td{white-space:nowrap}table.dataTable.compact thead th,table.dataTable.compact thead td{padding:4px 17px 4px 4px}table.dataTable.compact tfoot th,table.dataTable.compact tfoot td{padding:4px}table.dataTable.compact tbody th,table.dataTable.compact tbody td{padding:4px}table.dataTable th.dt-left,table.dataTable td.dt-left{text-align:left}table.dataTable th.dt-center,table.dataTable td.dt-center,table.dataTable td.dataTables_empty{text-align:center}table.dataTable th.dt-right,table.dataTable td.dt-right{text-align:right}table.dataTable th.dt-justify,table.dataTable td.dt-justify{text-align:justify}table.dataTable th.dt-nowrap,table.dataTable td.dt-nowrap{white-space:nowrap}table.dataTable thead th.dt-head-left,table.dataTable thead td.dt-head-left,table.dataTable tfoot th.dt-head-left,table.dataTable tfoot td.dt-head-left{text-align:left}table.dataTable thead th.dt-head-center,table.dataTable thead td.dt-head-center,table.dataTable tfoot th.dt-head-center,table.dataTable tfoot td.dt-head-center{text-align:center}table.dataTable thead th.dt-head-right,table.dataTable thead td.dt-head-right,table.dataTable tfoot th.dt-head-right,table.dataTable tfoot td.dt-head-right{text-align:right}table.dataTable thead th.dt-head-justify,table.dataTable thead td.dt-head-justify,table.dataTable tfoot th.dt-head-justify,table.dataTable tfoot td.dt-head-justify{text-align:justify}table.dataTable thead th.dt-head-nowrap,table.dataTable thead td.dt-head-nowrap,table.dataTable tfoot th.dt-head-nowrap,table.dataTable tfoot td.dt-head-nowrap{white-space:nowrap}table.dataTable tbody th.dt-body-left,table.dataTable tbody td.dt-body-left{text-align:left}table.dataTable tbody th.dt-body-center,table.dataTable tbody td.dt-body-center{text-align:center}table.dataTable tbody th.dt-body-right,table.dataTable tbody td.dt-body-right{text-align:right}table.dataTable tbody th.dt-body-justify,table.dataTable tbody td.dt-body-justify{text-align:justify}table.dataTable tbody th.dt-body-nowrap,table.dataTable tbody td.dt-body-nowrap{white-space:nowrap}table.dataTable,table.dataTable th,table.dataTable td{box-sizing:content-box}.dataTables_wrapper{position:relative;clear:both;*zoom:1;zoom:1}.dataTables_wrapper .dataTables_length{float:left}.dataTables_wrapper .dataTables_filter{float:right;text-align:right}.dataTables_wrapper .dataTables_filter input{margin-left:0.5em}.dataTables_wrapper .dataTables_info{clear:both;float:left;padding-top:0.755em}.dataTables_wrapper .dataTables_paginate{float:right;text-align:right;padding-top:0.25em}.dataTables_wrapper .dataTables_paginate .paginate_button{box-sizing:border-box;display:inline-block;min-width:1.5em;padding:0.5em 1em;margin-left:2px;text-align:center;text-decoration:none !important;cursor:pointer;*cursor:hand;color:#333 !important;border:1px solid transparent;border-radius:2px}.dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{color:#333 !important;border:1px solid #979797;background-color:white;background:-webkit-gradient(linear, left top, left bottom, color-stop(0%, #fff), color-stop(100%, #dcdcdc));background:-webkit-linear-gradient(top, #fff 0%, #dcdcdc 100%);background:-moz-linear-gradient(top, #fff 0%, #dcdcdc 100%);background:-ms-linear-gradient(top, #fff 0%, #dcdcdc 100%);background:-o-linear-gradient(top, #fff 0%, #dcdcdc 100%);background:linear-gradient(to bottom, #fff 0%, #dcdcdc 100%)}.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active{cursor:default;color:#666 !important;border:1px solid transparent;background:transparent;box-shadow:none}.dataTables_wrapper .dataTables_paginate .paginate_button:hover{color:white !important;border:1px solid #111;background-color:#585858;background:-webkit-gradient(linear, left top, left bottom, color-stop(0%, #585858), color-stop(100%, #111));background:-webkit-linear-gradient(top, #585858 0%, #111 100%);background:-moz-linear-gradient(top, #585858 0%, #111 100%);background:-ms-linear-gradient(top, #585858 0%, #111 100%);background:-o-linear-gradient(top, #585858 0%, #111 100%);background:linear-gradient(to bottom, #585858 0%, #111 100%)}.dataTables_wrapper .dataTables_paginate .paginate_button:active{outline:none;background-color:#2b2b2b;background:-webkit-gradient(linear, left top, left bottom, color-stop(0%, #2b2b2b), color-stop(100%, #0c0c0c));background:-webkit-linear-gradient(top, #2b2b2b 0%, #0c0c0c 100%);background:-moz-linear-gradient(top, #2b2b2b 0%, #0c0c0c 100%);background:-ms-linear-gradient(top, #2b2b2b 0%, #0c0c0c 100%);background:-o-linear-gradient(top, #2b2b2b 0%, #0c0c0c 100%);background:linear-gradient(to bottom, #2b2b2b 0%, #0c0c0c 100%);box-shadow:inset 0 0 3px #111}.dataTables_wrapper .dataTables_paginate .ellipsis{padding:0 1em}.dataTables_wrapper .dataTables_processing{position:absolute;top:50%;left:50%;width:100%;height:40px;margin-left:-50%;margin-top:-25px;padding-top:20px;text-align:center;font-size:1.2em;background-color:white;background:-webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255,255,255,0)), color-stop(25%, rgba(255,255,255,0.9)), color-stop(75%, rgba(255,255,255,0.9)), color-stop(100%, rgba(255,255,255,0)));background:-webkit-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);background:-moz-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);background:-ms-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);background:-o-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);background:linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%)}.dataTables_wrapper .dataTables_length,.dataTables_wrapper .dataTables_filter,.dataTables_wrapper .dataTables_info,.dataTables_wrapper .dataTables_processing,.dataTables_wrapper .dataTables_paginate{color:#333}.dataTables_wrapper .dataTables_scroll{clear:both}.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody{*margin-top:-1px;-webkit-overflow-scrolling:touch}.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>thead>tr>th,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>thead>tr>td,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>tbody>tr>th,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>tbody>tr>td{vertical-align:middle}.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>thead>tr>th>div.dataTables_sizing,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>thead>tr>td>div.dataTables_sizing,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>tbody>tr>th>div.dataTables_sizing,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>tbody>tr>td>div.dataTables_sizing{height:0;overflow:hidden;margin:0 !important;padding:0 !important}.dataTables_wrapper.no-footer .dataTables_scrollBody{border-bottom:1px solid #111}.dataTables_wrapper.no-footer div.dataTables_scrollHead table.dataTable,.dataTables_wrapper.no-footer div.dataTables_scrollBody>table{border-bottom:none}.dataTables_wrapper:after{visibility:hidden;display:block;content:\"\";clear:both;height:0}@media screen and (max-width: 767px){.dataTables_wrapper .dataTables_info,.dataTables_wrapper .dataTables_paginate{float:none;text-align:center}.dataTables_wrapper .dataTables_paginate{margin-top:0.5em}}@media screen and (max-width: 640px){.dataTables_wrapper .dataTables_length,.dataTables_wrapper .dataTables_filter{float:none;text-align:center}.dataTables_wrapper .dataTables_filter{margin-top:0.5em}}\r\n", ""]);
+exports.push([module.i, "table.dataTable{width:100%;margin:0 auto;clear:both;border-collapse:separate;border-spacing:0}table.dataTable thead th,table.dataTable tfoot th{font-weight:bold}table.dataTable thead th,table.dataTable thead td{padding:10px 18px;border-bottom:1px solid #111}table.dataTable thead th:active,table.dataTable thead td:active{outline:none}table.dataTable tfoot th,table.dataTable tfoot td{padding:10px 18px 6px 18px;border-top:1px solid #111}table.dataTable thead .sorting,table.dataTable thead .sorting_asc,table.dataTable thead .sorting_desc,table.dataTable thead .sorting_asc_disabled,table.dataTable thead .sorting_desc_disabled{cursor:pointer;*cursor:hand;background-repeat:no-repeat;background-position:center right}table.dataTable thead .sorting{background-image:url(" + escape(__webpack_require__(/*! ../images/sort_both.png */ "../../../../public/vendor/datatables/images/sort_both.png")) + ")}table.dataTable thead .sorting_asc{background-image:url(" + escape(__webpack_require__(/*! ../images/sort_asc.png */ "../../../../public/vendor/datatables/images/sort_asc.png")) + ")}table.dataTable thead .sorting_desc{background-image:url(" + escape(__webpack_require__(/*! ../images/sort_desc.png */ "../../../../public/vendor/datatables/images/sort_desc.png")) + ")}table.dataTable thead .sorting_asc_disabled{background-image:url(" + escape(__webpack_require__(/*! ../images/sort_asc_disabled.png */ "../../../../public/vendor/datatables/images/sort_asc_disabled.png")) + ")}table.dataTable thead .sorting_desc_disabled{background-image:url(" + escape(__webpack_require__(/*! ../images/sort_desc_disabled.png */ "../../../../public/vendor/datatables/images/sort_desc_disabled.png")) + ")}table.dataTable tbody tr{background-color:#ffffff}table.dataTable tbody tr.selected{background-color:#B0BED9}table.dataTable tbody th,table.dataTable tbody td{padding:8px 10px}table.dataTable.row-border tbody th,table.dataTable.row-border tbody td,table.dataTable.display tbody th,table.dataTable.display tbody td{border-top:1px solid #ddd}table.dataTable.row-border tbody tr:first-child th,table.dataTable.row-border tbody tr:first-child td,table.dataTable.display tbody tr:first-child th,table.dataTable.display tbody tr:first-child td{border-top:none}table.dataTable.cell-border tbody th,table.dataTable.cell-border tbody td{border-top:1px solid #ddd;border-right:1px solid #ddd}table.dataTable.cell-border tbody tr th:first-child,table.dataTable.cell-border tbody tr td:first-child{border-left:1px solid #ddd}table.dataTable.cell-border tbody tr:first-child th,table.dataTable.cell-border tbody tr:first-child td{border-top:none}table.dataTable.stripe tbody tr.odd,table.dataTable.display tbody tr.odd{background-color:#f9f9f9}table.dataTable.stripe tbody tr.odd.selected,table.dataTable.display tbody tr.odd.selected{background-color:#acbad4}table.dataTable.hover tbody tr:hover,table.dataTable.display tbody tr:hover{background-color:#f6f6f6}table.dataTable.hover tbody tr:hover.selected,table.dataTable.display tbody tr:hover.selected{background-color:#aab7d1}table.dataTable.order-column tbody tr>.sorting_1,table.dataTable.order-column tbody tr>.sorting_2,table.dataTable.order-column tbody tr>.sorting_3,table.dataTable.display tbody tr>.sorting_1,table.dataTable.display tbody tr>.sorting_2,table.dataTable.display tbody tr>.sorting_3{background-color:#fafafa}table.dataTable.order-column tbody tr.selected>.sorting_1,table.dataTable.order-column tbody tr.selected>.sorting_2,table.dataTable.order-column tbody tr.selected>.sorting_3,table.dataTable.display tbody tr.selected>.sorting_1,table.dataTable.display tbody tr.selected>.sorting_2,table.dataTable.display tbody tr.selected>.sorting_3{background-color:#acbad5}table.dataTable.display tbody tr.odd>.sorting_1,table.dataTable.order-column.stripe tbody tr.odd>.sorting_1{background-color:#f1f1f1}table.dataTable.display tbody tr.odd>.sorting_2,table.dataTable.order-column.stripe tbody tr.odd>.sorting_2{background-color:#f3f3f3}table.dataTable.display tbody tr.odd>.sorting_3,table.dataTable.order-column.stripe tbody tr.odd>.sorting_3{background-color:whitesmoke}table.dataTable.display tbody tr.odd.selected>.sorting_1,table.dataTable.order-column.stripe tbody tr.odd.selected>.sorting_1{background-color:#a6b4cd}table.dataTable.display tbody tr.odd.selected>.sorting_2,table.dataTable.order-column.stripe tbody tr.odd.selected>.sorting_2{background-color:#a8b5cf}table.dataTable.display tbody tr.odd.selected>.sorting_3,table.dataTable.order-column.stripe tbody tr.odd.selected>.sorting_3{background-color:#a9b7d1}table.dataTable.display tbody tr.even>.sorting_1,table.dataTable.order-column.stripe tbody tr.even>.sorting_1{background-color:#fafafa}table.dataTable.display tbody tr.even>.sorting_2,table.dataTable.order-column.stripe tbody tr.even>.sorting_2{background-color:#fcfcfc}table.dataTable.display tbody tr.even>.sorting_3,table.dataTable.order-column.stripe tbody tr.even>.sorting_3{background-color:#fefefe}table.dataTable.display tbody tr.even.selected>.sorting_1,table.dataTable.order-column.stripe tbody tr.even.selected>.sorting_1{background-color:#acbad5}table.dataTable.display tbody tr.even.selected>.sorting_2,table.dataTable.order-column.stripe tbody tr.even.selected>.sorting_2{background-color:#aebcd6}table.dataTable.display tbody tr.even.selected>.sorting_3,table.dataTable.order-column.stripe tbody tr.even.selected>.sorting_3{background-color:#afbdd8}table.dataTable.display tbody tr:hover>.sorting_1,table.dataTable.order-column.hover tbody tr:hover>.sorting_1{background-color:#eaeaea}table.dataTable.display tbody tr:hover>.sorting_2,table.dataTable.order-column.hover tbody tr:hover>.sorting_2{background-color:#ececec}table.dataTable.display tbody tr:hover>.sorting_3,table.dataTable.order-column.hover tbody tr:hover>.sorting_3{background-color:#efefef}table.dataTable.display tbody tr:hover.selected>.sorting_1,table.dataTable.order-column.hover tbody tr:hover.selected>.sorting_1{background-color:#a2aec7}table.dataTable.display tbody tr:hover.selected>.sorting_2,table.dataTable.order-column.hover tbody tr:hover.selected>.sorting_2{background-color:#a3b0c9}table.dataTable.display tbody tr:hover.selected>.sorting_3,table.dataTable.order-column.hover tbody tr:hover.selected>.sorting_3{background-color:#a5b2cb}table.dataTable.no-footer{border-bottom:1px solid #111}table.dataTable.nowrap th,table.dataTable.nowrap td{white-space:nowrap}table.dataTable.compact thead th,table.dataTable.compact thead td{padding:4px 17px 4px 4px}table.dataTable.compact tfoot th,table.dataTable.compact tfoot td{padding:4px}table.dataTable.compact tbody th,table.dataTable.compact tbody td{padding:4px}table.dataTable th.dt-left,table.dataTable td.dt-left{text-align:left}table.dataTable th.dt-center,table.dataTable td.dt-center,table.dataTable td.dataTables_empty{text-align:center}table.dataTable th.dt-right,table.dataTable td.dt-right{text-align:right}table.dataTable th.dt-justify,table.dataTable td.dt-justify{text-align:justify}table.dataTable th.dt-nowrap,table.dataTable td.dt-nowrap{white-space:nowrap}table.dataTable thead th.dt-head-left,table.dataTable thead td.dt-head-left,table.dataTable tfoot th.dt-head-left,table.dataTable tfoot td.dt-head-left{text-align:left}table.dataTable thead th.dt-head-center,table.dataTable thead td.dt-head-center,table.dataTable tfoot th.dt-head-center,table.dataTable tfoot td.dt-head-center{text-align:center}table.dataTable thead th.dt-head-right,table.dataTable thead td.dt-head-right,table.dataTable tfoot th.dt-head-right,table.dataTable tfoot td.dt-head-right{text-align:right}table.dataTable thead th.dt-head-justify,table.dataTable thead td.dt-head-justify,table.dataTable tfoot th.dt-head-justify,table.dataTable tfoot td.dt-head-justify{text-align:justify}table.dataTable thead th.dt-head-nowrap,table.dataTable thead td.dt-head-nowrap,table.dataTable tfoot th.dt-head-nowrap,table.dataTable tfoot td.dt-head-nowrap{white-space:nowrap}table.dataTable tbody th.dt-body-left,table.dataTable tbody td.dt-body-left{text-align:left}table.dataTable tbody th.dt-body-center,table.dataTable tbody td.dt-body-center{text-align:center}table.dataTable tbody th.dt-body-right,table.dataTable tbody td.dt-body-right{text-align:right}table.dataTable tbody th.dt-body-justify,table.dataTable tbody td.dt-body-justify{text-align:justify}table.dataTable tbody th.dt-body-nowrap,table.dataTable tbody td.dt-body-nowrap{white-space:nowrap}table.dataTable,table.dataTable th,table.dataTable td{box-sizing:content-box}.dataTables_wrapper{position:relative;clear:both;*zoom:1;zoom:1}.dataTables_wrapper .dataTables_length{float:left}.dataTables_wrapper .dataTables_filter{float:right;text-align:right}.dataTables_wrapper .dataTables_filter input{margin-left:0.5em}.dataTables_wrapper .dataTables_info{clear:both;float:left;padding-top:0.755em}.dataTables_wrapper .dataTables_paginate{float:right;text-align:right;padding-top:0.25em}.dataTables_wrapper .dataTables_paginate .paginate_button{box-sizing:border-box;display:inline-block;min-width:1.5em;padding:0.5em 1em;margin-left:2px;text-align:center;text-decoration:none !important;cursor:pointer;*cursor:hand;color:#333 !important;border:1px solid transparent;border-radius:2px}.dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{color:#333 !important;border:1px solid #979797;background-color:white;background:-webkit-gradient(linear, left top, left bottom, color-stop(0%, #fff), color-stop(100%, #dcdcdc));background:-webkit-linear-gradient(top, #fff 0%, #dcdcdc 100%);background:-moz-linear-gradient(top, #fff 0%, #dcdcdc 100%);background:-ms-linear-gradient(top, #fff 0%, #dcdcdc 100%);background:-o-linear-gradient(top, #fff 0%, #dcdcdc 100%);background:linear-gradient(to bottom, #fff 0%, #dcdcdc 100%)}.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active{cursor:default;color:#666 !important;border:1px solid transparent;background:transparent;box-shadow:none}.dataTables_wrapper .dataTables_paginate .paginate_button:hover{color:white !important;border:1px solid #111;background-color:#585858;background:-webkit-gradient(linear, left top, left bottom, color-stop(0%, #585858), color-stop(100%, #111));background:-webkit-linear-gradient(top, #585858 0%, #111 100%);background:-moz-linear-gradient(top, #585858 0%, #111 100%);background:-ms-linear-gradient(top, #585858 0%, #111 100%);background:-o-linear-gradient(top, #585858 0%, #111 100%);background:linear-gradient(to bottom, #585858 0%, #111 100%)}.dataTables_wrapper .dataTables_paginate .paginate_button:active{outline:none;background-color:#2b2b2b;background:-webkit-gradient(linear, left top, left bottom, color-stop(0%, #2b2b2b), color-stop(100%, #0c0c0c));background:-webkit-linear-gradient(top, #2b2b2b 0%, #0c0c0c 100%);background:-moz-linear-gradient(top, #2b2b2b 0%, #0c0c0c 100%);background:-ms-linear-gradient(top, #2b2b2b 0%, #0c0c0c 100%);background:-o-linear-gradient(top, #2b2b2b 0%, #0c0c0c 100%);background:linear-gradient(to bottom, #2b2b2b 0%, #0c0c0c 100%);box-shadow:inset 0 0 3px #111}.dataTables_wrapper .dataTables_paginate .ellipsis{padding:0 1em}.dataTables_wrapper .dataTables_processing{position:absolute;top:50%;left:50%;width:100%;height:40px;margin-left:-50%;margin-top:-25px;padding-top:20px;text-align:center;font-size:1.2em;background-color:white;background:-webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255,255,255,0)), color-stop(25%, rgba(255,255,255,0.9)), color-stop(75%, rgba(255,255,255,0.9)), color-stop(100%, rgba(255,255,255,0)));background:-webkit-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);background:-moz-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);background:-ms-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);background:-o-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);background:linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%)}.dataTables_wrapper .dataTables_length,.dataTables_wrapper .dataTables_filter,.dataTables_wrapper .dataTables_info,.dataTables_wrapper .dataTables_processing,.dataTables_wrapper .dataTables_paginate{color:#333}.dataTables_wrapper .dataTables_scroll{clear:both}.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody{*margin-top:-1px;-webkit-overflow-scrolling:touch}.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>thead>tr>th,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>thead>tr>td,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>tbody>tr>th,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>tbody>tr>td{vertical-align:middle}.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>thead>tr>th>div.dataTables_sizing,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>thead>tr>td>div.dataTables_sizing,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>tbody>tr>th>div.dataTables_sizing,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody>table>tbody>tr>td>div.dataTables_sizing{height:0;overflow:hidden;margin:0 !important;padding:0 !important}.dataTables_wrapper.no-footer .dataTables_scrollBody{border-bottom:1px solid #111}.dataTables_wrapper.no-footer div.dataTables_scrollHead table.dataTable,.dataTables_wrapper.no-footer div.dataTables_scrollBody>table{border-bottom:none}.dataTables_wrapper:after{visibility:hidden;display:block;content:\"\";clear:both;height:0}@media screen and (max-width: 767px){.dataTables_wrapper .dataTables_info,.dataTables_wrapper .dataTables_paginate{float:none;text-align:center}.dataTables_wrapper .dataTables_paginate{margin-top:0.5em}}@media screen and (max-width: 640px){.dataTables_wrapper .dataTables_length,.dataTables_wrapper .dataTables_filter{float:none;text-align:center}.dataTables_wrapper .dataTables_filter{margin-top:0.5em}}\n", ""]);
 
 // exports
 
@@ -15684,7 +15647,7 @@ exports.push([module.i, "table.dataTable{width:100%;margin:0 auto;clear:both;bor
 
 /***/ "../../../../node_modules/css-loader/index.js??ref--5-1!../../../../public/vendor/select2/css/select2.css":
 /*!*************************************************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!D:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!F:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
   \*************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -15703,7 +15666,7 @@ exports.push([module.i, ".select2-container {\r\n  box-sizing: border-box;\r\n  
 
 /***/ "../../../../node_modules/css-loader/index.js??ref--5-1!../../../vendor/jstree/themes/default/style.min.css":
 /*!**********************************************************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!D:/sc/spexplorer/js/spexplorerjs/src/vendor/jstree/themes/default/style.min.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!F:/sc/spexplorer/js/spexplorerjs/src/vendor/jstree/themes/default/style.min.css ***!
   \**********************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -15723,7 +15686,7 @@ exports.push([module.i, ".jstree-node,.jstree-children,.jstree-container-ul{disp
 
 /***/ "../../../../node_modules/css-loader/lib/css-base.js":
 /*!********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
   \********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -15810,7 +15773,7 @@ function toComment(sourceMap) {
 
 /***/ "../../../../node_modules/css-loader/lib/url/escape.js":
 /*!**********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader/lib/url/escape.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader/lib/url/escape.js ***!
   \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -15837,7 +15800,7 @@ module.exports = function escape(url) {
 
 /***/ "../../../../node_modules/jquery/dist/jquery.js":
 /*!***************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
   \***************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -26213,7 +26176,7 @@ return jQuery;
 
 /***/ "../../../../node_modules/js-beautify/js/lib/beautify-css.js":
 /*!****************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify-css.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify-css.js ***!
   \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -27263,7 +27226,7 @@ if (true) {
 
 /***/ "../../../../node_modules/js-beautify/js/lib/beautify-html.js":
 /*!*****************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify-html.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify-html.js ***!
   \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -28643,7 +28606,7 @@ if (true) {
 
 /***/ "../../../../node_modules/js-beautify/js/lib/beautify.js":
 /*!************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/js-beautify/js/lib/beautify.js ***!
   \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -31472,7 +31435,7 @@ if (true) {
 
 /***/ "../../../../node_modules/jshint/dist/jshint.js":
 /*!***************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/jshint/dist/jshint.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/jshint/dist/jshint.js ***!
   \***************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -56017,7 +55980,7 @@ if (typeof exports === 'object' && exports) exports.JSHINT = JSHINT;
 
 /***/ "../../../../node_modules/style-loader/lib/addStyles.js":
 /*!***********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/style-loader/lib/addStyles.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/style-loader/lib/addStyles.js ***!
   \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -56404,7 +56367,7 @@ function updateLink (link, options, obj) {
 
 /***/ "../../../../node_modules/style-loader/lib/urls.js":
 /*!******************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/style-loader/lib/urls.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/node_modules/style-loader/lib/urls.js ***!
   \******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -56568,7 +56531,7 @@ module.exports = function(module) {
 
 /***/ "../../../../public/vendor/bootstrap/3.3.7/css/spexp.min.css":
 /*!****************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.min.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/css/spexp.min.css ***!
   \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -56598,7 +56561,7 @@ if(false) {}
 
 /***/ "../../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot":
 /*!*************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot ***!
   \*************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -56609,7 +56572,7 @@ module.exports = "data:application/vnd.ms-fontobject;base64,n04AAEFNAAACAAIABAAA
 
 /***/ "../../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot?":
 /*!**************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot? ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot? ***!
   \**************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -56620,7 +56583,7 @@ module.exports = "data:application/vnd.ms-fontobject;base64,n04AAEFNAAACAAIABAAA
 
 /***/ "../../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg":
 /*!*************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg ***!
   \*************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -56631,7 +56594,7 @@ module.exports = "data:image/svg+xml;base64,bW9kdWxlLmV4cG9ydHMgPSAiZGF0YTppbWFn
 
 /***/ "../../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf":
 /*!*************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf ***!
   \*************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -56642,7 +56605,7 @@ module.exports = "data:font/ttf;base64,AAEAAAAPAIAAAwBwRkZUTW0ql9wAAAD8AAAAHEdER
 
 /***/ "../../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff":
 /*!**************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff ***!
   \**************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -56653,7 +56616,7 @@ module.exports = "data:application/font-woff;base64,d09GRgABAAAAAFuAAA8AAAAAsVwA
 
 /***/ "../../../../public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2":
 /*!***************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2 ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2 ***!
   \***************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -56664,7 +56627,7 @@ module.exports = "data:font/woff2;base64,d09GMgABAAAAAEZsAA8AAAAAsVwAAEYJAAECTQA
 
 /***/ "../../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js":
 /*!**************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/js/bootstrap.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/bootstrap/3.3.7/js/bootstrap.js ***!
   \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -58838,7 +58801,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 /***/ "../../../../public/vendor/datatables/css/jquery.datatables.min.css":
 /*!***********************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/css/jquery.datatables.min.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/css/jquery.datatables.min.css ***!
   \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -58868,7 +58831,7 @@ if(false) {}
 
 /***/ "../../../../public/vendor/datatables/images/sort_asc.png":
 /*!*************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/images/sort_asc.png ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/images/sort_asc.png ***!
   \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -58879,7 +58842,7 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAABy
 
 /***/ "../../../../public/vendor/datatables/images/sort_asc_disabled.png":
 /*!**********************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/images/sort_asc_disabled.png ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/images/sort_asc_disabled.png ***!
   \**********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -58890,7 +58853,7 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAQAAADY
 
 /***/ "../../../../public/vendor/datatables/images/sort_both.png":
 /*!**************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/images/sort_both.png ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/images/sort_both.png ***!
   \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -58901,7 +58864,7 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAQAAADY
 
 /***/ "../../../../public/vendor/datatables/images/sort_desc.png":
 /*!**************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/images/sort_desc.png ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/images/sort_desc.png ***!
   \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -58912,7 +58875,7 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAABy
 
 /***/ "../../../../public/vendor/datatables/images/sort_desc_disabled.png":
 /*!***********************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/images/sort_desc_disabled.png ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/images/sort_desc_disabled.png ***!
   \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -58923,7 +58886,7 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAQAAADY
 
 /***/ "../../../../public/vendor/datatables/jquery.datatables.js":
 /*!**************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/jquery.datatables.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/datatables/jquery.datatables.js ***!
   \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -72819,7 +72782,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 /***/ "../../../../public/vendor/moment/moment.js":
 /*!***********************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/moment/moment.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/moment/moment.js ***!
   \***********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -77235,7 +77198,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 /***/ "../../../../public/vendor/select2/css/select2.css":
 /*!******************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
   \******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -77265,7 +77228,7 @@ if(false) {}
 
 /***/ "../../../../public/vendor/select2/js/select2.full.js":
 /*!*********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/js/select2.full.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/js/select2.full.js ***!
   \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -83366,7 +83329,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 /***/ "../../../vendor/jstree/jstree.js":
 /*!********************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/vendor/jstree/jstree.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/vendor/jstree/jstree.js ***!
   \********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -92578,7 +92541,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 /***/ "../../../vendor/jstree/themes/default/32px.png":
 /*!**********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/vendor/jstree/themes/default/32px.png ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/vendor/jstree/themes/default/32px.png ***!
   \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -92589,7 +92552,7 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAABgCAMAAABb
 
 /***/ "../../../vendor/jstree/themes/default/40px.png":
 /*!**********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/vendor/jstree/themes/default/40px.png ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/vendor/jstree/themes/default/40px.png ***!
   \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -92600,7 +92563,7 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAAHgCAMAAACs
 
 /***/ "../../../vendor/jstree/themes/default/style.min.css":
 /*!***************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/vendor/jstree/themes/default/style.min.css ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/vendor/jstree/themes/default/style.min.css ***!
   \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -92630,7 +92593,7 @@ if(false) {}
 
 /***/ "../../../vendor/jstree/themes/default/throbber.gif":
 /*!**************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/vendor/jstree/themes/default/throbber.gif ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/vendor/jstree/themes/default/throbber.gif ***!
   \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -92641,7 +92604,7 @@ module.exports = "data:image/gif;base64,R0lGODlhEAAQAPMAAP////Dw8IqKiuDg4EZGRnp6
 
 /***/ "../../logger/logger.js":
 /*!************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/logger/logger.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/logger/logger.js ***!
   \************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -92789,7 +92752,7 @@ __webpack_require__(/*! ../string/funcs.js */ "../../string/funcs.js");
 
 /***/ "../../mirrors/jseditor.js":
 /*!***************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/jseditor.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/jseditor.js ***!
   \***************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -92971,7 +92934,7 @@ window.CodeMirror = _codemirror2.default;
 
 /***/ "../../mirrors/jsmirror.js":
 /*!***************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/jsmirror.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/jsmirror.js ***!
   \***************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -93094,7 +93057,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /***/ "../../mirrors/jsmirror.template.html":
 /*!**************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/jsmirror.template.html ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/jsmirror.template.html ***!
   \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -93105,7 +93068,7 @@ module.exports = "<style type='text/css'>\r\n    .full {\r\n        width: 100%;
 
 /***/ "../../mirrors/xmleditor.js":
 /*!****************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/xmleditor.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/xmleditor.js ***!
   \****************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -93314,7 +93277,7 @@ window.JSHINT = _jshint2.default.JSHINT;
 
 /***/ "../../mirrors/xmleditor.template.html":
 /*!***************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/xmleditor.template.html ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/xmleditor.template.html ***!
   \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -93325,7 +93288,7 @@ module.exports = "<div>\r\n    <style type=\"text/css\">\r\n        html, body, 
 
 /***/ "../../mirrors/xmlmirror.js":
 /*!****************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/xmlmirror.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/xmlmirror.js ***!
   \****************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -93399,7 +93362,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /***/ "../../mirrors/xmlmirror.template.html":
 /*!***************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/xmlmirror.template.html ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/mirrors/xmlmirror.template.html ***!
   \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -93410,7 +93373,7 @@ module.exports = "<style type=\"text/css\">\r\n    .full {\r\n        width: 100
 
 /***/ "../../string/funcs.js":
 /*!***********************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/string/funcs.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/string/funcs.js ***!
   \***********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -93544,7 +93507,7 @@ __webpack_require__(/*! ./string.js */ "../../string/string.js");
 
 /***/ "../../string/string.js":
 /*!************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/string/string.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/string/string.js ***!
   \************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -93641,7 +93604,7 @@ __webpack_require__(/*! ./string.js */ "../../string/string.js");
 
 /***/ "../../widget.base.js":
 /*!**********************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/widget.base.js ***!
+  !*** F:/sc/spexplorer/js/spexplorerjs/src/components/widget.base.js ***!
   \**********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -94747,7 +94710,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 		var ensureGroups = function ensureGroups(groups) {
 			return $.Deferred(function (dfdG) {
 				getGroups().done(function () /*spGroups*/{
-					ns.funcs.processAsQueue(groups, function (group) {
+					ns.modules.funcs.processAsQueue(groups, function (group) {
 						return $.Deferred(function (dfd) {
 							ensureGroup(group.name, group.desc).done(function (spGroup) {
 								log("Adding permissions for " + group.name);
@@ -94788,7 +94751,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 			}).promise();
 		};
 		var ensureCTypes = function ensureCTypes(ctypes) {
-			return ns.funcs.processAsQueue(ctypes || [], function (ctype) {
+			return ns.modules.funcs.processAsQueue(ctypes || [], function (ctype) {
 				return ensureCtype(ctype.Name, ctype.FieldLinks);
 			});
 		};
@@ -94868,7 +94831,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 											if (args.Permissions) {
 												breakRoleInheritance(false, true).done(function () {
 													log("done with inheritance");
-													ns.funcs.processAsQueue(args.Permissions, function (entry) {
+													ns.modules.funcs.processAsQueue(args.Permissions, function (entry) {
 														var groupName = entry.name;
 														var perms = entry.permissions;
 														log("adding perm: " + groupName + " to " + args.ListTitle);
@@ -94937,7 +94900,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 						dfd.reject("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
 					});
 				};
-				ns.funcs.processAsQueue(fields, function (field) {
+				ns.modules.funcs.processAsQueue(fields, function (field) {
 					return $.Deferred(function (fieldDfd) {
 						getMarkup(field).done(function (xml) {
 
@@ -95101,7 +95064,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 			var allitems = [];
 
 			return $.Deferred(function (alldfd) {
-				ns.funcs.processAsQueue(folderQueue, function (folder) {
+				ns.modules.funcs.processAsQueue(folderQueue, function (folder) {
 
 					return $.Deferred(function (dfd) {
 
@@ -95207,7 +95170,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 			clearActions: clearActions,
 			createFolder: createFolder,
 			loadSpElem: loadSpElem,
-			processAsQueue: ns.funcs.processAsQueue,
+			processAsQueue: ns.modules.funcs.processAsQueue,
 			ensureFolder: ensureFolder,
 			getItems: getAllItemsPaged,
 			addItems: addItems,
