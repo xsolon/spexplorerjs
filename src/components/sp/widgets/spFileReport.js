@@ -1,15 +1,18 @@
-/// <reference path="../../typings/sharepoint/index.d.ts" />
-/// <reference path="../widget.base.js" />
-/// <reference path="sp.list.js" />
-import moment from "../../../node_modules/moment/moment.js";
-import "./sp.base.js";
-import "./sp.web.js";
+/// <reference path="../../../typings/sharepoint/index.d.ts" />
+/// <reference path="../../widget.base.js" />
+/// <reference path="../../../../node_modules/moment/moment.js" />
+/// <reference path="../api/sp.list.js" />
+import moment from "../../../../node_modules/moment/moment.js";
+import "../api/sp.base.js";
+import "../api/sp.web.js";
 import "./treelight.js";
-import "../mirrors/xmlmirror.js";
-import "../widget.base.js";
-import "./sp.list.js";
+import "../../mirrors/xmlmirror.js";
+import "../../widget.base.js";
+import "../api/sp.list.js";
 
 import template from "./spFileReport.html";
+
+// 0.0.2 - updated to latest api
 
 (function (ns, $, moment) {
 
@@ -25,7 +28,7 @@ import template from "./spFileReport.html";
 		var cancel = false;
 		var me = {};
 
-		var archiveDal = new ns.listapi.Dal({
+		var archiveDal = new ns.modules.listapi.Dal({
 			ListTitle: "OldItems",
 			ListTemplate: 100, //SP.ListTemplateType.genericList,
 			Fields: [
@@ -69,8 +72,8 @@ import template from "./spFileReport.html";
 
 						var subs = web.getSubwebsForCurrentUser();
 
-						ns.sp.loadSpElem(subs).done(function () {
-							websdfd.resolve(ns.sp.collectionToArray(subs));
+						ctx.loadSpElem(subs).done(function () {
+							websdfd.resolve(ns.modules.spapi.collectionToArray(subs));
 						});
 					}).promise();
 
@@ -81,10 +84,10 @@ import template from "./spFileReport.html";
 						ctx.load(lists);
 
 						ctx.executeQueryAsync(function () {
-							lists = ns.sp.collectionToArray(lists);
+							lists = ns.modules.spapi.collectionToArray(lists);
 
 							// only doc libraries
-							lists = jQuery.grep(lists,
+							lists = $.grep(lists,
 								function (n) {
 									return n.get_baseTemplate() === 101;
 								});
@@ -125,7 +128,7 @@ import template from "./spFileReport.html";
 
 					trace.debug(msg);
 
-					var dal = new ns.listapi.Dal(list);
+					var dal = new ns.modules.listapi.Dal(list);
 
 					return $.Deferred(function (listDfd) {
 						var onDone = function (items) {
@@ -191,9 +194,9 @@ import template from "./spFileReport.html";
 							archiveDal.loadSpElem(folderItem);
 
 							var archiveItems = [];
-							var groups = ns.funcs.groupBySize(items, 100);
+							var groups = ns.modules.funcs.groupBySize(items, 100);
 
-							ns.funcs.processAsQueue(groups,
+							ns.modules.funcs.processAsQueue(groups,
 								function (gItems) {
 
 									gItems.forEach(function (n) {
@@ -215,7 +218,7 @@ import template from "./spFileReport.html";
 
 				};
 
-				ns.funcs.processAsQueue(arr, function (obj) {
+				ns.modules.funcs.processAsQueue(arr, function (obj) {
 					ctx = ctx || obj.get_context();
 
 					return $.Deferred(function (dfd) {
@@ -293,7 +296,7 @@ import template from "./spFileReport.html";
 					btn.prop("disabled", false);
 					btnCancel.hide();
 					trace.log(items.length);
-					//ns.sp.uploadAjax()
+					//ns.modules.spapi.uploadAjax()
 				});
 
 				return false;
@@ -304,6 +307,6 @@ import template from "./spFileReport.html";
 		return me;
 	};
 
-	ns.widgets.addSpWidget("spFileReport", oldReport, "0.0.1");
+	ns.widgets.addSpWidget("spFileReport", oldReport, "0.0.2");
 
-})(spexplorerjs, jQuery, moment);
+})(spexplorerjs, spexplorerjs.modules.jQuery, moment);

@@ -110,7 +110,7 @@ import "./sp.folderapi.js";
 		}).promise();
 	};
 
-	var getByTitle = function(listTitle, ctx) {
+	var getByTitle = function (listTitle, ctx) {
 		ctx = ctx || ns.modules.spapi.getCtx();
 		return ctx.get_web().get_lists().getByTitle(listTitle);
 	};
@@ -463,7 +463,6 @@ import "./sp.folderapi.js";
 			ctx.load(action);
 			var dfd = $.Deferred();
 
-			ns.modules.loadSpElem(action).done(function () {
 			ctx.loadSpElem(action).done(function () {
 				log("addCustomAction.done");
 				dfd.resolve(action);
@@ -1043,7 +1042,7 @@ import "./sp.folderapi.js";
 			args: args,
 			deleteList: delTheList,
 			addWebPart: addWebPart,
-			getitems: function (caml /*string*/, force /*bool*/) {
+			getitems: function (caml /*string*/, force /*bool*/, limit, folder) {
 				if (arguments.length == 1) {
 					force = true;
 				}
@@ -1056,7 +1055,7 @@ import "./sp.folderapi.js";
 						dfd.resolve(items);
 					} else {
 						getlist().done(function () /*list*/ {
-							getitems(caml).done(function (res) {
+							getitems(caml, folder, limit).done(function (res) {
 								items = res;
 								dfd.resolve(items, list, ctx);
 							});

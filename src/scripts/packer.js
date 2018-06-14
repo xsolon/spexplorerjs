@@ -10,7 +10,7 @@ var files = [
     //,"./src/components/loader/loader.js"
     //, "./src/components/logger/logger.js"
     //,
-    "./src/components/sp/api/api.js"
+    //"./src/components/sp/api/api.js"
     //,
     //,"./src/components/sp/api/tester.js"
     //,"./src/components/datatables/datatables.js"
@@ -21,7 +21,7 @@ var files = [
     // , "./src/components/mirrors/xmlmirror.js"
     //"./src/components/sp/widgets/treelight.js"
     //,
-    //"./src/components/sp/spFileReport.js"
+    "./src/components/sp/widgets/spFileReport.js"
     //,
     //"./src/components/sp/sp.list.js"
     //,
@@ -29,8 +29,8 @@ var files = [
     //, "./src/components/sp/sp.wizard.js"
     //,
     //"./src/components/sp/sp.list.js"
-    ,
-    "./src/components/sp/widgets/list.editor.js"
+    //,
+    //"./src/components/sp/widgets/list.editor.js"
     //,
     //"./src/components/sp/widgets/field.selector.js"
     //"./src/components/sp/widgets/masterpageselector.js"

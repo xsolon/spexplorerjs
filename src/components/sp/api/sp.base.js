@@ -1,5 +1,6 @@
 /// <reference path="../../logger/logger.js" />
 /* global require,ExecuteOrDelayUntilScriptLoaded */
+// v 0.0.5 : 2018-06-14 - use get_current in getCtx
 // v 0.0.5 : 2018-06-01 - bug in ctx.prototyp.loadSpElem
 // v 0.0.4 : 2018-05-22 - add loadSpElem to Sp.ClientContext
 // v 0.0.3 : 2018-05-17 - getFieldMap
@@ -15,7 +16,7 @@ require("../../logger/logger.js");
 
 
 	var utils = {
-		version: "v0.0.5",
+		version: "v0.0.6",
 		collectionToArray: function (spCollection) {
 
 			var result = [];
@@ -109,7 +110,10 @@ require("../../logger/logger.js");
 		},
 		getCtx: function (url) {
 			var ctx;
-			ctx = new SP.ClientContext(url);
+			if (url)
+				ctx = new SP.ClientContext(url);
+			else
+				ctx = SP.ClientContext.get_current();
 			//try {
 			//  ctx = SP.ClientContext.get_current();
 			//} catch (e) {

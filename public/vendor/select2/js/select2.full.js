@@ -3662,7 +3662,7 @@
 							option.children != null &&
               !wrapper({
               	results: option.children
-							}, true)
+              }, true)
 						);
 
 						var optionText = (option.text || "").toUpperCase();
