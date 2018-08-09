@@ -86,6 +86,6 @@ import "../../widget.base.js";
 
 	};
 
-	ns.widgets.addSpWidget("xSpWebEditor", xSpWebEditor, "0.0.2");
+	ns.widgets.addSpWidget("xSpWebEditor", xSpWebEditor, "0.0.3");
 
 })(spexplorerjs, spexplorerjs.modules.jQuery);

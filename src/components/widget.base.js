@@ -1,4 +1,5 @@
 /*globals ExecuteOrDelayUntilScriptLoaded */
+// 0.1.4: 2018/08/09    -   added funcs as dependency to support all  widgets
 // 0.1.3: 2018/04/28    -   modules
 // 0.1.2: 2018/03/23    -   addSpWidget for SharePoint components
 //                          add version number to elements with class widgetinfo
@@ -6,6 +7,7 @@
 //                          log from tracing
 // 0.1.0: 2018/03/23    -   pass options to widget constructor
 import "./logger/logger.js";
+import "./string/funcs.js";
 
 (function (ns, $) {
 
@@ -18,6 +20,7 @@ import "./logger/logger.js";
 	var defineWidget = function (name, constructor, version) {
 
 		return {
+
 			publicName: name,
 			constructor: constructor,
 			version: version,

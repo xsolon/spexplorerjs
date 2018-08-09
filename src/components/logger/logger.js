@@ -1,4 +1,4 @@
-/* global require */
+// v 1.0.7: 2018-08-19  - remove dependency on funcs.js
 // v 1.0.6: 2018-05-17  - assert, addOnTraceHandler allows additional event hanlders for trace
 // v 1.0.4: 2018-04-28  - move definition to modules
 // v 1.0.2: 2018-04-28  - match spexplorerjs.trace
@@ -6,12 +6,31 @@
 // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
 // v 0.0.1: 2018-03-28  - debug, get
 
-require("../string/funcs.js");
-
+//require("../string/funcs.js");
 (function (ns) {
 
+	var format = function format() {
+		/// TODO: unit test, breaks in some cases
+		var args = arguments;
+		var tmpl = args[0];
+		for (var i = 0; i < args.length - 1; i++) {
+			var s = "\\{" + i + "\\}";
+			var reg1 = new RegExp(s, "g");
+			tmpl = tmpl.replace(reg1, encodeURIComponent(args[i + 1]));
+		}
+		try {
+			tmpl = decodeURIComponent(tmpl);
+		} catch (e) {
+
+			console && console.error(e);
+			throw e;
+		}
+
+		return tmpl;
+	};
+
 	var logf = function () {
-		var msg = ns.modules.string.format.apply(ns.modules.string.format, arguments);
+		var msg = format.apply(format, arguments);
 		if (this && this.source) {
 			msg = this.source + ": " + msg;
 		}
