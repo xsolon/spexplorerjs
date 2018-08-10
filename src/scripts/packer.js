@@ -8,7 +8,7 @@ var HtmlWebpackInlineSourcePlugin = require("html-webpack-inline-source-plugin")
 var files = [
 	//"./src/components/string/string.js"
 	//,"./src/components/loader/loader.js"
-	"./src/components/logger/logger.js"
+	//"./src/components/logger/logger.js"
 	//,
 	//"./src/components/sp/api/api.js"
 	//,
@@ -30,7 +30,7 @@ var files = [
 	//,
 	//"./src/components/sp/sp.list.js"
 	//,
-	//"./src/components/sp/widgets/list.editor.js"
+	"./src/components/sp/widgets/list.editor.js"
 	//,
 	//"./src/components/sp/widgets/field.selector.js"
 	//"./src/components/sp/widgets/masterpageselector.js"

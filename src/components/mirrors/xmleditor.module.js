@@ -1,3 +1,3 @@
-﻿module.exports = {
-    sample: "./xmleditor.html"
+module.exports = {
+	sample: "./xmleditor.html"
 };

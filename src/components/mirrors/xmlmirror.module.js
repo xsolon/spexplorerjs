@@ -1,3 +1,3 @@
-﻿module.exports = {
-    sample: "./xmlmirror.html" 
+module.exports = {
+	sample: "./xmlmirror.html" 
 };

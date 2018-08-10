@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>sp.web.Samples</title>
+</head>
+<body>
+    <fieldset id="refreshSite">
+        <legend>Refresh Web</legend>
+        <p>Select a site to be deleted and re-created.</p>
+        <label for="Url">Site Url</label>
+        <input type="text" id="Url" />
+        <label for="Title">Site Url</label>
+        <input type="text" id="Title" />
+        <label for="Template">Site Template</label>
+        <select id="Template"></select>
+        <button type="button">Refresh</button>
+        <ul id="log"></ul>
+        <script type="text/javascript">
+
+            (function(ns) {
+                var $ = ns.$;
+                var log = new function () {
+		            var d = function () {
+			            ns.logger && ns.logger.log.apply(log, arguments);
+		                SP.UI.Notify.addNotification(arguments[0]);
+		            };
+		            d.source = "refreshWeb";
+		            return d;
+	            };
+
+                $("button", "#refreshSite").click(function() {
+
+                    var template = $('#Template').val();
+                    var title = $('#Title').val();
+                    var url = $('#Url').val();
+
+                    var createSite = function() {
+                        log('Creating site');
+                        ns.webapi.createWeb(null, title, url, template, true).done(function() {
+                            log('Site Created');
+                        }).fail(function(sender, err) {
+                            log(err);
+                        });
+                    };
+                    ns.webapi.loadWeb(url).done(function(web){
+                        log('Deleting site');
+                        web.deleteObject();
+                        var ctx = web.get_context();
+                        ctx.executeQueryAsync(function() {
+                        log('Site deleted');
+                                createSite();
+                            },
+                            function() {
+                                log('Site could not be deleted');
+                            });
+                    }).fail(function() {
+                        log('Site not found');
+                        createSite();
+                    });
+                });
+
+                ExecuteOrDelayUntilScriptLoaded(function() {
+                    log('sp.ready');
+                    ns.webapi.webTemplates().done(function(templates) {
+                        for (var i = 0; i < templates.length; i++) {
+                            var template = templates[i];
+                            var title = template.get_title();
+                            var name = template.get_name();
+                            $('#Template').append($('<option>', { value : name }).text(title));
+                        }
+                    });
+                }, "sp.js");
+
+            })(window["spexplorerjs"]);
+        </script>
+    </fieldset>
+</body>
+</html>

@@ -1,4 +1,4 @@
-﻿module.exports = {
-  spPage: "../spPage16.aspx"
-  , publicName: "xSpMastePageSelector"
+module.exports = {
+	spPage: "../spPage16.aspx"
+	, publicName: "xSpMastePageSelector"
 };

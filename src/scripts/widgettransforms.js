@@ -302,7 +302,7 @@ var createSpPage = function (module, inline) {
 	var scriptBlockTemplate = "<SharePoint:ScriptBlock runat=\"server\">[[[Content]]]</SharePoint:ScriptBlock>";
 	/// TODO: uploader to use scriptlink
 	var scriptLinkTempalte = "<ScriptLink language=\"javascript\" name=\"MyJS.js\" Defer=\"true\" runat=\"server\"/>";
-	scriptLinkTempalte = "<script type=\"text/javascript\" src=\"[[[Src]]][[[Env]]].js\"></script>";
+	scriptLinkTempalte = "<script type='text/javascript' src='[[[Src]]][[[Env]]].js'></script>";
 
 	var publicRelativePath = widgetPath.substring(widgetPath.indexOf("public") + "public/".length);
 

@@ -84767,28 +84767,28 @@ __webpack_require__(/*! ../api/sp.base.js */ "../api/sp.base.js");
 		//	return dfd.promise();
 
 		//};
-		var addScriptLink = function addScriptLink(name, url, sequence) {
-			var dfd = $.Deferred();
+		//var addScriptLink = function (name, url, sequence) {
+		//	var dfd = $.Deferred();
 
-			var actions = ctx.get_site().get_userCustomActions();
+		//	var actions = ctx.get_site().get_userCustomActions();
 
-			var action = actions.add();
-			action.set_location("ScriptLink");
-			action.set_title(name);
-			action.set_scriptSrc(url);
-			action.set_sequence(sequence);
-			action.update();
+		//	var action = actions.add();
+		//	action.set_location("ScriptLink");
+		//	action.set_title(name);
+		//	action.set_scriptSrc(url);
+		//	action.set_sequence(sequence);
+		//	action.update();
 
-			ctx.load(action);
+		//	ctx.load(action);
 
-			ctx.executeQueryAsync(function () {
-				dfd.resolve(action);
-			}, function (r, a) {
-				ns.sp.reqFailure(r, a, "addScriptLink", dfd);
-			});
+		//	ctx.executeQueryAsync(function () {
+		//		dfd.resolve(action);
+		//	},
+		//	function (r, a) { ns.sp.reqFailure(r, a, "addScriptLink", dfd); });
 
-			return dfd.promise();
-		};
+		//	return dfd.promise();
+
+		//};
 
 		return { getFields: getFields, getLists: getLists, getList: getList, getActions: getActions, addCustomAction: addCustomAction };
 	};
@@ -85104,6 +85104,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 		$el.html(template.trim().replace("[label]", opts.label));
 
+		var spdal = new ns.listapi.dal(opts.weburl);
 		//var spdal = new ns.customactions.dal(opts.weburl);
 		var fieldSel = $(".casDrp", ui);
 

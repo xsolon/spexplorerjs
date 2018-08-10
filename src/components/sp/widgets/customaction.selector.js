@@ -90,6 +90,7 @@ import "./treelight.js";
 
 		$el.html(template.trim().replace("[label]", opts.label));
 
+		var spdal = new ns.listapi.dal(opts.weburl);
 		//var spdal = new ns.customactions.dal(opts.weburl);
 		var fieldSel = $(".casDrp", ui);
 

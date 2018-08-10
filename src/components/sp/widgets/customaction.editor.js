@@ -115,5 +115,4 @@ import "../../mirrors/xmlmirror.js";
 	};
 
 	ns.widgets.addSpWidget("spCustomActions", CustomActions, "0.1.5");
-
 })(spexplorerjs, spexplorerjs.modules.jQuery, template);

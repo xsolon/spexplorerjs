@@ -1,5 +1,5 @@
-﻿module.exports = {
-    sample: "./sp.web.html"
-    , spPage: "./spPage.aspx"
-    , publicName: "xSpExplorer"
+module.exports = {
+	sample: "./sp.web.html"
+	, spPage: "./spPage.aspx"
+	, publicName: "xSpExplorer"
 };
