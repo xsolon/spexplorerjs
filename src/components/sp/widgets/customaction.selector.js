@@ -1,5 +1,5 @@
 /* global require */
-// v 0.1.7 - 2018/08/13 - listapi moved to modules
+// v 0.1.8 - 2018/08/13 - listapi moved to modules
 // v 0.1.5 - 2018/03/28 - change public event from 'selectionchange' to 'ca.selectionchange'
 //                      - layout updates
 import template from "./customaction.selector.template.html";
@@ -91,7 +91,7 @@ import "./treelight.js";
 
 		$el.html(template.trim().replace("[label]", opts.label));
 
-		var spdal = new ns.modules.listapi.dal(opts.weburl);
+		//var spdal = new ns.modules.listapi.dal(opts.weburl);
 		//var spdal = new ns.customactions.dal(opts.weburl);
 		var fieldSel = $(".casDrp", ui);
 
@@ -157,7 +157,8 @@ import "./treelight.js";
 			return $.Deferred(function (dfd) {
 
 				trace.debug("loading list" + listTitle);
-				spdal.getList(listTitle).done(function (list) {
+				var list = ns.modules.listapi.getByTitle(listTitle);
+				ns.modules.spapi.loadSpElem(list).done(function (list) {
 					setSelection(list);
 				}).always(function () {
 					dfd.resolve();
@@ -196,7 +197,7 @@ import "./treelight.js";
 						opts.listtitle = instate.listtitle;
 						if (opts.weburl != instate.weburl) {
 
-							spdal = new ns.listapi.dal(opts.weburl);
+							//spdal = new ns.modules.listapi.dal(opts.weburl);
 						}
 						//opts.excludereadonly = instate.excludereadonly;
 						//readonlycheck.prop("checked", opts.excludereadonly);
@@ -242,7 +243,7 @@ import "./treelight.js";
 		})();
 	};
 
-	ns.widgets.addSpWidget("xSPCustomActionSelector", xSPCustomActionSelector, "0.1.7");
+	ns.widgets.addSpWidget("xSPCustomActionSelector", xSPCustomActionSelector, "0.1.8");
 
 })(spexplorerjs, spexplorerjs.modules.jQuery, template, itemtemplate);
 
