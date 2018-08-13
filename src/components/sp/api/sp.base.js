@@ -1,5 +1,6 @@
 /// <reference path="../../logger/logger.js" />
 /* global require,ExecuteOrDelayUntilScriptLoaded */
+// v 0.0.6 : 2018-08-13 - funcs.js dependency
 // v 0.0.5 : 2018-06-14 - use get_current in getCtx
 // v 0.0.5 : 2018-06-01 - bug in ctx.prototyp.loadSpElem
 // v 0.0.4 : 2018-05-22 - add loadSpElem to Sp.ClientContext
@@ -8,12 +9,12 @@
 // v 0.0.1 : 2018-03-11 - loadSpElem
 
 require("../../logger/logger.js");
+require("../../string/funcs.js");
 
 (function (ns, $) {
 
 	var debug = window.location.href.search(/(local|debugsp)/) > 0;
 	var trace = ns.modules.logger.get("sp", debug);
-
 
 	var utils = {
 		version: "v0.0.6",
