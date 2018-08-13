@@ -234,7 +234,7 @@
 	return ns.logger;
 
 	// both of these dependencies are resolved in string.js
-})(window.spexplorerjs = window.spexplorerjs || { modules: {} });
+})(window.spexplorerjs = window["spexplorerjs"] || { modules: {} });
 
 /***/ })
 
