@@ -1,4 +1,5 @@
 /* global require */
+// v 0.1.7 - 2018/08/13 - listapi moved to modules
 // v 0.1.5 - 2018/03/28 - change public event from 'selectionchange' to 'ca.selectionchange'
 //                      - layout updates
 import template from "./customaction.selector.template.html";
@@ -90,7 +91,7 @@ import "./treelight.js";
 
 		$el.html(template.trim().replace("[label]", opts.label));
 
-		var spdal = new ns.listapi.dal(opts.weburl);
+		var spdal = new ns.modules.listapi.dal(opts.weburl);
 		//var spdal = new ns.customactions.dal(opts.weburl);
 		var fieldSel = $(".casDrp", ui);
 
