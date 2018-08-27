@@ -1,5 +1,3 @@
-var script = document.createElement("script"), t = new Date(); script.src = "https://sp.dev.local/sites/test1/cir/siteassets/ccir/js/link.js?i=" + t.getMilliseconds(); document.getElementsByTagName("body")[0].appendChild(script); void (0);
-
 
 var script = document.createElement("script"), t = new Date();
 script.src = "https://localhost:8443/components/loader/spwizard.local.js?i=" + t.getMilliseconds(); document.getElementsByTagName("body")[0].appendChild(script); void (0);
