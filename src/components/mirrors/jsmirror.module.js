@@ -1,3 +1,3 @@
-﻿module.exports = {
-    sample: "./jsmirror.html"
+module.exports = {
+	sample: "./jsmirror.html"
 };

@@ -1,3 +1,3 @@
-﻿module.exports = {
-    sample: "./jseditor.html"
+module.exports = {
+	sample: "./jseditor.html"
 };

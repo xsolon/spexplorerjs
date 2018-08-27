@@ -1,5 +1,5 @@
-﻿module.exports = {
-  //sample: "./treelight.html"
-   spPage: "./spPage16.aspx"
-  , publicName: "querybuilder"
+module.exports = {
+	//sample: "./treelight.html"
+	spPage: "./spPage16.aspx"
+	, publicName: "querybuilder"
 };

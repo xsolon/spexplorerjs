@@ -82,7 +82,7 @@
 
 
 module.exports = {
-    sample: "./xmlmirror.html"
+	sample: "./xmlmirror.html"
 };
 
 /***/ })

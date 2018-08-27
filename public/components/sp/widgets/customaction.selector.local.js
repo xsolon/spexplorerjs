@@ -38250,7 +38250,8 @@ module.exports = "data:image/gif;base64,R0lGODlhEAAQAPMAAP////Dw8IqKiuDg4EZGRnp6
 "use strict";
 
 
-// v 1.0.7: 2018-08-19  - remove dependency on funcs.js
+// v 1.0.8: 2018-08-11  - define namespace if needed
+// v 1.0.7: 2018-08-09  - remove dependency on funcs.js
 // v 1.0.6: 2018-05-17  - assert, addOnTraceHandler allows additional event hanlders for trace
 // v 1.0.4: 2018-04-28  - move definition to modules
 // v 1.0.2: 2018-04-28  - match spexplorerjs.trace
@@ -38258,7 +38259,6 @@ module.exports = "data:image/gif;base64,R0lGODlhEAAQAPMAAP////Dw8IqKiuDg4EZGRnp6
 // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
 // v 0.0.1: 2018-03-28  - debug, get
 
-//require("../string/funcs.js");
 (function (ns) {
 
 	var format = function format() {
@@ -38403,7 +38403,7 @@ module.exports = "data:image/gif;base64,R0lGODlhEAAQAPMAAP////Dw8IqKiuDg4EZGRnp6
 	return ns.logger;
 
 	// both of these dependencies are resolved in string.js
-})(spexplorerjs);
+})(window.spexplorerjs = window["spexplorerjs"] || { modules: {} });
 
 /***/ }),
 
@@ -38756,6 +38756,7 @@ __webpack_require__(/*! ./string/funcs.js */ "../../string/funcs.js");
 
 /// <reference path="../../logger/logger.js" />
 /* global require,ExecuteOrDelayUntilScriptLoaded */
+// v 0.0.6 : 2018-08-13 - funcs.js dependency
 // v 0.0.5 : 2018-06-14 - use get_current in getCtx
 // v 0.0.5 : 2018-06-01 - bug in ctx.prototyp.loadSpElem
 // v 0.0.4 : 2018-05-22 - add loadSpElem to Sp.ClientContext
@@ -38764,6 +38765,7 @@ __webpack_require__(/*! ./string/funcs.js */ "../../string/funcs.js");
 // v 0.0.1 : 2018-03-11 - loadSpElem
 
 __webpack_require__(/*! ../../logger/logger.js */ "../../logger/logger.js");
+__webpack_require__(/*! ../../string/funcs.js */ "../../string/funcs.js");
 
 (function (ns, $) {
 
@@ -39130,6 +39132,8 @@ __webpack_require__(/*! ./sp.base.js */ "../api/sp.base.js");
 
 __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 
+// v 0.0.9: 2018-08-16  - spdal: replaced log,error ctr arguments with a trace object
+// v 0.0.9: 2018-08-14  - ensureFields: create each field per request
 // v 0.0.8: 2018-06-01  - getitems default force to true
 // v 0.0.8: 2018-06-04  - bugfixes
 // v 0.0.7: 2018-05-24  - add getAll to List prototype
@@ -39152,10 +39156,9 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 		var query = new SP.CamlQuery();
 
 		var queryXml = caml || "<View Scope='Recursive'>\
-        <ViewFields>\
-          <FieldRef Name='ID'></FieldRef>\
-        </ViewFields><RowLimit>1000</RowLimit>\
-      </View>";
+		<ViewFields><FieldRef Name='ID'></FieldRef>\
+		</ViewFields><RowLimit>1000</RowLimit>\
+</View>";
 
 		if (folder) {
 			query.set_folderServerRelativeUrl(folder);
@@ -39241,7 +39244,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 		ctx = ctx || ns.modules.spapi.getCtx();
 		return ctx.get_web().get_lists().getByTitle(listTitle);
 	};
-	var spDal = function spDal(args, log, error) {
+	var spDal = function spDal(args, ctrace) {
 		var ctx = null;
 		var web = null;
 		var lists = null;
@@ -39276,9 +39279,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 			ctx.load(lists, "Include(Fields.Include(Title))");
 		})();
 
-		//var trace = ns.modules.logger.get("spdal");
-		log = log || trace.log;
-		error = error || trace.error;
+		ctrace = ctrace || trace;
 
 		var listExists = function listExists(lists, listTitle) {
 
@@ -39295,7 +39296,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 							break;
 						}
 					}
-					log({ listExists: listTitle, result: result });
+					ctrace.log({ listExists: listTitle, result: result });
 					dfd.resolve(result);
 				};
 				if (lists.get_data().length === 0) {
@@ -39333,7 +39334,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 						return n.get_name() === name;
 					});
 					if (matches.length === 0) {
-						trace.debug("Adding ctype" + name);
+						ctrace.debug("Adding ctype" + name);
 						addContentType(name, fieldLinks).done(function (ctype) {
 							dfd.resolve(ctype);
 						});
@@ -39358,7 +39359,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 					});
 
 					if (matches.length === 0) {
-						trace.error(name + " not found");
+						ctrace.error(name + " not found");
 					} else {
 						var webcType = matches[0];
 						var listCTypes = list.get_contentTypes();
@@ -39374,7 +39375,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 
 								fieldLinks.forEach(function (fieldName) {
 
-									trace.debug("---Addfield " + fieldName + " field link");
+									ctrace.debug("---Addfield " + fieldName + " field link");
 
 									var localField = $.grep(listFields, function (n) {
 										return n.get_internalName() === fieldName;
@@ -39450,7 +39451,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 						spItems.push(newspitem);
 					}
 					ctx.executeQueryAsync(function () {
-						log("addItems done");
+						ctrace.log("addItems done");
 						dfd.resolve(spItems);
 					}, function (r, a) {
 						reqFailure(r, a, "addItems" + args.listTitle, dfd);
@@ -39463,7 +39464,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 			return dfd.promise();
 		};
 		var handleOnReady = function handleOnReady(splist, dfd) {
-			log("OnListReady");
+			ctrace.log("OnListReady");
 			if (args.OnListReady) {
 				args.OnListReady(me, splist, ctx).done(function () {
 					dfd.resolve(splist);
@@ -39471,7 +39472,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 			} else dfd.resolve(splist);
 		};
 		var handleOnCreated = function handleOnCreated(splist, dfd) {
-			log("OnListCreated");
+			ctrace.log("OnListCreated");
 			if (args.OnListCreated) {
 				args.OnListCreated(me, splist, ctx).done(function () {
 					dfd.resolve(splist);
@@ -39495,9 +39496,9 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 		};
 
 		/**
-         * returns folder (creating it and its path if necessary)
-         * @param {string} serverRelativeUrl
-         */
+   * returns folder (creating it and its path if necessary)
+   * @param {string} serverRelativeUrl
+   */
 		var ensureFolder = function ensureFolder(serverRelativeUrl /*string*/) {
 			var dfd = $.Deferred();
 
@@ -39520,8 +39521,8 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 			return dfd.promise();
 		};
 		/**
-         * @param {string} serverRelativeUrl
-         */
+   * @param {string} serverRelativeUrl
+   */
 		var folderExists = function folderExists(serverRelativeUrl) {
 			var dfd = $.Deferred();
 			var folder = web.getFolderByServerRelativeUrl(serverRelativeUrl);
@@ -39600,7 +39601,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 			var dfd = $.Deferred();
 
 			ctx.loadSpElem(action).done(function () {
-				log("addCustomAction.done");
+				ctrace.log("addCustomAction.done");
 				dfd.resolve(action);
 			});
 
@@ -39669,7 +39670,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 
 					for (var i = 0; i < permissions.length; i++) {
 						var perm = permissions[i];
-						log("adding Permissions " + perm);
+						ctrace.log("adding Permissions " + perm);
 
 						var rdContribute = parentWeb.get_roleDefinitions().getByName(perm);
 						// Create a new RoleDefinitionBindingCollection.
@@ -39721,7 +39722,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 							var groupName = group.get_title();
 							spGroups[groupName] = group;
 						}
-						log("Loaded Groups: " + groupCollection.get_count());
+						ctrace.log("Loaded Groups: " + groupCollection.get_count());
 						dfd.resolve(spGroups);
 					}, function (r, a) {
 						reqFailure(r, a, "getGroups", dfd);
@@ -39751,9 +39752,9 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 					ns.modules.funcs.processAsQueue(groups, function (group) {
 						return $.Deferred(function (dfd) {
 							ensureGroup(group.name, group.desc).done(function (spGroup) {
-								log("Adding permissions for " + group.name);
+								ctrace.log("Adding permissions for " + group.name);
 								addPermission(spGroup, group.permissions, web).done(function () {
-									log("adding pemission is done");
+									ctrace.log("adding pemission is done");
 									dfd.resolve();
 								});
 							});
@@ -39770,7 +39771,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 				var ctx = parentWeb.get_context();
 				var groupCollection = parentWeb.get_siteGroups();
 
-				log("creating group: " + name);
+				ctrace.log("creating group: " + name);
 				var spGroup = groupCollection.add(function () {
 					var membersGRP = new SP.GroupCreationInformation();
 					membersGRP.set_title(name);
@@ -39794,7 +39795,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 			});
 		};
 		var createList = function createList(listTitle, templateType) {
-			log("Creating list " + listTitle);
+			ctrace.log("Creating list " + listTitle);
 			return $.Deferred(function (dfd) {
 
 				var listCreationInfo = new SP.ListCreationInformation();
@@ -39806,7 +39807,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 				ctx.load(oList);
 
 				ctx.executeQueryAsync(function () {
-					log(args.ListTitle + " creation done");
+					ctrace.log(args.ListTitle + " creation done");
 					list = oList;
 					handleOnCreated(list, dfd);
 				}, function (r, a) {
@@ -39818,7 +39819,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 			// log context failure
 
 			var msg = from + "(list:" + args.ListTitle + ") : Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
-			error(msg);
+			ctrace.error(msg);
 
 			if (dfd) dfd.reject(msg);
 		};
@@ -39838,10 +39839,10 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 					lists = web.get_lists();
 
 					var done = function done() {
-						log("lists loaded");
+						ctrace.log("lists loaded");
 						listExists(lists, args.ListTitle).done(function (res) {
 							if (res.exists) {
-								log("list already exists");
+								ctrace.log("list already exists");
 								list = res.list;
 
 								var rootFolder = list.get_rootFolder();
@@ -39867,21 +39868,21 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 											addItems(args.DefaultItems, splist, spfields);
 										}
 									};
-									log(args.ListTitle + ": creating fields");
+									ctrace.log(args.ListTitle + ": creating fields");
 
 									ensureFields(splist, args.Fields || []).done(function (spfields) {
 										ensureCTypes(args.ContentTypes).done(function () {
 											defaultItems(spfields);
 											if (args.Permissions) {
 												breakRoleInheritance(false, true).done(function () {
-													log("done with inheritance");
+													ctrace.log("done with inheritance");
 													ns.modules.funcs.processAsQueue(args.Permissions, function (entry) {
 														var groupName = entry.name;
 														var perms = entry.permissions;
-														log("adding perm: " + groupName + " to " + args.ListTitle);
+														ctrace.log("adding perm: " + groupName + " to " + args.ListTitle);
 														return addPermission(groupName, perms, splist);
 													}).done(function () {
-														log("done adding permissions");
+														ctrace.log("done adding permissions");
 														handleOnReady(splist, dfd);
 													});
 												});
@@ -39890,17 +39891,17 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 											}
 										});
 									}).fail(function (err) {
-										log(err);
+										ctrace.log(err);
 									});
 								}).fail(function (err) {
 
-									log(err);
+									ctrace.log(err);
 								});
 							}
 						});
 					};
 
-					log("loading lists...");
+					ctrace.log("loading lists...");
 					ctx.load(lists);
 
 					ctx.executeQueryAsync(done, function (r, a) {
@@ -39931,7 +39932,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 
 					ctx.load(spfields, "Include(Title,FieldTypeKind,TypeAsString,InternalName)");
 					ctx.executeQueryAsync(function () {
-						log("existing fields loaded");
+						ctrace.log("existing fields loaded");
 						var le = spfields.getEnumerator();
 						var parsed = {};
 						while (le.moveNext()) {
@@ -39948,14 +39949,18 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 					return $.Deferred(function (fieldDfd) {
 						getMarkup(field).done(function (xml) {
 
-							log("adding: " + xml);
+							ctrace.log("adding: " + xml);
 							var spField = spfields.addFieldAsXml(xml, true, SP.AddFieldOptions.defaultValue);
 
 							if (field.post) {
 								field.post(spField);
 							}
 							ctx.load(spField);
-							fieldDfd.resolve();
+							ctx.executeQueryAsync(function () {
+								fieldDfd.resolve();
+							}, function (r, a) {
+								reqFailure(r, a, "ensureFields", fieldDfd);
+							});
 						});
 					}).promise();
 				}).done(done);
@@ -39963,7 +39968,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 		};
 
 		var deleteList = function deleteList(lists, listTitle) {
-			log("deleting list " + listTitle);
+			ctrace.log("deleting list " + listTitle);
 			return $.Deferred(function (dfd) {
 
 				listExists(lists, listTitle).done(function (listexists) {
@@ -40023,14 +40028,14 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 </View>";
 				//loadSpElem(rootFolder, ctx),
 				$.when(getAllItemsPaged(queryXml, folder, limit)).done(function (items) {
-					log(items);
+					ctrace.log(items);
 					if (args.itemParser) {
 						dfd.resolve(args.itemParser(items), list, ctx);
 					} else {
 						dfd.resolve(items, list, ctx);
 					}
 				}).fail(function () {
-					error("getitems error");
+					ctrace.error("getitems error");
 				});
 			}).promise();
 		};
@@ -40089,16 +40094,16 @@ __webpack_require__(/*! ./sp.folderapi.js */ "../api/sp.folderapi.js");
 					dfd.resolve(allItems);
 				});
 			}).fail(function () {
-				trace.error("error getAllPages");
+				ctrace.error("error getAllPages");
 			});
 
 			return dfd.promise();
 		};
 
 		/**
-         * For large lists, get items on individual folders, ** very slow **
-         * @param {SP.ListItem} tFolder
-         */
+   * For large lists, get items on individual folders, ** very slow **
+   * @param {SP.ListItem} tFolder
+   */
 		var loadAllFilesFromAllFolders = function loadAllFilesFromAllFolders(caml) {
 
 			var folderQueue = [list.get_rootFolder()];
@@ -40425,28 +40430,28 @@ __webpack_require__(/*! ../api/sp.base.js */ "../api/sp.base.js");
 		//	return dfd.promise();
 
 		//};
-		var addScriptLink = function addScriptLink(name, url, sequence) {
-			var dfd = $.Deferred();
+		//var addScriptLink = function (name, url, sequence) {
+		//	var dfd = $.Deferred();
 
-			var actions = ctx.get_site().get_userCustomActions();
+		//	var actions = ctx.get_site().get_userCustomActions();
 
-			var action = actions.add();
-			action.set_location("ScriptLink");
-			action.set_title(name);
-			action.set_scriptSrc(url);
-			action.set_sequence(sequence);
-			action.update();
+		//	var action = actions.add();
+		//	action.set_location("ScriptLink");
+		//	action.set_title(name);
+		//	action.set_scriptSrc(url);
+		//	action.set_sequence(sequence);
+		//	action.update();
 
-			ctx.load(action);
+		//	ctx.load(action);
 
-			ctx.executeQueryAsync(function () {
-				dfd.resolve(action);
-			}, function (r, a) {
-				ns.sp.reqFailure(r, a, "addScriptLink", dfd);
-			});
+		//	ctx.executeQueryAsync(function () {
+		//		dfd.resolve(action);
+		//	},
+		//	function (r, a) { ns.sp.reqFailure(r, a, "addScriptLink", dfd); });
 
-			return dfd.promise();
-		};
+		//	return dfd.promise();
+
+		//};
 
 		return { getFields: getFields, getLists: getLists, getList: getList, getActions: getActions, addCustomAction: addCustomAction };
 	};
@@ -40532,230 +40537,232 @@ __webpack_require__(/*! ./treelight.js */ "./treelight.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* global require */
+// v 0.1.8 - 2018/08/13 - listapi moved to modules
 // v 0.1.5 - 2018/03/28 - change public event from 'selectionchange' to 'ca.selectionchange'
 //                      - layout updates
 (function (ns, $, template, itemtemplate) {
 
-    var debug = window.location.href.search(/[local|debugcustomactionsel]/) > 0;
-    var trace = ns.modules.logger.get("customactionEditor", debug);
+	var debug = window.location.href.search(/[local|debugcustomactionsel]/) > 0;
+	var trace = ns.modules.logger.get("customactionEditor", debug);
 
-    (function loadPublicRefs() {
+	(function loadPublicRefs() {
 
-        if ($.fn.select2) {
-            trace.debug("select2 already loaded");
-        } else {
-            trace.log("loading select2");
-            __webpack_require__(/*! ../../../../public/vendor/select2/js/select2.full.js */ "../../../../public/vendor/select2/js/select2.full.js");
-            __webpack_require__(/*! ../../../../public/vendor/select2/css/select2.css */ "../../../../public/vendor/select2/css/select2.css");
-        }
-    })();
+		if ($.fn.select2) {
+			trace.debug("select2 already loaded");
+		} else {
+			trace.log("loading select2");
+			__webpack_require__(/*! ../../../../public/vendor/select2/js/select2.full.js */ "../../../../public/vendor/select2/js/select2.full.js");
+			__webpack_require__(/*! ../../../../public/vendor/select2/css/select2.css */ "../../../../public/vendor/select2/css/select2.css");
+		}
+	})();
 
-    var fieldLabel = function fieldLabel(field) {
-        var tmpl = itemtemplate.trim();
-        var valu = ns.modules.string.format(tmpl, field.get_title(), field.get_name(), field.get_description(), field.get_id().toString());
-        return valu;
-    };
+	var fieldLabel = function fieldLabel(field) {
+		var tmpl = itemtemplate.trim();
+		var valu = ns.modules.string.format(tmpl, field.get_title(), field.get_name(), field.get_description(), field.get_id().toString());
+		return valu;
+	};
 
-    var addOptions = function addOptions(ctrl, actions) {
-        trace.log("Actions:" + actions.length);
-        for (var i = 0; i < actions.length; i++) {
-            var ca = actions[i];
-            var opt = $(ns.modules.string.format("<option value=\"{1}\">{0}</option>", ca.get_title(), ca.get_id().toString()));
-            opt.prop("data-field", ca);
+	var addOptions = function addOptions(ctrl, actions) {
+		trace.log("Actions:" + actions.length);
+		for (var i = 0; i < actions.length; i++) {
+			var ca = actions[i];
+			var opt = $(ns.modules.string.format("<option value=\"{1}\">{0}</option>", ca.get_title(), ca.get_id().toString()));
+			opt.prop("data-field", ca);
 
-            ctrl.append(opt);
-        }
-    };
+			ctrl.append(opt);
+		}
+	};
 
-    var bindActionSelect = function bindActionSelect(sel) {
-        var initSelect2 = function initSelect2(sel) {
-            sel.select2({
-                templateResult: function formatState(state) {
+	var bindActionSelect = function bindActionSelect(sel) {
+		var initSelect2 = function initSelect2(sel) {
+			sel.select2({
+				templateResult: function formatState(state) {
 
-                    if (!state.id) {
-                        return state.text;
-                    }
+					if (!state.id) {
+						return state.text;
+					}
 
-                    var field = $(state.element).prop("data-field");
+					var field = $(state.element).prop("data-field");
 
-                    var $state = $(fieldLabel(field));
+					var $state = $(fieldLabel(field));
 
-                    return $state;
-                }, templateSelection: function template(data /*, container*/) {
-                    var ca = $(data.element).prop("data-field");
-                    return ca.get_title();
-                }
-            });
-        };
-        initSelect2(sel);
-    };
+					return $state;
+				}, templateSelection: function template(data /*, container*/) {
+					var ca = $(data.element).prop("data-field");
+					return ca.get_title();
+				}
+			});
+		};
+		initSelect2(sel);
+	};
 
-    var xSPCustomActionSelector = function xSPCustomActionSelector(ui, opts) {
-        var $el = $(ui);var _container = null;
-        //var selectedField = null;
-        opts = $.extend({
-            label: $el.attr("data-label"),
-            weburl: $el.attr("data-siteurl"),
-            listtitle: $el.attr("data-list"),
-            container: null
-            //excludereadonly: $el.attr('data-excludereadonly')
-        }, opts);
-        try {
-            var state = $(".xwidgetstate:first", $el);
-            if (state.length > 0) {
-                opts = $.extend(opts, JSON.parse(state.html().trim()));
-            }
-        } catch (e) {
-            trace.log(e);
-        }
+	var xSPCustomActionSelector = function xSPCustomActionSelector(ui, opts) {
+		var $el = $(ui);var _container = null;
+		//var selectedField = null;
+		opts = $.extend({
+			label: $el.attr("data-label"),
+			weburl: $el.attr("data-siteurl"),
+			listtitle: $el.attr("data-list"),
+			container: null
+			//excludereadonly: $el.attr('data-excludereadonly')
+		}, opts);
+		try {
+			var state = $(".xwidgetstate:first", $el);
+			if (state.length > 0) {
+				opts = $.extend(opts, JSON.parse(state.html().trim()));
+			}
+		} catch (e) {
+			trace.log(e);
+		}
 
-        _container = opts.container;
+		_container = opts.container;
 
-        $el.html(template.trim().replace("[label]", opts.label));
+		$el.html(template.trim().replace("[label]", opts.label));
 
-        var spdal = new ns.listapi.dal(opts.weburl);
-        //var spdal = new ns.customactions.dal(opts.weburl);
-        var fieldSel = $(".casDrp", ui);
+		//var spdal = new ns.modules.listapi.dal(opts.weburl);
+		//var spdal = new ns.customactions.dal(opts.weburl);
+		var fieldSel = $(".casDrp", ui);
 
-        fieldSel.on("change.select2", function () {
-            var data = fieldSel.select2("data");
-            var field = null;
-            if (data.length > 0) {
-                field = $(data[0].element).prop("data-field");
-            }
+		fieldSel.on("change.select2", function () {
+			var data = fieldSel.select2("data");
+			var field = null;
+			if (data.length > 0) {
+				field = $(data[0].element).prop("data-field");
+			}
 
-            $el.trigger("ca.selectionchange", field);
-        });
+			$el.trigger("ca.selectionchange", field);
+		});
 
-        bindActionSelect(fieldSel);
+		bindActionSelect(fieldSel);
 
-        var onListChange = function onListChange(selection) {
+		var onListChange = function onListChange(selection) {
 
-            return $.Deferred(function (dfd) {
-                _container = selection;
+			return $.Deferred(function (dfd) {
+				_container = selection;
 
-                opts.listtitle = selection.get_title ? selection.get_title() : selection.constructor.getName();
+				opts.listtitle = selection.get_title ? selection.get_title() : selection.constructor.getName();
 
-                (function loadWebUrl() {
-                    if (SP.Site.isInstanceOfType(_container)) {} else if (SP.Web.isInstanceOfType(_container)) {
-                        var doneWeb = function doneWeb() {
-                            opts.weburl = _container.get_url();
-                        };
-                        if (_container.isPropertyAvailable("Url")) doneWeb();else ns.modules.spapi.loadSpElem(_container).done(doneWeb);
-                    } else {
-                        var done = function done() {
-                            opts.weburl = selection.get_parentWebUrl();
-                        };
-                        if (selection.isPropertyAvailable("ParentWebUrl")) done();else ns.modules.spapi.loadSpElem(selection).done(done);
-                    }
-                })();
+				(function loadWebUrl() {
+					if (SP.Site.isInstanceOfType(_container)) {} else if (SP.Web.isInstanceOfType(_container)) {
+						var doneWeb = function doneWeb() {
+							opts.weburl = _container.get_url();
+						};
+						if (_container.isPropertyAvailable("Url")) doneWeb();else ns.modules.spapi.loadSpElem(_container).done(doneWeb);
+					} else {
+						var done = function done() {
+							opts.weburl = selection.get_parentWebUrl();
+						};
+						if (selection.isPropertyAvailable("ParentWebUrl")) done();else ns.modules.spapi.loadSpElem(selection).done(done);
+					}
+				})();
 
-                ns.modules.customactions.getActions(selection).done(function (actions) {
-                    fieldSel.html("");
-                    addOptions(fieldSel, actions);
-                    fieldSel.val(null).trigger("change.select2");
-                }).fail(function (err) {
-                    trace.error(err);
-                }).always(function () {
-                    dfd.resolve();
-                });
-            }).promise();
-        };
+				ns.modules.customactions.getActions(selection).done(function (actions) {
+					fieldSel.html("");
+					addOptions(fieldSel, actions);
+					fieldSel.val(null).trigger("change.select2");
+				}).fail(function (err) {
+					trace.error(err);
+				}).always(function () {
+					dfd.resolve();
+				});
+			}).promise();
+		};
 
-        var listCtrl = $("[data-widget='xSPTreeLight']", $el).xSPTreeLight().on("listchange", function (e, list) {
-            onListChange(list);
-        });
+		var listCtrl = $("[data-widget='xSPTreeLight']", $el).xSPTreeLight().on("listchange", function (e, list) {
+			onListChange(list);
+		});
 
-        var setSelection = function setSelection(elem) {
-            onListChange(elem);
-            listCtrl.data("xSPTreeLight").value(elem);
-        };
+		var setSelection = function setSelection(elem) {
+			onListChange(elem);
+			listCtrl.data("xSPTreeLight").value(elem);
+		};
 
-        var loadList = function loadList(listTitle) {
-            return $.Deferred(function (dfd) {
+		var loadList = function loadList(listTitle) {
+			return $.Deferred(function (dfd) {
 
-                trace.debug("loading list" + listTitle);
-                spdal.getList(listTitle).done(function (list) {
-                    setSelection(list);
-                }).always(function () {
-                    dfd.resolve();
-                });
-            }).promise();
-        };
-        if (opts.listtitle) {
-            loadList(opts.listtitle).done(function () {
-                $el.trigger("xwidget.init");
-            });
-        } else if (opts.container) {
-            setSelection(opts.container);
-        } else {
-            $el.trigger("xwidget.init");
-        }
+				trace.debug("loading list" + listTitle);
+				var list = ns.modules.listapi.getByTitle(listTitle);
+				ns.modules.spapi.loadSpElem(list).done(function (list) {
+					setSelection(list);
+				}).always(function () {
+					dfd.resolve();
+				});
+			}).promise();
+		};
+		if (opts.listtitle) {
+			loadList(opts.listtitle).done(function () {
+				$el.trigger("xwidget.init");
+			});
+		} else if (opts.container) {
+			setSelection(opts.container);
+		} else {
+			$el.trigger("xwidget.init");
+		}
 
-        return function register() {
-            var me = {
-                value: function value() {
-                    var field = fieldSel.find(":selected").prop("data-field");
-                    return field;
-                },
-                getOptions: function getOptions() {
-                    var fields = [];
-                    fieldSel.find("option").each(function () {
-                        fields.push($(this).prop("data-field"));
-                    });
+		return function register() {
+			var me = {
+				value: function value() {
+					var field = fieldSel.find(":selected").prop("data-field");
+					return field;
+				},
+				getOptions: function getOptions() {
+					var fields = [];
+					fieldSel.find("option").each(function () {
+						fields.push($(this).prop("data-field"));
+					});
 
-                    return fields;
-                },
-                state: function state(instate) {
-                    if (arguments.length > 0) {
-                        trace.log({ setstate: instate });
-                        opts.listtitle = instate.listtitle;
-                        if (opts.weburl != instate.weburl) {
+					return fields;
+				},
+				state: function state(instate) {
+					if (arguments.length > 0) {
+						trace.log({ setstate: instate });
+						opts.listtitle = instate.listtitle;
+						if (opts.weburl != instate.weburl) {}
 
-                            spdal = new ns.listapi.dal(opts.weburl);
-                        }
-                        //opts.excludereadonly = instate.excludereadonly;
-                        //readonlycheck.prop("checked", opts.excludereadonly);
-                        opts = $.extend(opts, instate);
-                        $("legend:first", $el).html(opts.label);
-                        loadList(opts.listtitle);
-                    } else {
-                        var state = {
-                            label: $("legend:first", $el).html(),
-                            list: _container,
-                            listtitle: _container ? _container.get_title() : "",
-                            weburl: opts.weburl
-                            //, excludereadonly: opts.excludereadonly
-                        };
+						//spdal = new ns.modules.listapi.dal(opts.weburl);
 
-                        return state;
-                    }
-                },
-                container: function container(list) {
-                    if (list) {
-                        onListChange(list);
-                        listCtrl.data("xSPTreeLight").value(list);
-                        _container = list;
-                    }
+						//opts.excludereadonly = instate.excludereadonly;
+						//readonlycheck.prop("checked", opts.excludereadonly);
+						opts = $.extend(opts, instate);
+						$("legend:first", $el).html(opts.label);
+						loadList(opts.listtitle);
+					} else {
+						var state = {
+							label: $("legend:first", $el).html(),
+							list: _container,
+							listtitle: _container ? _container.get_title() : "",
+							weburl: opts.weburl
+							//, excludereadonly: opts.excludereadonly
+						};
 
-                    return _container;
-                }, savestate: function savestate() {
-                    var state = me.state();
-                    delete state.list; // complex object
+						return state;
+					}
+				},
+				container: function container(list) {
+					if (list) {
+						onListChange(list);
+						listCtrl.data("xSPTreeLight").value(list);
+						_container = list;
+					}
 
-                    var statectrl = $(".xwidgetstate:first", $el);
-                    if (statectrl.length == 0) {
-                        statectrl = $("<div class=\"xwidgetstate\" style=\"display:none\"/>");
-                    }
-                    statectrl.html(JSON.stringify(state));
-                }
-            };
+					return _container;
+				}, savestate: function savestate() {
+					var state = me.state();
+					delete state.list; // complex object
 
-            return me;
-        }();
-    };
+					var statectrl = $(".xwidgetstate:first", $el);
+					if (statectrl.length == 0) {
+						statectrl = $("<div class=\"xwidgetstate\" style=\"display:none\"/>");
+					}
+					statectrl.html(JSON.stringify(state));
+				}
+			};
 
-    ns.widgets.addSpWidget("xSPCustomActionSelector", xSPCustomActionSelector, "0.1.7");
+			return me;
+		}();
+	};
+
+	ns.widgets.addSpWidget("xSPCustomActionSelector", xSPCustomActionSelector, "0.1.8");
 })(spexplorerjs, spexplorerjs.modules.jQuery, _customactionSelectorTemplate2.default, _customactionSelectorItemtemplate2.default);
 
 /***/ }),

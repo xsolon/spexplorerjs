@@ -82,7 +82,7 @@
 
 
 module.exports = {
-    sample: "./xmleditor.html"
+	sample: "./xmleditor.html"
 };
 
 /***/ })

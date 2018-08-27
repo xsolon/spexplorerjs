@@ -10,7 +10,7 @@ var files = [
 	//,"./src/components/loader/loader.js"
 	//"./src/components/logger/logger.js"
 	//,
-	//"./src/components/sp/api/api.js"
+	"./src/components/sp/api/api.js"
 	//,
 	//,"./src/components/sp/api/tester.js"
 	//,"./src/components/datatables/datatables.js"
@@ -30,7 +30,7 @@ var files = [
 	//,
 	//"./src/components/sp/sp.list.js"
 	//,
-	"./src/components/sp/widgets/list.editor.js"
+	//"./src/components/sp/widgets/list.editor.js"
 	//,
 	//"./src/components/sp/widgets/field.selector.js"
 	//"./src/components/sp/widgets/masterpageselector.js"
@@ -52,7 +52,7 @@ var files = [
 var runWebPack = function (debug, filePath) {
 
 	var execPath = process.cwd();
-	console.log("Execution path:" + execPath);
+	console.log("Execution path:" + execPath + "--------------------------------------------");
 	var srcDir = path.resolve(execPath, path.dirname(filePath));
 	var publicDir = path.resolve(execPath, srcDir.replace("src", "public"));
 	var moduleName = path.basename(filePath);

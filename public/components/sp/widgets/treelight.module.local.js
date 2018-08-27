@@ -82,9 +82,9 @@
 
 
 module.exports = {
-    sample: "./treelight.html",
-    spPage: "./spPage16.aspx",
-    publicName: "xSPTreeLight"
+	sample: "./treelight.html",
+	spPage: "./spPage16.aspx",
+	publicName: "xSPTreeLight"
 };
 
 /***/ })

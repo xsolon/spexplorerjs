@@ -50,5 +50,5 @@ body #s4-leftpanel {
     <div class="spexp">
         <div data-widget="xSpMastePageSelector"></div>
     </div>
-    <script type="text/javascript" src="https://spexplorerjs.azurewebsites.net/components/sp/widgets/masterpageselector.js"></script>
+    <script type='text/javascript' src='https://spexplorerjs.azurewebsites.net/components\sp\widgets\masterpageSelector.js'></script>
 </asp:Content>

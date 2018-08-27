@@ -9538,7 +9538,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 "use strict";
 
 
-// v 1.0.7: 2018-08-19  - remove dependency on funcs.js
+// v 1.0.8: 2018-08-11  - define namespace if needed
+// v 1.0.7: 2018-08-09  - remove dependency on funcs.js
 // v 1.0.6: 2018-05-17  - assert, addOnTraceHandler allows additional event hanlders for trace
 // v 1.0.4: 2018-04-28  - move definition to modules
 // v 1.0.2: 2018-04-28  - match spexplorerjs.trace
@@ -9546,7 +9547,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
 // v 0.0.1: 2018-03-28  - debug, get
 
-//require("../string/funcs.js");
 (function (ns) {
 
 	var format = function format() {
@@ -9691,7 +9691,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	return ns.logger;
 
 	// both of these dependencies are resolved in string.js
-})(spexplorerjs);
+})(window.spexplorerjs = window["spexplorerjs"] || { modules: {} });
 
 /***/ }),
 

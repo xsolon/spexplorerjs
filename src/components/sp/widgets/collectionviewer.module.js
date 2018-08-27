@@ -1,4 +1,4 @@
-﻿module.exports = {
-  spPage: "./spPage16.aspx"
-  , publicName: "colviewer"
+module.exports = {
+	spPage: "./spPage16.aspx"
+	, publicName: "colviewer"
 };

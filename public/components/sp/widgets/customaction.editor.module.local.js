@@ -82,8 +82,8 @@
 
 
 module.exports = {
-    spPage: "./spPage16.aspx",
-    publicName: "spCustomActions"
+	spPage: "./spPage16.aspx",
+	publicName: "spCustomActions"
 };
 
 /***/ })
