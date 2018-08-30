@@ -6,7 +6,9 @@
 // v 0.0.3: 2018-04-28  - removed jQuery dependency
 // v 0.0.2: 2018-04-02  - remove try/catch by probing from window.console, let it fail otherwise
 // v 0.0.1: 2018-03-28  - debug, get
+
 (function (ns) {
+
     var format = function format() {
         /// TODO: unit test, breaks in some cases
         var args = arguments;
@@ -18,19 +20,18 @@
         }
         try {
             tmpl = decodeURIComponent(tmpl);
-        }
-        catch (e) {
+        } catch (e) {
+
             console && console.error(e);
             throw e;
         }
+
         return tmpl;
     };
+
     var isConsole = typeof console !== 'undefined';
-    var logf = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
+
+    var logf = function (...args: any[]) {
         var msg = format.apply(format, arguments);
         if (this && this.source) {
             msg = this.source + ": " + msg;
@@ -41,12 +42,10 @@
         if (this && this.source) {
             if (arguments.length === 1 && typeof arguments[0] == "string") {
                 logf("{0}: {1}", this.source, arguments[0]);
-            }
-            else {
+            } else {
                 var obj = {};
                 obj[this.source] = arguments;
-                if (arguments.length === 1)
-                    obj[this.source] = arguments[0];
+                if (arguments.length === 1) obj[this.source] = arguments[0];
                 isConsole && console.log.apply(console, [obj]);
             }
         }
@@ -60,8 +59,7 @@
         //	obj[this.source] = arguments;
         //	console.log.apply(console, [obj]);
         //         }
-        else
-            isConsole && console.log.apply(console, arguments);
+        else isConsole && console.log.apply(console, arguments);
         //jQuery("#depLog").append(String.format("<li>{0}</li>", arguments[0]));
     };
     var error = function () {
@@ -76,18 +74,16 @@
     var debug = function () {
         isConsole && console.log.apply(console, arguments);
     };
+
     var logger = {
         "version": "1.0.6",
         logf: logf, "log": log, "error": error, "warn": warn, "debug": debug, "assert": assert
     };
-    var defineScopedTracing = function defineScopedTracing(source, debugging, onTraceH) {
+
+    var defineScopedTracing = function defineScopedTracing(source: string, debugging: boolean, onTraceH?: Function) {
         var onTraceArray = [];
         (onTraceH && onTraceArray.push(onTraceH));
-        var onTrace = function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
-            }
+        var onTrace = function (...args: any[]) {
             var args1 = arguments;
             onTraceArray.forEach(function (n) {
                 n(args1);
@@ -101,6 +97,7 @@
             d['source'] = source;
             return d;
         })();
+
         var scopedLog = (function () {
             var d = function () {
                 logger.log.apply(scopedLog, arguments);
@@ -135,6 +132,7 @@
             d['source'] = source;
             return d;
         })();
+
         return {
             addOnTraceHandler: function (handler) {
                 (handler && onTraceArray.push(handler));
@@ -146,14 +144,18 @@
             assert: scopedAssert
         };
     };
+
     logger['get'] = defineScopedTracing;
+
     /// TODO: this should be private
     var debug = (typeof window === 'undefined') ? true : window.location.href.search(/local/i) > 0;
     logger['trace'] = defineScopedTracing("logger", debug);
     ns.modules.logger = logger;
     ns.modules.logger.trace.debug(logger.version);
+
     return ns.logger;
+
     // both of these dependencies are resolved in string.js
 })(spexplorerjs = (typeof spexplorerjs === 'undefined') ? { modules: {} } : spexplorerjs);
+
 module.exports = spexplorerjs;
-//# sourceMappingURL=logger.js.map

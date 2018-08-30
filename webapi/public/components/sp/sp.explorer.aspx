@@ -50,5 +50,5 @@ body #s4-leftpanel {
     <div class="spexp">
         <div data-widget="xSpExplorer"></div>
     </div>
-    <script type="text/javascript" src="https://spexplorerjs.azurewebsites.net/components/sp/sp.explorer.js"></script>
+    <script type='text/javascript' src='https://spexplorerjs.azurewebsites.net/components\sp\sp.explorer.js'></script>
 </asp:Content>
