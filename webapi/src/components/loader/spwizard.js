@@ -6,6 +6,7 @@ import "../../../public/vendor/bootstrap/3.3.7/js/bootstrap.js";
 import "../../../public/vendor/bootstrap/3.3.7/css/spexp.min.css";
 
 (function (ns) {
+
 	var $ = spexplorerjs.modules.jQuery;
 
 	var placeholder = $(template);
