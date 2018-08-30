@@ -24,6 +24,14 @@
     <Compile Include="public\components\datatables\datatables.min.js" />
     <Compile Include="public\components\loader\loader.js" />
     <Compile Include="public\components\loader\loader.min.js" />
+    <Compile Include="public\components\loader\loaderspwizard.js" />
+    <Compile Include="public\components\loader\loaderspwizard.local.js" />
+    <Compile Include="public\components\loader\shortcut.js" />
+    <Compile Include="public\components\loader\shortcut.local.js" />
+    <Compile Include="public\components\loader\spwizard.js" />
+    <Compile Include="public\components\loader\spwizard.local.js" />
+    <Compile Include="public\components\loader\wizard.js" />
+    <Compile Include="public\components\loader\wizard.local.js" />
     <Compile Include="public\components\logger\logger.js" />
     <Compile Include="public\components\logger\logger.min.js" />
     <Compile Include="public\components\mirrors\jseditor.js" />

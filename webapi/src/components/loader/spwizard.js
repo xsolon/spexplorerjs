@@ -19,6 +19,7 @@ import "../../../public/vendor/bootstrap/3.3.7/css/spexp.min.css";
 
 		var script = document.createElement("script");
 		script.src = url;
+
 		$("body").append(script);
 	};
 

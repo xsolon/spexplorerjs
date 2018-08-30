@@ -105,9 +105,9 @@ module.exports = function(module) {
 /***/ }),
 
 /***/ "../../vendor/jquery/2.2.4/jquery.js":
-/*!**************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/vendor/jquery/2.2.4/jquery.js ***!
-  \**************************************************************************/
+/*!*********************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/vendor/jquery/2.2.4/jquery.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
