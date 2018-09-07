@@ -6,6 +6,7 @@
 
 import "./sp.folderapi.js";
 
+// v 0.0.10: 2018-09-04  - bug in addPermissions
 // v 0.0.9: 2018-08-16  - spdal: replaced log,error ctr arguments with a trace object
 // v 0.0.9: 2018-08-14  - ensureFields: create each field per request
 // v 0.0.8: 2018-06-01  - getitems default force to true
@@ -541,9 +542,9 @@ import "./sp.folderapi.js";
 					}
 
 					// Get the RoleAssignmentCollection for the target web.
-					//var assignments = securable.get_roleAssignments();
+					var assignments = securable.get_roleAssignments();
 					// assign the group to the new RoleDefinitionBindingCollection.
-					//var roleAssignmentContribute = assignments.add(principal, collContribute);
+					assignments.add(principal, collContribute);
 
 					ctx.load(principal);
 

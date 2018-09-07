@@ -82,7 +82,7 @@
 
 
 module.exports = {
-    sample: "./jseditor.html"
+	sample: "./jseditor.html"
 };
 
 /***/ })

@@ -72,9 +72,9 @@
 /******/ ({
 
 /***/ "../../../../node_modules/css-loader/index.js??ref--5-1!../../../../public/vendor/select2/css/select2.css":
-/*!*************************************************************************************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader??ref--5-1!D:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
-  \*************************************************************************************************************************************************/
+/*!***************************************************************************************************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/node_modules/css-loader??ref--5-1!D:/sc/spexplorer/js/spexplorerjs/webapi/public/vendor/select2/css/select2.css ***!
+  \***************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -91,9 +91,9 @@ exports.push([module.i, ".select2-container {\r\n  box-sizing: border-box;\r\n  
 /***/ }),
 
 /***/ "../../../../node_modules/css-loader/lib/css-base.js":
-/*!********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/css-loader/lib/css-base.js ***!
-  \********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/node_modules/css-loader/lib/css-base.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -178,9 +178,9 @@ function toComment(sourceMap) {
 /***/ }),
 
 /***/ "../../../../node_modules/jquery/dist/jquery.js":
-/*!***************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/jquery/dist/jquery.js ***!
-  \***************************************************************************/
+/*!**********************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/node_modules/jquery/dist/jquery.js ***!
+  \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10554,9 +10554,9 @@ return jQuery;
 /***/ }),
 
 /***/ "../../../../node_modules/style-loader/lib/addStyles.js":
-/*!***********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/style-loader/lib/addStyles.js ***!
-  \***********************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/node_modules/style-loader/lib/addStyles.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10941,9 +10941,9 @@ function updateLink (link, options, obj) {
 /***/ }),
 
 /***/ "../../../../node_modules/style-loader/lib/urls.js":
-/*!******************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/node_modules/style-loader/lib/urls.js ***!
-  \******************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/node_modules/style-loader/lib/urls.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -11074,9 +11074,9 @@ module.exports = function(module) {
 /***/ }),
 
 /***/ "../../../../public/vendor/select2/css/select2.css":
-/*!******************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/css/select2.css ***!
-  \******************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/public/vendor/select2/css/select2.css ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11104,9 +11104,9 @@ if(false) {}
 /***/ }),
 
 /***/ "../../../../public/vendor/select2/js/select2.full.js":
-/*!*********************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/public/vendor/select2/js/select2.full.js ***!
-  \*********************************************************************************/
+/*!****************************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/public/vendor/select2/js/select2.full.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17205,9 +17205,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /***/ }),
 
 /***/ "../../../vendor/jquery/2.2.4/jquery.js":
-/*!**************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/vendor/jquery/2.2.4/jquery.js ***!
-  \**************************************************************************/
+/*!*********************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/vendor/jquery/2.2.4/jquery.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -26629,9 +26629,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /***/ }),
 
 /***/ "../../logger/logger.js":
-/*!************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/logger/logger.js ***!
-  \************************************************************************/
+/*!*******************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/components/logger/logger.js ***!
+  \*******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -26796,9 +26796,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /***/ }),
 
 /***/ "../../string/funcs.js":
-/*!***********************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/string/funcs.js ***!
-  \***********************************************************************/
+/*!******************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/components/string/funcs.js ***!
+  \******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -26930,9 +26930,9 @@ __webpack_require__(/*! ./string.js */ "../../string/string.js");
 /***/ }),
 
 /***/ "../../string/string.js":
-/*!************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/string/string.js ***!
-  \************************************************************************/
+/*!*******************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/components/string/string.js ***!
+  \*******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -27028,9 +27028,9 @@ __webpack_require__(/*! ./string.js */ "../../string/string.js");
 /***/ }),
 
 /***/ "../../widget.base.js":
-/*!**********************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/widget.base.js ***!
-  \**********************************************************************/
+/*!*****************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/components/widget.base.js ***!
+  \*****************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 

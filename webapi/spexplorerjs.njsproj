@@ -139,12 +139,21 @@
     <Compile Include="public\components\widget.base.local.js" />
     <Compile Include="scripts.js" />
     <Compile Include="server.js" />
+    <Compile Include="src\components\datatables\datatables.js" />
     <Compile Include="src\components\loader\loader.js" />
     <Compile Include="src\components\loader\module.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\components\loader\spwizard.js" />
     <Compile Include="src\components\logger\logger.js" />
+    <Compile Include="src\components\mirrors\jseditor.js" />
+    <Compile Include="src\components\mirrors\jseditor.module.js" />
+    <Compile Include="src\components\mirrors\jsmirror.js" />
+    <Compile Include="src\components\mirrors\jsmirror.module.js" />
+    <Compile Include="src\components\mirrors\xmleditor.js" />
+    <Compile Include="src\components\mirrors\xmleditor.module.js" />
+    <Compile Include="src\components\mirrors\xmlmirror.js" />
+    <Compile Include="src\components\mirrors\xmlmirror.module.js" />
     <Compile Include="src\components\sp\api\api.js" />
     <Compile Include="src\components\sp\api\sp.base.js" />
     <Compile Include="src\components\sp\api\sp.folderapi.js" />
@@ -183,8 +192,14 @@
     <Compile Include="src\components\sp\widgets\web.editor.js" />
     <Compile Include="src\components\sp\widgets\web.editor.module.js" />
     <Compile Include="src\components\sp\widgets\wizard.js" />
+    <Compile Include="src\components\string\funcs.js" />
+    <Compile Include="src\components\string\string.js" />
+    <Compile Include="src\components\string\xhr.js" />
     <Compile Include="src\components\widget.base.js" />
     <Compile Include="src\scripts\eslint.js" />
+    <Compile Include="src\scripts\mytransforms.js" />
+    <Compile Include="src\scripts\packer.js" />
+    <Compile Include="src\scripts\widgettransforms.js" />
     <Compile Include="uglify.js" />
     <Compile Include="webpack.config.js" />
     <Content Include="LICENSE" />
@@ -280,7 +295,16 @@
     <Compile Include="public\refs\jquery.min.js" />
     <Compile Include="routes\index.js" />
     <Compile Include="routes\users.js" />
+    <Content Include="src\components\datatables\example1.html" />
+    <Content Include="src\components\datatables\template.html" />
     <Content Include="src\components\loader\spwizard.template.html" />
+    <Content Include="src\components\mirrors\jseditor.html" />
+    <Content Include="src\components\mirrors\jsmirror.html" />
+    <Content Include="src\components\mirrors\jsmirror.template.html" />
+    <Content Include="src\components\mirrors\xmleditor.html" />
+    <Content Include="src\components\mirrors\xmleditor.template.html" />
+    <Content Include="src\components\mirrors\xmlmirror.html" />
+    <Content Include="src\components\mirrors\xmlmirror.template.html" />
     <Content Include="src\components\sp\api\sp.web.html" />
     <Content Include="src\components\sp\api\tester.template.html" />
     <Content Include="src\components\sp\list.selector.html" />
@@ -334,11 +358,14 @@
     <Folder Include="public\stylesheets" />
     <Folder Include="routes" />
     <Folder Include="src\components\" />
+    <Folder Include="src\components\datatables\" />
     <Folder Include="src\components\loader\" />
     <Folder Include="src\components\logger\" />
+    <Folder Include="src\components\mirrors\" />
     <Folder Include="src\components\sp\" />
     <Folder Include="src\components\sp\api\" />
     <Folder Include="src\components\sp\widgets\" />
+    <Folder Include="src\components\string\" />
     <Folder Include="src\scripts\" />
     <Folder Include="views" />
   </ItemGroup>

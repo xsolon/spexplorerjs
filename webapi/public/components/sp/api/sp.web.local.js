@@ -105,9 +105,9 @@ module.exports = function(module) {
 /***/ }),
 
 /***/ "../../../vendor/jquery/2.2.4/jquery.js":
-/*!**************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/vendor/jquery/2.2.4/jquery.js ***!
-  \**************************************************************************/
+/*!*********************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/vendor/jquery/2.2.4/jquery.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9529,9 +9529,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /***/ }),
 
 /***/ "../../logger/logger.js":
-/*!************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/logger/logger.js ***!
-  \************************************************************************/
+/*!*******************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/components/logger/logger.js ***!
+  \*******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9696,9 +9696,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /***/ }),
 
 /***/ "../../string/funcs.js":
-/*!***********************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/string/funcs.js ***!
-  \***********************************************************************/
+/*!******************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/components/string/funcs.js ***!
+  \******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9830,9 +9830,9 @@ __webpack_require__(/*! ./string.js */ "../../string/string.js");
 /***/ }),
 
 /***/ "../../string/string.js":
-/*!************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/string/string.js ***!
-  \************************************************************************/
+/*!*******************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/components/string/string.js ***!
+  \*******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 

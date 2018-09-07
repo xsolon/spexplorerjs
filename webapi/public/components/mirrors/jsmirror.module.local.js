@@ -82,7 +82,7 @@
 
 
 module.exports = {
-    sample: "./jsmirror.html"
+	sample: "./jsmirror.html"
 };
 
 /***/ })

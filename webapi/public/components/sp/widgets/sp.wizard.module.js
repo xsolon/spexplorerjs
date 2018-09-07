@@ -66,15 +66,15 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./querybuilder.module.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./sp.wizard.module.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./querybuilder.module.js":
-/*!********************************!*\
-  !*** ./querybuilder.module.js ***!
-  \********************************/
+/***/ "./sp.wizard.module.js":
+/*!*****************************!*\
+  !*** ./sp.wizard.module.js ***!
+  \*****************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -82,9 +82,8 @@
 
 
 module.exports = {
-	//sample: "./treelight.html"
 	spPage: "./spPage16.aspx",
-	publicName: "querybuilder"
+	publicName: "spWizard"
 };
 
 /***/ })

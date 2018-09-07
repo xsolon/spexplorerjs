@@ -1,5 +1,6 @@
 /// <reference path="../../logger/logger.js" />
 /* global require,ExecuteOrDelayUntilScriptLoaded */
+// v 0.0.7 : 2018-08-31 - getPeoplePickerByName
 // v 0.0.6 : 2018-08-13 - funcs.js dependency
 // v 0.0.5 : 2018-06-14 - use get_current in getCtx
 // v 0.0.5 : 2018-06-01 - bug in ctx.prototyp.loadSpElem
@@ -162,6 +163,54 @@ require("../../string/funcs.js");
 				res[nm] = this.parentNode;
 			});
 			return res;
+		},
+		getPeoplePickerByName: function (name) {
+			var field = null;
+			for (var a in SPClientPeoplePicker.SPClientPeoplePickerDict) {
+				if (a.search(name) > -1) {
+					field = SPClientPeoplePicker.SPClientPeoplePickerDict[a];
+					break;
+				}
+			}
+			return field;
+		}
+		, sendEmail: function (to, body, subject) {
+			//https://sharepoint.stackexchange.com/questions/150833/sp-utilities-utility-sendemail-with-additional-headers-javascript
+			//https://www.linkedin.com/pulse/limitation-sendmail-functioning-sharepoint-using-client-hai-nguyen/
+			var urlTemplate = ns.ui.getWebUrl() + "/_api/SP.Utilities.Utility.SendEmail";
+			var formDigest = document.getElementById("__REQUESTDIGEST").value;
+			return $.ajax({
+				contentType: "application/json",
+				url: urlTemplate,
+				type: "POST",
+				data: JSON.stringify({
+					"properties": {
+						"__metadata": { "type": "SP.Utilities.EmailProperties" },
+						"From": "from",
+						"To": { "results": [to] },
+						"Subject": subject,
+						"Body": body
+					}
+				}
+				),
+				headers: {
+					"Accept": "application/json;odata=verbose",
+					"content-type": "application/json;odata=verbose",
+					"X-RequestDigest": formDigest
+				}
+			}).fail(function () {
+				
+			});
+		},
+		updatePanels: function () {
+
+			for (ctxName in g_ctxDict) {
+				var wpCtx = g_ctxDict[ctxName];
+				var clvp = new CLVP(wpCtx);
+				var evtAjax = { currentCtx: wpCtx, csrAjaxRefresh: true };
+				AJAXRefreshView(evtAjax, SP.UI.DialogResult.OK);
+			}
+
 		}
 
 	};

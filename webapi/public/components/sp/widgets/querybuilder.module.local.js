@@ -82,9 +82,9 @@
 
 
 module.exports = {
-  //sample: "./treelight.html"
-  spPage: "./spPage16.aspx",
-  publicName: "querybuilder"
+	//sample: "./treelight.html"
+	spPage: "./spPage16.aspx",
+	publicName: "querybuilder"
 };
 
 /***/ })

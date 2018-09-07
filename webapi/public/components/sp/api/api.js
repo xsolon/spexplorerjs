@@ -105,9 +105,9 @@ module.exports = function(module) {
 /***/ }),
 
 /***/ "../../../vendor/jquery/2.2.4/jquery.js":
-/*!**************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/vendor/jquery/2.2.4/jquery.js ***!
-  \**************************************************************************/
+/*!*********************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/vendor/jquery/2.2.4/jquery.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9529,9 +9529,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /***/ }),
 
 /***/ "../../logger/logger.js":
-/*!************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/logger/logger.js ***!
-  \************************************************************************/
+/*!*******************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/components/logger/logger.js ***!
+  \*******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9696,9 +9696,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /***/ }),
 
 /***/ "../../string/funcs.js":
-/*!***********************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/string/funcs.js ***!
-  \***********************************************************************/
+/*!******************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/components/string/funcs.js ***!
+  \******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9830,9 +9830,9 @@ __webpack_require__(/*! ./string.js */ "../../string/string.js");
 /***/ }),
 
 /***/ "../../string/string.js":
-/*!************************************************************************!*\
-  !*** D:/sc/spexplorer/js/spexplorerjs/src/components/string/string.js ***!
-  \************************************************************************/
+/*!*******************************************************************************!*\
+  !*** D:/sc/spexplorer/js/spexplorerjs/webapi/src/components/string/string.js ***!
+  \*******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9955,6 +9955,7 @@ __webpack_require__(/*! ./sp.web.js */ "./sp.web.js");
 
 /// <reference path="../../logger/logger.js" />
 /* global require,ExecuteOrDelayUntilScriptLoaded */
+// v 0.0.7 : 2018-08-31 - getPeoplePickerByName
 // v 0.0.6 : 2018-08-13 - funcs.js dependency
 // v 0.0.5 : 2018-06-14 - use get_current in getCtx
 // v 0.0.5 : 2018-06-01 - bug in ctx.prototyp.loadSpElem
@@ -10106,6 +10107,50 @@ __webpack_require__(/*! ../../string/funcs.js */ "../../string/funcs.js");
 				res[nm] = this.parentNode;
 			});
 			return res;
+		},
+		getPeoplePickerByName: function getPeoplePickerByName(name) {
+			var field = null;
+			for (var a in SPClientPeoplePicker.SPClientPeoplePickerDict) {
+				if (a.search(name) > -1) {
+					field = SPClientPeoplePicker.SPClientPeoplePickerDict[a];
+					break;
+				}
+			}
+			return field;
+		},
+		sendEmail: function sendEmail(to, body, subject) {
+			//https://sharepoint.stackexchange.com/questions/150833/sp-utilities-utility-sendemail-with-additional-headers-javascript
+			//https://www.linkedin.com/pulse/limitation-sendmail-functioning-sharepoint-using-client-hai-nguyen/
+			var urlTemplate = ns.ui.getWebUrl() + "/_api/SP.Utilities.Utility.SendEmail";
+			var formDigest = document.getElementById("__REQUESTDIGEST").value;
+			return $.ajax({
+				contentType: "application/json",
+				url: urlTemplate,
+				type: "POST",
+				data: JSON.stringify({
+					"properties": {
+						"__metadata": { "type": "SP.Utilities.EmailProperties" },
+						"From": "from",
+						"To": { "results": [to] },
+						"Subject": subject,
+						"Body": body
+					}
+				}),
+				headers: {
+					"Accept": "application/json;odata=verbose",
+					"content-type": "application/json;odata=verbose",
+					"X-RequestDigest": formDigest
+				}
+			}).fail(function () {});
+		},
+		updatePanels: function updatePanels() {
+
+			for (ctxName in g_ctxDict) {
+				var wpCtx = g_ctxDict[ctxName];
+				var clvp = new CLVP(wpCtx);
+				var evtAjax = { currentCtx: wpCtx, csrAjaxRefresh: true };
+				AJAXRefreshView(evtAjax, SP.UI.DialogResult.OK);
+			}
 		}
 
 	};
@@ -10331,6 +10376,7 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
 __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 
+// v 0.0.10: 2018-09-04  - bug in addPermissions
 // v 0.0.9: 2018-08-16  - spdal: replaced log,error ctr arguments with a trace object
 // v 0.0.9: 2018-08-14  - ensureFields: create each field per request
 // v 0.0.8: 2018-06-01  - getitems default force to true
@@ -10878,9 +10924,9 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 					}
 
 					// Get the RoleAssignmentCollection for the target web.
-					//var assignments = securable.get_roleAssignments();
+					var assignments = securable.get_roleAssignments();
 					// assign the group to the new RoleDefinitionBindingCollection.
-					//var roleAssignmentContribute = assignments.add(principal, collContribute);
+					assignments.add(principal, collContribute);
 
 					ctx.load(principal);
 

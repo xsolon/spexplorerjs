@@ -82,8 +82,8 @@
 
 
 module.exports = {
-    spPage: "./spPage16.aspx",
-    publicName: "xSPFieldSelector"
+	spPage: "./spPage16.aspx",
+	publicName: "xSPFieldSelector"
 };
 
 /***/ })

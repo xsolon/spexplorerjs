@@ -66,26 +66,23 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./querybuilder.module.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./user.editor.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./querybuilder.module.js":
-/*!********************************!*\
-  !*** ./querybuilder.module.js ***!
-  \********************************/
+/***/ "./user.editor.js":
+/*!************************!*\
+  !*** ./user.editor.js ***!
+  \************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = {
-	//sample: "./treelight.html"
-	spPage: "./spPage16.aspx",
-	publicName: "querybuilder"
-};
+// https://docs.microsoft.com/en-us/sharepoint/dev/sp-add-ins/use-the-client-side-people-picker-control-in-sharepoint-hosted-sharepoint-add-in
+ExecuteOrDelayUntilScriptLoaded(function () {}, "clientpeoplepicker.js");
 
 /***/ })
 
