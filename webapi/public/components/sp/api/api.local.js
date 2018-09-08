@@ -10376,6 +10376,7 @@ __webpack_require__(/*! ./sp.base.js */ "./sp.base.js");
 
 __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 
+// v 0.0.12: 2018-09-07  - ensureFields check if field exists
 // v 0.0.10: 2018-09-04  - bug in addPermissions
 // v 0.0.9: 2018-08-16  - spdal: replaced log,error ctr arguments with a trace object
 // v 0.0.9: 2018-08-14  - ensureFields: create each field per request
@@ -11156,8 +11157,26 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 			}).promise();
 		};
 		var ensureFields = function ensureFields(list, fields) {
-			fields = fields || [];
+			fields = fields || args.Fields || [];
 			var spfields = list.get_fields();
+			var loadFields = function loadFields() {
+				return $.Deferred(function (dfd) {
+					ctx.load(spfields, "Include(Title,FieldTypeKind,TypeAsString,InternalName)");
+					ctx.executeQueryAsync(function () {
+						ctrace.log("existing fields loaded");
+						var le = spfields.getEnumerator();
+						var parsed = {};
+						while (le.moveNext()) {
+							var field = le.get_current();
+							parsed[field.get_internalName()] = field;
+						}
+						listFields = parsed;
+						dfd.resolve(parsed);
+					}, function onError(sender, args) {
+						dfd.reject("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
+					});
+				}).promise();
+			};
 			var getMarkup = function getMarkup(field) {
 				return $.Deferred(function (dfd) {
 
@@ -11171,6 +11190,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 					}
 				}).promise();
 			};
+
 			return $.Deferred(function (dfd) {
 				var done = function done() {
 					spfields = list.get_fields();
@@ -11190,25 +11210,33 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 						dfd.reject("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
 					});
 				};
-				ns.modules.funcs.processAsQueue(fields, function (field) {
-					return $.Deferred(function (fieldDfd) {
-						getMarkup(field).done(function (xml) {
+				loadFields().done(function (spFieldMap) {
+					ns.modules.funcs.processAsQueue(fields, function (field) {
+						return $.Deferred(function (fieldDfd) {
+							getMarkup(field).done(function (xml) {
 
-							ctrace.log("adding: " + xml);
-							var spField = spfields.addFieldAsXml(xml, true, SP.AddFieldOptions.defaultValue);
-
-							if (field.post) {
-								field.post(spField);
-							}
-							ctx.load(spField);
-							ctx.executeQueryAsync(function () {
-								fieldDfd.resolve();
-							}, function (r, a) {
-								reqFailure(r, a, "ensureFields", fieldDfd);
+								var fieldXML = $($.parseXML(xml)).find("Field");
+								var internalName = fieldXML.attr("DisplayName") || fieldXML.attr("InternalName");
+								var spField = spFieldMap[internalName];
+								if (spField) {
+									ctrace.debug(internalName + " found");
+								} else {
+									ctrace.log("adding: " + xml);
+									spField = spfields.addFieldAsXml(xml, true, SP.AddFieldOptions.defaultValue);
+								}
+								if (field.post) {
+									field.post(spField);
+								}
+								ctx.load(spField);
+								ctx.executeQueryAsync(function () {
+									fieldDfd.resolve();
+								}, function (r, a) {
+									reqFailure(r, a, "ensureFields", fieldDfd);
+								});
 							});
-						});
-					}).promise();
-				}).done(done);
+						}).promise();
+					}).done(done);
+				});
 			}).promise();
 		};
 
@@ -11486,7 +11514,7 @@ __webpack_require__(/*! ./sp.folderapi.js */ "./sp.folderapi.js");
 		getAll: getAll,
 		getFields: getFields,
 		Dal: spDal,
-		version: "0.0.8"
+		version: "0.0.11"
 	};
 
 	var updateApi = function updateApi() {

@@ -69,3 +69,4 @@ bin
 packages
 /.vs/config/applicationhost.config
 /routes/.vs
+/nodeapi/spexplorerjs.node/*.user
