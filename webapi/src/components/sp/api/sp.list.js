@@ -6,6 +6,7 @@
 
 import "./sp.folderapi.js";
 
+// v 0.0.14: 2018-09-10  - addItems better handle LookupValues, defaultItems is a promise
 // v 0.0.12: 2018-09-07  - ensureFields check if field exists
 // v 0.0.10: 2018-09-04  - bug in addPermissions
 // v 0.0.9: 2018-08-16  - spdal: replaced log,error ctr arguments with a trace object
@@ -264,6 +265,29 @@ import "./sp.folderapi.js";
 		};
 
 		var addItems = function (items, splist, spfields, folderUrl) {
+			var prepLookupValue = function (raw) {
+				var val = null;
+				if (raw == null || SP.User.isInstanceOfType(raw) || SP.FieldLookupValue.isInstanceOfType(raw)) {
+					val = raw;
+				} else if (Array.isInstanceOfType(raw)) {
+					val = [];
+					raw.forEach(function (item) {
+						if (parseInt(item) > 0) {
+							var iVal = new SP.FieldLookupValue();
+							iVal.set_lookupId(item);
+							val.push(iVal);
+						}
+						else {
+							val.push(item);
+						}
+					});
+				}
+				else if (parseInt(raw) > 0) {
+					val = new SP.FieldLookupValue();
+					val.set_lookupId(raw);
+				}
+				return val;
+			};
 			var dfd = $.Deferred();
 
 			getlist().done(function () {
@@ -291,19 +315,7 @@ import "./sp.folderapi.js";
 							} else if (fieldType.search("Lookup") === 0) {
 
 								var itemVal = data[f];
-								if (itemVal) {
-									if (itemVal.length) {
-										val = [];
-										for (var j = 0; j < itemVal.length; j++) {
-											var iVal = new SP.FieldLookupValue();
-											iVal.set_lookupId(itemVal[j]);
-											val.push(iVal);
-										}
-									} else {
-										val = new SP.FieldLookupValue();
-										val.set_lookupId(itemVal);
-									}
-								}
+								val = prepLookupValue(itemVal);
 							} else {
 								val = data[f];
 							}
@@ -318,7 +330,7 @@ import "./sp.folderapi.js";
 						ctrace.log("addItems done");
 						dfd.resolve(spItems);
 					}, function (r, a) {
-						reqFailure(r, a, "addItems" + args.listTitle, dfd);
+						reqFailure(r, a, "addItems" + args.ListTitle, dfd);
 					});
 				} else {
 					dfd.resolve();
@@ -724,36 +736,44 @@ import "./sp.folderapi.js";
 									ctx.load(rootFolder, ["ServerRelativeUrl"]);
 									ctx.executeQueryAsync();
 
-									var defaultItems = function defaultItems(spfields) {
-										if (typeof args.DefaultItems == "function") {
-											args.DefaultItems(spfields, me).done(function (items) {
-												addItems(items, splist, spfields);
-											});
-										} else {
-											addItems(args.DefaultItems, splist, spfields);
-										}
+									var defaultItems = function (spfields) {
+										return $.Deferred(function (dfdDefItems) {
+											if (typeof args.DefaultItems == "function") {
+												args.DefaultItems(spfields, me).done(function (items) {
+													addItems(items, splist, spfields).done(function () {
+														dfdDefItems.resolve();
+													});
+												});
+											} else {
+												addItems(args.DefaultItems, splist, spfields).done(function () {
+													dfdDefItems.resolve();
+												});
+											}
+
+										}).promise();
 									};
 									ctrace.log(args.ListTitle + ": creating fields");
 
 									ensureFields(splist, args.Fields || []).done(function (spfields) {
 										ensureCTypes(args.ContentTypes).done(function () {
-											defaultItems(spfields);
-											if (args.Permissions) {
-												breakRoleInheritance(false, true).done(function () {
-													ctrace.log("done with inheritance");
-													ns.modules.funcs.processAsQueue(args.Permissions, function (entry) {
-														var groupName = entry.name;
-														var perms = entry.permissions;
-														ctrace.log("adding perm: " + groupName + " to " + args.ListTitle);
-														return addPermission(groupName, perms, splist);
-													}).done(function () {
-														ctrace.log("done adding permissions");
-														handleOnReady(splist, dfd);
+											defaultItems(spfields).done(function () {
+												if (args.Permissions) {
+													breakRoleInheritance(false, true).done(function () {
+														ctrace.log("done with inheritance");
+														ns.modules.funcs.processAsQueue(args.Permissions, function (entry) {
+															var groupName = entry.name;
+															var perms = entry.permissions;
+															ctrace.log("adding perm: " + groupName + " to " + args.ListTitle);
+															return addPermission(groupName, perms, splist);
+														}).done(function () {
+															ctrace.log("done adding permissions");
+															handleOnReady(splist, dfd);
+														});
 													});
-												});
-											} else {
-												handleOnReady(splist, dfd);
-											}
+												} else {
+													handleOnReady(splist, dfd);
+												}
+											});
 
 										});
 									}).fail(function (err) {
@@ -1136,7 +1156,7 @@ import "./sp.folderapi.js";
 		getAll: getAll,
 		getFields: getFields,
 		Dal: spDal,
-		version: "0.0.11"
+		version: "0.0.14"
 	};
 
 	var updateApi = function () {
