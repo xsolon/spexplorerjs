@@ -1,5 +1,6 @@
 /// <reference path="../../logger/logger.js" />
 /* global require,ExecuteOrDelayUntilScriptLoaded */
+// v 0.0.8 : 2018-10-02 - Bug in SendEmail
 // v 0.0.7 : 2018-08-31 - getPeoplePickerByName
 // v 0.0.6 : 2018-08-13 - funcs.js dependency
 // v 0.0.5 : 2018-06-14 - use get_current in getCtx
@@ -175,6 +176,9 @@ require("../../string/funcs.js");
 			return field;
 		}
 		, sendEmail: function (to, body, subject) {
+			if (!Array.isArray(to)) {
+				to = [to];
+			}
 			//https://sharepoint.stackexchange.com/questions/150833/sp-utilities-utility-sendemail-with-additional-headers-javascript
 			//https://www.linkedin.com/pulse/limitation-sendmail-functioning-sharepoint-using-client-hai-nguyen/
 			var urlTemplate = ns.ui.getWebUrl() + "/_api/SP.Utilities.Utility.SendEmail";
@@ -187,7 +191,7 @@ require("../../string/funcs.js");
 					"properties": {
 						"__metadata": { "type": "SP.Utilities.EmailProperties" },
 						"From": "from",
-						"To": { "results": [to] },
+						"To": { "results": to },
 						"Subject": subject,
 						"Body": body
 					}
@@ -198,7 +202,7 @@ require("../../string/funcs.js");
 					"content-type": "application/json;odata=verbose",
 					"X-RequestDigest": formDigest
 				}
-			}).fail(function () {
+
 				
 			});
 		},

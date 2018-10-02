@@ -37,6 +37,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var sp_jsom_node_1 = require("sp-jsom-node");
+//import api from './logger';
+var Logger_1 = require("./Logger");
+var logger = new Logger_1.Logger('test');
+logger.log('init');
 var settings = require('c:\\sc\\irm\\private.json');
 var jsomNodeOptions = {
     siteUrl: settings.siteUrl,
