@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"module": "amd",
+		"target": "es5",
+		"lib": [ "es6", "dom" ],
+		"sourceMap": true,
+		//"outFile": "base.js",
+		"typeRoots": [ "./node_modules/@types" ],
+		"outDir": "./dist/",
+		"moduleResolution": "node",
+		"allowJs": false,
+		"declaration": true
+	},
+	"include": [ "src/**/*.api.ts" ],
+	"exclude": [
+		"node_modules",
+		"dist"
+	]
+}

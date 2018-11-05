@@ -1,16 +1,16 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "lib": [ "es6", "dom" ],
-    "sourceMap": true,
-    "allowJs": true,
-    "typeRoots": [ "./node_modules/@types" ],
-    "moduleResolution": "node"
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es5",
+		"lib": [ "es6", "dom" ],
+		"sourceMap": true,
+		"allowJs": true,
+		"typeRoots": [ "./node_modules/@types", "./defs" ],
+		"moduleResolution": "node"
 
-  },
-  "files": ["app.ts"],
-  "exclude": [
-    "node_modules"
-  ]
+	},
+	"files": [ "app.ts" ],
+	"exclude": [
+		"node_modules"
+	]
 }

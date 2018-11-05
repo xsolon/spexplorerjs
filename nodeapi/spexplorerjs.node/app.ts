@@ -1,4 +1,6 @@
-﻿import { JsomNode, IJsomNodeSettings, IJsomNodeInitSettings } from 'sp-jsom-node';
+﻿/// <reference path="src/defs/sharepoint/index.d.ts" />
+
+import { JsomNode, IJsomNodeSettings, IJsomNodeInitSettings } from 'sp-jsom-node';
 //import api from './logger';
 
 import { Logger } from './Logger';
@@ -7,7 +9,7 @@ var logger = new Logger('test');
 
 logger.log('init');
 
-let settings: any = require('c:\\sc\\irm\\private.json');
+let settings: any = require('c:\\sc\\sample\\private.json');
 let jsomNodeOptions: IJsomNodeInitSettings = {
     siteUrl: settings.siteUrl,
     authOptions: settings

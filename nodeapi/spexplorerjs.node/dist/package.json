@@ -1,0 +1,15 @@
+{
+  "name": "spexplorerts",
+  "version": "0.1.4",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "xsolon <martin@xsolon.net> (http://blog.xsolon.net)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xsolon/spexplorerjs"
+  }
+}
