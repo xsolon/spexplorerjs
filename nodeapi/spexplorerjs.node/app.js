@@ -1,4 +1,5 @@
 "use strict";
+/// <reference path="src/defs/sharepoint/index.d.ts" />
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -41,7 +42,7 @@ var sp_jsom_node_1 = require("sp-jsom-node");
 var Logger_1 = require("./Logger");
 var logger = new Logger_1.Logger('test');
 logger.log('init');
-var settings = require('c:\\sc\\irm\\private.json');
+var settings = require('c:\\sc\\sample\\private.json');
 var jsomNodeOptions = {
     siteUrl: settings.siteUrl,
     authOptions: settings

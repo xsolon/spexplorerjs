@@ -1,8 +1,6 @@
-﻿/// <reference path="../defs/sharepoint/index.d.ts" />
-/// <reference path="../../node_modules/@types/microsoft-ajax/index.d.ts" />
-
+﻿
 import { Logger } from './logger.api';
-import { FieldMeta, ListMeta } from './meta.api';
+import { FieldMeta, ListMeta, itemsFunction } from './meta.api';
 import { funcs } from "./utils.api";
 
 import jQuery = require('jquery');
@@ -128,9 +126,18 @@ export class ListDal {
 					meta.listUpdates(list, me).then(function () {
 						me.ctrace.debug('listUpdates.done');
 						if (isNew && meta.defaultItems) {
-							me.addItems(meta.defaultItems, list, "").done(function () {
-								dfd.resolve();
-							});
+							var addFunction = function (items) {
+								me.addItems(items, list).done(function () {
+									dfd.resolve();
+								});
+							};
+							if (Array.isArray(meta.defaultItems)) {
+								addFunction(meta.defaultItems as any[]);
+							} else {
+								(meta.defaultItems as itemsFunction)(list, me).done(function (items) {
+									addFunction(items);
+								});
+							}
 						} else {
 							dfd.resolve();
 						}
@@ -254,7 +261,7 @@ export class ListDal {
 			});
 		}).promise();
 	};
-	addItems(items: Array<any>, splist: SP.List, folderUrl: string): JQuery.Promise<any> {
+	addItems(items: Array<any>, splist: SP.List, folderUrl?: string): JQuery.Promise<any> {
 		var me = this;
 		me.ctrace.log('starting addItems');
 		var prepLookupValue = function (raw) {
@@ -329,7 +336,6 @@ export class ListDal {
 					debugger;
 				}
 				me.ctx.executeQueryAsync(function () {
-					debugger;
 					me.ctrace.log("addItems done");
 					dfd.resolve(spItems);
 				}, function (r, a) {

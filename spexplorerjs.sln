@@ -7,6 +7,8 @@ Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "spexplorerjs", "webapi\spex
 EndProject
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "spexplorerjs.node", "nodeapi\spexplorerjs.node\spexplorerjs.node.njsproj", "{40F2E876-2233-473B-88B0-7B3473833147}"
 EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "TsSample", "TsSample\TsSample.njsproj", "{1B9D5D82-FC05-4B57-93C8-78FA7299FBC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{40F2E876-2233-473B-88B0-7B3473833147}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40F2E876-2233-473B-88B0-7B3473833147}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40F2E876-2233-473B-88B0-7B3473833147}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B9D5D82-FC05-4B57-93C8-78FA7299FBC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B9D5D82-FC05-4B57-93C8-78FA7299FBC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B9D5D82-FC05-4B57-93C8-78FA7299FBC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B9D5D82-FC05-4B57-93C8-78FA7299FBC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

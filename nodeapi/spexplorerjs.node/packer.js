@@ -24,7 +24,7 @@ var config = {
 	},
 	output: {
 		filename: 'api.pack.js',
-		path: path.resolve(__dirname, 'dist')
+		path: path.resolve(__dirname, 'dist/bundles')
 	}
 };
 

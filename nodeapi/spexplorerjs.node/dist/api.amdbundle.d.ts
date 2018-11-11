@@ -1,3 +1,4 @@
+/// <reference types="sharepoint" />
 declare module "logger.api" {
     class Logger {
         name: string;
@@ -27,7 +28,7 @@ declare module "list.api" {
         createList(listTitle: any, templateType: any, web: any): Promise<SP.List>;
         getMeta(listTitle: string, fieldNames: any): Promise<ListMeta>;
         setupForms: (tList: SP.List<any>, scriptLink: string, htmlLink: string) => JQuery.Promise<any, any, any>;
-        addItems(items: Array<any>, splist: SP.List, folderUrl: string): JQuery.Promise<any>;
+        addItems(items: Array<any>, splist: SP.List, folderUrl?: string): JQuery.Promise<any>;
     }
 }
 declare module "meta.api" {
@@ -36,7 +37,7 @@ declare module "meta.api" {
         fields: FieldMeta[];
         listTemplate: number;
         title: string;
-        defaultItems: any[];
+        defaultItems: any[] | itemsFunction;
         listUpdates?: listUpdatesFunction;
         permissions?: GroupMeta[];
         constructor(title: string);
@@ -56,6 +57,7 @@ declare module "meta.api" {
         inDefaultView?: boolean;
     }
     export var classBuilder: (list: ListMeta) => string;
+    export type itemsFunction = (list: SP.List, dal: ListDal) => JQuery.Promise<any[]>;
     export type markupFunction = (ctx: SP.ClientContext, list: SP.List, spfields: SP.FieldCollection, lists: SP.ListCollection, web: SP.Web) => JQuery.Promise<string>;
     export type listUpdatesFunction = (list: SP.List, dal: ListDal) => Promise<any>;
     export type postFunction = (field: SP.Field) => void;
@@ -84,10 +86,6 @@ declare module "utils.api" {
         ensureGroups(groups: Array<GroupMeta>, ctx: SP.ClientContext, securable?: SP.SecurableObject, logger?: Logger): JQuery.Promise<any>;
         createGroup(name: any, desc: any, ctx: SP.ClientContext, parentWeb: SP.Web | null, logger?: Logger): JQuery.Promise<SP.Group>;
         sendEmail(to: string | [string], body: string, subject: string, webUrl?: string): JQuery.Promise<any>;
-        /**
-         * returns table rows that contain the keyword FieldInternName. This identify legacy form fields in a SharePoint form
-         * @returns object with properties that match the internal name of each field in the form. The propety value is the html table row
-        */
         getFieldMap: () => any;
     }
     export var initExtensions: () => void;

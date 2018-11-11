@@ -1,5 +1,4 @@
-﻿/// <reference path="../defs/sharepoint/index.d.ts" />
-/// <reference path="../../node_modules/@types/microsoft-ajax/index.d.ts" />
+﻿/// <reference types='sharepoint'/>
 
 import { Logger } from './logger.api';
 import { GroupMeta } from './meta.api';

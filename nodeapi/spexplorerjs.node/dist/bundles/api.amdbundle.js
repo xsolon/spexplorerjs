@@ -1,7 +1,7 @@
 define("logger.api", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var Logger = /** @class */ (function () {
+    var Logger = (function () {
         function Logger(name) {
             this.shouldLog = true;
             this.shouldDebug = true;
@@ -29,19 +29,17 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
     Object.defineProperty(exports, "__esModule", { value: true });
     global['$'] = jQuery;
     var utils = new utils_api_1.funcs();
-    var ListDal = /** @class */ (function () {
+    var ListDal = (function () {
         function ListDal(ctx) {
             this.ctrace = new logger_api_1.Logger('ListApi');
             this.ensureFields = function (list, fields) {
                 var me = this;
                 me.ctrace.debug('enureFields.begin');
-                //fields = fields || args.Fields || [];
                 var spfields = list.get_fields();
                 var loadFields = function () {
                     return $.Deferred(function (dfd) {
                         me.ctx.load(spfields, "Include(Title,FieldTypeKind,TypeAsString,InternalName)");
                         me.ctx.executeQueryAsync(function () {
-                            //var spFields: Array<SP.Field> = collectionToArray(spfields);
                             var le = spfields.getEnumerator();
                             var parsed = {};
                             while (le.moveNext()) {
@@ -106,7 +104,6 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                                         fieldDfd.resolve();
                                     }, function (r, a) {
                                         debugger;
-                                        //reqFailure(r, a, "ensureFields", fieldDfd);
                                     });
                                 });
                             }).promise();
@@ -118,7 +115,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                 var editForm = tList.get_forms().getByPageType(6);
                 var dispForm = tList.get_forms().getByPageType(4);
                 var newForm = tList.get_forms().getByPageType(8);
-                var jslinkUrl = scriptLink; //"clienttemplates.js|~site/siteassets / irm / js / refs / forms.js | ~site / siteassets / irm / js / task.form.js";
+                var jslinkUrl = scriptLink;
                 var xml = '<WebPart xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/WebPart/v2">\
   <Title>Templates</Title><FrameType>None</FrameType><IsIncluded>true</IsIncluded><FrameState>Normal</FrameState>\
   <IsVisible>true</IsVisible>\
@@ -342,7 +339,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
 define("meta.api", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var ListMeta = /** @class */ (function () {
+    var ListMeta = (function () {
         function ListMeta(title) {
             this.title = title;
             this.fields = [];
@@ -351,14 +348,14 @@ define("meta.api", ["require", "exports"], function (require, exports) {
         return ListMeta;
     }());
     exports.ListMeta = ListMeta;
-    var GroupMeta = /** @class */ (function () {
+    var GroupMeta = (function () {
         function GroupMeta() {
             this.desc = '';
         }
         return GroupMeta;
     }());
     exports.GroupMeta = GroupMeta;
-    var FieldMeta = /** @class */ (function () {
+    var FieldMeta = (function () {
         function FieldMeta() {
             this.inDefaultView = false;
         }
@@ -384,12 +381,11 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
         if (dfd)
             dfd.reject(msg);
         else {
-            // if there is no promise log at this level
             logger.error(msg);
         }
     };
     exports.version = '0.1.2';
-    var funcs = /** @class */ (function () {
+    var funcs = (function () {
         function funcs() {
             this.getParameterByName = function (name, url) {
                 if (!url)
@@ -511,11 +507,10 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
                             ctx.executeQueryAsync(function () {
                                 jslinkdfd.resolve();
                             });
-                        }, function ( /*r, a*/) { });
-                    }, function ( /*r, a*/) { });
+                        }, function () { });
+                    }, function () { });
                 }).promise();
             };
-            // --- Groups
             this.breakRoleInheritance = function (securable, copyRoleAssignments, clearSubscopes) {
                 securable.breakRoleInheritance(copyRoleAssignments, clearSubscopes);
                 securable.any && securable.update();
@@ -534,13 +529,9 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
                             var perm = permissions[i];
                             logger.log("adding Permissions " + perm);
                             var rdContribute = parentWeb.get_roleDefinitions().getByName(perm);
-                            // Create a new RoleDefinitionBindingCollection.
-                            // Add the role to the collection.
                             collContribute.add(rdContribute);
                         }
-                        // Get the RoleAssignmentCollection for the target web.
                         var assignments = securable.get_roleAssignments();
-                        // assign the group to the new RoleDefinitionBindingCollection.
                         assignments.add(principal, collContribute);
                         ctx.load(principal);
                         ctx.executeQueryAsync(function () {
@@ -560,11 +551,6 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
                     }
                 }).promise();
             };
-            // --- Groups
-            /**
-             * returns table rows that contain the keyword FieldInternName. This identify legacy form fields in a SharePoint form
-             * @returns object with properties that match the internal name of each field in the form. The propety value is the html table row
-            */
             this.getFieldMap = function () {
                 var res = {};
                 $("td.ms-formbody").each(function () {
@@ -581,7 +567,7 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
             };
         }
         funcs.prototype.loadSpElem = function (elem, sptx, caller) {
-            sptx = sptx || (elem.get_context && elem.get_context()); // || utils.getCtx();
+            sptx = sptx || (elem.get_context && elem.get_context());
             return $.Deferred(function (dfd) {
                 if (elem.length) {
                     for (var i = 0; i < elem.length; i++) {
@@ -690,7 +676,7 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
                     }).done(function () {
                         dfdG.resolve();
                     });
-                }); //;
+                });
             }).promise();
         };
         ;
@@ -719,8 +705,6 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
         ;
         funcs.prototype.sendEmail = function (to, body, subject, webUrl) {
             if (webUrl === void 0) { webUrl = ""; }
-            //https://sharepoint.stackexchange.com/questions/150833/sp-utilities-utility-sendemail-with-additional-headers-javascript
-            //https://www.linkedin.com/pulse/limitation-sendmail-functioning-sharepoint-using-client-hai-nguyen/
             var urlTemplate = webUrl + "/_api/SP.Utilities.Utility.SendEmail";
             var formDigest = document.getElementById("__REQUESTDIGEST").value;
             if (!Array.isArray(to)) {
@@ -775,9 +759,6 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
     };
     exports.initExtensions();
 });
-//if (typeof window != 'undefined') {
-//	window['spexplorerjs'].modules.utils = utils;
-//}
 define("def.api", ["require", "exports", "logger.api", "utils.api", "list.api", "jquery"], function (require, exports, logger_api_3, utils_api_2, list_api_1, jQuery) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -792,4 +773,4 @@ define("def.api", ["require", "exports", "logger.api", "utils.api", "list.api", 
         };
     }
 });
-//# sourceMappingURL=api.bundle.js.map
+//# sourceMappingURL=api.amdbundle.js.map

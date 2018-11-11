@@ -2,14 +2,14 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <Name>spexplorerjs.node</Name>
-    <RootNamespace>spexplorerjs.node</RootNamespace>
+    <Name>TsSample</Name>
+    <RootNamespace>TsSample</RootNamespace>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>40f2e876-2233-473b-88b0-7b3473833147</ProjectGuid>
+    <ProjectGuid>1b9d5d82-fc05-4b57-93c8-78fa7299fbc0</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>app.ts</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
@@ -33,63 +33,9 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
-    <Content Include="dist\bundles\api.amdbundle.js.map" />
-    <Content Include="dist\api\def.api.js.map" />
-    <Content Include="dist\api\list.api.js.map" />
-    <Content Include="dist\api\logger.api.js.map" />
-    <Content Include="dist\api\meta.api.js.map" />
-    <Content Include="dist\api\utils.api.js.map" />
-    <Content Include="dist\index.api.js.map" />
-    <Content Include="dist\package.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="src\defs\sharepoint\LICENSE" />
-    <Content Include="src\defs\sharepoint\package.json" />
-    <Content Include="src\defs\sharepoint\README.md" />
-    <Content Include="tsconfig.Api.Common.json" />
-    <Content Include="tsconfig.Api.Amd.json" />
     <Content Include="tsconfig.json" />
-    <TypeScriptCompile Include="dist\api\def.api.d.ts" />
-    <TypeScriptCompile Include="dist\api\list.api.d.ts" />
-    <TypeScriptCompile Include="dist\api\logger.api.d.ts" />
-    <TypeScriptCompile Include="dist\api\meta.api.d.ts" />
-    <TypeScriptCompile Include="dist\api\utils.api.d.ts" />
-    <TypeScriptCompile Include="dist\bundles\api.amdbundle.d.ts" />
-    <TypeScriptCompile Include="dist\index.api.d.ts" />
-    <TypeScriptCompile Include="Logger.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="src\api\def.api.ts" />
-    <TypeScriptCompile Include="src\api\list.api.ts" />
-    <TypeScriptCompile Include="src\api\logger.api.ts" />
-    <TypeScriptCompile Include="src\api\meta.api.ts" />
-    <TypeScriptCompile Include="src\api\utils.api.ts" />
-    <TypeScriptCompile Include="src\defs\sharepoint\index.d.ts" />
-    <TypeScriptCompile Include="src\defs\window.d.ts" />
-    <TypeScriptCompile Include="src\index.api.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="dist\bundles\api.amdbundle.js" />
-    <Compile Include="dist\bundles\api.pack.js" />
-    <Compile Include="dist\api\def.api.js" />
-    <Compile Include="dist\api\list.api.js" />
-    <Compile Include="dist\api\logger.api.js" />
-    <Compile Include="dist\api\meta.api.js" />
-    <Compile Include="dist\api\utils.api.js" />
-    <Compile Include="dist\index.api.js" />
-    <Compile Include="mylogger.ts" />
-    <Compile Include="packer.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="dist\" />
-    <Folder Include="dist\api\" />
-    <Folder Include="dist\bundles\" />
-    <Folder Include="src\" />
-    <Folder Include="src\api\" />
-    <Folder Include="src\defs\" />
-    <Folder Include="src\defs\sharepoint\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

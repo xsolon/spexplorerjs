@@ -4,7 +4,7 @@ export class ListMeta {
 	public fields: FieldMeta[];
 	public listTemplate: number;
 	public title: string;
-	public defaultItems: any[];
+	public defaultItems: any[] | itemsFunction;
 	public listUpdates?: listUpdatesFunction;
 	public permissions?: GroupMeta[];
 
@@ -44,6 +44,7 @@ export var classBuilder = function (list: ListMeta): string {
 	return template;
 };
 
+export declare type itemsFunction= (list: SP.List, dal: ListDal) => JQuery.Promise<any[]>;
 export type markupFunction = (ctx: SP.ClientContext, list: SP.List, spfields: SP.FieldCollection, lists: SP.ListCollection, web: SP.Web) => JQuery.Promise<string>;
 export type listUpdatesFunction = (list: SP.List, dal: ListDal) => Promise<any>;
 export type postFunction = (field: SP.Field) => void;
