@@ -10,7 +10,7 @@
 	"scripts": {
 		"api": "tsc -p ./tsconfig.Api.Common.json --outDir ./dist",
 		"pack": "node packer.js all",
-		"amdbundle": "tsc -p ./tsconfig.Api.Amd.json --outFile ./dist/api.amdbundle.js"
+		"amdbundle": "tsc -p ./tsconfig.Api.Amd.json --outFile ./dist/bundles/api.amdbundle.js"
 	},
 	"dependencies": {
 		"debug": "^2.2.0",

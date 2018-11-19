@@ -15,13 +15,26 @@ var reqFailure = function (req, reqargs, dfd?: JQueryDeferred<any>, logger: Logg
 	}
 };
 
-export var version: string = '0.1.2';
+export var version: string = '0.1.4';
 export type QueueStep<T> = (item: T) => Promise<void>;
 export type ArrayPromise<T> = () => Promise<Array<T>>;
-
+export type KeyFunc<T> = (item: T) => string;
 export class funcs {
 	public constructor() {
 	}
+	public arrayToDictionary<T>(array: Array<T>, getKey: KeyFunc<T>, forceUnique: boolean = false): { [key: string]: T } {
+		var dic: { [key: string]: T } = {};
+		for (var i = 0; i < array.length; i++) {
+			var element = array[i];
+			var key = getKey(element);
+			if (forceUnique && dic[key]) {
+				throw key + " already in dictionary";
+			} else
+				dic[key] = element;
+		}
+		return dic;
+	};
+
 	public getParameterByName = function (name, url?) {
 		if (!url) url = window.location.href;
 		name = name.replace(/[[\]]/g, "\\$&");
@@ -40,6 +53,11 @@ export class funcs {
 			}
 		}
 		return field;
+	};
+	public collectionToDictionary<T>(spCollection, getKey: KeyFunc<T>, forceUnique: boolean = false): { [key: string]: T } {
+		var arr = this.collectionToArray<T>(spCollection);
+		var dic = this.arrayToDictionary<T>(arr, getKey, forceUnique);
+		return dic;
 	};
 	public collectionToArray = function <T>(spCollection): Array<T> {
 
@@ -103,6 +121,39 @@ export class funcs {
 			});
 		}).promise();
 	};
+
+	public removeScriptLink(ctx: SP.ClientContext, title: string, logger: Logger = defaultLogger) {
+		var mee = this;
+		logger.debug(`removeScriptLink: title:${title}`);
+		return $.Deferred(function (dfd) {
+			var web = ctx.get_web();
+			var actions = web.get_userCustomActions();
+
+			mee.loadSpElem(actions, ctx).done(function () {
+				var actionArray = mee.collectionToArray<SP.UserCustomAction>(actions);
+				var existing = $.grep(actionArray, function (n) { return title === n.get_title(); });
+
+				var action: SP.UserCustomAction = null;
+
+				if (existing.length === 0) {
+					logger.log(`scriptlink ${title} not found`);
+					action = actions.add();
+				} else {
+					logger.debug(`removing scriptlink: title:${title}`);
+					action = existing[0];
+
+					action.deleteObject();
+					ctx.executeQueryAsync(function () {
+						dfd.resolve();
+					}, function () {
+						dfd.resolve();
+						debugger;
+					});
+				}
+			});
+		});
+	};
+
 	public addScriptLink(ctx: SP.ClientContext, src: string, title: string, sequence: number = 100, logger: Logger = defaultLogger) {
 		var mee = this;
 		logger.debug(`addScriptLink: title:${title} src:${src}`);

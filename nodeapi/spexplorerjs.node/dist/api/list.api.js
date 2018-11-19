@@ -321,6 +321,70 @@ var ListDal = /** @class */ (function () {
         return dfd.promise();
     };
     ;
+    ListDal.prototype.getQuery = function (caml, folder) {
+        var query = new SP.CamlQuery();
+        caml = caml || "<View Scope='Recursive'>\
+		<ViewFields><FieldRef Name='ID'></FieldRef>\
+		</ViewFields><RowLimit>1000</RowLimit>\
+</View>";
+        if (folder) {
+            query.set_folderServerRelativeUrl(folder);
+        }
+        query.set_viewXml(caml);
+        return query;
+    };
+    ;
+    ListDal.prototype.runAllQuery = function (query, splist, limit, trace) {
+        if (limit === void 0) { limit = 0; }
+        if (trace === void 0) { trace = this.ctrace; }
+        var me = this;
+        var spctx = me.ctx;
+        var items = [], spItems;
+        var parseRows = function (currrentItems) {
+            var itemsCount = currrentItems.get_count();
+            for (var i = 0; i < itemsCount; i++) {
+                var item = currrentItems.itemAt(i);
+                if (item) {
+                    items.push(item);
+                }
+            }
+        };
+        var loadNext = function (pageInfo) {
+            trace.debug("page: " + pageInfo);
+            pageInfo = pageInfo || "";
+            var pos = new SP.ListItemCollectionPosition();
+            pos.set_pagingInfo(pageInfo);
+            query.set_listItemCollectionPosition(pos);
+            spItems = splist.getItems(query);
+            spctx.load(spItems);
+            var onSuccess = function () {
+                parseRows(spItems);
+                var position = spItems.get_listItemCollectionPosition();
+                if (position !== null && (limit === 0 || items.length < limit)) {
+                    var info = position.get_pagingInfo();
+                    loadNext(info);
+                }
+                else {
+                    dfd.resolve(items, splist, spctx);
+                }
+            };
+            spctx.executeQueryAsync(onSuccess, function (sender, error) {
+                trace.error(error.get_message());
+                //trace.error(JSON.stringify({ query: query, error: error, sender: sender }));
+                dfd.reject(sender, error);
+            });
+        };
+        loadNext();
+        var dfd = $.Deferred();
+        return dfd.promise();
+    };
+    ;
+    ListDal.prototype.getAll = function (splist, caml, folder, limit) {
+        if (limit === void 0) { limit = 0; }
+        var query = this.getQuery(caml, folder);
+        return this.runAllQuery(query, splist, limit);
+    };
+    ;
     return ListDal;
 }());
 exports.ListDal = ListDal;

@@ -11,7 +11,7 @@ export type QueueStep = (item) => Promise<void>;
 export type ArrayPromise = () => Promise<Array<any>>;
 
 export class ListDal {
-
+	version: '0.1';
 	ctrace: Logger = new Logger('ListApi');
 	ctx: SP.ClientContext;
 
@@ -348,6 +348,76 @@ export class ListDal {
 
 		});
 		return dfd.promise();
+	};
+	getQuery(caml?: string, folder?: string): SP.CamlQuery {
+
+		var query = new SP.CamlQuery();
+
+		caml = caml || "<View Scope='Recursive'>\
+		<ViewFields><FieldRef Name='ID'></FieldRef>\
+		</ViewFields><RowLimit>1000</RowLimit>\
+</View>";
+
+		if (folder) {
+			query.set_folderServerRelativeUrl(folder);
+		}
+
+		query.set_viewXml(caml);
+		return query;
+	};
+	runAllQuery(query: SP.CamlQuery, splist: SP.List, limit = 0, trace = this.ctrace): JQuery.Promise<Array<SP.ListItem>> {
+		var me = this;
+		var spctx = me.ctx;
+
+		var items: Array<SP.ListItem> = [], spItems;
+
+		var parseRows = function (currrentItems) {
+			const itemsCount = currrentItems.get_count();
+			for (let i = 0; i < itemsCount; i++) {
+				const item = currrentItems.itemAt(i);
+				if (item) {
+					items.push(item);
+				}
+			}
+		};
+
+		var loadNext = function (pageInfo?) {
+
+			trace.debug(`page: ${pageInfo}`);
+			pageInfo = pageInfo || "";
+
+			const pos = new SP.ListItemCollectionPosition();
+			pos.set_pagingInfo(pageInfo);
+			query.set_listItemCollectionPosition(pos);
+			spItems = splist.getItems(query);
+			spctx.load(spItems);
+
+			var onSuccess = function () /*sender, args*/ {
+				parseRows(spItems);
+				var position = spItems.get_listItemCollectionPosition();
+				if (position !== null && (limit === 0 || items.length < limit)) {
+					var info = position.get_pagingInfo();
+					loadNext(info);
+				} else {
+					dfd.resolve(items, splist, spctx);
+				}
+			};
+
+			spctx.executeQueryAsync(onSuccess, function (sender, error) {
+				trace.error(error.get_message());
+				//trace.error(JSON.stringify({ query: query, error: error, sender: sender }));
+				dfd.reject(sender, error);
+			});
+		};
+
+		loadNext();
+
+		var dfd = $.Deferred();
+		return dfd.promise();
+	};
+	getAll(splist: SP.List, caml: string, folder?: string, limit: number = 0) : JQuery.Promise<Array<SP.ListItem>>{
+		var query = this.getQuery(caml, folder);
+		return this.runAllQuery(query, splist, limit);
 	};
 
 }

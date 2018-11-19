@@ -13,7 +13,7 @@ var reqFailure = function (req, reqargs, dfd, logger) {
         logger.error(msg);
     }
 };
-exports.version = '0.1.2';
+exports.version = '0.1.4';
 var funcs = /** @class */ (function () {
     function funcs() {
         this.getParameterByName = function (name, url) {
@@ -205,6 +205,28 @@ var funcs = /** @class */ (function () {
             return res;
         };
     }
+    funcs.prototype.arrayToDictionary = function (array, getKey, forceUnique) {
+        if (forceUnique === void 0) { forceUnique = false; }
+        var dic = {};
+        for (var i = 0; i < array.length; i++) {
+            var element = array[i];
+            var key = getKey(element);
+            if (forceUnique && dic[key]) {
+                throw key + " already in dictionary";
+            }
+            else
+                dic[key] = element;
+        }
+        return dic;
+    };
+    ;
+    funcs.prototype.collectionToDictionary = function (spCollection, getKey, forceUnique) {
+        if (forceUnique === void 0) { forceUnique = false; }
+        var arr = this.collectionToArray(spCollection);
+        var dic = this.arrayToDictionary(arr, getKey, forceUnique);
+        return dic;
+    };
+    ;
     funcs.prototype.loadSpElem = function (elem, sptx, caller) {
         sptx = sptx || (elem.get_context && elem.get_context()); // || utils.getCtx();
         return $.Deferred(function (dfd) {
@@ -221,6 +243,36 @@ var funcs = /** @class */ (function () {
                 reqFailure(r, a);
             });
         }).promise();
+    };
+    ;
+    funcs.prototype.removeScriptLink = function (ctx, title, logger) {
+        if (logger === void 0) { logger = defaultLogger; }
+        var mee = this;
+        logger.debug("removeScriptLink: title:" + title);
+        return $.Deferred(function (dfd) {
+            var web = ctx.get_web();
+            var actions = web.get_userCustomActions();
+            mee.loadSpElem(actions, ctx).done(function () {
+                var actionArray = mee.collectionToArray(actions);
+                var existing = $.grep(actionArray, function (n) { return title === n.get_title(); });
+                var action = null;
+                if (existing.length === 0) {
+                    logger.log("scriptlink " + title + " not found");
+                    action = actions.add();
+                }
+                else {
+                    logger.debug("removing scriptlink: title:" + title);
+                    action = existing[0];
+                    action.deleteObject();
+                    ctx.executeQueryAsync(function () {
+                        dfd.resolve();
+                    }, function () {
+                        dfd.resolve();
+                        debugger;
+                    });
+                }
+            });
+        });
     };
     ;
     funcs.prototype.addScriptLink = function (ctx, src, title, sequence, logger) {

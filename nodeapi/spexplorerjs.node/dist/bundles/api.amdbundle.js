@@ -166,9 +166,19 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                         meta.listUpdates(list, me).then(function () {
                             me.ctrace.debug('listUpdates.done');
                             if (isNew && meta.defaultItems) {
-                                me.addItems(meta.defaultItems, list, "").done(function () {
-                                    dfd.resolve();
-                                });
+                                var addFunction = function (items) {
+                                    me.addItems(items, list).done(function () {
+                                        dfd.resolve();
+                                    });
+                                };
+                                if (Array.isArray(meta.defaultItems)) {
+                                    addFunction(meta.defaultItems);
+                                }
+                                else {
+                                    meta.defaultItems(list, me).done(function (items) {
+                                        addFunction(items);
+                                    });
+                                }
                             }
                             else {
                                 dfd.resolve();
@@ -318,7 +328,6 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                         debugger;
                     }
                     me.ctx.executeQueryAsync(function () {
-                        debugger;
                         me.ctrace.log("addItems done");
                         dfd.resolve(spItems);
                     }, function (r, a) {
@@ -330,6 +339,69 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                 }
             });
             return dfd.promise();
+        };
+        ;
+        ListDal.prototype.getQuery = function (caml, folder) {
+            var query = new SP.CamlQuery();
+            caml = caml || "<View Scope='Recursive'>\
+		<ViewFields><FieldRef Name='ID'></FieldRef>\
+		</ViewFields><RowLimit>1000</RowLimit>\
+</View>";
+            if (folder) {
+                query.set_folderServerRelativeUrl(folder);
+            }
+            query.set_viewXml(caml);
+            return query;
+        };
+        ;
+        ListDal.prototype.runAllQuery = function (query, splist, limit, trace) {
+            if (limit === void 0) { limit = 0; }
+            if (trace === void 0) { trace = this.ctrace; }
+            var me = this;
+            var spctx = me.ctx;
+            var items = [], spItems;
+            var parseRows = function (currrentItems) {
+                var itemsCount = currrentItems.get_count();
+                for (var i = 0; i < itemsCount; i++) {
+                    var item = currrentItems.itemAt(i);
+                    if (item) {
+                        items.push(item);
+                    }
+                }
+            };
+            var loadNext = function (pageInfo) {
+                trace.debug("page: " + pageInfo);
+                pageInfo = pageInfo || "";
+                var pos = new SP.ListItemCollectionPosition();
+                pos.set_pagingInfo(pageInfo);
+                query.set_listItemCollectionPosition(pos);
+                spItems = splist.getItems(query);
+                spctx.load(spItems);
+                var onSuccess = function () {
+                    parseRows(spItems);
+                    var position = spItems.get_listItemCollectionPosition();
+                    if (position !== null && (limit === 0 || items.length < limit)) {
+                        var info = position.get_pagingInfo();
+                        loadNext(info);
+                    }
+                    else {
+                        dfd.resolve(items, splist, spctx);
+                    }
+                };
+                spctx.executeQueryAsync(onSuccess, function (sender, error) {
+                    trace.error(JSON.stringify({ query: query, error: error, sender: sender }));
+                    dfd.reject(sender, error);
+                });
+            };
+            loadNext();
+            var dfd = $.Deferred();
+            return dfd.promise();
+        };
+        ;
+        ListDal.prototype.getAll = function (splist, caml, folder, limit) {
+            if (limit === void 0) { limit = 0; }
+            var query = this.getQuery(caml, folder);
+            return this.runAllQuery(query, splist, limit);
         };
         ;
         return ListDal;
@@ -384,7 +456,7 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
             logger.error(msg);
         }
     };
-    exports.version = '0.1.2';
+    exports.version = '0.1.3';
     var funcs = (function () {
         function funcs() {
             this.getParameterByName = function (name, url) {
@@ -582,6 +654,36 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
                     reqFailure(r, a);
                 });
             }).promise();
+        };
+        ;
+        funcs.prototype.removeScriptLink = function (ctx, title, logger) {
+            if (logger === void 0) { logger = defaultLogger; }
+            var mee = this;
+            logger.debug("removeScriptLink: title:" + title);
+            return $.Deferred(function (dfd) {
+                var web = ctx.get_web();
+                var actions = web.get_userCustomActions();
+                mee.loadSpElem(actions, ctx).done(function () {
+                    var actionArray = mee.collectionToArray(actions);
+                    var existing = $.grep(actionArray, function (n) { return title === n.get_title(); });
+                    var action = null;
+                    if (existing.length === 0) {
+                        logger.log("scriptlink " + title + " not found");
+                        action = actions.add();
+                    }
+                    else {
+                        logger.debug("removing scriptlink: title:" + title);
+                        action = existing[0];
+                        action.deleteObject();
+                        ctx.executeQueryAsync(function () {
+                            dfd.resolve();
+                        }, function () {
+                            dfd.resolve();
+                            debugger;
+                        });
+                    }
+                });
+            });
         };
         ;
         funcs.prototype.addScriptLink = function (ctx, src, title, sequence, logger) {

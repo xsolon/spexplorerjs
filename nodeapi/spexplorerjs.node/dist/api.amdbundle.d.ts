@@ -19,6 +19,7 @@ declare module "list.api" {
     export type QueueStep = (item: any) => Promise<void>;
     export type ArrayPromise = () => Promise<Array<any>>;
     export class ListDal {
+        version: '0.1';
         ctrace: Logger;
         ctx: SP.ClientContext;
         constructor(ctx: SP.ClientContext);
@@ -29,6 +30,9 @@ declare module "list.api" {
         getMeta(listTitle: string, fieldNames: any): Promise<ListMeta>;
         setupForms: (tList: SP.List<any>, scriptLink: string, htmlLink: string) => JQuery.Promise<any, any, any>;
         addItems(items: Array<any>, splist: SP.List, folderUrl?: string): JQuery.Promise<any>;
+        getQuery(caml?: string, folder?: string): SP.CamlQuery;
+        runAllQuery(query: SP.CamlQuery, splist: SP.List, limit?: number, trace?: Logger): JQuery.Promise<any, any, any>;
+        getAll(splist: SP.List, caml: string, folder?: string, limit?: number): JQuery.Promise<any, any, any>;
     }
 }
 declare module "meta.api" {
@@ -75,6 +79,7 @@ declare module "utils.api" {
         collectionToArray: <T>(spCollection: any) => T[];
         processAsQueue: <T>(arr: T[] | ArrayPromise<T>, action: QueueStep<T>) => JQuery.Promise<void, any, any>;
         loadSpElem(elem: Array<any> | any, sptx: SP.ClientRuntimeContext, caller?: any | null): JQuery.Promise<any>;
+        removeScriptLink(ctx: SP.ClientContext, title: string, logger?: Logger): JQuery.Deferred<any, any, any>;
         addScriptLink(ctx: SP.ClientContext, src: string, title: string, sequence?: number, logger?: Logger): JQuery.Promise<any, any, any>;
         setHomePage: (folderOrWeb: SP.Web | SP.Folder, url: string, logger?: Logger) => Promise<void>;
         addWebPart: (ctx: SP.ClientContext, serverRelativeFormUrl: string, wpXml: string, zone: string, position?: number) => JQuery.Promise<SP.WebParts.WebPartDefinition, any, any>;
