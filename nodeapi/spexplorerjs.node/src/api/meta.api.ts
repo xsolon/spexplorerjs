@@ -14,7 +14,7 @@ export class ListMeta {
 		this.defaultItems = [];
 	}
 
-	public static version: '0.1';
+	public static version: '0.1.2';
 }
 
 export class GroupMeta {
@@ -24,12 +24,13 @@ export class GroupMeta {
 }
 
 export class FieldMeta {
-	markup: markupFunction | string;
-	name: string;
-	legacyName?: string | null;
-	title?: string | null;
-	post?: postFunction;
-	inDefaultView?: boolean = false;
+	public markup: markupFunction | string;
+	public name: string;
+	public legacyName?: string | null;
+	public title?: string | null;
+	public post?: postFunction;
+	public inDefaultView?: boolean = false;
+	public addOptions?: SP.AddFieldOptions = SP.AddFieldOptions.addFieldInternalNameHint | SP.AddFieldOptions.addToAllContentTypes
 }
 
 export var classBuilder = function (list: ListMeta): string {
@@ -44,7 +45,7 @@ export var classBuilder = function (list: ListMeta): string {
 	return template;
 };
 
-export declare type itemsFunction= (list: SP.List, dal: ListDal) => JQuery.Promise<any[]>;
+export declare type itemsFunction = (list: SP.List, dal: ListDal) => JQuery.Promise<any[]>;
 export type markupFunction = (ctx: SP.ClientContext, list: SP.List, spfields: SP.FieldCollection, lists: SP.ListCollection, web: SP.Web) => JQuery.Promise<string>;
 export type listUpdatesFunction = (list: SP.List, dal: ListDal) => Promise<any>;
 export type postFunction = (field: SP.Field) => void;

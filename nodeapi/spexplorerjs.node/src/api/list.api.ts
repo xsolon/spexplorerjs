@@ -11,12 +11,12 @@ export type QueueStep = (item) => Promise<void>;
 export type ArrayPromise = () => Promise<Array<any>>;
 
 export class ListDal {
-	version: '0.1';
+	version: '0.1.2';
 	ctrace: Logger = new Logger('ListApi');
 	ctx: SP.ClientContext;
 
 	constructor(ctx: SP.ClientContext) {
-		this.ctx = ctx;
+		this.ctx = ctx || SP.ClientContext.get_current();
 	}
 
 	ensureFields = function (list: SP.List, fields: Array<FieldMeta>) {
@@ -74,7 +74,7 @@ export class ListDal {
 			};
 			loadFields().then(function (spFieldMap) {
 				me.ctrace.log('checking fields');
-				utils.processAsQueue<FieldMeta>(fields, function (field: FieldMeta) {
+				utils.processAsQueue<FieldMeta>(fields.slice(), function (field: FieldMeta) {
 					return $.Deferred(function (fieldDfd) {
 						me.ctrace.log(`-- field: ${field.name}`);
 						getMarkup(field, spFieldMap).then(function (xml) {
@@ -86,7 +86,7 @@ export class ListDal {
 								me.ctrace.debug(internalName + " found");
 							} else {
 								me.ctrace.log("adding: " + xml);
-								spField = spfields.addFieldAsXml(xml, field.inDefaultView, SP.AddFieldOptions.addFieldInternalNameHint);
+								spField = spfields.addFieldAsXml(xml, field.inDefaultView, field.addOptions);
 							}
 							if (field.post) {
 								field.post(spField);
@@ -227,14 +227,16 @@ export class ListDal {
 		}).promise();
 
 	};
-	setupForms = function (tList: SP.List, scriptLink: string, htmlLink: string) {
+	setupForms = function (tList: SP.List, scriptLink: string, htmlLink?: string) {
 
 		var editForm = tList.get_forms().getByPageType(6);
 		var dispForm = tList.get_forms().getByPageType(4);
 		var newForm = tList.get_forms().getByPageType(8);
 		var jslinkUrl = scriptLink; //"clienttemplates.js|~site/siteassets / irm / js / refs / forms.js | ~site / siteassets / irm / js / task.form.js";
+		var ctx = this.ctx;
 
-		var xml = '<WebPart xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/WebPart/v2">\
+		var addWebPart = function (dfd) {
+			var xml = '<WebPart xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/WebPart/v2">\
   <Title>Templates</Title><FrameType>None</FrameType><IsIncluded>true</IsIncluded><FrameState>Normal</FrameState>\
   <IsVisible>true</IsVisible>\
   <Assembly>Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c</Assembly>\
@@ -242,19 +244,25 @@ export class ListDal {
   <ContentLink xmlns="http://schemas.microsoft.com/WebPart/v2/ContentEditor">htmlLink</ContentLink>\
 </WebPart>'.replace(/htmlLink/g, htmlLink);
 
-		var ctx = this.ctx;
+			utils.addWebPart(ctx, dispForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
+				utils.addWebPart(ctx, newForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
+					utils.addWebPart(ctx, editForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
+						dfd.resolve();
+					});
+				});
+			});
+		};
+
 		return $.Deferred(function (dfd) {
 			utils.loadSpElem([editForm, dispForm, newForm], ctx).done(function () {
 				utils.setformJsLink(newForm.get_serverRelativeUrl(), ctx, jslinkUrl).then(function () {
 					utils.setformJsLink(dispForm.get_serverRelativeUrl(), ctx, jslinkUrl).then(function () {
 						utils.setformJsLink(editForm.get_serverRelativeUrl(), ctx, jslinkUrl).then(function () {
-							utils.addWebPart(ctx, dispForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
-								utils.addWebPart(ctx, newForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
-									utils.addWebPart(ctx, editForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
-										dfd.resolve();
-									});
-								});
-							});
+							if (htmlLink) {
+								addWebPart(dfd);
+							} else {
+								dfd.resolve();
+							}
 						});
 					});
 				});
@@ -415,7 +423,7 @@ export class ListDal {
 		var dfd = $.Deferred();
 		return dfd.promise();
 	};
-	getAll(splist: SP.List, caml: string, folder?: string, limit: number = 0) : JQuery.Promise<Array<SP.ListItem>>{
+	getAll(splist: SP.List, caml: string, folder?: string, limit: number = 0): JQuery.Promise<Array<SP.ListItem>> {
 		var query = this.getQuery(caml, folder);
 		return this.runAllQuery(query, splist, limit);
 	};

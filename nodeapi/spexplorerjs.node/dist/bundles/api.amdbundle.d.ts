@@ -19,7 +19,7 @@ declare module "list.api" {
     export type QueueStep = (item: any) => Promise<void>;
     export type ArrayPromise = () => Promise<Array<any>>;
     export class ListDal {
-        version: '0.1';
+        version: '0.1.2';
         ctrace: Logger;
         ctx: SP.ClientContext;
         constructor(ctx: SP.ClientContext);
@@ -28,11 +28,11 @@ declare module "list.api" {
         ensureList(meta: ListMeta): Promise<any>;
         createList(listTitle: any, templateType: any, web: any): Promise<SP.List>;
         getMeta(listTitle: string, fieldNames: any): Promise<ListMeta>;
-        setupForms: (tList: SP.List<any>, scriptLink: string, htmlLink: string) => JQuery.Promise<any, any, any>;
+        setupForms: (tList: SP.List<any>, scriptLink: string, htmlLink?: string) => JQuery.Promise<any, any, any>;
         addItems(items: Array<any>, splist: SP.List, folderUrl?: string): JQuery.Promise<any>;
         getQuery(caml?: string, folder?: string): SP.CamlQuery;
-        runAllQuery(query: SP.CamlQuery, splist: SP.List, limit?: number, trace?: Logger): JQuery.Promise<any, any, any>;
-        getAll(splist: SP.List, caml: string, folder?: string, limit?: number): JQuery.Promise<any, any, any>;
+        runAllQuery(query: SP.CamlQuery, splist: SP.List, limit?: number, trace?: Logger): JQuery.Promise<Array<SP.ListItem>>;
+        getAll(splist: SP.List, caml: string, folder?: string, limit?: number): JQuery.Promise<Array<SP.ListItem>>;
     }
 }
 declare module "meta.api" {
@@ -45,7 +45,7 @@ declare module "meta.api" {
         listUpdates?: listUpdatesFunction;
         permissions?: GroupMeta[];
         constructor(title: string);
-        static version: '0.1';
+        static version: '0.1.2';
     }
     export class GroupMeta {
         name: string;
@@ -59,6 +59,7 @@ declare module "meta.api" {
         title?: string | null;
         post?: postFunction;
         inDefaultView?: boolean;
+        addOptions?: SP.AddFieldOptions;
     }
     export var classBuilder: (list: ListMeta) => string;
     export type itemsFunction = (list: SP.List, dal: ListDal) => JQuery.Promise<any[]>;
@@ -72,10 +73,17 @@ declare module "utils.api" {
     export var version: string;
     export type QueueStep<T> = (item: T) => Promise<void>;
     export type ArrayPromise<T> = () => Promise<Array<T>>;
+    export type KeyFunc<T> = (item: T) => string;
     export class funcs {
         constructor();
+        arrayToDictionary<T>(array: Array<T>, getKey: KeyFunc<T>, forceUnique?: boolean): {
+            [key: string]: T;
+        };
         getParameterByName: (name: any, url?: any) => string;
         getPeoplePickerByName: (name: string) => SPClientPeoplePicker;
+        collectionToDictionary<T>(spCollection: any, getKey: KeyFunc<T>, forceUnique?: boolean): {
+            [key: string]: T;
+        };
         collectionToArray: <T>(spCollection: any) => T[];
         processAsQueue: <T>(arr: T[] | ArrayPromise<T>, action: QueueStep<T>) => JQuery.Promise<void, any, any>;
         loadSpElem(elem: Array<any> | any, sptx: SP.ClientRuntimeContext, caller?: any | null): JQuery.Promise<any>;

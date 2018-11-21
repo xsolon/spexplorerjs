@@ -82,7 +82,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                     };
                     loadFields().then(function (spFieldMap) {
                         me.ctrace.log('checking fields');
-                        utils.processAsQueue(fields, function (field) {
+                        utils.processAsQueue(fields.slice(), function (field) {
                             return $.Deferred(function (fieldDfd) {
                                 me.ctrace.log("-- field: " + field.name);
                                 getMarkup(field, spFieldMap).then(function (xml) {
@@ -94,7 +94,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                                     }
                                     else {
                                         me.ctrace.log("adding: " + xml);
-                                        spField = spfields.addFieldAsXml(xml, field.inDefaultView, SP.AddFieldOptions.addFieldInternalNameHint);
+                                        spField = spfields.addFieldAsXml(xml, field.inDefaultView, field.addOptions);
                                     }
                                     if (field.post) {
                                         field.post(spField);
@@ -116,33 +116,41 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                 var dispForm = tList.get_forms().getByPageType(4);
                 var newForm = tList.get_forms().getByPageType(8);
                 var jslinkUrl = scriptLink;
-                var xml = '<WebPart xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/WebPart/v2">\
+                var ctx = this.ctx;
+                var addWebPart = function (dfd) {
+                    var xml = '<WebPart xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/WebPart/v2">\
   <Title>Templates</Title><FrameType>None</FrameType><IsIncluded>true</IsIncluded><FrameState>Normal</FrameState>\
   <IsVisible>true</IsVisible>\
   <Assembly>Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c</Assembly>\
   <TypeName>Microsoft.SharePoint.WebPartPages.ContentEditorWebPart</TypeName>\
   <ContentLink xmlns="http://schemas.microsoft.com/WebPart/v2/ContentEditor">htmlLink</ContentLink>\
 </WebPart>'.replace(/htmlLink/g, htmlLink);
-                var ctx = this.ctx;
+                    utils.addWebPart(ctx, dispForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
+                        utils.addWebPart(ctx, newForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
+                            utils.addWebPart(ctx, editForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
+                                dfd.resolve();
+                            });
+                        });
+                    });
+                };
                 return $.Deferred(function (dfd) {
                     utils.loadSpElem([editForm, dispForm, newForm], ctx).done(function () {
                         utils.setformJsLink(newForm.get_serverRelativeUrl(), ctx, jslinkUrl).then(function () {
                             utils.setformJsLink(dispForm.get_serverRelativeUrl(), ctx, jslinkUrl).then(function () {
                                 utils.setformJsLink(editForm.get_serverRelativeUrl(), ctx, jslinkUrl).then(function () {
-                                    utils.addWebPart(ctx, dispForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
-                                        utils.addWebPart(ctx, newForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
-                                            utils.addWebPart(ctx, editForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
-                                                dfd.resolve();
-                                            });
-                                        });
-                                    });
+                                    if (htmlLink) {
+                                        addWebPart(dfd);
+                                    }
+                                    else {
+                                        dfd.resolve();
+                                    }
                                 });
                             });
                         });
                     });
                 }).promise();
             };
-            this.ctx = ctx;
+            this.ctx = ctx || SP.ClientContext.get_current();
         }
         ListDal.prototype.listExists = function (title) {
             var me = this;
@@ -389,7 +397,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                     }
                 };
                 spctx.executeQueryAsync(onSuccess, function (sender, error) {
-                    trace.error(JSON.stringify({ query: query, error: error, sender: sender }));
+                    trace.error(error.get_message());
                     dfd.reject(sender, error);
                 });
             };
@@ -430,6 +438,7 @@ define("meta.api", ["require", "exports"], function (require, exports) {
     var FieldMeta = (function () {
         function FieldMeta() {
             this.inDefaultView = false;
+            this.addOptions = SP.AddFieldOptions.addFieldInternalNameHint | SP.AddFieldOptions.addToAllContentTypes;
         }
         return FieldMeta;
     }());
@@ -456,7 +465,7 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
             logger.error(msg);
         }
     };
-    exports.version = '0.1.3';
+    exports.version = '0.1.4';
     var funcs = (function () {
         function funcs() {
             this.getParameterByName = function (name, url) {
@@ -638,6 +647,28 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
                 return res;
             };
         }
+        funcs.prototype.arrayToDictionary = function (array, getKey, forceUnique) {
+            if (forceUnique === void 0) { forceUnique = false; }
+            var dic = {};
+            for (var i = 0; i < array.length; i++) {
+                var element = array[i];
+                var key = getKey(element);
+                if (forceUnique && dic[key]) {
+                    throw key + " already in dictionary";
+                }
+                else
+                    dic[key] = element;
+            }
+            return dic;
+        };
+        ;
+        funcs.prototype.collectionToDictionary = function (spCollection, getKey, forceUnique) {
+            if (forceUnique === void 0) { forceUnique = false; }
+            var arr = this.collectionToArray(spCollection);
+            var dic = this.arrayToDictionary(arr, getKey, forceUnique);
+            return dic;
+        };
+        ;
         funcs.prototype.loadSpElem = function (elem, sptx, caller) {
             sptx = sptx || (elem.get_context && elem.get_context());
             return $.Deferred(function (dfd) {

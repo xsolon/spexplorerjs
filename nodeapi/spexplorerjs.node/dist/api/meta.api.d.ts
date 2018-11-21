@@ -8,7 +8,7 @@ export declare class ListMeta {
     listUpdates?: listUpdatesFunction;
     permissions?: GroupMeta[];
     constructor(title: string);
-    static version: '0.1';
+    static version: '0.1.2';
 }
 export declare class GroupMeta {
     name: string;
@@ -22,6 +22,7 @@ export declare class FieldMeta {
     title?: string | null;
     post?: postFunction;
     inDefaultView?: boolean;
+    addOptions?: SP.AddFieldOptions;
 }
 export declare var classBuilder: (list: ListMeta) => string;
 export declare type itemsFunction = (list: SP.List, dal: ListDal) => JQuery.Promise<any[]>;

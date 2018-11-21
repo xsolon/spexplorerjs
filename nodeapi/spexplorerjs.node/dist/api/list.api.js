@@ -61,7 +61,7 @@ var ListDal = /** @class */ (function () {
                 };
                 loadFields().then(function (spFieldMap) {
                     me.ctrace.log('checking fields');
-                    utils.processAsQueue(fields, function (field) {
+                    utils.processAsQueue(fields.slice(), function (field) {
                         return $.Deferred(function (fieldDfd) {
                             me.ctrace.log("-- field: " + field.name);
                             getMarkup(field, spFieldMap).then(function (xml) {
@@ -73,7 +73,7 @@ var ListDal = /** @class */ (function () {
                                 }
                                 else {
                                     me.ctrace.log("adding: " + xml);
-                                    spField = spfields.addFieldAsXml(xml, field.inDefaultView, SP.AddFieldOptions.addFieldInternalNameHint);
+                                    spField = spfields.addFieldAsXml(xml, field.inDefaultView, field.addOptions);
                                 }
                                 if (field.post) {
                                     field.post(spField);
@@ -96,33 +96,41 @@ var ListDal = /** @class */ (function () {
             var dispForm = tList.get_forms().getByPageType(4);
             var newForm = tList.get_forms().getByPageType(8);
             var jslinkUrl = scriptLink; //"clienttemplates.js|~site/siteassets / irm / js / refs / forms.js | ~site / siteassets / irm / js / task.form.js";
-            var xml = '<WebPart xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/WebPart/v2">\
+            var ctx = this.ctx;
+            var addWebPart = function (dfd) {
+                var xml = '<WebPart xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/WebPart/v2">\
   <Title>Templates</Title><FrameType>None</FrameType><IsIncluded>true</IsIncluded><FrameState>Normal</FrameState>\
   <IsVisible>true</IsVisible>\
   <Assembly>Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c</Assembly>\
   <TypeName>Microsoft.SharePoint.WebPartPages.ContentEditorWebPart</TypeName>\
   <ContentLink xmlns="http://schemas.microsoft.com/WebPart/v2/ContentEditor">htmlLink</ContentLink>\
 </WebPart>'.replace(/htmlLink/g, htmlLink);
-            var ctx = this.ctx;
+                utils.addWebPart(ctx, dispForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
+                    utils.addWebPart(ctx, newForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
+                        utils.addWebPart(ctx, editForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
+                            dfd.resolve();
+                        });
+                    });
+                });
+            };
             return $.Deferred(function (dfd) {
                 utils.loadSpElem([editForm, dispForm, newForm], ctx).done(function () {
                     utils.setformJsLink(newForm.get_serverRelativeUrl(), ctx, jslinkUrl).then(function () {
                         utils.setformJsLink(dispForm.get_serverRelativeUrl(), ctx, jslinkUrl).then(function () {
                             utils.setformJsLink(editForm.get_serverRelativeUrl(), ctx, jslinkUrl).then(function () {
-                                utils.addWebPart(ctx, dispForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
-                                    utils.addWebPart(ctx, newForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
-                                        utils.addWebPart(ctx, editForm.get_serverRelativeUrl(), xml, "FullPage", 3).done(function (wp1) {
-                                            dfd.resolve();
-                                        });
-                                    });
-                                });
+                                if (htmlLink) {
+                                    addWebPart(dfd);
+                                }
+                                else {
+                                    dfd.resolve();
+                                }
                             });
                         });
                     });
                 });
             }).promise();
         };
-        this.ctx = ctx;
+        this.ctx = ctx || SP.ClientContext.get_current();
     }
     ListDal.prototype.listExists = function (title) {
         var me = this;

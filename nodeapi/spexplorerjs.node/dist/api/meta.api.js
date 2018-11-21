@@ -19,6 +19,7 @@ exports.GroupMeta = GroupMeta;
 var FieldMeta = /** @class */ (function () {
     function FieldMeta() {
         this.inDefaultView = false;
+        this.addOptions = SP.AddFieldOptions.addFieldInternalNameHint | SP.AddFieldOptions.addToAllContentTypes;
     }
     return FieldMeta;
 }());
