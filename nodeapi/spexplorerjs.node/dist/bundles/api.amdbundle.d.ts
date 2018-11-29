@@ -1,6 +1,7 @@
 /// <reference types="sharepoint" />
 declare module "logger.api" {
     class Logger {
+        version: '0.1';
         name: string;
         shouldLog: boolean;
         shouldDebug: boolean;
@@ -19,13 +20,13 @@ declare module "list.api" {
     export type QueueStep = (item: any) => Promise<void>;
     export type ArrayPromise = () => Promise<Array<any>>;
     export class ListDal {
-        version: '0.1.2';
+        version: '0.1.4';
         ctrace: Logger;
         ctx: SP.ClientContext;
         constructor(ctx: SP.ClientContext);
         ensureFields: (list: SP.List<any>, fields: FieldMeta[]) => JQuery.Promise<any, any, any>;
         listExists(title: string): Promise<[boolean, SP.List]>;
-        ensureList(meta: ListMeta): Promise<any>;
+        ensureList(meta: ListMeta): Promise<SP.List>;
         createList(listTitle: any, templateType: any, web: any): Promise<SP.List>;
         getMeta(listTitle: string, fieldNames: any): Promise<ListMeta>;
         setupForms: (tList: SP.List<any>, scriptLink: string, htmlLink?: string) => JQuery.Promise<any, any, any>;
@@ -74,6 +75,16 @@ declare module "utils.api" {
     export type QueueStep<T> = (item: T) => Promise<void>;
     export type ArrayPromise<T> = () => Promise<Array<T>>;
     export type KeyFunc<T> = (item: T) => string;
+    export class pagewps {
+        ctx: SP.ClientContext;
+        lpm: SP.WebParts.LimitedWebPartManager;
+        wps: {
+            [id: string]: {
+                wpd: SP.WebParts.WebPartDefinition;
+                wp: SP.WebParts.WebPart;
+            };
+        };
+    }
     export class funcs {
         constructor();
         arrayToDictionary<T>(array: Array<T>, getKey: KeyFunc<T>, forceUnique?: boolean): {
@@ -91,6 +102,7 @@ declare module "utils.api" {
         addScriptLink(ctx: SP.ClientContext, src: string, title: string, sequence?: number, logger?: Logger): JQuery.Promise<any, any, any>;
         setHomePage: (folderOrWeb: SP.Web | SP.Folder, url: string, logger?: Logger) => Promise<void>;
         addWebPart: (ctx: SP.ClientContext, serverRelativeFormUrl: string, wpXml: string, zone: string, position?: number) => JQuery.Promise<SP.WebParts.WebPartDefinition, any, any>;
+        getPageWebParts(formUrl: string, ctx: SP.ClientContext): JQuery.Promise<pagewps>;
         setformJsLink: (formUrl: string, ctx: SP.ClientContext, bizJs: string) => Promise<any>;
         breakRoleInheritance: (securable: SP.SecurableObject, copyRoleAssignments: boolean, clearSubscopes: boolean) => JQueryPromise<any>;
         getGroups(ctx: SP.ClientContext, logger?: Logger): JQuery.Promise<any>;

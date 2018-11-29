@@ -5,6 +5,16 @@ export declare var version: string;
 export declare type QueueStep<T> = (item: T) => Promise<void>;
 export declare type ArrayPromise<T> = () => Promise<Array<T>>;
 export declare type KeyFunc<T> = (item: T) => string;
+export declare class pagewps {
+    ctx: SP.ClientContext;
+    lpm: SP.WebParts.LimitedWebPartManager;
+    wps: {
+        [id: string]: {
+            wpd: SP.WebParts.WebPartDefinition;
+            wp: SP.WebParts.WebPart;
+        };
+    };
+}
 export declare class funcs {
     constructor();
     arrayToDictionary<T>(array: Array<T>, getKey: KeyFunc<T>, forceUnique?: boolean): {
@@ -22,6 +32,7 @@ export declare class funcs {
     addScriptLink(ctx: SP.ClientContext, src: string, title: string, sequence?: number, logger?: Logger): JQuery.Promise<any, any, any>;
     setHomePage: (folderOrWeb: SP.Web | SP.Folder, url: string, logger?: Logger) => Promise<void>;
     addWebPart: (ctx: SP.ClientContext, serverRelativeFormUrl: string, wpXml: string, zone: string, position?: number) => JQuery.Promise<SP.WebParts.WebPartDefinition, any, any>;
+    getPageWebParts(formUrl: string, ctx: SP.ClientContext): JQuery.Promise<pagewps>;
     setformJsLink: (formUrl: string, ctx: SP.ClientContext, bizJs: string) => Promise<any>;
     breakRoleInheritance: (securable: SP.SecurableObject, copyRoleAssignments: boolean, clearSubscopes: boolean) => JQueryPromise<any>;
     getGroups(ctx: SP.ClientContext, logger?: Logger): JQuery.Promise<any>;

@@ -11,7 +11,15 @@ var Logger = /** @class */ (function () {
         this.shouldLog && console && console.log(message);
     };
     Logger.prototype.debug = function (message) {
-        this.shouldDebug && console && console.debug(message);
+        // in IE console.debug not always available
+        if (this.shouldDebug && console) {
+            if (console.debug) {
+                console.debug(message);
+            }
+            else if (console.log) {
+                console.log(message);
+            }
+        }
     };
     Logger.prototype.trace = function (message) {
         this.shouldTrace && console && console.trace(message);

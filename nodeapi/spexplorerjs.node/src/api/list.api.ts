@@ -1,4 +1,4 @@
-﻿
+﻿// v 0.1.5 - 2018_11_27 - Use displayname if field definition does not have internal/name/static attributes
 import { Logger } from './logger.api';
 import { FieldMeta, ListMeta, itemsFunction } from './meta.api';
 import { funcs } from "./utils.api";
@@ -11,7 +11,7 @@ export type QueueStep = (item) => Promise<void>;
 export type ArrayPromise = () => Promise<Array<any>>;
 
 export class ListDal {
-	version: '0.1.2';
+	version: '0.1.5';
 	ctrace: Logger = new Logger('ListApi');
 	ctx: SP.ClientContext;
 
@@ -80,7 +80,7 @@ export class ListDal {
 						getMarkup(field, spFieldMap).then(function (xml) {
 
 							var fieldXML = $($.parseXML(xml)).find("Field");
-							var internalName = fieldXML.attr("InternalName") || fieldXML.attr("Name") || fieldXML.attr("StaticName");
+							var internalName = fieldXML.attr("InternalName") || fieldXML.attr("Name") || fieldXML.attr("StaticName") || fieldXML.attr("DisplayName");
 							var spField = spFieldMap[internalName];
 							if (spField) {
 								me.ctrace.debug(internalName + " found");
@@ -117,7 +117,7 @@ export class ListDal {
 			});
 		}).promise();
 	};
-	ensureList(meta: ListMeta): Promise<any> {
+	ensureList(meta: ListMeta): Promise<SP.List> {
 		var me = this;
 		return $.Deferred(function (dfd) {
 			var isNew = false;
@@ -139,11 +139,11 @@ export class ListDal {
 								});
 							}
 						} else {
-							dfd.resolve();
+							dfd.resolve(list);
 						}
 					});
 				} else
-					dfd.resolve();
+					dfd.resolve(list);
 				me.ctrace.debug('ensureList.done');
 			};
 			me.listExists(meta.title).then(function (res) {
@@ -295,7 +295,6 @@ export class ListDal {
 			}
 			return val;
 		};
-		var dfd = $.Deferred();
 		var fields: SP.FieldCollection = splist.get_fields();
 		me.ctx.load(fields);
 
@@ -353,8 +352,9 @@ export class ListDal {
 				dfd.resolve();
 			}
 
-
 		});
+
+		var dfd = $.Deferred();
 		return dfd.promise();
 	};
 	getQuery(caml?: string, folder?: string): SP.CamlQuery {

@@ -13,7 +13,14 @@ var reqFailure = function (req, reqargs, dfd, logger) {
         logger.error(msg);
     }
 };
-exports.version = '0.1.4';
+exports.version = '0.1.5';
+var pagewps = /** @class */ (function () {
+    function pagewps() {
+    }
+    return pagewps;
+}());
+exports.pagewps = pagewps;
+;
 var funcs = /** @class */ (function () {
     function funcs() {
         this.getParameterByName = function (name, url) {
@@ -307,6 +314,35 @@ var funcs = /** @class */ (function () {
                 });
             });
         }).promise();
+    };
+    ;
+    funcs.prototype.getPageWebParts = function (formUrl, ctx) {
+        var result = {
+            ctx: ctx, wps: {}, lpm: null
+        };
+        var me = this;
+        var web = ctx.get_web();
+        var oFile = web.getFileByServerRelativeUrl(formUrl);
+        var lpm = oFile.getLimitedWebPartManager(SP.WebParts.PersonalizationScope.shared);
+        result.lpm = lpm;
+        var wps = lpm.get_webParts();
+        ctx.load(wps); //, "Include(WebPart.Title)");
+        ctx.executeQueryAsync(function () {
+            var wpps = me.collectionToArray(wps);
+            wpps.forEach(function (wpd) {
+                var wp = wpd.get_webPart();
+                var id = wpd.get_id().toString();
+                result.wps[id] = { wpd: wpd, wp: wp };
+                ctx.load(wpd);
+                ctx.load(wp);
+                ctx.load(wp.get_properties());
+            });
+            ctx.executeQueryAsync(function () {
+                dfd.resolve(result);
+            }, function ( /*r, a*/) { debugger; });
+        }, function ( /*r, a*/) { debugger; });
+        var dfd = $.Deferred();
+        return dfd.promise();
     };
     ;
     funcs.prototype.getGroups = function (ctx, logger) {

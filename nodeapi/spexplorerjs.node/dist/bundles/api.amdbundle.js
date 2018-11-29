@@ -12,7 +12,14 @@ define("logger.api", ["require", "exports"], function (require, exports) {
             this.shouldLog && console && console.log(message);
         };
         Logger.prototype.debug = function (message) {
-            this.shouldDebug && console && console.debug(message);
+            if (this.shouldDebug && console) {
+                if (console.debug) {
+                    console.debug(message);
+                }
+                else if (console.log) {
+                    console.log(message);
+                }
+            }
         };
         Logger.prototype.trace = function (message) {
             this.shouldTrace && console && console.trace(message);
@@ -189,12 +196,12 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                                 }
                             }
                             else {
-                                dfd.resolve();
+                                dfd.resolve(list);
                             }
                         });
                     }
                     else
-                        dfd.resolve();
+                        dfd.resolve(list);
                     me.ctrace.debug('ensureList.done');
                 };
                 me.listExists(meta.title).then(function (res) {
@@ -290,7 +297,6 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                 }
                 return val;
             };
-            var dfd = $.Deferred();
             var fields = splist.get_fields();
             me.ctx.load(fields);
             me.ctx.executeQueryAsync(function () {
@@ -346,6 +352,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                     dfd.resolve();
                 }
             });
+            var dfd = $.Deferred();
             return dfd.promise();
         };
         ;
@@ -465,7 +472,14 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
             logger.error(msg);
         }
     };
-    exports.version = '0.1.4';
+    exports.version = '0.1.5';
+    var pagewps = (function () {
+        function pagewps() {
+        }
+        return pagewps;
+    }());
+    exports.pagewps = pagewps;
+    ;
     var funcs = (function () {
         function funcs() {
             this.getParameterByName = function (name, url) {
@@ -749,6 +763,35 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
                     });
                 });
             }).promise();
+        };
+        ;
+        funcs.prototype.getPageWebParts = function (formUrl, ctx) {
+            var result = {
+                ctx: ctx, wps: {}, lpm: null
+            };
+            var me = this;
+            var web = ctx.get_web();
+            var oFile = web.getFileByServerRelativeUrl(formUrl);
+            var lpm = oFile.getLimitedWebPartManager(SP.WebParts.PersonalizationScope.shared);
+            result.lpm = lpm;
+            var wps = lpm.get_webParts();
+            ctx.load(wps);
+            ctx.executeQueryAsync(function () {
+                var wpps = me.collectionToArray(wps);
+                wpps.forEach(function (wpd) {
+                    var wp = wpd.get_webPart();
+                    var id = wpd.get_id().toString();
+                    result.wps[id] = { wpd: wpd, wp: wp };
+                    ctx.load(wpd);
+                    ctx.load(wp);
+                    ctx.load(wp.get_properties());
+                });
+                ctx.executeQueryAsync(function () {
+                    dfd.resolve(result);
+                }, function () { debugger; });
+            }, function () { debugger; });
+            var dfd = $.Deferred();
+            return dfd.promise();
         };
         ;
         funcs.prototype.getGroups = function (ctx, logger) {

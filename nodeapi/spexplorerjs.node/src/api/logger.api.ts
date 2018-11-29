@@ -1,4 +1,5 @@
 ﻿class Logger {
+	version: '0.1';
 	name: string;
 	shouldLog: boolean = true;
 	shouldDebug: boolean = true;
@@ -12,7 +13,14 @@
 	}
 
 	public debug(message: string) {
-		this.shouldDebug && console && console.debug(message);
+		// in IE console.debug not always available
+		if (this.shouldDebug && console) {
+			if (console.debug) {
+				console.debug(message);
+			} else if (console.log) {
+				console.log(message);
+			}
+		}
 	}
 
 	public trace(message: string) {

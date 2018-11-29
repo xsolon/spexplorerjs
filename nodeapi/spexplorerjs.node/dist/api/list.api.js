@@ -169,12 +169,12 @@ var ListDal = /** @class */ (function () {
                             }
                         }
                         else {
-                            dfd.resolve();
+                            dfd.resolve(list);
                         }
                     });
                 }
                 else
-                    dfd.resolve();
+                    dfd.resolve(list);
                 me.ctrace.debug('ensureList.done');
             };
             me.listExists(meta.title).then(function (res) {
@@ -270,7 +270,6 @@ var ListDal = /** @class */ (function () {
             }
             return val;
         };
-        var dfd = $.Deferred();
         var fields = splist.get_fields();
         me.ctx.load(fields);
         me.ctx.executeQueryAsync(function () {
@@ -326,6 +325,7 @@ var ListDal = /** @class */ (function () {
                 dfd.resolve();
             }
         });
+        var dfd = $.Deferred();
         return dfd.promise();
     };
     ;

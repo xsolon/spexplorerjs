@@ -1,4 +1,5 @@
 declare class Logger {
+    version: '0.1';
     name: string;
     shouldLog: boolean;
     shouldDebug: boolean;

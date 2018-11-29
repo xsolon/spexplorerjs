@@ -15,10 +15,17 @@ var reqFailure = function (req, reqargs, dfd?: JQueryDeferred<any>, logger: Logg
 	}
 };
 
-export var version: string = '0.1.4';
+export var version: string = '0.1.5';
 export type QueueStep<T> = (item: T) => Promise<void>;
 export type ArrayPromise<T> = () => Promise<Array<T>>;
 export type KeyFunc<T> = (item: T) => string;
+export class pagewps {
+	ctx: SP.ClientContext;
+	lpm: SP.WebParts.LimitedWebPartManager;
+	wps: {
+		[id: string]: { wpd: SP.WebParts.WebPartDefinition, wp: SP.WebParts.WebPart }
+	}
+};
 export class funcs {
 	public constructor() {
 	}
@@ -233,6 +240,37 @@ export class funcs {
 				});
 			});
 		}).promise();
+	};
+	public getPageWebParts(formUrl: string, ctx: SP.ClientContext): JQuery.Promise<pagewps> {
+		var result: pagewps = {
+			ctx, wps: {}, lpm: null
+		};
+		var me = this;
+		var web = ctx.get_web();
+		var oFile = web.getFileByServerRelativeUrl(formUrl);
+
+		var lpm = oFile.getLimitedWebPartManager(SP.WebParts.PersonalizationScope.shared);
+		result.lpm = lpm;
+		var wps = lpm.get_webParts();
+		ctx.load(wps);//, "Include(WebPart.Title)");
+
+		ctx.executeQueryAsync(function () {
+			var wpps = me.collectionToArray<SP.WebParts.WebPartDefinition>(wps);
+			wpps.forEach(function (wpd) {
+				var wp = wpd.get_webPart();
+				var id = wpd.get_id().toString();
+				result.wps[id] = { wpd: wpd, wp: wp };
+				ctx.load(wpd);
+				ctx.load(wp);
+				ctx.load(wp.get_properties());
+			});
+			ctx.executeQueryAsync(function () {
+				dfd.resolve(result);
+			}, function (/*r, a*/) { debugger; });
+		}, function (/*r, a*/) { debugger; });
+
+		var dfd = $.Deferred();
+		return dfd.promise();
 	};
 	public setformJsLink = function (formUrl: string, ctx: SP.ClientContext, bizJs: string): Promise<any> {
 		return $.Deferred(function (jslinkdfd) {
