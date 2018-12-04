@@ -20,7 +20,7 @@ declare module "list.api" {
     export type QueueStep = (item: any) => Promise<void>;
     export type ArrayPromise = () => Promise<Array<any>>;
     export class ListDal {
-        version: '0.1.4';
+        version: '0.1.5';
         ctrace: Logger;
         ctx: SP.ClientContext;
         constructor(ctx: SP.ClientContext);

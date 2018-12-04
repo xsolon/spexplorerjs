@@ -11,4 +11,7 @@ exports.FieldMeta = meta_api_1.FieldMeta;
 exports.GroupMeta = meta_api_1.GroupMeta;
 exports.ListMeta = meta_api_1.ListMeta;
 exports.classBuilder = meta_api_1.classBuilder;
+var backups_node_1 = require("./api/backups.node");
+exports.backupList = backups_node_1.backupList;
+exports.restoreList = backups_node_1.restoreList;
 //# sourceMappingURL=index.api.js.map

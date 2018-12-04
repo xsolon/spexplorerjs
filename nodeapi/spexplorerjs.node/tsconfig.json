@@ -1,15 +1,23 @@
 {
 	"compilerOptions": {
+		"allowJs": true,
 		"module": "commonjs",
 		"target": "es5",
 		"lib": [ "es6", "dom" ],
 		"sourceMap": true,
-		"allowJs": true,
-		"typeRoots": [ "./node_modules/@types", "./src/defs" ],
-		"moduleResolution": "node"
-
+		"moduleResolution": "node",
+		"typeRoots": [
+			"./node_modules/@types",
+			"./node_modules",
+			"./src/defs"
+		],
+		"types": [
+			"node",
+			"core-js"
+		]
 	},
-	"files": [ "app.ts" ],
+	"include": [ "./src/api/*" ],
+	//"files": [ "app.ts" ],
 	"exclude": [
 		"node_modules"
 	]

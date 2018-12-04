@@ -4,7 +4,7 @@ import { FieldMeta, ListMeta } from './meta.api';
 export declare type QueueStep = (item: any) => Promise<void>;
 export declare type ArrayPromise = () => Promise<Array<any>>;
 export declare class ListDal {
-    version: '0.1.4';
+    version: '0.1.5';
     ctrace: Logger;
     ctx: SP.ClientContext;
     constructor(ctx: SP.ClientContext);

@@ -94,7 +94,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                                 me.ctrace.log("-- field: " + field.name);
                                 getMarkup(field, spFieldMap).then(function (xml) {
                                     var fieldXML = $($.parseXML(xml)).find("Field");
-                                    var internalName = fieldXML.attr("InternalName") || fieldXML.attr("Name") || fieldXML.attr("StaticName");
+                                    var internalName = fieldXML.attr("InternalName") || fieldXML.attr("Name") || fieldXML.attr("StaticName") || fieldXML.attr("DisplayName");
                                     var spField = spFieldMap[internalName];
                                     if (spField) {
                                         me.ctrace.debug(internalName + " found");

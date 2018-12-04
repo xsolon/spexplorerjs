@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// v 0.1.5 - 2018_11_27 - Use displayname if field definition does not have internal/name/static attributes
 var logger_api_1 = require("./logger.api");
 var meta_api_1 = require("./meta.api");
 var utils_api_1 = require("./utils.api");
@@ -66,7 +67,7 @@ var ListDal = /** @class */ (function () {
                             me.ctrace.log("-- field: " + field.name);
                             getMarkup(field, spFieldMap).then(function (xml) {
                                 var fieldXML = $($.parseXML(xml)).find("Field");
-                                var internalName = fieldXML.attr("InternalName") || fieldXML.attr("Name") || fieldXML.attr("StaticName");
+                                var internalName = fieldXML.attr("InternalName") || fieldXML.attr("Name") || fieldXML.attr("StaticName") || fieldXML.attr("DisplayName");
                                 var spField = spFieldMap[internalName];
                                 if (spField) {
                                     me.ctrace.debug(internalName + " found");

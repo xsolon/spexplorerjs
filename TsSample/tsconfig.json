@@ -1,10 +1,20 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es6",
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es6",
 		"lib": [ "es6", "dom" ],
-    "sourceMap": true
-  },
+		"sourceMap": true,
+		"moduleResolution": "node",
+		"typeRoots": [
+			"./node_modules/@types",
+			"./node_modules",
+			"./src/defs"
+		],
+		"types": [
+			"node",
+			"core-js"
+		]
+	},
   "exclude": [
     "node_modules"
   ]

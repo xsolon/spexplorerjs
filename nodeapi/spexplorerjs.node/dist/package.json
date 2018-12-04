@@ -1,6 +1,6 @@
 {
   "name": "spexplorerts",
-  "version": "0.1.20",
+  "version": "0.1.22",
   "description": "",
   "main": "index.api.js",
   "scripts": {
@@ -13,6 +13,8 @@
     "url": "https://github.com/xsolon/spexplorerjs"
   },
 	"dependencies": {
-		"@types/sharepoint": "^2016.1.1"
+		"@types/sharepoint": "^2016.1.1",
+		"jsdom": "^12.1.0",
+		"jquery": "^3.3.1"
 	}
 }
