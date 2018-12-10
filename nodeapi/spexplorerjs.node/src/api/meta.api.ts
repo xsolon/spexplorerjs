@@ -1,4 +1,4 @@
-﻿import { ListDal } from "./list.api";
+﻿import { ListApi } from "./list.api";
 
 export class ListMeta {
 	public fields: FieldMeta[];
@@ -45,7 +45,7 @@ export var classBuilder = function (list: ListMeta): string {
 	return template;
 };
 
-export declare type itemsFunction = (list: SP.List, dal: ListDal) => JQuery.Promise<any[]>;
+export declare type itemsFunction = (list: SP.List, dal: ListApi) => JQuery.Promise<any[]>;
 export type markupFunction = (ctx: SP.ClientContext, list: SP.List, spfields: SP.FieldCollection, lists: SP.ListCollection, web: SP.Web) => JQuery.Promise<string>;
-export type listUpdatesFunction = (list: SP.List, dal: ListDal) => Promise<any>;
+export type listUpdatesFunction = (list: SP.List, dal: ListApi) => Promise<any>;
 export type postFunction = (field: SP.Field) => void;

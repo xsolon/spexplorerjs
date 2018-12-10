@@ -8,7 +8,35 @@ var jQuery = require("jquery");
 global['$'] = jQuery;
 var utils = new utils_api_1.funcs();
 var ListDal = /** @class */ (function () {
-    function ListDal(ctx) {
+    function ListDal(title, defaultQuery) {
+        if (defaultQuery === void 0) { defaultQuery = "<View/>"; }
+        this.title = title;
+        this.defaultQuery = defaultQuery;
+        this.ctx = SP.ClientContext.get_current();
+        this.list = this.ctx.get_web().get_lists().getByTitle(this.title);
+        this.dal = new ListApi(this.ctx);
+    }
+    ListDal.prototype.getList = function () {
+        return this.list;
+    };
+    ListDal.prototype.getItems = function (query) {
+        if (query === void 0) { query = this.defaultQuery; }
+        return this.dal.getAll(this.list, query);
+    };
+    ListDal.prototype.getItemById = function (id) {
+        var li = this.list.getItemById(id);
+        this.ctx.load(li);
+        this.ctx.executeQueryAsync(function () {
+            ddf.resolve(li);
+        });
+        var ddf = jQuery.Deferred();
+        return ddf.promise();
+    };
+    return ListDal;
+}());
+exports.ListDal = ListDal;
+var ListApi = /** @class */ (function () {
+    function ListApi(ctx) {
         this.ctrace = new logger_api_1.Logger('ListApi');
         this.ensureFields = function (list, fields) {
             var me = this;
@@ -133,7 +161,7 @@ var ListDal = /** @class */ (function () {
         };
         this.ctx = ctx || SP.ClientContext.get_current();
     }
-    ListDal.prototype.listExists = function (title) {
+    ListApi.prototype.listExists = function (title) {
         var me = this;
         var lists = me.ctx.get_web().get_lists();
         me.ctx.load(lists, 'Include(Title)');
@@ -146,7 +174,7 @@ var ListDal = /** @class */ (function () {
         }).promise();
     };
     ;
-    ListDal.prototype.ensureList = function (meta) {
+    ListApi.prototype.ensureList = function (meta) {
         var me = this;
         return $.Deferred(function (dfd) {
             var isNew = false;
@@ -194,7 +222,7 @@ var ListDal = /** @class */ (function () {
         }).promise();
     };
     ;
-    ListDal.prototype.createList = function (listTitle, templateType, web) {
+    ListApi.prototype.createList = function (listTitle, templateType, web) {
         var me = this;
         me.ctrace.log("Creating list " + listTitle);
         return $.Deferred(function (dfd) {
@@ -211,7 +239,7 @@ var ListDal = /** @class */ (function () {
         }).promise();
     };
     ;
-    ListDal.prototype.getMeta = function (listTitle, fieldNames) {
+    ListApi.prototype.getMeta = function (listTitle, fieldNames) {
         var me = this;
         var list = me.ctx.get_web().get_lists().getByTitle(listTitle);
         var fields = list.get_fields();
@@ -244,7 +272,7 @@ var ListDal = /** @class */ (function () {
         }).promise();
     };
     ;
-    ListDal.prototype.addItems = function (items, splist, folderUrl) {
+    ListApi.prototype.addItems = function (items, splist, folderUrl) {
         var me = this;
         me.ctrace.log('starting addItems');
         var prepLookupValue = function (raw) {
@@ -330,7 +358,7 @@ var ListDal = /** @class */ (function () {
         return dfd.promise();
     };
     ;
-    ListDal.prototype.getQuery = function (caml, folder) {
+    ListApi.prototype.getQuery = function (caml, folder) {
         var query = new SP.CamlQuery();
         caml = caml || "<View Scope='Recursive'>\
 		<ViewFields><FieldRef Name='ID'></FieldRef>\
@@ -343,7 +371,7 @@ var ListDal = /** @class */ (function () {
         return query;
     };
     ;
-    ListDal.prototype.runAllQuery = function (query, splist, limit, trace) {
+    ListApi.prototype.runAllQuery = function (query, splist, limit, trace) {
         if (limit === void 0) { limit = 0; }
         if (trace === void 0) { trace = this.ctrace; }
         var me = this;
@@ -388,13 +416,13 @@ var ListDal = /** @class */ (function () {
         return dfd.promise();
     };
     ;
-    ListDal.prototype.getAll = function (splist, caml, folder, limit) {
+    ListApi.prototype.getAll = function (splist, caml, folder, limit) {
         if (limit === void 0) { limit = 0; }
         var query = this.getQuery(caml, folder);
         return this.runAllQuery(query, splist, limit);
     };
     ;
-    return ListDal;
+    return ListApi;
 }());
-exports.ListDal = ListDal;
+exports.ListApi = ListApi;
 //# sourceMappingURL=list.api.js.map

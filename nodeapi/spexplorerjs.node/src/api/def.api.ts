@@ -1,7 +1,7 @@
 ﻿
 import { Logger } from './logger.api';
 import { funcs } from './utils.api';
-import { ListDal } from './list.api';
+import { ListApi, ListDal } from './list.api';
 import jQuery = require('jquery');
 
 if (typeof window != 'undefined') {
@@ -9,7 +9,8 @@ if (typeof window != 'undefined') {
 		modules: {
 			logger: Logger,
 			utils: funcs,
-			listapi: ListDal,
+			listapi: ListApi,
+			listdal: ListDal,
 			jQuery: jQuery
 		}
 	};

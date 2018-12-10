@@ -9,7 +9,8 @@ if (typeof window != 'undefined') {
         modules: {
             logger: logger_api_1.Logger,
             utils: utils_api_1.funcs,
-            listapi: list_api_1.ListDal,
+            listapi: list_api_1.ListApi,
+            listdal: list_api_1.ListDal,
             jQuery: jQuery
         }
     };

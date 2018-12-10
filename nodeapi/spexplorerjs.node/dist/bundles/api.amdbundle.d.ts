@@ -20,10 +20,22 @@ declare module "list.api" {
     export type QueueStep = (item: any) => Promise<void>;
     export type ArrayPromise = () => Promise<Array<any>>;
     export class ListDal {
-        version: '0.1.5';
+        version: '0.1.6';
+        title: string;
+        defaultQuery: string;
+        ctx: SP.ClientContext;
+        dal: ListApi;
+        list: SP.List;
+        constructor(title: string, defaultQuery?: string);
+        getList(): SP.List;
+        getItems(query?: string): JQuery.Promise<SP.ListItem[]>;
+        getItemById(id: number): JQuery.Promise<SP.ListItem>;
+    }
+    export class ListApi {
+        version: '0.1.6';
         ctrace: Logger;
         ctx: SP.ClientContext;
-        constructor(ctx: SP.ClientContext);
+        constructor(ctx?: SP.ClientContext);
         ensureFields: (list: SP.List<any>, fields: FieldMeta[]) => JQuery.Promise<any, any, any>;
         listExists(title: string): Promise<[boolean, SP.List]>;
         ensureList(meta: ListMeta): Promise<SP.List>;
@@ -37,7 +49,7 @@ declare module "list.api" {
     }
 }
 declare module "meta.api" {
-    import { ListDal } from "list.api";
+    import { ListApi } from "list.api";
     export class ListMeta {
         fields: FieldMeta[];
         listTemplate: number;
@@ -63,9 +75,9 @@ declare module "meta.api" {
         addOptions?: SP.AddFieldOptions;
     }
     export var classBuilder: (list: ListMeta) => string;
-    export type itemsFunction = (list: SP.List, dal: ListDal) => JQuery.Promise<any[]>;
+    export type itemsFunction = (list: SP.List, dal: ListApi) => JQuery.Promise<any[]>;
     export type markupFunction = (ctx: SP.ClientContext, list: SP.List, spfields: SP.FieldCollection, lists: SP.ListCollection, web: SP.Web) => JQuery.Promise<string>;
-    export type listUpdatesFunction = (list: SP.List, dal: ListDal) => Promise<any>;
+    export type listUpdatesFunction = (list: SP.List, dal: ListApi) => Promise<any>;
     export type postFunction = (field: SP.Field) => void;
 }
 declare module "utils.api" {

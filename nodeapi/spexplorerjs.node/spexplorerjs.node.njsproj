@@ -33,7 +33,6 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
-    <Content Include="dist\api.amdbundle.js.map" />
     <Content Include="dist\api\backups.node.js.map" />
     <Content Include="dist\bundles\api.amdbundle.js.map" />
     <Content Include="dist\api\def.api.js.map" />
@@ -51,7 +50,6 @@
     <Content Include="tsconfig.Api.Common.json" />
     <Content Include="tsconfig.Api.Amd.json" />
     <Content Include="tsconfig.json" />
-    <TypeScriptCompile Include="dist\api.amdbundle.d.ts" />
     <TypeScriptCompile Include="dist\api\backups.node.d.ts" />
     <TypeScriptCompile Include="dist\api\def.api.d.ts" />
     <TypeScriptCompile Include="dist\api\list.api.d.ts" />
@@ -78,7 +76,6 @@
     </TypeScriptCompile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="dist\api.amdbundle.js" />
     <Compile Include="dist\api\backups.node.js" />
     <Compile Include="dist\bundles\api.amdbundle.js" />
     <Compile Include="dist\bundles\api.pack.js" />

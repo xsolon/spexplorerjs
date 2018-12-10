@@ -4,10 +4,22 @@ import { FieldMeta, ListMeta } from './meta.api';
 export declare type QueueStep = (item: any) => Promise<void>;
 export declare type ArrayPromise = () => Promise<Array<any>>;
 export declare class ListDal {
-    version: '0.1.5';
+    version: '0.1.6';
+    title: string;
+    defaultQuery: string;
+    ctx: SP.ClientContext;
+    dal: ListApi;
+    list: SP.List;
+    constructor(title: string, defaultQuery?: string);
+    getList(): SP.List;
+    getItems(query?: string): JQuery.Promise<SP.ListItem[]>;
+    getItemById(id: number): JQuery.Promise<SP.ListItem>;
+}
+export declare class ListApi {
+    version: '0.1.6';
     ctrace: Logger;
     ctx: SP.ClientContext;
-    constructor(ctx: SP.ClientContext);
+    constructor(ctx?: SP.ClientContext);
     ensureFields: (list: SP.List<any>, fields: FieldMeta[]) => JQuery.Promise<any, any, any>;
     listExists(title: string): Promise<[boolean, SP.List]>;
     ensureList(meta: ListMeta): Promise<SP.List>;

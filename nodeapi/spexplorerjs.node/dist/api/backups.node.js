@@ -3,6 +3,7 @@
 /// <reference types="node" />
 /// <reference types="sp-request" />
 Object.defineProperty(exports, "__esModule", { value: true });
+//v 0.1
 var jsdom = require("jsdom");
 var JSDOM = jsdom.JSDOM;
 var window = new JSDOM().window;
@@ -23,7 +24,7 @@ var trace = new logger_api_1.Logger("backups.node");
 var utils = new utils_api_1.funcs();
 function backupList(listDef, ctx, localFolder, settings) {
     trace.log("backing-up " + listDef.title);
-    var listDal = new list_api_1.ListDal(ctx);
+    var listDal = new list_api_1.ListApi(ctx);
     var lDfd = j$.Deferred();
     var web = ctx.get_web();
     var list = web.get_lists().getByTitle(listDef.title);
@@ -176,7 +177,7 @@ function backupList(listDef, ctx, localFolder, settings) {
 exports.backupList = backupList;
 ;
 function restoreList(listDef, ctx, localFolder, settings) {
-    var listDal = new list_api_1.ListDal(ctx);
+    var listDal = new list_api_1.ListApi(ctx);
     listDal.ensureList(listDef).then(function (list) {
         ctx.load(list);
         ctx.executeQueryAsync(function () {

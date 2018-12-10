@@ -1,5 +1,5 @@
 /// <reference types="sharepoint" />
-import { ListDal } from "./list.api";
+import { ListApi } from "./list.api";
 export declare class ListMeta {
     fields: FieldMeta[];
     listTemplate: number;
@@ -25,7 +25,7 @@ export declare class FieldMeta {
     addOptions?: SP.AddFieldOptions;
 }
 export declare var classBuilder: (list: ListMeta) => string;
-export declare type itemsFunction = (list: SP.List, dal: ListDal) => JQuery.Promise<any[]>;
+export declare type itemsFunction = (list: SP.List, dal: ListApi) => JQuery.Promise<any[]>;
 export declare type markupFunction = (ctx: SP.ClientContext, list: SP.List, spfields: SP.FieldCollection, lists: SP.ListCollection, web: SP.Web) => JQuery.Promise<string>;
-export declare type listUpdatesFunction = (list: SP.List, dal: ListDal) => Promise<any>;
+export declare type listUpdatesFunction = (list: SP.List, dal: ListApi) => Promise<any>;
 export declare type postFunction = (field: SP.Field) => void;

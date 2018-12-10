@@ -11,11 +11,43 @@ export type QueueStep = (item) => Promise<void>;
 export type ArrayPromise = () => Promise<Array<any>>;
 
 export class ListDal {
-	version: '0.1.5';
+	version: '0.1.6';
+	title: string;
+	defaultQuery: string
+	ctx: SP.ClientContext;
+	dal: ListApi;
+	list: SP.List;
+	constructor(title: string, defaultQuery: string = "<View/>") {
+		this.title = title;
+		this.defaultQuery = defaultQuery;
+		this.ctx = SP.ClientContext.get_current();
+		this.list = this.ctx.get_web().get_lists().getByTitle(this.title);
+		this.dal = new ListApi(this.ctx);
+	}
+	getList(): SP.List {
+		return this.list;
+	}
+	getItems(query: string = this.defaultQuery): JQuery.Promise<SP.ListItem[]> {
+		return this.dal.getAll(this.list, query);
+	}
+	getItemById(id: number): JQuery.Promise<SP.ListItem> {
+		var li = this.list.getItemById(id);
+
+		this.ctx.load(li);
+		this.ctx.executeQueryAsync(function () {
+			ddf.resolve(li);
+		});
+		var ddf = jQuery.Deferred();
+		return ddf.promise();
+	}
+}
+
+export class ListApi {
+	version: '0.1.6';
 	ctrace: Logger = new Logger('ListApi');
 	ctx: SP.ClientContext;
 
-	constructor(ctx: SP.ClientContext) {
+	constructor(ctx?: SP.ClientContext) {
 		this.ctx = ctx || SP.ClientContext.get_current();
 	}
 

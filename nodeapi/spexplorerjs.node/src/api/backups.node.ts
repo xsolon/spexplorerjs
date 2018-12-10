@@ -20,7 +20,7 @@ import * as sprequest from "sp-request";
 import { ListMeta } from './meta.api';
 import { Logger } from './logger.api';
 import { funcs } from './utils.api';
-import { ListDal } from './list.api';
+import { ListApi } from './list.api';
 
 var trace = new Logger("backups.node");
 var utils = new funcs();
@@ -29,7 +29,7 @@ export function backupList(listDef: ListMeta, ctx: SP.ClientContext, localFolder
 
 	trace.log(`backing-up ${listDef.title}`);
 
-	var listDal = new ListDal(ctx);
+	var listDal = new ListApi(ctx);
 	var lDfd = j$.Deferred();
 	var web = ctx.get_web();
 	var list = web.get_lists().getByTitle(listDef.title);
@@ -193,7 +193,7 @@ export function backupList(listDef: ListMeta, ctx: SP.ClientContext, localFolder
 
 export function restoreList(listDef: ListMeta, ctx: SP.ClientContext, localFolder: string, settings: any): JQuery.Promise<void> {
 
-	var listDal = new ListDal(ctx);
+	var listDal = new ListApi(ctx);
 	listDal.ensureList(listDef).then(function (list: SP.List) {
 
 		ctx.load(list);
