@@ -6,6 +6,7 @@ var utils_api_1 = require("./api/utils.api");
 exports.funcs = utils_api_1.funcs;
 var list_api_1 = require("./api/list.api");
 exports.ListDal = list_api_1.ListDal;
+exports.ListApi = list_api_1.ListApi;
 var meta_api_1 = require("./api/meta.api");
 exports.FieldMeta = meta_api_1.FieldMeta;
 exports.GroupMeta = meta_api_1.GroupMeta;
