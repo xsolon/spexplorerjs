@@ -6,6 +6,7 @@ export class ListMeta {
 	public title: string;
 	public defaultItems: any[] | itemsFunction;
 	public listUpdates?: listUpdatesFunction;
+	public afterListCreated?: listUpdatesFunction;
 	public permissions?: GroupMeta[];
 
 	constructor(title: string) {

@@ -129,7 +129,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                                     }
                                     else {
                                         me.ctrace.log("adding: " + xml);
-                                        spField = spfields.addFieldAsXml(xml, field.inDefaultView, field.addOptions);
+                                        spField = spfields.addFieldAsXml(xml, field.inDefaultView, field.addOptions || (SP.AddFieldOptions.addFieldInternalNameHint | SP.AddFieldOptions.addToAllContentTypes));
                                     }
                                     if (field.post) {
                                         field.post(spField);
@@ -240,7 +240,15 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                         isNew = true;
                         me.createList(meta.title, meta.listTemplate, me.ctx.get_web()).then(function (list) {
                             me.ensureFields(list, meta.fields).then(function () {
-                                done(list);
+                                if (meta.afterListCreated) {
+                                    meta.afterListCreated(list, me).then(function () {
+                                        done(list);
+                                    }).catch(function () {
+                                        debugger;
+                                    });
+                                }
+                                else
+                                    done(list);
                             });
                         });
                     }

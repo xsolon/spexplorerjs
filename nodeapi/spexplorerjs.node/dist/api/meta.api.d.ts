@@ -6,6 +6,7 @@ export declare class ListMeta {
     title: string;
     defaultItems: any[] | itemsFunction;
     listUpdates?: listUpdatesFunction;
+    afterListCreated?: listUpdatesFunction;
     permissions?: GroupMeta[];
     constructor(title: string);
     static version: '0.1.2';

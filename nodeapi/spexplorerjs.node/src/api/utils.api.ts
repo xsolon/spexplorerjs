@@ -378,6 +378,7 @@ export class funcs {
 				});
 			};
 
+      // @ts-ignore
 			if (SP.Group.isInstanceOfType(principalIn)) {
 				safeAddPermission(safePrincipal);
 			} else {

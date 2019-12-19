@@ -47,6 +47,9 @@
     <Content Include="src\defs\sharepoint\LICENSE" />
     <Content Include="src\defs\sharepoint\package.json" />
     <Content Include="src\defs\sharepoint\README.md" />
+    <Content Include="src\widgets\temp1.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="tsconfig.Api.Common.json" />
     <Content Include="tsconfig.Api.Amd.json" />
     <Content Include="tsconfig.json" />
@@ -74,6 +77,9 @@
     <TypeScriptCompile Include="src\index.api.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\widgets\sample1.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="dist\api\backups.node.js" />
@@ -84,9 +90,11 @@
     <Compile Include="dist\api\logger.api.js" />
     <Compile Include="dist\api\meta.api.js" />
     <Compile Include="dist\api\utils.api.js" />
+    <Compile Include="dist\bundles\widgets.pack.js" />
     <Compile Include="dist\index.api.js" />
     <Compile Include="mylogger.ts" />
     <Compile Include="packer.js" />
+    <Compile Include="src\widgets\widgetspacker.js" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="dist\" />
@@ -96,6 +104,7 @@
     <Folder Include="src\api\" />
     <Folder Include="src\defs\" />
     <Folder Include="src\defs\sharepoint\" />
+    <Folder Include="src\widgets\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

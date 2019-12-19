@@ -20,7 +20,7 @@ declare module "list.api" {
     export type QueueStep = (item: any) => Promise<void>;
     export type ArrayPromise = () => Promise<Array<any>>;
     export class ListDal {
-        version: '0.1.6';
+        version: '0.1.7';
         title: string;
         defaultQuery: string;
         ctx: SP.ClientContext;
@@ -32,7 +32,7 @@ declare module "list.api" {
         getItemById(id: number): JQuery.Promise<SP.ListItem>;
     }
     export class ListApi {
-        version: '0.1.6';
+        version: '0.1.7';
         ctrace: Logger;
         ctx: SP.ClientContext;
         constructor(ctx?: SP.ClientContext);
@@ -56,6 +56,7 @@ declare module "meta.api" {
         title: string;
         defaultItems: any[] | itemsFunction;
         listUpdates?: listUpdatesFunction;
+        afterListCreated?: listUpdatesFunction;
         permissions?: GroupMeta[];
         constructor(title: string);
         static version: '0.1.2';

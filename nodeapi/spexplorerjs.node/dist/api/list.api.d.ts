@@ -4,7 +4,7 @@ import { FieldMeta, ListMeta } from './meta.api';
 export declare type QueueStep = (item: any) => Promise<void>;
 export declare type ArrayPromise = () => Promise<Array<any>>;
 export declare class ListDal {
-    version: '0.1.6';
+    version: '0.1.7';
     title: string;
     defaultQuery: string;
     ctx: SP.ClientContext;
@@ -16,7 +16,7 @@ export declare class ListDal {
     getItemById(id: number): JQuery.Promise<SP.ListItem>;
 }
 export declare class ListApi {
-    version: '0.1.6';
+    version: '0.1.7';
     ctrace: Logger;
     ctx: SP.ClientContext;
     constructor(ctx?: SP.ClientContext);
