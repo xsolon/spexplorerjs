@@ -11,7 +11,7 @@ export type QueueStep = (item) => Promise<void>;
 export type ArrayPromise = () => Promise<Array<any>>;
 
 export class ListDal {
-  version: '0.1.7';
+  version: '0.1.8';
   title: string;
   defaultQuery: string
   ctx: SP.ClientContext;
@@ -27,8 +27,8 @@ export class ListDal {
   getList(): SP.List {
     return this.list;
   }
-  getItems(query: string = this.defaultQuery): JQuery.Promise<SP.ListItem[]> {
-    return this.dal.getAll(this.list, query);
+  getItems(query: string = this.defaultQuery, folder?: string): JQuery.Promise<SP.ListItem[]> {
+    return this.dal.getAll(this.list, query, folder);
   }
   getItemById(id: number): JQuery.Promise<SP.ListItem> {
     var li = this.list.getItemById(id);

@@ -19,9 +19,9 @@ var ListDal = /** @class */ (function () {
     ListDal.prototype.getList = function () {
         return this.list;
     };
-    ListDal.prototype.getItems = function (query) {
+    ListDal.prototype.getItems = function (query, folder) {
         if (query === void 0) { query = this.defaultQuery; }
-        return this.dal.getAll(this.list, query);
+        return this.dal.getAll(this.list, query, folder);
     };
     ListDal.prototype.getItemById = function (id) {
         var li = this.list.getItemById(id);
