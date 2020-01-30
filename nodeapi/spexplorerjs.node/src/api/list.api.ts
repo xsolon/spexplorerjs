@@ -9,9 +9,9 @@ var utils: funcs = new funcs();
 
 export type QueueStep = (item) => Promise<void>;
 export type ArrayPromise = () => Promise<Array<any>>;
-
+// 2020-01-30: 0.1.9 - getItems: additional parameter 'limit'
 export class ListDal {
-  version: '0.1.8';
+  version: '0.1.9';
   title: string;
   defaultQuery: string
   ctx: SP.ClientContext;
@@ -27,8 +27,8 @@ export class ListDal {
   getList(): SP.List {
     return this.list;
   }
-  getItems(query: string = this.defaultQuery, folder?: string): JQuery.Promise<SP.ListItem[]> {
-    return this.dal.getAll(this.list, query, folder);
+  getItems(query: string = this.defaultQuery, folder?: string, limit?: number): JQuery.Promise<SP.ListItem[]> {
+    return this.dal.getAll(this.list, query, folder, limit);
   }
   getItemById(id: number): JQuery.Promise<SP.ListItem> {
     var li = this.list.getItemById(id);

@@ -7,6 +7,7 @@ var utils_api_1 = require("./utils.api");
 var jQuery = require("jquery");
 global['$'] = jQuery;
 var utils = new utils_api_1.funcs();
+// 2020-01-30: 0.1.9 - getItems: additional parameter 'limit'
 var ListDal = /** @class */ (function () {
     function ListDal(title, defaultQuery) {
         if (defaultQuery === void 0) { defaultQuery = "<View/>"; }
@@ -19,9 +20,9 @@ var ListDal = /** @class */ (function () {
     ListDal.prototype.getList = function () {
         return this.list;
     };
-    ListDal.prototype.getItems = function (query, folder) {
+    ListDal.prototype.getItems = function (query, folder, limit) {
         if (query === void 0) { query = this.defaultQuery; }
-        return this.dal.getAll(this.list, query, folder);
+        return this.dal.getAll(this.list, query, folder, limit);
     };
     ListDal.prototype.getItemById = function (id) {
         var li = this.list.getItemById(id);

@@ -20,7 +20,7 @@ declare module "list.api" {
     export type QueueStep = (item: any) => Promise<void>;
     export type ArrayPromise = () => Promise<Array<any>>;
     export class ListDal {
-        version: '0.1.8';
+        version: '0.1.9';
         title: string;
         defaultQuery: string;
         ctx: SP.ClientContext;
@@ -28,7 +28,7 @@ declare module "list.api" {
         list: SP.List;
         constructor(title: string, defaultQuery?: string);
         getList(): SP.List;
-        getItems(query?: string, folder?: string): JQuery.Promise<SP.ListItem[]>;
+        getItems(query?: string, folder?: string, limit?: number): JQuery.Promise<SP.ListItem[]>;
         getItemById(id: number): JQuery.Promise<SP.ListItem>;
     }
     export class ListApi {

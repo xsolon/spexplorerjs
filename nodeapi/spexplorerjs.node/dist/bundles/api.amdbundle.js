@@ -48,9 +48,9 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
         ListDal.prototype.getList = function () {
             return this.list;
         };
-        ListDal.prototype.getItems = function (query, folder) {
+        ListDal.prototype.getItems = function (query, folder, limit) {
             if (query === void 0) { query = this.defaultQuery; }
-            return this.dal.getAll(this.list, query, folder);
+            return this.dal.getAll(this.list, query, folder, limit);
         };
         ListDal.prototype.getItemById = function (id) {
             var li = this.list.getItemById(id);
