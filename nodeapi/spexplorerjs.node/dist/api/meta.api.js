@@ -24,6 +24,18 @@ var FieldMeta = /** @class */ (function () {
     return FieldMeta;
 }());
 exports.FieldMeta = FieldMeta;
+var FieldLinkMeta = /** @class */ (function () {
+    function FieldLinkMeta() {
+    }
+    return FieldLinkMeta;
+}());
+exports.FieldLinkMeta = FieldLinkMeta;
+var CTypeMeta = /** @class */ (function () {
+    function CTypeMeta() {
+    }
+    return CTypeMeta;
+}());
+exports.CTypeMeta = CTypeMeta;
 exports.classBuilder = function (list) {
     var fieldStr = "";
     list.fields.forEach(function (field) {

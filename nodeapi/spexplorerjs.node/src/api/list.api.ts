@@ -1,6 +1,9 @@
-﻿// v 0.1.5 - 2018_11_27 - Use displayname if field definition does not have internal/name/static attributes
+﻿// v 0.1.5  - 2018_11_27 - Use displayname if field definition does not have internal/name/static attributes
+// v 0.1.9  - 2020_01_31 - addItems returns JQuery.Promise<Array<SP.ListItem>>
+// v 0.1.10 - 2020_02_04 - folderApi
+// v 0.1.10 - 2020_03_06 - Content Types
 import { Logger } from './logger.api';
-import { FieldMeta, ListMeta, itemsFunction } from './meta.api';
+import { FieldMeta, ListMeta, itemsFunction, CTypeMeta } from './meta.api';
 import { funcs } from "./utils.api";
 
 import jQuery = require('jquery');
@@ -11,7 +14,7 @@ export type QueueStep = (item) => Promise<void>;
 export type ArrayPromise = () => Promise<Array<any>>;
 // 2020-01-30: 0.1.9 - getItems: additional parameter 'limit'
 export class ListDal {
-  version: '0.1.9';
+  version: '0.1.11';
   title: string;
   defaultQuery: string
   ctx: SP.ClientContext;
@@ -24,11 +27,17 @@ export class ListDal {
     this.list = this.ctx.get_web().get_lists().getByTitle(this.title);
     this.dal = new ListApi(this.ctx);
   }
+  ensureFolder(serverRelativeUrl: string): JQuery.Promise<SP.Folder> {
+    return this.dal.folderApi.ensureFolderInList(serverRelativeUrl, this.list);
+  }
   getList(): SP.List {
     return this.list;
   }
   getItems(query: string = this.defaultQuery, folder?: string, limit?: number): JQuery.Promise<SP.ListItem[]> {
     return this.dal.getAll(this.list, query, folder, limit);
+  }
+  addItems(items: Array<any>, folderUrl?: string): JQuery.Promise<Array<SP.ListItem>> {
+    return this.dal.addItems(items, this.list, folderUrl);
   }
   getItemById(id: number): JQuery.Promise<SP.ListItem> {
     var li = this.list.getItemById(id);
@@ -43,14 +52,14 @@ export class ListDal {
 }
 
 export class ListApi {
-  version: '0.1.7';
+  version: '0.1.11';
   ctrace: Logger = new Logger('ListApi');
   ctx: SP.ClientContext;
-
+  folderApi: FolderApi;
   constructor(ctx?: SP.ClientContext) {
     this.ctx = ctx || SP.ClientContext.get_current();
+    this.folderApi = new FolderApi(this.ctx);
   }
-
   ensureFields = function (list: SP.List, fields: Array<FieldMeta>) {
     var me = this;
     me.ctrace.debug('enureFields.begin');
@@ -149,11 +158,149 @@ export class ListApi {
       });
     }).promise();
   };
-  ensureList(meta: ListMeta): Promise<SP.List> {
+  ensureCTypes(ctypes: CTypeMeta[], splist: SP.List): JQueryPromise<SP.ContentType[]> {
     var me = this;
-    return $.Deferred(function (dfd) {
-      var isNew = false;
-      var done = function (list: SP.List) {
+    var ctx = me.ctx;
+    var dfd = $.Deferred();
+
+    if (!ctypes) {
+      dfd.resolve();
+      return;
+    }
+    var listCtypes = splist.get_contentTypes();
+    var listFields = splist.get_fields();
+    var rootWeb = ctx.get_site().get_rootWeb();
+    var rootContentTypeCollection = rootWeb.get_contentTypes();
+
+    splist.set_contentTypesEnabled(true);
+    ctx.load(rootContentTypeCollection);
+    ctx.load(listFields);
+    ctx.load(listCtypes);
+
+    var listCtypesDic: { [key: string]: SP.ContentType } = null;
+    var listFieldsDic: { [key: string]: SP.Field } = null;
+
+    var createCtype = function (ctypeMeta: CTypeMeta): JQueryPromise<SP.ContentType> {
+      var dfd1 = $.Deferred();
+
+      var parentCtype: SP.ContentType = rootContentTypeCollection.getById(ctypeMeta.parentCtypeId);
+
+      ctx.load(parentCtype);
+      ctx.executeQueryAsync(function () {
+        me.ctrace.log(parentCtype.get_name());
+
+        var newContentType = new SP.ContentTypeCreationInformation();
+        newContentType.set_name(ctypeMeta.name);
+        if (ctypeMeta.group)
+          newContentType.set_group(ctypeMeta.group);
+        if (ctypeMeta.description)
+          newContentType.set_description(ctypeMeta.description);
+
+        newContentType.set_parentContentType(parentCtype);
+
+        var ctype = listCtypes.add(newContentType);
+
+        ctype.set_jsLink(ctypeMeta.jsLink);
+        ctype.update(false);
+
+        ctx.load(ctype);
+        ctx.load(listCtypes);
+        ctx.executeQueryAsync(function () {
+          dfd1.resolve(ctype);
+        }, function (s, e) {
+          me.ctrace.error(e.get_message());
+          debugger;
+        });
+      }, function (s, e) {
+        me.ctrace.error(e.get_message());
+        debugger;
+      });
+
+      return dfd1.promise();
+    };
+    var ensureFields = function (cType: SP.ContentType, meta: CTypeMeta): JQueryPromise<void> {
+      var dfd2 = $.Deferred();
+
+      var links = cType.get_fieldLinks();
+      ctx.load(links);
+      ctx.executeQueryAsync(function () {
+        var ctypeFieldLinks = utils.collectionToDictionary<SP.FieldLink>(links, function (field) { return field.get_name(); });
+
+        meta.fields.forEach(function (fieldMeta) {
+          if (!ctypeFieldLinks[fieldMeta.name]) {
+            me.ctrace.log(`ctype ${meta.name}: adding field link: ${fieldMeta.name}`);
+            var field = listFieldsDic[fieldMeta.name];
+            var newFieldLink = new SP.FieldLinkCreationInformation();
+            newFieldLink.set_field(field);
+            links.add(newFieldLink);
+          }
+        });
+
+        cType.update(false);
+        ctx.executeQueryAsync(function () {
+          dfd2.resolve();
+        }, function (s, e) {
+          me.ctrace.error(e.get_message());
+          debugger;
+        });
+      }, function (s, e) {
+        me.ctrace.error(e.get_message());
+        debugger;
+      });
+
+      return dfd2.promise();
+    };
+
+    var ensureCtype = function (ctype: CTypeMeta): JQueryPromise<void> {
+      var name = ctype.name;
+      var cDfd = $.Deferred();
+
+      var doCtype = function (spctype: SP.ContentType) {
+
+        if (ctype.description)
+          spctype.set_description(ctype.description);
+        if (ctype.group)
+          spctype.set_group(ctype.group);
+        if (ctype.jsLink)
+          spctype.set_jsLink(ctype.jsLink);
+
+        spctype.update(false);
+        ctx.executeQueryAsync(function () {
+          ensureFields(spctype, ctype).done(function () {
+            cDfd.resolve();
+          });
+        }, function (s, e) {
+          me.ctrace.error(e.get_message());
+          debugger;
+        });
+      };
+
+      if (!listCtypesDic[name]) {
+        createCtype(ctype).done(doCtype);
+      } else {
+        doCtype(listCtypesDic[name]);
+      }
+      return cDfd.promise();
+    };
+
+    ctx.executeQueryAsync(function () {
+      listFieldsDic = utils.collectionToDictionary<SP.Field>(listFields, function (field) { return field.get_internalName(); });
+      listCtypesDic = utils.collectionToDictionary<SP.ContentType>(listCtypes, function (cType) { return cType.get_name(); });
+
+      utils.processAsQueue<CTypeMeta>(ctypes, (ctypeMeta) => {
+        return ensureCtype(ctypeMeta);
+      }).done(function () {
+        dfd.resolve();
+      });
+    });
+    return dfd.promise();
+  };
+  ensureList(meta: ListMeta): JQueryPromise<SP.List> {
+    var me = this;
+    var dfd = $.Deferred();
+    var done = function (list: SP.List, isNew: boolean) {
+
+      var runUpdates = function () {
         if (meta.listUpdates) {
           meta.listUpdates(list, me).then(function () {
             me.ctrace.debug('listUpdates.done');
@@ -177,30 +324,50 @@ export class ListApi {
         } else
           dfd.resolve(list);
         me.ctrace.debug('ensureList.done');
-      };
-      me.listExists(meta.title).then(function (res) {
-        if (res[0]) {
-          me.ensureFields(res[1], meta.fields).then(function () { done(res[1]); });
-        } else {
-          isNew = true;
-          me.createList(meta.title, meta.listTemplate, me.ctx.get_web()).then(function (list) {
-            me.ensureFields(list, meta.fields).then(function () {
 
-              if (meta.afterListCreated) {
-                meta.afterListCreated(list, me).then(function () {
-                  done(list);
-                }).catch(function () {
-                  debugger;
-                });
-              } else
-                done(list);
-            });
-          });
-        }
+      };
+
+      var promise: JQueryPromise<any> = $.Deferred(function (dd) { dd.resolve(); }).promise();
+
+      if (isNew && meta.afterListCreated) {
+        promise = meta.afterListCreated(list, me);
+      }
+
+      promise.done(function () {
+        runUpdates();
+      }).catch(function () {
+        debugger;
       });
-    }).promise();
+    };
+
+    me.listExists(meta.title).then(function (res) {
+      var exists: boolean = res[0];
+      var existingList: SP.List = res[1];
+
+      var promise: JQueryPromise<SP.List> = $.Deferred(function (dd) { dd.resolve(existingList); }).promise();
+
+      if (!exists) {
+        promise = me.createList(meta.title, meta.listTemplate, me.ctx.get_web());
+      }
+
+      promise.then(function (list) {
+        me.ensureFields(list, meta.fields).then(function () {
+          me.ensureCTypes(meta.ctypes, list).done(function () {
+            done(list, !exists);
+          }).catch(function () {
+            debugger;
+          });
+        }).catch(function () {
+          debugger;
+        });
+      }).catch(function () {
+        debugger;
+      });
+
+    });
+    return dfd.promise();
   };
-  createList(listTitle, templateType, web): Promise<SP.List> {
+  createList(listTitle, templateType, web): JQueryPromise<SP.List> {
     var me = this;
     me.ctrace.log("Creating list " + listTitle);
     return $.Deferred(function (dfd) {
@@ -309,7 +476,7 @@ export class ListApi {
       });
     }).promise();
   };
-  addItems(items: Array<any>, splist: SP.List, folderUrl?: string): JQuery.Promise<any> {
+  addItems(items: Array<any>, splist: SP.List, folderUrl?: string): JQuery.Promise<Array<SP.ListItem>> {
     var me = this;
     me.ctrace.log('starting addItems');
     var prepLookupValue = function (raw) {
@@ -346,7 +513,7 @@ export class ListApi {
       });
 
       if (items && items.length > 0) {
-        var spItems = [];
+        var spItems: Array<SP.ListItem> = [];
         try {
           for (var i = 0; i < items.length; i++) {
 
@@ -469,4 +636,131 @@ export class ListApi {
     return this.runAllQuery(query, splist, limit);
   };
 
+}
+
+export class FolderApi {
+
+  ctrace: Logger = new Logger('FolderApi');
+  ctx: SP.ClientContext;
+
+  constructor(ctx?: SP.ClientContext) {
+    this.ctx = ctx || SP.ClientContext.get_current();
+  }
+
+  folderExists(serverRelativeUrl: string, web?: SP.Web): JQuery.Promise<SP.Folder | boolean> {
+
+    var trace = this.ctrace;
+    var ctx = this.ctx;
+
+    if (!web) {
+      web = ctx.get_web();
+    }
+    var dfd = $.Deferred();
+    var folder = web.getFolderByServerRelativeUrl(serverRelativeUrl);
+
+    trace.debug("probing for folder " + serverRelativeUrl);
+    ctx.load(folder, "Name", "ServerRelativeUrl");
+
+    ctx.executeQueryAsync(function () {
+      //if (folder.get_exists()) { // Not available in 2013
+      //    // Folder exists and isn't hidden from us. Print its name.
+      //    //console.log(folder.get_name());
+      //    dfd.resolve(folder);
+      //}
+      //else {
+      //    dfd.resolve(folder);
+      //    //console.log("Folder exists but is hidden (security-trimmed) for us.");
+      //}
+      try {
+        var url = folder.get_serverRelativeUrl();
+        trace.debug(`folder exists:${url}`);
+        dfd.resolve(folder);
+
+      } catch (e) {
+        trace.debug("Folder does not exist.");
+        dfd.resolve(false);
+      }
+    },
+      function (s, args) {
+        if (args.get_errorTypeName() === "System.IO.FileNotFoundException") {
+          // Folder doesn't exist at all.
+          trace.debug("Folder does not exist.");
+          dfd.resolve(false);
+        } else {
+          // An unexpected error occurred.
+          trace.debug("Error: " + args.get_message());
+          dfd.resolve(false);
+        }
+      });
+
+    return dfd.promise();
+
+  };
+
+  pathSteps(path: string): Array<string> {
+    var bits = path.split("/");
+    var qu = [];
+    for (var i = bits.length; i > 0; i--) {
+      var current = bits.slice(0, i).join("/");
+      if (current === "") current = "/";
+      qu.push(current);
+    }
+    return qu;
+  };
+
+  createFolderInList = function (name: string, parentFolderPath: string, list: SP.List): JQuery.Promise<SP.Folder> {
+    var ctx = this.ctx;// || list.get_context();
+    list.set_enableFolderCreation(true);
+    list.update();
+
+    var itemCreateInfo = new SP.ListItemCreationInformation();
+    itemCreateInfo.set_underlyingObjectType(SP.FileSystemObjectType.folder);
+    itemCreateInfo.set_leafName(name);
+    if (parentFolderPath) {
+      itemCreateInfo.set_folderUrl(parentFolderPath);
+    }
+
+    var li = list.addItem(itemCreateInfo);
+    li.set_item("Title", name);
+    li.update();
+
+    var dfd = $.Deferred();
+    ctx.load(li);
+    var folder = li.get_folder();
+    ctx.load(folder);
+    ctx.executeQueryAsync(function () {
+      dfd.resolve(folder);
+    }, function (r, a) {
+      dfd.reject([r, a]);
+    });
+
+    return dfd.promise();
+  };
+
+	/**
+       * returns folder (creating it and its path if necessary)
+       * @param {string} serverRelativeUrl
+       */
+  ensureFolderInList(serverRelativeUrl: string, list: SP.List): JQuery.Promise<SP.Folder> {
+    var me = this;
+    var dfd = $.Deferred();
+
+    me.folderExists(serverRelativeUrl, list.get_parentWeb()).done(function (folder) {
+      if (folder === false) {
+
+        var parentFolders = me.pathSteps(serverRelativeUrl);
+        var parentFolderPath = parentFolders[1];
+        var bits = serverRelativeUrl.split("/");
+        var name = bits[bits.length - 1];
+        me.ensureFolderInList(parentFolderPath, list).done(function () /*parentSpFolder*/ {
+          me.createFolderInList(name, parentFolderPath, list).done(function (folder) {
+            dfd.resolve(folder);
+          });
+        });
+      } else {
+        dfd.resolve(folder);
+      }
+    });
+    return dfd.promise();
+  };
 }

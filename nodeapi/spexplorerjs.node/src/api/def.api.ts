@@ -1,7 +1,7 @@
 ﻿
 import { Logger } from './logger.api';
 import { funcs } from './utils.api';
-import { ListApi, ListDal } from './list.api';
+import { ListApi, ListDal, FolderApi } from './list.api';
 import jQuery = require('jquery');
 
 if (typeof window != 'undefined') {

@@ -2,6 +2,7 @@
 
 export class ListMeta {
 	public fields: FieldMeta[];
+	public ctypes: CTypeMeta[];
 	public listTemplate: number;
 	public title: string;
 	public defaultItems: any[] | itemsFunction;
@@ -34,6 +35,19 @@ export class FieldMeta {
 	public addOptions?: SP.AddFieldOptions = SP.AddFieldOptions.addFieldInternalNameHint | SP.AddFieldOptions.addToAllContentTypes
 }
 
+export class FieldLinkMeta {
+  public name: string;
+}
+
+export class CTypeMeta {
+  public name: string;
+  public parentCtypeId: string;
+  public fields: FieldLinkMeta[];
+  public group?: string;
+  public description?: string;
+  public jsLink?: string;
+}
+
 export var classBuilder = function (list: ListMeta): string {
 
 	var fieldStr = "";
@@ -48,5 +62,5 @@ export var classBuilder = function (list: ListMeta): string {
 
 export declare type itemsFunction = (list: SP.List, dal: ListApi) => JQuery.Promise<any[]>;
 export type markupFunction = (ctx: SP.ClientContext, list: SP.List, spfields: SP.FieldCollection, lists: SP.ListCollection, web: SP.Web) => JQuery.Promise<string>;
-export type listUpdatesFunction = (list: SP.List, dal: ListApi) => Promise<any>;
+export type listUpdatesFunction = (list: SP.List, dal: ListApi) => JQuery.Promise<any>;
 export type postFunction = (field: SP.Field) => void;
