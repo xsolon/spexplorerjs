@@ -1,19 +1,23 @@
 "use strict";
 /// <reference types='sharepoint'/>
+// v 0.1.7 - 2020_03_24 - pageArray
+// v 0.1.6 - 2020_03_20 - log all errors on reqFailure, context optional on spLoadElem, improved getGroups
 Object.defineProperty(exports, "__esModule", { value: true });
 var logger_api_1 = require("./logger.api");
 var defaultLogger = new logger_api_1.Logger('Utils');
 var reqFailure = function (req, reqargs, dfd, logger) {
     if (logger === void 0) { logger = defaultLogger; }
-    var msg = " Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
-    if (dfd)
-        dfd.reject(msg);
-    else {
-        // if there is no promise log at this level
+    try {
+        var msg = " Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
         logger.error(msg);
     }
+    catch (e) {
+        debugger;
+    }
+    if (dfd)
+        dfd.reject(msg);
 };
-exports.version = '0.1.5';
+exports.version = '0.1.7';
 var pagewps = /** @class */ (function () {
     function pagewps() {
     }
@@ -213,6 +217,28 @@ var funcs = /** @class */ (function () {
             return res;
         };
     }
+    /**
+     * Divides array into an array of arrays where each sub array has no more than pageNum numer of items
+     * @param array : array to be divided
+     * @param pageNum : numer of items per sub array
+     */
+    funcs.prototype.pageArray = function (array, pageNum) {
+        if (pageNum === void 0) { pageNum = 10; }
+        if (pageNum < 0)
+            pageNum = 10;
+        var res = [];
+        var pos = -1;
+        array.forEach(function (n, i) {
+            if (res.length == 0 || res[pos].length == pageNum) {
+                res.push([n]);
+                pos++;
+            }
+            else {
+                res[pos].push(n);
+            }
+        });
+        return res;
+    };
     funcs.prototype.arrayToDictionary = function (array, getKey, forceUnique) {
         if (forceUnique === void 0) { forceUnique = false; }
         var dic = {};
@@ -236,7 +262,9 @@ var funcs = /** @class */ (function () {
     };
     ;
     funcs.prototype.loadSpElem = function (elem, sptx, caller) {
-        sptx = sptx || (elem.get_context && elem.get_context()); // || utils.getCtx();
+        sptx = sptx || (elem.get_context && elem.get_context()) || (elem.length && elem[0].get_context && elem[0].get_context());
+        if (!sptx)
+            throw "client context undefined";
         return $.Deferred(function (dfd) {
             if (elem.length) {
                 for (var i = 0; i < elem.length; i++) {
@@ -283,6 +311,14 @@ var funcs = /** @class */ (function () {
         });
     };
     ;
+    /**
+     * Adds a script link to userCustomActions. If a match is found (by title) then a new record is not added
+     * @param ctx SharePoint Client context
+     * @param src src of the script link
+     * @param title title of the script link
+     * @param sequence sequence of the script link
+     * @param logger logger
+     */
     funcs.prototype.addScriptLink = function (ctx, src, title, sequence, logger) {
         if (sequence === void 0) { sequence = 100; }
         if (logger === void 0) { logger = defaultLogger; }
@@ -348,24 +384,16 @@ var funcs = /** @class */ (function () {
     ;
     funcs.prototype.getGroups = function (ctx, logger) {
         if (logger === void 0) { logger = defaultLogger; }
-        return $.Deferred(function (dfd) {
-            var web = ctx.get_web();
-            var groupCollection = web.get_siteGroups();
-            ctx.load(groupCollection);
-            ctx.executeQueryAsync(function () {
-                var spGroups = {};
-                var le = groupCollection.getEnumerator();
-                while (le.moveNext()) {
-                    var group = le.get_current();
-                    var groupName = group.get_title();
-                    spGroups[groupName] = group;
-                }
-                logger.log("Loaded Groups: " + groupCollection.get_count());
-                dfd.resolve(spGroups);
-            }, function (r, a) {
-                reqFailure(r, a, dfd);
-            });
-        }).promise();
+        var dfd = $.Deferred();
+        var me = this;
+        var web = ctx.get_web();
+        var groupCollection = web.get_siteGroups();
+        me.loadSpElem(groupCollection, ctx, 'getGroups').done(function () {
+            logger.log("Loaded Groups: " + groupCollection.get_count());
+            var groups = me.collectionToDictionary(groupCollection, function (g) { return g.get_title(); });
+            dfd.resolve(groups);
+        });
+        return dfd.promise();
     };
     ;
     funcs.prototype.ensureGroup = function (name, desc, ctx, logger) {
@@ -488,7 +516,4 @@ exports.initExtensions = function () {
     }
 };
 exports.initExtensions();
-//if (typeof window != 'undefined') {
-//	window['spexplorerjs'].modules.utils = utils;
-//}
 //# sourceMappingURL=utils.api.js.map

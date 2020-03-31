@@ -20,7 +20,7 @@ declare module "list.api" {
     export type QueueStep = (item: any) => Promise<void>;
     export type ArrayPromise = () => Promise<Array<any>>;
     export class ListDal {
-        version: '0.1.11';
+        version: '0.1.17';
         title: string;
         defaultQuery: string;
         ctx: SP.ClientContext;
@@ -30,11 +30,11 @@ declare module "list.api" {
         ensureFolder(serverRelativeUrl: string): JQuery.Promise<SP.Folder>;
         getList(): SP.List;
         getItems(query?: string, folder?: string, limit?: number): JQuery.Promise<SP.ListItem[]>;
-        addItems(items: Array<any>, folderUrl?: string): JQuery.Promise<Array<SP.ListItem>>;
+        addItems(items: Array<any>, folderUrl?: string, pageNum?: number): JQuery.Promise<Array<SP.ListItem>>;
         getItemById(id: number): JQuery.Promise<SP.ListItem>;
     }
     export class ListApi {
-        version: '0.1.11';
+        version: '0.1.17';
         ctrace: Logger;
         ctx: SP.ClientContext;
         folderApi: FolderApi;
@@ -46,7 +46,9 @@ declare module "list.api" {
         createList(listTitle: any, templateType: any, web: any): JQueryPromise<SP.List>;
         getMeta(listTitle: string, fieldNames: any): Promise<ListMeta>;
         setupForms: (tList: SP.List<any>, scriptLink: string, htmlLink?: string) => JQuery.Promise<any, any, any>;
-        addItems(items: Array<any>, splist: SP.List, folderUrl?: string): JQuery.Promise<Array<SP.ListItem>>;
+        addItems(gitems: Array<{
+            [key: string]: any;
+        }>, splist: SP.List, folderUrl?: string, pageNum?: number): JQuery.Promise<Array<SP.ListItem>>;
         getQuery(caml?: string, folder?: string): SP.CamlQuery;
         runAllQuery(query: SP.CamlQuery, splist: SP.List, limit?: number, trace?: Logger): JQuery.Promise<Array<SP.ListItem>>;
         getAll(splist: SP.List, caml: string, folder?: string, limit?: number): JQuery.Promise<Array<SP.ListItem>>;
@@ -55,10 +57,12 @@ declare module "list.api" {
         ctrace: Logger;
         ctx: SP.ClientContext;
         constructor(ctx?: SP.ClientContext);
+        ensureAttachmentFolder(itemId: number, list: SP.List): JQuery.Promise<SP.Folder>;
         folderExists(serverRelativeUrl: string, web?: SP.Web): JQuery.Promise<SP.Folder | boolean>;
         pathSteps(path: string): Array<string>;
         createFolderInList: (name: string, parentFolderPath: string, list: SP.List<any>) => JQuery.Promise<SP.Folder, any, any>;
         ensureFolderInList(serverRelativeUrl: string, list: SP.List): JQuery.Promise<SP.Folder>;
+        uploadFile(parentDir: SP.Folder, buffer: SP.Base64EncodedByteArray, filename: string, replaceInvalidChars?: boolean): JQuery.Promise<SP.File>;
     }
 }
 declare module "meta.api" {
@@ -68,12 +72,16 @@ declare module "meta.api" {
         ctypes: CTypeMeta[];
         listTemplate: number;
         title: string;
-        defaultItems: any[] | itemsFunction;
+        defaultItems: Array<{
+            [key: string]: any;
+        }> | itemsFunction;
+        afterDefaultItemsAdded?: postItemsAddedFunction;
         listUpdates?: listUpdatesFunction;
         afterListCreated?: listUpdatesFunction;
         permissions?: GroupMeta[];
+        getConfig?: () => any;
         constructor(title: string);
-        static version: '0.1.2';
+        static version: '0.1.4';
     }
     export class GroupMeta {
         name: string;
@@ -83,6 +91,9 @@ declare module "meta.api" {
     export class FieldMeta {
         markup: markupFunction | string;
         name: string;
+        type?: SP.FieldType;
+        flags?: number;
+        multiValue?: boolean;
         legacyName?: string | null;
         title?: string | null;
         post?: postFunction;
@@ -101,7 +112,10 @@ declare module "meta.api" {
         jsLink?: string;
     }
     export var classBuilder: (list: ListMeta) => string;
-    export type itemsFunction = (list: SP.List, dal: ListApi) => JQuery.Promise<any[]>;
+    export type itemsFunction = (list: SP.List, dal: ListApi) => JQuery.Promise<Array<{
+        [key: string]: any;
+    }>>;
+    export type postItemsAddedFunction = (list: SP.List, dal: ListApi, items: SP.ListItem[]) => JQuery.Promise<SP.ListItem[]>;
     export type markupFunction = (ctx: SP.ClientContext, list: SP.List, spfields: SP.FieldCollection, lists: SP.ListCollection, web: SP.Web) => JQuery.Promise<string>;
     export type listUpdatesFunction = (list: SP.List, dal: ListApi) => JQuery.Promise<any>;
     export type postFunction = (field: SP.Field) => void;
@@ -125,6 +139,7 @@ declare module "utils.api" {
     }
     export class funcs {
         constructor();
+        pageArray(array: Array<any>, pageNum?: number): Array<Array<any>>;
         arrayToDictionary<T>(array: Array<T>, getKey: KeyFunc<T>, forceUnique?: boolean): {
             [key: string]: T;
         };
@@ -135,7 +150,7 @@ declare module "utils.api" {
         };
         collectionToArray: <T>(spCollection: any) => T[];
         processAsQueue: <T>(arr: T[] | ArrayPromise<T>, action: QueueStep<T>) => JQuery.Promise<void, any, any>;
-        loadSpElem(elem: Array<any> | any, sptx: SP.ClientRuntimeContext, caller?: any | null): JQuery.Promise<any>;
+        loadSpElem(elem: Array<any> | any, sptx?: SP.ClientRuntimeContext, caller?: any | null): JQuery.Promise<any>;
         removeScriptLink(ctx: SP.ClientContext, title: string, logger?: Logger): JQuery.Deferred<any, any, any>;
         addScriptLink(ctx: SP.ClientContext, src: string, title: string, sequence?: number, logger?: Logger): JQuery.Promise<any, any, any>;
         setHomePage: (folderOrWeb: SP.Web | SP.Folder, url: string, logger?: Logger) => Promise<void>;
@@ -143,7 +158,9 @@ declare module "utils.api" {
         getPageWebParts(formUrl: string, ctx: SP.ClientContext): JQuery.Promise<pagewps>;
         setformJsLink: (formUrl: string, ctx: SP.ClientContext, bizJs: string) => Promise<any>;
         breakRoleInheritance: (securable: SP.SecurableObject, copyRoleAssignments: boolean, clearSubscopes: boolean) => JQueryPromise<any>;
-        getGroups(ctx: SP.ClientContext, logger?: Logger): JQuery.Promise<any>;
+        getGroups(ctx: SP.ClientContext, logger?: Logger): JQuery.Promise<{
+            [key: string]: SP.Group;
+        }>;
         ensureGroup(name: any, desc: any, ctx: SP.ClientContext, logger?: Logger): JQuery.Promise<SP.Group>;
         addPermission: (ctx: SP.ClientContext, principalIn: any, permissions: any, securable: SP.SecurableObject, parentWeb: SP.Web, logger?: Logger) => JQuery.Promise<any, any, any>;
         ensureGroups(groups: Array<GroupMeta>, ctx: SP.ClientContext, securable?: SP.SecurableObject, logger?: Logger): JQuery.Promise<any>;

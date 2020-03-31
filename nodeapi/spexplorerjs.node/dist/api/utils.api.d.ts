@@ -17,6 +17,12 @@ export declare class pagewps {
 }
 export declare class funcs {
     constructor();
+    /**
+     * Divides array into an array of arrays where each sub array has no more than pageNum numer of items
+     * @param array : array to be divided
+     * @param pageNum : numer of items per sub array
+     */
+    pageArray(array: Array<any>, pageNum?: number): Array<Array<any>>;
     arrayToDictionary<T>(array: Array<T>, getKey: KeyFunc<T>, forceUnique?: boolean): {
         [key: string]: T;
     };
@@ -27,15 +33,25 @@ export declare class funcs {
     };
     collectionToArray: <T>(spCollection: any) => T[];
     processAsQueue: <T>(arr: T[] | ArrayPromise<T>, action: QueueStep<T>) => JQuery.Promise<void, any, any>;
-    loadSpElem(elem: Array<any> | any, sptx: SP.ClientRuntimeContext, caller?: any | null): JQuery.Promise<any>;
+    loadSpElem(elem: Array<any> | any, sptx?: SP.ClientRuntimeContext, caller?: any | null): JQuery.Promise<any>;
     removeScriptLink(ctx: SP.ClientContext, title: string, logger?: Logger): JQuery.Deferred<any, any, any>;
+    /**
+     * Adds a script link to userCustomActions. If a match is found (by title) then a new record is not added
+     * @param ctx SharePoint Client context
+     * @param src src of the script link
+     * @param title title of the script link
+     * @param sequence sequence of the script link
+     * @param logger logger
+     */
     addScriptLink(ctx: SP.ClientContext, src: string, title: string, sequence?: number, logger?: Logger): JQuery.Promise<any, any, any>;
     setHomePage: (folderOrWeb: SP.Web | SP.Folder, url: string, logger?: Logger) => Promise<void>;
     addWebPart: (ctx: SP.ClientContext, serverRelativeFormUrl: string, wpXml: string, zone: string, position?: number) => JQuery.Promise<SP.WebParts.WebPartDefinition, any, any>;
     getPageWebParts(formUrl: string, ctx: SP.ClientContext): JQuery.Promise<pagewps>;
     setformJsLink: (formUrl: string, ctx: SP.ClientContext, bizJs: string) => Promise<any>;
     breakRoleInheritance: (securable: SP.SecurableObject, copyRoleAssignments: boolean, clearSubscopes: boolean) => JQueryPromise<any>;
-    getGroups(ctx: SP.ClientContext, logger?: Logger): JQuery.Promise<any>;
+    getGroups(ctx: SP.ClientContext, logger?: Logger): JQuery.Promise<{
+        [key: string]: SP.Group;
+    }>;
     ensureGroup(name: any, desc: any, ctx: SP.ClientContext, logger?: Logger): JQuery.Promise<SP.Group>;
     addPermission: (ctx: SP.ClientContext, principalIn: any, permissions: any, securable: SP.SecurableObject, parentWeb: SP.Web, logger?: Logger) => JQuery.Promise<any, any, any>;
     ensureGroups(groups: Array<GroupMeta>, ctx: SP.ClientContext, securable?: SP.SecurableObject, logger?: Logger): JQuery.Promise<any>;

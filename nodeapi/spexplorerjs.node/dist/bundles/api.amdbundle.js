@@ -55,8 +55,9 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
             if (query === void 0) { query = this.defaultQuery; }
             return this.dal.getAll(this.list, query, folder, limit);
         };
-        ListDal.prototype.addItems = function (items, folderUrl) {
-            return this.dal.addItems(items, this.list, folderUrl);
+        ListDal.prototype.addItems = function (items, folderUrl, pageNum) {
+            if (pageNum === void 0) { pageNum = 100; }
+            return this.dal.addItems(items, this.list, folderUrl, pageNum);
         };
         ListDal.prototype.getItemById = function (id) {
             var li = this.list.getItemById(id);
@@ -213,113 +214,114 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
             var dfd = $.Deferred();
             if (!ctypes) {
                 dfd.resolve();
-                return;
             }
-            var listCtypes = splist.get_contentTypes();
-            var listFields = splist.get_fields();
-            var rootWeb = ctx.get_site().get_rootWeb();
-            var rootContentTypeCollection = rootWeb.get_contentTypes();
-            splist.set_contentTypesEnabled(true);
-            ctx.load(rootContentTypeCollection);
-            ctx.load(listFields);
-            ctx.load(listCtypes);
-            var listCtypesDic = null;
-            var listFieldsDic = null;
-            var createCtype = function (ctypeMeta) {
-                var dfd1 = $.Deferred();
-                var parentCtype = rootContentTypeCollection.getById(ctypeMeta.parentCtypeId);
-                ctx.load(parentCtype);
-                ctx.executeQueryAsync(function () {
-                    me.ctrace.log(parentCtype.get_name());
-                    var newContentType = new SP.ContentTypeCreationInformation();
-                    newContentType.set_name(ctypeMeta.name);
-                    if (ctypeMeta.group)
-                        newContentType.set_group(ctypeMeta.group);
-                    if (ctypeMeta.description)
-                        newContentType.set_description(ctypeMeta.description);
-                    newContentType.set_parentContentType(parentCtype);
-                    var ctype = listCtypes.add(newContentType);
-                    ctype.set_jsLink(ctypeMeta.jsLink);
-                    ctype.update(false);
-                    ctx.load(ctype);
-                    ctx.load(listCtypes);
+            else {
+                var listCtypes = splist.get_contentTypes();
+                var listFields = splist.get_fields();
+                var rootWeb = ctx.get_site().get_rootWeb();
+                var rootContentTypeCollection = rootWeb.get_contentTypes();
+                splist.set_contentTypesEnabled(true);
+                ctx.load(rootContentTypeCollection);
+                ctx.load(listFields);
+                ctx.load(listCtypes);
+                var listCtypesDic = null;
+                var listFieldsDic = null;
+                var createCtype = function (ctypeMeta) {
+                    var dfd1 = $.Deferred();
+                    var parentCtype = rootContentTypeCollection.getById(ctypeMeta.parentCtypeId);
+                    ctx.load(parentCtype);
                     ctx.executeQueryAsync(function () {
-                        dfd1.resolve(ctype);
-                    }, function (s, e) {
-                        me.ctrace.error(e.get_message());
-                        debugger;
-                    });
-                }, function (s, e) {
-                    me.ctrace.error(e.get_message());
-                    debugger;
-                });
-                return dfd1.promise();
-            };
-            var ensureFields = function (cType, meta) {
-                var dfd2 = $.Deferred();
-                var links = cType.get_fieldLinks();
-                ctx.load(links);
-                ctx.executeQueryAsync(function () {
-                    var ctypeFieldLinks = utils.collectionToDictionary(links, function (field) { return field.get_name(); });
-                    meta.fields.forEach(function (fieldMeta) {
-                        if (!ctypeFieldLinks[fieldMeta.name]) {
-                            me.ctrace.log("ctype " + meta.name + ": adding field link: " + fieldMeta.name);
-                            var field = listFieldsDic[fieldMeta.name];
-                            var newFieldLink = new SP.FieldLinkCreationInformation();
-                            newFieldLink.set_field(field);
-                            links.add(newFieldLink);
-                        }
-                    });
-                    cType.update(false);
-                    ctx.executeQueryAsync(function () {
-                        dfd2.resolve();
-                    }, function (s, e) {
-                        me.ctrace.error(e.get_message());
-                        debugger;
-                    });
-                }, function (s, e) {
-                    me.ctrace.error(e.get_message());
-                    debugger;
-                });
-                return dfd2.promise();
-            };
-            var ensureCtype = function (ctype) {
-                var name = ctype.name;
-                var cDfd = $.Deferred();
-                var doCtype = function (spctype) {
-                    if (ctype.description)
-                        spctype.set_description(ctype.description);
-                    if (ctype.group)
-                        spctype.set_group(ctype.group);
-                    if (ctype.jsLink)
-                        spctype.set_jsLink(ctype.jsLink);
-                    spctype.update(false);
-                    ctx.executeQueryAsync(function () {
-                        ensureFields(spctype, ctype).done(function () {
-                            cDfd.resolve();
+                        me.ctrace.log(parentCtype.get_name());
+                        var newContentType = new SP.ContentTypeCreationInformation();
+                        newContentType.set_name(ctypeMeta.name);
+                        if (ctypeMeta.group)
+                            newContentType.set_group(ctypeMeta.group);
+                        if (ctypeMeta.description)
+                            newContentType.set_description(ctypeMeta.description);
+                        newContentType.set_parentContentType(parentCtype);
+                        var ctype = listCtypes.add(newContentType);
+                        ctype.set_jsLink(ctypeMeta.jsLink);
+                        ctype.update(false);
+                        ctx.load(ctype);
+                        ctx.load(listCtypes);
+                        ctx.executeQueryAsync(function () {
+                            dfd1.resolve(ctype);
+                        }, function (s, e) {
+                            me.ctrace.error(e.get_message());
+                            debugger;
                         });
                     }, function (s, e) {
                         me.ctrace.error(e.get_message());
                         debugger;
                     });
+                    return dfd1.promise();
                 };
-                if (!listCtypesDic[name]) {
-                    createCtype(ctype).done(doCtype);
-                }
-                else {
-                    doCtype(listCtypesDic[name]);
-                }
-                return cDfd.promise();
-            };
-            ctx.executeQueryAsync(function () {
-                listFieldsDic = utils.collectionToDictionary(listFields, function (field) { return field.get_internalName(); });
-                listCtypesDic = utils.collectionToDictionary(listCtypes, function (cType) { return cType.get_name(); });
-                utils.processAsQueue(ctypes, function (ctypeMeta) {
-                    return ensureCtype(ctypeMeta);
-                }).done(function () {
-                    dfd.resolve();
+                var ensureFields = function (cType, meta) {
+                    var dfd2 = $.Deferred();
+                    var links = cType.get_fieldLinks();
+                    ctx.load(links);
+                    ctx.executeQueryAsync(function () {
+                        var ctypeFieldLinks = utils.collectionToDictionary(links, function (field) { return field.get_name(); });
+                        meta.fields.forEach(function (fieldMeta) {
+                            if (!ctypeFieldLinks[fieldMeta.name]) {
+                                me.ctrace.log("ctype " + meta.name + ": adding field link: " + fieldMeta.name);
+                                var field = listFieldsDic[fieldMeta.name];
+                                var newFieldLink = new SP.FieldLinkCreationInformation();
+                                newFieldLink.set_field(field);
+                                links.add(newFieldLink);
+                            }
+                        });
+                        cType.update(false);
+                        ctx.executeQueryAsync(function () {
+                            dfd2.resolve();
+                        }, function (s, e) {
+                            me.ctrace.error(e.get_message());
+                            debugger;
+                        });
+                    }, function (s, e) {
+                        me.ctrace.error(e.get_message());
+                        debugger;
+                    });
+                    return dfd2.promise();
+                };
+                var ensureCtype = function (ctype) {
+                    var name = ctype.name;
+                    var cDfd = $.Deferred();
+                    var doCtype = function (spctype) {
+                        if (ctype.description)
+                            spctype.set_description(ctype.description);
+                        if (ctype.group)
+                            spctype.set_group(ctype.group);
+                        if (ctype.jsLink)
+                            spctype.set_jsLink(ctype.jsLink);
+                        spctype.update(false);
+                        ctx.executeQueryAsync(function () {
+                            ensureFields(spctype, ctype).done(function () {
+                                cDfd.resolve();
+                            });
+                        }, function (s, e) {
+                            me.ctrace.error(e.get_message());
+                            debugger;
+                        });
+                    };
+                    if (!listCtypesDic[name]) {
+                        createCtype(ctype).done(doCtype);
+                    }
+                    else {
+                        doCtype(listCtypesDic[name]);
+                    }
+                    return cDfd.promise();
+                };
+                ctx.executeQueryAsync(function () {
+                    listFieldsDic = utils.collectionToDictionary(listFields, function (field) { return field.get_internalName(); });
+                    listCtypesDic = utils.collectionToDictionary(listCtypes, function (cType) { return cType.get_name(); });
+                    utils.processAsQueue(ctypes, function (ctypeMeta) {
+                        return ensureCtype(ctypeMeta);
+                    }).done(function () {
+                        dfd.resolve();
+                    });
                 });
-            });
+            }
             return dfd.promise();
         };
         ;
@@ -333,8 +335,13 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                             me.ctrace.debug('listUpdates.done');
                             if (isNew && meta.defaultItems) {
                                 var addFunction = function (items) {
-                                    me.addItems(items, list).done(function () {
-                                        dfd.resolve();
+                                    me.addItems(items, list).done(function (spitems) {
+                                        if (meta.afterDefaultItemsAdded) {
+                                            meta.afterDefaultItemsAdded(list, me, spitems).done(function () { return dfd.resolve(); });
+                                        }
+                                        else {
+                                            dfd.resolve();
+                                        }
                                     });
                                 };
                                 if (Array.isArray(meta.defaultItems)) {
@@ -439,7 +446,8 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
             }).promise();
         };
         ;
-        ListApi.prototype.addItems = function (items, splist, folderUrl) {
+        ListApi.prototype.addItems = function (gitems, splist, folderUrl, pageNum) {
+            if (pageNum === void 0) { pageNum = 100; }
             var me = this;
             me.ctrace.log('starting addItems');
             var prepLookupValue = function (raw) {
@@ -469,52 +477,61 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
             var fields = splist.get_fields();
             me.ctx.load(fields);
             me.ctx.executeQueryAsync(function () {
-                var fieldMap = {};
-                utils.collectionToArray(fields).forEach(function (n) {
-                    fieldMap[n.get_internalName()] = n;
-                });
-                if (items && items.length > 0) {
+                var fieldMap = utils.collectionToDictionary(fields, function (f) { return f.get_internalName(); });
+                if (gitems && gitems.length > 0) {
                     var spItems = [];
-                    try {
-                        for (var i = 0; i < items.length; i++) {
-                            var data = items[i];
-                            var itemCreateInfo = new SP.ListItemCreationInformation();
-                            if (folderUrl) {
-                                itemCreateInfo.set_folderUrl(folderUrl);
-                            }
-                            var newspitem = splist.addItem(itemCreateInfo);
-                            for (var f in data) {
-                                if (!fieldMap[f])
-                                    continue;
-                                var fieldType = fieldMap[f].get_typeAsString();
-                                var val = null;
-                                if (fieldType === "URL") {
-                                    val = new SP.FieldUrlValue();
-                                    val.set_url(data[f]);
+                    var insertItems = function (items) {
+                        var iDfd = $.Deferred();
+                        try {
+                            items.forEach(function (data) {
+                                var copy = JSON.parse(JSON.stringify(data));
+                                var itemCreateInfo = new SP.ListItemCreationInformation();
+                                if (folderUrl) {
+                                    itemCreateInfo.set_folderUrl(folderUrl);
                                 }
-                                else if (fieldType.search("Lookup") === 0) {
-                                    var itemVal = data[f];
-                                    val = prepLookupValue(itemVal);
+                                var newspitem = splist.addItem(itemCreateInfo);
+                                for (var f in data) {
+                                    if (!fieldMap[f])
+                                        continue;
+                                    var fieldType = fieldMap[f].get_typeAsString();
+                                    var val = null;
+                                    if (fieldType === "URL") {
+                                        val = new SP.FieldUrlValue();
+                                        val.set_url(data[f]);
+                                    }
+                                    else if (fieldType.search("Lookup") === 0) {
+                                        var itemVal = data[f];
+                                        val = prepLookupValue(itemVal);
+                                    }
+                                    else {
+                                        val = data[f];
+                                    }
+                                    newspitem.set_item(f, val);
                                 }
-                                else {
-                                    val = data[f];
-                                }
-                                newspitem.set_item(f, val);
-                            }
-                            newspitem.update();
-                            me.ctx.load(newspitem);
-                            spItems.push(newspitem);
+                                newspitem.update();
+                                me.ctx.load(newspitem);
+                                spItems.push(newspitem);
+                                newspitem['additemsource'] = copy;
+                            });
                         }
-                    }
-                    catch (e) {
-                        me.ctrace.error(e);
-                        debugger;
-                    }
-                    me.ctx.executeQueryAsync(function () {
-                        me.ctrace.log("addItems done");
+                        catch (e) {
+                            me.ctrace.error(e);
+                            debugger;
+                            iDfd.reject(gitems);
+                        }
+                        me.ctx.executeQueryAsync(function () {
+                            me.ctrace.log("page done");
+                            iDfd.resolve();
+                        }, function (r, a) {
+                            debugger;
+                            iDfd.reject(gitems);
+                        });
+                        return iDfd.promise();
+                    };
+                    var pagedItems = utils.pageArray(gitems, pageNum);
+                    utils.processAsQueue(pagedItems, insertItems).done(function () {
+                        me.ctrace.log('add items done');
                         dfd.resolve(spItems);
-                    }, function (r, a) {
-                        debugger;
                     });
                 }
                 else {
@@ -620,6 +637,36 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
             };
             this.ctx = ctx || SP.ClientContext.get_current();
         }
+        FolderApi.prototype.ensureAttachmentFolder = function (itemId, list) {
+            var id = itemId.toString();
+            var dfd = $.Deferred();
+            var me = this;
+            var ctx = me.ctx;
+            var rootFolder = list.get_rootFolder();
+            ctx.load(rootFolder);
+            ctx.executeQueryAsync(function () {
+                var url = rootFolder.get_serverRelativeUrl() + "/Attachments";
+                me.folderExists(url + "/" + id).done(function (existingFolder) {
+                    if (SP.Folder.isInstanceOfType(existingFolder)) {
+                        dfd.resolve(existingFolder);
+                    }
+                    else {
+                        var attRootF = list.get_parentWeb().getFolderByServerRelativeUrl(url);
+                        var attachmentsFolder = attRootF.get_folders().add('_' + id);
+                        attachmentsFolder.moveTo(url + '/' + id);
+                        ctx.load(attachmentsFolder);
+                        ctx.executeQueryAsync(function () {
+                            dfd.resolve(attachmentsFolder);
+                        }, function (s, e) {
+                            debugger;
+                        });
+                    }
+                });
+            }, function () {
+                debugger;
+            });
+            return dfd.promise();
+        };
         FolderApi.prototype.folderExists = function (serverRelativeUrl, web) {
             var trace = this.ctrace;
             var ctx = this.ctx;
@@ -687,6 +734,29 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
             return dfd.promise();
         };
         ;
+        FolderApi.prototype.uploadFile = function (parentDir, buffer, filename, replaceInvalidChars) {
+            if (replaceInvalidChars === void 0) { replaceInvalidChars = true; }
+            var me = this;
+            var ctx = me.ctx;
+            var trace = me.ctrace;
+            var p = $.Deferred();
+            var createInfo = new SP.FileCreationInformation();
+            createInfo.set_content(buffer);
+            var fileName = filename;
+            if (replaceInvalidChars)
+                fileName = fileName.replace(/[#%\*:<>?\/|]/g, "");
+            createInfo.set_url(fileName);
+            var uploadedDocument = parentDir.get_files().add(createInfo);
+            ctx.load(uploadedDocument);
+            ctx.executeQueryAsync(function () {
+                p.resolve(uploadedDocument);
+            }, function (s, e) {
+                debugger;
+                trace.error(e.get_message());
+            });
+            return p.promise();
+        };
+        ;
         return FolderApi;
     }());
     exports.FolderApi = FolderApi;
@@ -712,6 +782,8 @@ define("meta.api", ["require", "exports"], function (require, exports) {
     exports.GroupMeta = GroupMeta;
     var FieldMeta = (function () {
         function FieldMeta() {
+            this.flags = 0;
+            this.multiValue = false;
             this.inDefaultView = false;
             this.addOptions = SP.AddFieldOptions.addFieldInternalNameHint | SP.AddFieldOptions.addToAllContentTypes;
         }
@@ -745,14 +817,17 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
     var defaultLogger = new logger_api_2.Logger('Utils');
     var reqFailure = function (req, reqargs, dfd, logger) {
         if (logger === void 0) { logger = defaultLogger; }
-        var msg = " Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
-        if (dfd)
-            dfd.reject(msg);
-        else {
+        try {
+            var msg = " Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
             logger.error(msg);
         }
+        catch (e) {
+            debugger;
+        }
+        if (dfd)
+            dfd.reject(msg);
     };
-    exports.version = '0.1.5';
+    exports.version = '0.1.7';
     var pagewps = (function () {
         function pagewps() {
         }
@@ -941,6 +1016,23 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
                 return res;
             };
         }
+        funcs.prototype.pageArray = function (array, pageNum) {
+            if (pageNum === void 0) { pageNum = 10; }
+            if (pageNum < 0)
+                pageNum = 10;
+            var res = [];
+            var pos = -1;
+            array.forEach(function (n, i) {
+                if (res.length == 0 || res[pos].length == pageNum) {
+                    res.push([n]);
+                    pos++;
+                }
+                else {
+                    res[pos].push(n);
+                }
+            });
+            return res;
+        };
         funcs.prototype.arrayToDictionary = function (array, getKey, forceUnique) {
             if (forceUnique === void 0) { forceUnique = false; }
             var dic = {};
@@ -964,7 +1056,9 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
         };
         ;
         funcs.prototype.loadSpElem = function (elem, sptx, caller) {
-            sptx = sptx || (elem.get_context && elem.get_context());
+            sptx = sptx || (elem.get_context && elem.get_context()) || (elem.length && elem[0].get_context && elem[0].get_context());
+            if (!sptx)
+                throw "client context undefined";
             return $.Deferred(function (dfd) {
                 if (elem.length) {
                     for (var i = 0; i < elem.length; i++) {
@@ -1076,24 +1170,16 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
         ;
         funcs.prototype.getGroups = function (ctx, logger) {
             if (logger === void 0) { logger = defaultLogger; }
-            return $.Deferred(function (dfd) {
-                var web = ctx.get_web();
-                var groupCollection = web.get_siteGroups();
-                ctx.load(groupCollection);
-                ctx.executeQueryAsync(function () {
-                    var spGroups = {};
-                    var le = groupCollection.getEnumerator();
-                    while (le.moveNext()) {
-                        var group = le.get_current();
-                        var groupName = group.get_title();
-                        spGroups[groupName] = group;
-                    }
-                    logger.log("Loaded Groups: " + groupCollection.get_count());
-                    dfd.resolve(spGroups);
-                }, function (r, a) {
-                    reqFailure(r, a, dfd);
-                });
-            }).promise();
+            var dfd = $.Deferred();
+            var me = this;
+            var web = ctx.get_web();
+            var groupCollection = web.get_siteGroups();
+            me.loadSpElem(groupCollection, ctx, 'getGroups').done(function () {
+                logger.log("Loaded Groups: " + groupCollection.get_count());
+                var groups = me.collectionToDictionary(groupCollection, function (g) { return g.get_title(); });
+                dfd.resolve(groups);
+            });
+            return dfd.promise();
         };
         ;
         funcs.prototype.ensureGroup = function (name, desc, ctx, logger) {

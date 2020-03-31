@@ -1,6 +1,6 @@
 {
   "name": "spexplorerts",
-  "version": "0.1.32",
+  "version": "0.1.48",
   "description": "",
   "main": "index.api.js",
   "scripts": {
