@@ -64,7 +64,7 @@
     <TypeScriptCompile Include="Logger.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\api\backups.node.ts">
+    <TypeScriptCompile Include="src\backups\backups.node.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\api\def.api.ts" />
@@ -104,6 +104,7 @@
     <Folder Include="src\api\" />
     <Folder Include="src\defs\" />
     <Folder Include="src\defs\sharepoint\" />
+    <Folder Include="src\backups\" />
     <Folder Include="src\widgets\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->

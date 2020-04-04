@@ -35,6 +35,7 @@ export declare class FieldMeta {
 }
 export declare class FieldLinkMeta {
     name: string;
+    hidden?: boolean;
 }
 export declare class CTypeMeta {
     name: string;

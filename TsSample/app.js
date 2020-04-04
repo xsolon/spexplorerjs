@@ -1,11 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/// <reference types='spexplorerts' />
 require("./init.js");
 const Api = require("spexplorerts");
 const sp_jsom_node_1 = require("sp-jsom-node");
 try {
-    //new Api.Logger().
     //import * as Deployment from './deployment';
     var path = '<path>.json';
     var restorePath = '<path>.json';

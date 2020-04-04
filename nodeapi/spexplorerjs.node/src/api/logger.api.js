@@ -27,6 +27,9 @@ var Logger = /** @class */ (function () {
     Logger.prototype.error = function (message) {
         console && console.error(message);
     };
+    Logger.get = function (name) {
+        return new Logger(name);
+    };
     return Logger;
 }());
 exports.Logger = Logger;

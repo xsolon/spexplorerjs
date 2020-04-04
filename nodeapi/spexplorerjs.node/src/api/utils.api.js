@@ -1,5 +1,6 @@
 "use strict";
 /// <reference types='sharepoint'/>
+// v 0.1.7 - 2020_03_24 - pageArray
 // v 0.1.6 - 2020_03_20 - log all errors on reqFailure, context optional on spLoadElem, improved getGroups
 Object.defineProperty(exports, "__esModule", { value: true });
 var logger_api_1 = require("./logger.api");
@@ -16,7 +17,7 @@ var reqFailure = function (req, reqargs, dfd, logger) {
     if (dfd)
         dfd.reject(msg);
 };
-exports.version = '0.1.6';
+exports.version = '0.1.7';
 var pagewps = /** @class */ (function () {
     function pagewps() {
     }
@@ -216,6 +217,28 @@ var funcs = /** @class */ (function () {
             return res;
         };
     }
+    /**
+     * Divides array into an array of arrays where each sub array has no more than pageNum numer of items
+     * @param array : array to be divided
+     * @param pageNum : numer of items per sub array
+     */
+    funcs.prototype.pageArray = function (array, pageNum) {
+        if (pageNum === void 0) { pageNum = 10; }
+        if (pageNum < 0)
+            pageNum = 10;
+        var res = [];
+        var pos = -1;
+        array.forEach(function (n, i) {
+            if (res.length == 0 || res[pos].length == pageNum) {
+                res.push([n]);
+                pos++;
+            }
+            else {
+                res[pos].push(n);
+            }
+        });
+        return res;
+    };
     funcs.prototype.arrayToDictionary = function (array, getKey, forceUnique) {
         if (forceUnique === void 0) { forceUnique = false; }
         var dic = {};

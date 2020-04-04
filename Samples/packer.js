@@ -6,35 +6,42 @@ var getConfig = function (debug) {
 
   var config = {
     entry: {
-      main:'./src/codeMirrorSample.ts',
-      search:'./src/components/SearchBox.ts'
+      //main:'./src/codeMirrorSample.ts',
+      //search:'./src/components/SearchBox.ts',
+      tree: './src/treeSample.ts'
     },
-    devtool:"inline-source-map",
+    devtool: "inline-source-map",
     optimization: {
       minimize: debug ? false : true
     },
     mode: debug ? "development" : "production",
     module: {
       rules: [
-				{
-					test: /\.html$/,
-					use: [{
-						loader: "html-loader",
-						options: {
+        {
+          test: /\.html$/,
+          use: [{
+            loader: "html-loader",
+            options: {
               minimize: false//debug ? false : true
-						}
-					}]
-				},
+            }
+          }]
+        },
         {
           test: /\.tsx?$/,
           use: 'ts-loader',
           exclude: /node_modules/
         },
-				{
-					test: /\.css$/,
-          use: [{ loader: "style-loader", options: {  } },
-          { loader: "css-loader", options: {  } }]
-				}
+        {
+          test: /\.css$/,
+          use: [{ loader: "style-loader", options: {} },
+          { loader: "css-loader", options: {} }]
+        },
+        {
+          test: /\.(gif|png|jpe?g|svg)$/i,
+          use: [
+            "url-loader"
+          ]
+        }
       ]
     },
     resolve: {
@@ -54,28 +61,28 @@ var debugConfig = getConfig(true);
 const compiler = webpack(debugConfig);
 
 compiler.run((err, stats) => {
-	if (err) {
-		console.error(err);
-		return;
-	} 
+  if (err) {
+    console.error(err);
+    return;
+  }
 
-	console.log(stats.toString({
-		chunks: false,  // Makes the build much quieter
-		colors: true    // Shows colors in the console
-	}));
+  console.log(stats.toString({
+    chunks: false,  // Makes the build much quieter
+    colors: true    // Shows colors in the console
+  }));
 });
 
 var prodConfig = getConfig(false);
 const compiler2 = webpack(prodConfig);
+if (false)
+  compiler2.run((err, stats) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
 
-compiler2.run((err, stats) => {
-	if (err) {
-		console.error(err);
-		return;
-	} 
-
-	console.log(stats.toString({
-		chunks: false,  // Makes the build much quieter
-		colors: true    // Shows colors in the console
-	}));
-});
+    console.log(stats.toString({
+      chunks: false,  // Makes the build much quieter
+      colors: true    // Shows colors in the console
+    }));
+  });

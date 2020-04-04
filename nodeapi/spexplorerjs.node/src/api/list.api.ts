@@ -1,4 +1,5 @@
-﻿// v 0.1.17 - 2020_03_26 - FolderApi: uploadFile
+﻿// v 0.1.18 - 2020_04_01 - Load Ctype from local web
+// v 0.1.17 - 2020_03_26 - FolderApi: uploadFile
 // v 0.1.16 - 2020_03_24 - addItems pageNum parameter to insert items throw pages, afterDefaultItemsAdded on ListMeta, FolderApi: ensureAttachmentFolder
 // v 0.1.5  - 2018_11_27 - Use displayname if field definition does not have internal/name/static attributes
 // v 0.1.9  - 2020_01_31 - addItems returns JQuery.Promise<Array<SP.ListItem>>
@@ -6,7 +7,7 @@
 // v 0.1.10 - 2020_03_06 - Content Types
 // v 0.1.10 - 2020_03_06 - bug in ensureCTypes
 import { Logger } from './logger.api';
-import { FieldMeta, ListMeta, itemsFunction, CTypeMeta } from './meta.api';
+import { FieldMeta, ListMeta, itemsFunction, CTypeMeta, FieldLinkMeta } from './meta.api';
 import { funcs } from "./utils.api";
 
 import jQuery = require('jquery');
@@ -17,7 +18,7 @@ export type QueueStep = (item) => Promise<void>;
 export type ArrayPromise = () => Promise<Array<any>>;
 // 2020-01-30: 0.1.9 - getItems: additional parameter 'limit'
 export class ListDal {
-  version: '0.1.17';
+  version: '0.1.18';
   title: string;
   defaultQuery: string
   ctx: SP.ClientContext;
@@ -174,9 +175,11 @@ export class ListApi {
       var listFields = splist.get_fields();
       var rootWeb = ctx.get_site().get_rootWeb();
       var rootContentTypeCollection = rootWeb.get_contentTypes();
-
+      var webTypesCol = splist.get_parentWeb().get_contentTypes();
       splist.set_contentTypesEnabled(true);
+      splist.update();
       ctx.load(rootContentTypeCollection);
+      ctx.load(webTypesCol);
       ctx.load(listFields);
       ctx.load(listCtypes);
 
@@ -186,7 +189,23 @@ export class ListApi {
       var createCtype = function (ctypeMeta: CTypeMeta): JQueryPromise<SP.ContentType> {
         var dfd1 = $.Deferred();
 
-        var parentCtype: SP.ContentType = rootContentTypeCollection.getById(ctypeMeta.parentCtypeId);
+        var webCtypesDic = utils.collectionToDictionary<SP.ContentType>(webTypesCol, (c) => c.get_id().get_stringValue());
+        var rootCtypesDic = utils.collectionToDictionary<SP.ContentType>(rootContentTypeCollection, (c) => c.get_id().get_stringValue());
+
+        var parentCtype: SP.ContentType = null;
+        if (webCtypesDic[ctypeMeta.parentCtypeId])
+          parentCtype = webCtypesDic[ctypeMeta.parentCtypeId];
+        else if (rootCtypesDic[ctypeMeta.parentCtypeId])
+          parentCtype = rootCtypesDic[ctypeMeta.parentCtypeId];
+        else {
+          webCtypesDic = utils.collectionToDictionary<SP.ContentType>(webTypesCol, (c) => c.get_name());
+          rootCtypesDic = utils.collectionToDictionary<SP.ContentType>(rootContentTypeCollection, (c) => c.get_name());
+
+          if (webCtypesDic[ctypeMeta.parentCtypeId])
+            parentCtype = webCtypesDic[ctypeMeta.parentCtypeId];
+          else
+            parentCtype = rootCtypesDic[ctypeMeta.parentCtypeId];
+        }
 
         ctx.load(parentCtype);
         ctx.executeQueryAsync(function () {
@@ -229,13 +248,15 @@ export class ListApi {
         ctx.executeQueryAsync(function () {
           var ctypeFieldLinks = utils.collectionToDictionary<SP.FieldLink>(links, function (field) { return field.get_name(); });
 
-          meta.fields.forEach(function (fieldMeta) {
+          meta.fields.forEach(function (fieldMeta: FieldLinkMeta) {
             if (!ctypeFieldLinks[fieldMeta.name]) {
               me.ctrace.log(`ctype ${meta.name}: adding field link: ${fieldMeta.name}`);
               var field = listFieldsDic[fieldMeta.name];
               var newFieldLink = new SP.FieldLinkCreationInformation();
               newFieldLink.set_field(field);
-              links.add(newFieldLink);
+              var fieldLink = links.add(newFieldLink);
+              if (fieldMeta.hidden != null)
+                fieldLink.set_hidden(fieldMeta.hidden);
             }
           });
 
@@ -486,7 +507,6 @@ export class ListApi {
   };
   addItems(gitems: Array<{ [key: string]: any }>, splist: SP.List, folderUrl?: string, pageNum: number = 100): JQuery.Promise<Array<SP.ListItem>> {
     var me = this;
-    me.ctrace.log('starting addItems');
     var prepLookupValue = function (raw) {
       var val = null;
       // @ts-ignore
@@ -518,6 +538,7 @@ export class ListApi {
       var fieldMap = utils.collectionToDictionary<SP.Field>(fields, (f) => f.get_internalName());
 
       if (gitems && gitems.length > 0) {
+        me.ctrace.log('starting addItems');
         var spItems: Array<SP.ListItem> = [];
         var insertItems = function (items: Array<{ [key: string]: any }>): JQuery.Promise<Array<SP.ListItem>> {
           var iDfd = $.Deferred();
@@ -845,11 +866,10 @@ export class FolderApi {
     ctx.executeQueryAsync(function () {
       p.resolve(uploadedDocument);
     }, function (s, e) {
-      debugger;
       trace.error(e.get_message());
+      p.reject(e);
     });
 
     return p.promise();
   };
-
 }

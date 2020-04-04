@@ -1,16 +1,17 @@
 /// <reference types="sharepoint" />
 declare module "logger.api" {
     class Logger {
-        version: '0.1';
+        version: '0.2';
         name: string;
         shouldLog: boolean;
         shouldDebug: boolean;
         shouldTrace: boolean;
         constructor(name: string);
-        log(message: string): void;
-        debug(message: string): void;
-        trace(message: string): void;
-        error(message: string): void;
+        log(message: any): void;
+        debug(message: any): void;
+        trace(message: any): void;
+        error(message: any): void;
+        static get(name: string): Logger;
     }
     export { Logger };
 }
@@ -20,7 +21,7 @@ declare module "list.api" {
     export type QueueStep = (item: any) => Promise<void>;
     export type ArrayPromise = () => Promise<Array<any>>;
     export class ListDal {
-        version: '0.1.17';
+        version: '0.1.18';
         title: string;
         defaultQuery: string;
         ctx: SP.ClientContext;
@@ -102,6 +103,7 @@ declare module "meta.api" {
     }
     export class FieldLinkMeta {
         name: string;
+        hidden?: boolean;
     }
     export class CTypeMeta {
         name: string;
@@ -170,4 +172,18 @@ declare module "utils.api" {
     }
     export var initExtensions: () => void;
 }
-declare module "def.api" { }
+declare module "def.api" {
+    import { Logger } from "logger.api";
+    import { funcs } from "utils.api";
+    import { ListApi, ListDal } from "list.api";
+    export interface spexplorerjs {
+        [key: string]: any;
+        modules: {
+            logger: Logger;
+            utils: funcs;
+            listapi: ListApi;
+            listdal: ListDal;
+            jQuery: JQueryStatic;
+        };
+    }
+}

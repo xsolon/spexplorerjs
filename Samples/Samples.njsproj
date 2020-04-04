@@ -37,6 +37,9 @@
     <Content Include="public\javascripts\main.js" />
     <Content Include="public\javascripts\search.js" />
     <Content Include="src\certDev1.pem" />
+    <Content Include="src\components\fieldselector.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\components\searchbox.template.html" />
     <Content Include="src\components\jseditor.template.html">
       <SubType>Code</SubType>
@@ -47,6 +50,7 @@
     <Content Include="public\stylesheets\main.css" />
     <Content Include="README.md" />
     <Content Include="views\error.ejs" />
+    <Content Include="views\jstree.ejs" />
     <Content Include="views\spsearch.ejs" />
     <Content Include="views\index.ejs" />
     <Content Include="views\index.pug" />
@@ -67,13 +71,20 @@
     <TypeScriptCompile Include="src\codeMirrorSample.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\components\fieldselector.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\components\jseditor.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\components\codemirroreditor.ts" />
+    <TypeScriptCompile Include="src\components\treelight.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\html.d.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\components\SearchBox.ts">
+    <TypeScriptCompile Include="src\treeSample.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
   </ItemGroup>

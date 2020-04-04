@@ -33,12 +33,13 @@ require("codemirror/addon/fold/foldgutter.css");
 //import 'codemirror/addon/display/fullscreen.css';
 //import 'codemirror/addon/display/fullscreen.js';
 var Api = require("spexplorerts");
+var format = require('xml-formatter');
 var CodeMirrorHelper = /** @class */ (function () {
     function CodeMirrorHelper() {
         this.trace = new Api.Logger("CodeMirrorHelper");
     }
     CodeMirrorHelper.prototype.createEditor = function (divId, config, title) {
-        var section = document.getElementById(divId);
+        var section = divId; // document.getElementById(divId) as HTMLDivElement;
         if (!section) {
             this.trace.error("element with id " + divId + " not found");
         }
@@ -59,7 +60,18 @@ var CodeMirrorHelper = /** @class */ (function () {
             lineNumbers: true,
             mode: 'xml',
         };
-        return this.createEditor(divId, config, title);
+        var editor = this.createEditor(divId, config, title);
+        editor.setOption("extraKeys", {
+            "Ctrl-Q": function (cm) {
+                //@ts-ignore
+                cm.foldCode(cm.getCursor());
+            },
+            "Alt-F": function (cm) {
+                var val = format(cm.getValue());
+                cm.setValue(val);
+            },
+        });
+        return editor;
     };
     CodeMirrorHelper.prototype.createJsEditor = function (divId, title) {
         this.trace.debug("Creating js editor in " + divId);

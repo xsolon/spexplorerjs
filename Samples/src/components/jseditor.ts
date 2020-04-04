@@ -36,14 +36,14 @@ import "codemirror/addon/fold/foldgutter.css";
 //import 'codemirror/addon/display/fullscreen.css';
 //import 'codemirror/addon/display/fullscreen.js';
 import * as Api from 'spexplorerts';
-
+var format = require('xml-formatter');
 export class CodeMirrorHelper {
   trace: Api.Logger;
   constructor() {
     this.trace = new Api.Logger("CodeMirrorHelper");
   }
-  createEditor(divId: string, config: CodeMirror.EditorConfiguration, title?:string): CodeMirror.EditorFromTextArea {
-    var section = document.getElementById(divId) as HTMLDivElement;
+  createEditor(divId: HTMLElement, config: CodeMirror.EditorConfiguration, title?:string): CodeMirror.EditorFromTextArea {
+    var section = divId;// document.getElementById(divId) as HTMLDivElement;
     if (!section) {
       this.trace.error(`element with id ${divId} not found`);
     }
@@ -62,7 +62,7 @@ export class CodeMirrorHelper {
     return editor
   }
 
-  createXmlEditor(divId: string, title?:string): CodeMirror.EditorFromTextArea {
+  createXmlEditor(divId: HTMLElement, title?: string): CodeMirror.EditorFromTextArea {
 
     this.trace.debug(`Creating xml editor in ${divId}`);
 
@@ -72,9 +72,22 @@ export class CodeMirrorHelper {
       mode: 'xml',
     };
 
-    return this.createEditor(divId,config, title);
+    var editor = this.createEditor(divId,config, title);
+
+    editor.setOption("extraKeys", {
+      "Ctrl-Q": function (cm) {
+        //@ts-ignore
+        cm.foldCode(cm.getCursor());
+      },
+      "Alt-F": function (cm) {
+        var val = format(cm.getValue());
+        cm.setValue(val);
+      },
+    });
+
+    return editor;
   }
-  createJsEditor(divId: string, title?:string): CodeMirror.EditorFromTextArea {
+  createJsEditor(divId: HTMLElement, title?:string): CodeMirror.EditorFromTextArea {
 
     this.trace.debug(`Creating js editor in ${divId}`);
 

@@ -20,6 +20,7 @@
 	"include": [ "src/**/*.api.ts" ],
 	"exclude": [
 		"node_modules",
+		"backups.node.ts",
 		"dist"
 	]
 }

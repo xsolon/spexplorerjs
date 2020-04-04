@@ -27,6 +27,9 @@ define("logger.api", ["require", "exports"], function (require, exports) {
         Logger.prototype.error = function (message) {
             console && console.error(message);
         };
+        Logger.get = function (name) {
+            return new Logger(name);
+        };
         return Logger;
     }());
     exports.Logger = Logger;
@@ -220,15 +223,32 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                 var listFields = splist.get_fields();
                 var rootWeb = ctx.get_site().get_rootWeb();
                 var rootContentTypeCollection = rootWeb.get_contentTypes();
+                var webTypesCol = splist.get_parentWeb().get_contentTypes();
                 splist.set_contentTypesEnabled(true);
+                splist.update();
                 ctx.load(rootContentTypeCollection);
+                ctx.load(webTypesCol);
                 ctx.load(listFields);
                 ctx.load(listCtypes);
                 var listCtypesDic = null;
                 var listFieldsDic = null;
                 var createCtype = function (ctypeMeta) {
                     var dfd1 = $.Deferred();
-                    var parentCtype = rootContentTypeCollection.getById(ctypeMeta.parentCtypeId);
+                    var webCtypesDic = utils.collectionToDictionary(webTypesCol, function (c) { return c.get_id().get_stringValue(); });
+                    var rootCtypesDic = utils.collectionToDictionary(rootContentTypeCollection, function (c) { return c.get_id().get_stringValue(); });
+                    var parentCtype = null;
+                    if (webCtypesDic[ctypeMeta.parentCtypeId])
+                        parentCtype = webCtypesDic[ctypeMeta.parentCtypeId];
+                    else if (rootCtypesDic[ctypeMeta.parentCtypeId])
+                        parentCtype = rootCtypesDic[ctypeMeta.parentCtypeId];
+                    else {
+                        webCtypesDic = utils.collectionToDictionary(webTypesCol, function (c) { return c.get_name(); });
+                        rootCtypesDic = utils.collectionToDictionary(rootContentTypeCollection, function (c) { return c.get_name(); });
+                        if (webCtypesDic[ctypeMeta.parentCtypeId])
+                            parentCtype = webCtypesDic[ctypeMeta.parentCtypeId];
+                        else
+                            parentCtype = rootCtypesDic[ctypeMeta.parentCtypeId];
+                    }
                     ctx.load(parentCtype);
                     ctx.executeQueryAsync(function () {
                         me.ctrace.log(parentCtype.get_name());
@@ -268,7 +288,9 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                                 var field = listFieldsDic[fieldMeta.name];
                                 var newFieldLink = new SP.FieldLinkCreationInformation();
                                 newFieldLink.set_field(field);
-                                links.add(newFieldLink);
+                                var fieldLink = links.add(newFieldLink);
+                                if (fieldMeta.hidden != null)
+                                    fieldLink.set_hidden(fieldMeta.hidden);
                             }
                         });
                         cType.update(false);
@@ -751,8 +773,8 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
             ctx.executeQueryAsync(function () {
                 p.resolve(uploadedDocument);
             }, function (s, e) {
-                debugger;
                 trace.error(e.get_message());
+                p.reject(e);
             });
             return p.promise();
         };
@@ -792,6 +814,7 @@ define("meta.api", ["require", "exports"], function (require, exports) {
     exports.FieldMeta = FieldMeta;
     var FieldLinkMeta = (function () {
         function FieldLinkMeta() {
+            this.hidden = null;
         }
         return FieldLinkMeta;
     }());
@@ -1304,8 +1327,9 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
 define("def.api", ["require", "exports", "logger.api", "utils.api", "list.api", "jquery"], function (require, exports, logger_api_3, utils_api_2, list_api_1, jQuery) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    if (typeof window != 'undefined') {
-        window['spexplorerjs'] = {
+    if (typeof window !== 'undefined') {
+        window['spexplorerjs'] = window['spexplorerjs'] || {
+            version: '1.0.1',
             modules: {
                 logger: logger_api_3.Logger,
                 utils: utils_api_2.funcs,

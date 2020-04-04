@@ -18,6 +18,7 @@ var GroupMeta = /** @class */ (function () {
 exports.GroupMeta = GroupMeta;
 var FieldMeta = /** @class */ (function () {
     function FieldMeta() {
+        this.flags = 0;
         this.multiValue = false;
         this.inDefaultView = false;
         this.addOptions = SP.AddFieldOptions.addFieldInternalNameHint | SP.AddFieldOptions.addToAllContentTypes;

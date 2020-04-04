@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// v 0.1.18 - 2020_04_01 - Load Ctype from local web
 // v 0.1.17 - 2020_03_26 - FolderApi: uploadFile
 // v 0.1.16 - 2020_03_24 - addItems pageNum parameter to insert items throw pages, afterDefaultItemsAdded on ListMeta, FolderApi: ensureAttachmentFolder
 // v 0.1.5  - 2018_11_27 - Use displayname if field definition does not have internal/name/static attributes
@@ -201,15 +202,32 @@ var ListApi = /** @class */ (function () {
             var listFields = splist.get_fields();
             var rootWeb = ctx.get_site().get_rootWeb();
             var rootContentTypeCollection = rootWeb.get_contentTypes();
+            var webTypesCol = splist.get_parentWeb().get_contentTypes();
             splist.set_contentTypesEnabled(true);
+            splist.update();
             ctx.load(rootContentTypeCollection);
+            ctx.load(webTypesCol);
             ctx.load(listFields);
             ctx.load(listCtypes);
             var listCtypesDic = null;
             var listFieldsDic = null;
             var createCtype = function (ctypeMeta) {
                 var dfd1 = $.Deferred();
-                var parentCtype = rootContentTypeCollection.getById(ctypeMeta.parentCtypeId);
+                var webCtypesDic = utils.collectionToDictionary(webTypesCol, function (c) { return c.get_id().get_stringValue(); });
+                var rootCtypesDic = utils.collectionToDictionary(rootContentTypeCollection, function (c) { return c.get_id().get_stringValue(); });
+                var parentCtype = null;
+                if (webCtypesDic[ctypeMeta.parentCtypeId])
+                    parentCtype = webCtypesDic[ctypeMeta.parentCtypeId];
+                else if (rootCtypesDic[ctypeMeta.parentCtypeId])
+                    parentCtype = rootCtypesDic[ctypeMeta.parentCtypeId];
+                else {
+                    webCtypesDic = utils.collectionToDictionary(webTypesCol, function (c) { return c.get_name(); });
+                    rootCtypesDic = utils.collectionToDictionary(rootContentTypeCollection, function (c) { return c.get_name(); });
+                    if (webCtypesDic[ctypeMeta.parentCtypeId])
+                        parentCtype = webCtypesDic[ctypeMeta.parentCtypeId];
+                    else
+                        parentCtype = rootCtypesDic[ctypeMeta.parentCtypeId];
+                }
                 ctx.load(parentCtype);
                 ctx.executeQueryAsync(function () {
                     me.ctrace.log(parentCtype.get_name());
@@ -249,7 +267,9 @@ var ListApi = /** @class */ (function () {
                             var field = listFieldsDic[fieldMeta.name];
                             var newFieldLink = new SP.FieldLinkCreationInformation();
                             newFieldLink.set_field(field);
-                            links.add(newFieldLink);
+                            var fieldLink = links.add(newFieldLink);
+                            if (fieldMeta.hidden != null)
+                                fieldLink.set_hidden(fieldMeta.hidden);
                         }
                     });
                     cType.update(false);
@@ -758,8 +778,8 @@ var FolderApi = /** @class */ (function () {
         ctx.executeQueryAsync(function () {
             p.resolve(uploadedDocument);
         }, function (s, e) {
-            debugger;
             trace.error(e.get_message());
+            p.reject(e);
         });
         return p.promise();
     };

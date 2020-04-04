@@ -28,6 +28,7 @@ var FieldMeta = /** @class */ (function () {
 exports.FieldMeta = FieldMeta;
 var FieldLinkMeta = /** @class */ (function () {
     function FieldLinkMeta() {
+        this.hidden = null;
     }
     return FieldLinkMeta;
 }());

@@ -44,6 +44,7 @@ export class FieldMeta {
 
 export class FieldLinkMeta {
   public name: string;
+  public hidden?: boolean = null;
 }
 
 export class CTypeMeta {
