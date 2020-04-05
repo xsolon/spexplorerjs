@@ -35,6 +35,12 @@ export class CodeMirrorEditor {
     var elem = jsEditor.getTextArea();
     $(elem).on('run', onRun);
 
+    $('#editorXmlTab').click(() => {
+      setTimeout(() => {
+        xmlEditor.refresh();
+      }, 200);
+    });
+
     var runScript = function (code: string) {
       try {
         trace.log(code);

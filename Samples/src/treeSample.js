@@ -3,8 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var treelight_1 = require("./components/treelight");
 var codemirroreditor_1 = require("./components/codemirroreditor");
 var fieldselector_1 = require("./components/fieldselector");
+require("bootstrap");
+require("./custom.scss");
+//import 'bootstrap/dist/css/bootstrap.min.css';
+var tmp = require("./ui.template.html");
 var $ = require('jquery');
-$('#ui').html("\n<table> <tr>\n    <td valign='top'> <div id='tree'/> </td>\n    <td valign='top'> <div id='field'/> <div id='editor'/> </td>\n</tr> </table>\n");
+$('#ui').html(tmp);
 var tree = new treelight_1.TreeLight('#tree');
 var field = new fieldselector_1.FieldSelector('#field');
 tree.on('selectionChange', function (spelem) {

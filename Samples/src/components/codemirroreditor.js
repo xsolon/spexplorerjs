@@ -28,6 +28,11 @@ var CodeMirrorEditor = /** @class */ (function () {
         };
         var elem = jsEditor.getTextArea();
         $(elem).on('run', onRun);
+        $('#editorXmlTab').click(function () {
+            setTimeout(function () {
+                xmlEditor.refresh();
+            }, 200);
+        });
         var runScript = function (code) {
             try {
                 trace.log(code);

@@ -1,14 +1,13 @@
 import { TreeLight } from "./components/treelight";
 import { CodeMirrorEditor } from "./components/codemirroreditor";
 import { FieldSelector } from "./components/fieldselector";
+import 'bootstrap';
+import './custom.scss'
+//import 'bootstrap/dist/css/bootstrap.min.css';
+import * as tmp from './ui.template.html';
 
 var $ = require('jquery');
-$('#ui').html(`
-<table> <tr>
-    <td valign='top'> <div id='tree'/> </td>
-    <td valign='top'> <div id='field'/> <div id='editor'/> </td>
-</tr> </table>
-`)
+$('#ui').html(tmp);
 var tree = new TreeLight('#tree');
 var field = new FieldSelector('#field');
 tree.on('selectionChange', (spelem: any): void => {
