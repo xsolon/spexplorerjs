@@ -471,7 +471,6 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
         ListApi.prototype.addItems = function (gitems, splist, folderUrl, pageNum) {
             if (pageNum === void 0) { pageNum = 100; }
             var me = this;
-            me.ctrace.log('starting addItems');
             var prepLookupValue = function (raw) {
                 var val = null;
                 if (raw == null || SP.User.isInstanceOfType(raw) || SP.FieldLookupValue.isInstanceOfType(raw)) {
@@ -501,6 +500,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
             me.ctx.executeQueryAsync(function () {
                 var fieldMap = utils.collectionToDictionary(fields, function (f) { return f.get_internalName(); });
                 if (gitems && gitems.length > 0) {
+                    me.ctrace.log('starting addItems');
                     var spItems = [];
                     var insertItems = function (items) {
                         var iDfd = $.Deferred();
@@ -782,6 +782,139 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
         return FolderApi;
     }());
     exports.FolderApi = FolderApi;
+    var WebApi = (function () {
+        function WebApi(ctx) {
+            this.ctrace = new logger_api_1.Logger('WebApi');
+            this.ctx = ctx;
+        }
+        WebApi.prototype.ensureCTypes = function (ctypes, web) {
+            if (web === void 0) { web = null; }
+            var me = this;
+            var ctx = me.ctx;
+            if (web == null)
+                web = ctx.get_web();
+            var dfd = $.Deferred();
+            if (!ctypes) {
+                dfd.resolve();
+            }
+            else {
+                var fieldsCol = web.get_availableFields();
+                var webTypesCol = web.get_availableContentTypes();
+                ctx.load(webTypesCol);
+                ctx.load(fieldsCol);
+                var listCtypesDic = null;
+                var listFieldsDic = null;
+                var createCtype = function (ctypeMeta) {
+                    var dfd1 = $.Deferred();
+                    var parentCtype = null;
+                    if (listCtypesDic[ctypeMeta.parentCtypeId])
+                        parentCtype = listCtypesDic[ctypeMeta.parentCtypeId];
+                    ctx.load(parentCtype);
+                    ctx.executeQueryAsync(function () {
+                        me.ctrace.log(parentCtype.get_name());
+                        var newContentType = new SP.ContentTypeCreationInformation();
+                        newContentType.set_name(ctypeMeta.name);
+                        if (ctypeMeta.group)
+                            newContentType.set_group(ctypeMeta.group);
+                        if (ctypeMeta.description)
+                            newContentType.set_description(ctypeMeta.description);
+                        newContentType.set_parentContentType(parentCtype);
+                        var ctype = web.get_contentTypes().add(newContentType);
+                        ctype.set_jsLink(ctypeMeta.jsLink);
+                        ctype.update(false);
+                        ctx.load(ctype);
+                        ctx.executeQueryAsync(function () {
+                            dfd1.resolve(ctype);
+                        }, function (s, e) {
+                            me.ctrace.error(e.get_message());
+                            debugger;
+                        });
+                    }, function (s, e) {
+                        me.ctrace.error(e.get_message());
+                        debugger;
+                    });
+                    return dfd1.promise();
+                };
+                var ensureFields = function (cType, meta) {
+                    var dfd2 = $.Deferred();
+                    var links = cType.get_fieldLinks();
+                    ctx.load(links);
+                    ctx.executeQueryAsync(function () {
+                        var ctypeFieldLinks = utils.collectionToDictionary(links, function (field) { return field.get_name(); });
+                        meta.fields.forEach(function (fieldMeta) {
+                            if (!ctypeFieldLinks[fieldMeta.name]) {
+                                me.ctrace.log("ctype " + meta.name + ": adding field link: " + fieldMeta.name);
+                                var field = listFieldsDic[fieldMeta.name];
+                                var newFieldLink = new SP.FieldLinkCreationInformation();
+                                newFieldLink.set_field(field);
+                                var fieldLink = links.add(newFieldLink);
+                                if (fieldMeta.hidden != null)
+                                    fieldLink.set_hidden(fieldMeta.hidden);
+                            }
+                        });
+                        cType.update(false);
+                        ctx.executeQueryAsync(function () {
+                            dfd2.resolve();
+                        }, function (s, e) {
+                            me.ctrace.error(e.get_message());
+                            debugger;
+                        });
+                    }, function (s, e) {
+                        me.ctrace.error(e.get_message());
+                        debugger;
+                    });
+                    return dfd2.promise();
+                };
+                var ensureCtype = function (ctype) {
+                    var name = ctype.name;
+                    var cDfd = $.Deferred();
+                    var doCtype = function (spctype) {
+                        if (ctype.description)
+                            spctype.set_description(ctype.description);
+                        if (ctype.group)
+                            spctype.set_group(ctype.group);
+                        if (ctype.jsLink)
+                            spctype.set_jsLink(ctype.jsLink);
+                        spctype.update(false);
+                        ctx.executeQueryAsync(function () {
+                            ensureFields(spctype, ctype).done(function () {
+                                cDfd.resolve();
+                            });
+                        }, function (s, e) {
+                            me.ctrace.error(e.get_message());
+                            debugger;
+                        });
+                    };
+                    if (!listCtypesDic[name]) {
+                        createCtype(ctype).done(doCtype);
+                    }
+                    else {
+                        doCtype(listCtypesDic[name]);
+                    }
+                    return cDfd.promise();
+                };
+                ctx.executeQueryAsync(function () {
+                    listFieldsDic = utils.collectionToDictionary(fieldsCol, function (field) { return field.get_internalName(); });
+                    listCtypesDic = utils.collectionToDictionary(webTypesCol, function (cType) { return cType.get_name(); });
+                    utils.collectionToArray(webTypesCol).forEach(function (x) {
+                        listCtypesDic[x.get_stringId()] = x;
+                    });
+                    utils.processAsQueue(ctypes, function (ctypeMeta) {
+                        return ensureCtype(ctypeMeta);
+                    }).done(function () {
+                        dfd.resolve();
+                    });
+                });
+            }
+            return dfd.promise();
+        };
+        ;
+        WebApi.GetApi = function (ctx) {
+            return new WebApi(ctx);
+        };
+        return WebApi;
+    }());
+    exports.WebApi = WebApi;
 });
 define("meta.api", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -832,6 +965,46 @@ define("meta.api", ["require", "exports"], function (require, exports) {
         });
         var template = "export class " + list.title + "Def {\n\t" + fieldStr + "\n}";
         return template;
+    };
+    exports.tsClassBuilder = function (list) {
+        var ctypes = JSON.parse(JSON.stringify(list.ctypes || []));
+        if (ctypes.length == 0) {
+            ctypes.push({
+                name: '',
+                fields: list.fields,
+            });
+        }
+        var fields = {};
+        list.fields.forEach(function (f) {
+            var sType = "string";
+            if (f.type == SP.FieldType.user) {
+                sType = 'SP.FieldUserValue';
+            }
+            else if (f.type == SP.FieldType.lookup) {
+                sType = 'SP.FieldLookupValue';
+            }
+            else if (f.type == SP.FieldType.boolean) {
+                sType = 'boolean';
+            }
+            else if (f.type == SP.FieldType.dateTime) {
+                sType = 'Date';
+            }
+            if (f.multiValue) {
+                sType += '[]';
+            }
+            var tmp = f.name + "(val?: " + sType + "): " + sType + " {\n    var me = this;\n    if (val) {\n      me.li.set_item('" + f.name + "', val);\n    }\n    var res: " + sType + " = me.li.get_item('" + f.name + "');\n    return res;\n  }\n\n";
+            fields[f.name] = tmp;
+        });
+        var res = '/// <reference types="sharepoint" />';
+        ctypes.forEach(function (c) {
+            var ctypeFields = [];
+            c.fields.forEach(function (f) {
+                ctypeFields.push(fields[f.name]);
+            });
+            var className = "" + list.title.replace(/ /g, '') + c.name.replace(/ /g, '') + "Type";
+            res += "\nexport class " + className + " {\n  li: SP.ListItem;\n  constructor(li?: SP.ListItem) {\n    if (li)\n      this.li = li;\n  }\n  spitem(li?: SP.ListItem): SP.ListItem {\n    if (li)\n      this.li = li;\n    return li;\n  }\n  id(val?: string): number{\n    var me = this;\n    if (val) {\n      me.li.set_item('ID', val);\n    }\n    var res: number = me.li.get_item('ID');\n    return res;\n  }\n  title (val?: string): string {\n    var me = this;\n    if (val) {\n      me.li.set_item('title', val);\n    }\n    var res: string = me.li.get_item('title');\n    return res;\n  }\n  " + ctypeFields.join(' ') + "\n  public static FromArray(spArray: SP.ListItem[]): Array<" + className + "> {\n    var result = [];\n    (spArray || []).forEach((li) => {\n        result.push(new " + className + "(li));\n    });\n    return result;\n  };\n  public static FromCollection(spCollection: SP.ListItemCollection): Array<" + className + "> {\n    var result = [];\n    if (spCollection) {\n      var le = spCollection.getEnumerator();\n      while (le.moveNext()) {\n        var li = le.get_current();\n        result.push(new " + className + "(li));\n      }\n    }\n    return result;\n  };\n}\n";
+        });
+        return res;
     };
 });
 define("utils.api", ["require", "exports", "logger.api"], function (require, exports, logger_api_2) {
@@ -1329,12 +1502,15 @@ define("def.api", ["require", "exports", "logger.api", "utils.api", "list.api", 
     Object.defineProperty(exports, "__esModule", { value: true });
     if (typeof window !== 'undefined') {
         window['spexplorerjs'] = window['spexplorerjs'] || {
-            version: '1.0.1',
+            version: '1.0.3',
             modules: {
                 logger: logger_api_3.Logger,
+                funcs: new utils_api_2.funcs(),
                 utils: utils_api_2.funcs,
                 listapi: list_api_1.ListApi,
                 listdal: list_api_1.ListDal,
+                folderapi: list_api_1.FolderApi,
+                webapi: list_api_1.WebApi,
                 jQuery: jQuery
             }
         };

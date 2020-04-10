@@ -1,7 +1,7 @@
 /// <reference types='jquery' />
 import 'select2/dist/css/select2.css';
 import 'spexplorerts/api/def.api';
-import { spexplorerjs } from 'spexplorerts/api/def.api';
+import { Ispexplorerjs } from 'spexplorerts/api/def.api';
 import { Logger, funcs } from 'spexplorerts';
 
 require('select2');
@@ -9,6 +9,7 @@ var trace: Logger = Logger.get("logger");
 trace.shouldDebug = true;
 var utils = new funcs();
 import * as tmp from './fieldselector.html';
+
 
 export class FieldSelector {
   target: SP.List | SP.Web;
@@ -22,7 +23,7 @@ export class FieldSelector {
     ui.html(tmp);
     me.ui = ui;
     trace.log('FieldSelector.init');
-    var ns: spexplorerjs = window['spexplorerjs']
+    var ns: Ispexplorerjs = window['spexplorerjs']
 
     if (opts && opts.target) {
       me.setTarget(opts.target);

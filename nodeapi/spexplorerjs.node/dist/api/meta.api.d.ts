@@ -46,6 +46,7 @@ export declare class CTypeMeta {
     jsLink?: string;
 }
 export declare var classBuilder: (list: ListMeta) => string;
+export declare var tsClassBuilder: (list: ListMeta) => string;
 export declare type itemsFunction = (list: SP.List, dal: ListApi) => JQuery.Promise<Array<{
     [key: string]: any;
 }>>;

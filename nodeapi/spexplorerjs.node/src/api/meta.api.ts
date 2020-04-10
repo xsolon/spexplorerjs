@@ -67,6 +67,113 @@ export var classBuilder = function (list: ListMeta): string {
 }`
   return template;
 };
+export var tsClassBuilder = function (list: ListMeta): string {
+
+  var ctypes: CTypeMeta[] = JSON.parse(JSON.stringify(list.ctypes || [])); // copy
+
+  if (ctypes.length == 0) {
+    //@ts-ignore
+    ctypes.push({
+      name: '',
+      fields: list.fields,
+    });
+  }
+  var fields: { [key: string]: string } = {};
+  list.fields.forEach((f) => {
+    var sType = "string"
+    if (f.type == SP.FieldType.user) {
+      sType = 'SP.FieldUserValue';
+    }
+    else if (f.type == SP.FieldType.lookup) {
+      sType = 'SP.FieldLookupValue';
+    }
+    else if (f.type == SP.FieldType.boolean) {
+      sType = 'boolean';
+    }
+    else if (f.type == SP.FieldType.dateTime) {
+      sType = 'Date';
+    }
+
+    if (f.multiValue) {
+      sType += '[]';
+    }
+    var tmp = `${f.name}(val?: ${sType}): ${sType} {
+    var me = this;
+    if (val) {
+      me.li.set_item('${f.name}', val);
+    }
+    var res: ${sType} = me.li.get_item('${f.name}');
+    return res;
+  }
+
+`;
+    //fields.push( );
+    fields[f.name] = tmp;
+  });
+
+  var res = '/// <reference types="sharepoint" />';
+  ctypes.forEach((c) => {
+
+    var ctypeFields = [];
+    c.fields.forEach((f) => {
+      ctypeFields.push(fields[f.name]);
+    });
+
+    var className = `${list.title.replace(/ /g, '')}${c.name.replace(/ /g, '')}Type`;
+    res += `
+export class ${className} {
+  li: SP.ListItem;
+  constructor(li?: SP.ListItem) {
+    if (li)
+      this.li = li;
+  }
+  spitem(li?: SP.ListItem): SP.ListItem {
+    if (li)
+      this.li = li;
+    return li;
+  }
+  id(val?: string): number{
+    var me = this;
+    if (val) {
+      me.li.set_item('ID', val);
+    }
+    var res: number = me.li.get_item('ID');
+    return res;
+  }
+  title (val?: string): string {
+    var me = this;
+    if (val) {
+      me.li.set_item('title', val);
+    }
+    var res: string = me.li.get_item('title');
+    return res;
+  }
+  ${ctypeFields.join(' ')}
+  public static FromArray(spArray: SP.ListItem[]): Array<${className}> {
+    var result = [];
+    (spArray || []).forEach((li) => {
+        result.push(new ${className}(li));
+    });
+    return result;
+  };
+  public static FromCollection(spCollection: SP.ListItemCollection): Array<${className}> {
+    var result = [];
+    if (spCollection) {
+      var le = spCollection.getEnumerator();
+      while (le.moveNext()) {
+        var li = le.get_current();
+        result.push(new ${className}(li));
+      }
+    }
+    return result;
+  };
+}
+`;
+
+  });
+  return res;
+};
+
 
 export declare type itemsFunction = (list: SP.List, dal: ListApi) => JQuery.Promise<Array<{ [key: string]: any }>>;
 export declare type postItemsAddedFunction = (list: SP.List, dal: ListApi, items: SP.ListItem[]) => JQuery.Promise<SP.ListItem[]>;

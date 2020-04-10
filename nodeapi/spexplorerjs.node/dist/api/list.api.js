@@ -450,7 +450,6 @@ var ListApi = /** @class */ (function () {
     ListApi.prototype.addItems = function (gitems, splist, folderUrl, pageNum) {
         if (pageNum === void 0) { pageNum = 100; }
         var me = this;
-        me.ctrace.log('starting addItems');
         var prepLookupValue = function (raw) {
             var val = null;
             // @ts-ignore
@@ -481,6 +480,7 @@ var ListApi = /** @class */ (function () {
         me.ctx.executeQueryAsync(function () {
             var fieldMap = utils.collectionToDictionary(fields, function (f) { return f.get_internalName(); });
             if (gitems && gitems.length > 0) {
+                me.ctrace.log('starting addItems');
                 var spItems = [];
                 var insertItems = function (items) {
                     var iDfd = $.Deferred();
@@ -787,4 +787,139 @@ var FolderApi = /** @class */ (function () {
     return FolderApi;
 }());
 exports.FolderApi = FolderApi;
+var WebApi = /** @class */ (function () {
+    function WebApi(ctx) {
+        this.ctrace = new logger_api_1.Logger('WebApi');
+        this.ctx = ctx;
+    }
+    WebApi.prototype.ensureCTypes = function (ctypes, web) {
+        if (web === void 0) { web = null; }
+        var me = this;
+        var ctx = me.ctx;
+        if (web == null)
+            web = ctx.get_web();
+        var dfd = $.Deferred();
+        if (!ctypes) {
+            dfd.resolve();
+        }
+        else {
+            var fieldsCol = web.get_availableFields();
+            var webTypesCol = web.get_availableContentTypes();
+            ctx.load(webTypesCol);
+            ctx.load(fieldsCol);
+            var listCtypesDic = null;
+            var listFieldsDic = null;
+            var createCtype = function (ctypeMeta) {
+                var dfd1 = $.Deferred();
+                var parentCtype = null;
+                if (listCtypesDic[ctypeMeta.parentCtypeId])
+                    parentCtype = listCtypesDic[ctypeMeta.parentCtypeId];
+                ctx.load(parentCtype);
+                ctx.executeQueryAsync(function () {
+                    me.ctrace.log(parentCtype.get_name());
+                    var newContentType = new SP.ContentTypeCreationInformation();
+                    newContentType.set_name(ctypeMeta.name);
+                    if (ctypeMeta.group)
+                        newContentType.set_group(ctypeMeta.group);
+                    if (ctypeMeta.description)
+                        newContentType.set_description(ctypeMeta.description);
+                    newContentType.set_parentContentType(parentCtype);
+                    var ctype = web.get_contentTypes().add(newContentType);
+                    //var ctype = webTypesCol.add(newContentType);
+                    ctype.set_jsLink(ctypeMeta.jsLink);
+                    ctype.update(false);
+                    ctx.load(ctype);
+                    //ctx.load(webTypesCol);
+                    ctx.executeQueryAsync(function () {
+                        dfd1.resolve(ctype);
+                    }, function (s, e) {
+                        me.ctrace.error(e.get_message());
+                        debugger;
+                    });
+                }, function (s, e) {
+                    me.ctrace.error(e.get_message());
+                    debugger;
+                });
+                return dfd1.promise();
+            };
+            var ensureFields = function (cType, meta) {
+                var dfd2 = $.Deferred();
+                var links = cType.get_fieldLinks();
+                ctx.load(links);
+                ctx.executeQueryAsync(function () {
+                    var ctypeFieldLinks = utils.collectionToDictionary(links, function (field) { return field.get_name(); });
+                    meta.fields.forEach(function (fieldMeta) {
+                        if (!ctypeFieldLinks[fieldMeta.name]) {
+                            me.ctrace.log("ctype " + meta.name + ": adding field link: " + fieldMeta.name);
+                            var field = listFieldsDic[fieldMeta.name];
+                            var newFieldLink = new SP.FieldLinkCreationInformation();
+                            newFieldLink.set_field(field);
+                            var fieldLink = links.add(newFieldLink);
+                            if (fieldMeta.hidden != null)
+                                fieldLink.set_hidden(fieldMeta.hidden);
+                        }
+                    });
+                    cType.update(false);
+                    ctx.executeQueryAsync(function () {
+                        dfd2.resolve();
+                    }, function (s, e) {
+                        me.ctrace.error(e.get_message());
+                        debugger;
+                    });
+                }, function (s, e) {
+                    me.ctrace.error(e.get_message());
+                    debugger;
+                });
+                return dfd2.promise();
+            };
+            var ensureCtype = function (ctype) {
+                var name = ctype.name;
+                var cDfd = $.Deferred();
+                var doCtype = function (spctype) {
+                    if (ctype.description)
+                        spctype.set_description(ctype.description);
+                    if (ctype.group)
+                        spctype.set_group(ctype.group);
+                    if (ctype.jsLink)
+                        spctype.set_jsLink(ctype.jsLink);
+                    spctype.update(false);
+                    ctx.executeQueryAsync(function () {
+                        ensureFields(spctype, ctype).done(function () {
+                            cDfd.resolve();
+                        });
+                    }, function (s, e) {
+                        me.ctrace.error(e.get_message());
+                        debugger;
+                    });
+                };
+                if (!listCtypesDic[name]) {
+                    createCtype(ctype).done(doCtype);
+                }
+                else {
+                    doCtype(listCtypesDic[name]);
+                }
+                return cDfd.promise();
+            };
+            ctx.executeQueryAsync(function () {
+                listFieldsDic = utils.collectionToDictionary(fieldsCol, function (field) { return field.get_internalName(); });
+                listCtypesDic = utils.collectionToDictionary(webTypesCol, function (cType) { return cType.get_name(); });
+                utils.collectionToArray(webTypesCol).forEach(function (x) {
+                    listCtypesDic[x.get_stringId()] = x;
+                });
+                utils.processAsQueue(ctypes, function (ctypeMeta) {
+                    return ensureCtype(ctypeMeta);
+                }).done(function () {
+                    dfd.resolve();
+                });
+            });
+        }
+        return dfd.promise();
+    };
+    ;
+    WebApi.GetApi = function (ctx) {
+        return new WebApi(ctx);
+    };
+    return WebApi;
+}());
+exports.WebApi = WebApi;
 //# sourceMappingURL=list.api.js.map

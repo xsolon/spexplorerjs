@@ -90,6 +90,16 @@ export class TreeLight {
 
         cb(items);
       };
+      var loadFolder = function (node, cb) {
+        var list: SP.Folder = node.data;
+        var items = [];
+
+        var id = node.id;
+        items.push({ text: "Folders", id: id + "_Folders", data: list.get_folders(), children: true });
+        items.push({ text: "Files", id: id + "_Files", data: list.get_files(), children: true });
+
+        cb(items);
+      };
       var loadList = function (node, cb) {
         var list: SP.List = node.data;
         trace.log({ list: list });
@@ -106,6 +116,7 @@ export class TreeLight {
         items.push({ text: "Content Types", id: list.get_id() + "_ContentTypes", data: list.get_contentTypes(), children: true, icon: "/_layouts/15/images/HLTHINFO.PNG" });
         items.push({ text: "Fields", id: list.get_id() + "_Fields", data: list.get_fields(), children: true, icon: "https://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-menu-icon.png" });
         items.push({ text: "Views", id: list.get_id() + "_Views", data: list.get_views(), children: true, icon: "https://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/ui-menu-icon.png" });
+        items.push({ text: "Folder", id: list.get_id() + "_Folder", data: list.get_rootFolder(), children: true });
 
         cb(items);
       };
@@ -114,7 +125,7 @@ export class TreeLight {
         var col: SP.ClientObjectCollection<any> = node.data;
 
         var iconUrl = null;
-        var gettext: (any) => string = (x) => x.get_title();
+        var gettext: (any) => string = (x) => x.get_name ? x.get_name() : x.get_title();
         //@ts-ignore
         if (SP.ListCollection.isInstanceOfType(col)) {
           ctx.load(col, "Include(Id,Title,HasUniqueRoleAssignments,ImageUrl,ItemCount,DefaultViewUrl)");
@@ -162,7 +173,7 @@ export class TreeLight {
             var nodeText = gettext(list);
             var node: any = {
               children: true, text: nodeText,
-              id: list.get_id().toString(), data: list
+              id:((list.get_id && list.get_id()) || list.get_name()).toString(), data: list
             };
             if (list['get_imageUrl'])
               node.icon = list.get_imageUrl();
@@ -205,7 +216,9 @@ export class TreeLight {
         { text: "Webs", id: id + "_Webs", icon: "/_layouts/15/images/siteicon_16x16.png", children: true, data: web.get_webs() },
         { text: "Content Types", id: id + "_ContentTypes", data: web.get_availableContentTypes(), children: true, icon: "/_layouts/15/images/HLTHINFO.PNG" },
         { text: "Fields", id: id + "_Fields", data: web.get_availableFields(), children: true, icon: "/_layouts/15/images/HLTHINFO.PNG" }
-          , { text: "User Actions", id: id + "_Actions", data: web.get_userCustomActions(), children: true, icon: "/_layouts/15/images/HLTHINFO.PNG" }
+          ,
+        { text: "User Actions", id: id + "_Actions", data: web.get_userCustomActions(), children: true, icon: "/_layouts/15/images/HLTHINFO.PNG" },
+        { text: "Root Folder", id: id + "_RootFolder", data: web.get_rootFolder(), children: true }
         ];
 
         if (web.get_hasUniqueRoleAssignments()) {
@@ -234,6 +247,10 @@ export class TreeLight {
             //@ts-ignore
             else if (SP.Web.isInstanceOfType(node.data)) {
               loadWeb(node, cb);
+            }
+            //@ts-ignore
+            else if (SP.Folder.isInstanceOfType(node.data)) {
+              loadFolder(node, cb);
             }
             //@ts-ignore
             else if (SP.List.isInstanceOfType(node.data)) {

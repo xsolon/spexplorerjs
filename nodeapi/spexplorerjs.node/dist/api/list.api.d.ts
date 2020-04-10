@@ -59,3 +59,10 @@ export declare class FolderApi {
      */
     uploadFile(parentDir: SP.Folder, buffer: SP.Base64EncodedByteArray, filename: string, replaceInvalidChars?: boolean): JQuery.Promise<SP.File>;
 }
+export declare class WebApi {
+    ctrace: Logger;
+    ctx: SP.ClientContext;
+    constructor(ctx: SP.ClientContext);
+    ensureCTypes(ctypes: CTypeMeta[], web?: SP.Web): JQueryPromise<SP.ContentType[]>;
+    static GetApi(ctx: SP.ClientContext): WebApi;
+}

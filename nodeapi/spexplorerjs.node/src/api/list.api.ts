@@ -873,3 +873,158 @@ export class FolderApi {
     return p.promise();
   };
 }
+
+export class WebApi {
+  ctrace: Logger = new Logger('WebApi');
+  ctx: SP.ClientContext;
+  constructor(ctx: SP.ClientContext) {
+    this.ctx = ctx;
+  }
+  ensureCTypes(ctypes: CTypeMeta[], web: SP.Web = null): JQueryPromise<SP.ContentType[]> {
+    var me = this;
+    var ctx = me.ctx;
+    if (web == null) web = ctx.get_web();
+
+    var dfd = $.Deferred();
+
+    if (!ctypes) {
+      dfd.resolve();
+    }
+    else {
+      var fieldsCol = web.get_availableFields();
+      var webTypesCol = web.get_availableContentTypes();
+      ctx.load(webTypesCol);
+      ctx.load(fieldsCol);
+
+      var listCtypesDic: { [key: string]: SP.ContentType } = null;
+      var listFieldsDic: { [key: string]: SP.Field } = null;
+
+      var createCtype = function (ctypeMeta: CTypeMeta): JQueryPromise<SP.ContentType> {
+        var dfd1 = $.Deferred();
+
+        var parentCtype: SP.ContentType = null;
+        if (listCtypesDic[ctypeMeta.parentCtypeId])
+          parentCtype = listCtypesDic[ctypeMeta.parentCtypeId];
+
+        ctx.load(parentCtype);
+        ctx.executeQueryAsync(function () {
+          me.ctrace.log(parentCtype.get_name());
+
+          var newContentType = new SP.ContentTypeCreationInformation();
+          newContentType.set_name(ctypeMeta.name);
+          if (ctypeMeta.group)
+            newContentType.set_group(ctypeMeta.group);
+          if (ctypeMeta.description)
+            newContentType.set_description(ctypeMeta.description);
+
+          newContentType.set_parentContentType(parentCtype);
+
+          var ctype = web.get_contentTypes().add(newContentType);
+          //var ctype = webTypesCol.add(newContentType);
+
+          ctype.set_jsLink(ctypeMeta.jsLink);
+          ctype.update(false);
+
+          ctx.load(ctype);
+          //ctx.load(webTypesCol);
+          ctx.executeQueryAsync(function () {
+            dfd1.resolve(ctype);
+          }, function (s, e) {
+            me.ctrace.error(e.get_message());
+            debugger;
+          });
+        }, function (s, e) {
+          me.ctrace.error(e.get_message());
+          debugger;
+        });
+
+        return dfd1.promise();
+      };
+      var ensureFields = function (cType: SP.ContentType, meta: CTypeMeta): JQueryPromise<void> {
+        var dfd2 = $.Deferred();
+
+        var links = cType.get_fieldLinks();
+        ctx.load(links);
+        ctx.executeQueryAsync(function () {
+          var ctypeFieldLinks = utils.collectionToDictionary<SP.FieldLink>(links, function (field) { return field.get_name(); });
+
+          meta.fields.forEach(function (fieldMeta: FieldLinkMeta) {
+            if (!ctypeFieldLinks[fieldMeta.name]) {
+              me.ctrace.log(`ctype ${meta.name}: adding field link: ${fieldMeta.name}`);
+              var field = listFieldsDic[fieldMeta.name];
+              var newFieldLink = new SP.FieldLinkCreationInformation();
+              newFieldLink.set_field(field);
+              var fieldLink = links.add(newFieldLink);
+              if (fieldMeta.hidden != null)
+                fieldLink.set_hidden(fieldMeta.hidden);
+            }
+          });
+
+          cType.update(false);
+          ctx.executeQueryAsync(function () {
+            dfd2.resolve();
+          }, function (s, e) {
+            me.ctrace.error(e.get_message());
+            debugger;
+          });
+        }, function (s, e) {
+          me.ctrace.error(e.get_message());
+          debugger;
+        });
+
+        return dfd2.promise();
+      };
+
+      var ensureCtype = function (ctype: CTypeMeta): JQueryPromise<void> {
+        var name = ctype.name;
+        var cDfd = $.Deferred();
+
+        var doCtype = function (spctype: SP.ContentType) {
+
+          if (ctype.description)
+            spctype.set_description(ctype.description);
+          if (ctype.group)
+            spctype.set_group(ctype.group);
+          if (ctype.jsLink)
+            spctype.set_jsLink(ctype.jsLink);
+
+          spctype.update(false);
+          ctx.executeQueryAsync(function () {
+            ensureFields(spctype, ctype).done(function () {
+              cDfd.resolve();
+            });
+          }, function (s, e) {
+            me.ctrace.error(e.get_message());
+            debugger;
+          });
+        };
+
+        if (!listCtypesDic[name]) {
+          createCtype(ctype).done(doCtype);
+        } else {
+          doCtype(listCtypesDic[name]);
+        }
+        return cDfd.promise();
+      };
+
+      ctx.executeQueryAsync(function () {
+        listFieldsDic = utils.collectionToDictionary<SP.Field>(fieldsCol, function (field) { return field.get_internalName(); });
+        listCtypesDic = utils.collectionToDictionary<SP.ContentType>(webTypesCol, function (cType) { return cType.get_name(); });
+
+        utils.collectionToArray<SP.ContentType>(webTypesCol).forEach((x) => {
+          listCtypesDic[x.get_stringId()] = x;
+        });
+
+        utils.processAsQueue<CTypeMeta>(ctypes, (ctypeMeta) => {
+          return ensureCtype(ctypeMeta);
+        }).done(function () {
+          dfd.resolve();
+        });
+      });
+    }
+    return dfd.promise();
+  };
+  public static GetApi(ctx: SP.ClientContext): WebApi {
+    return new WebApi(ctx);
+  }
+}

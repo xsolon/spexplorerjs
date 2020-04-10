@@ -65,6 +65,13 @@ declare module "list.api" {
         ensureFolderInList(serverRelativeUrl: string, list: SP.List): JQuery.Promise<SP.Folder>;
         uploadFile(parentDir: SP.Folder, buffer: SP.Base64EncodedByteArray, filename: string, replaceInvalidChars?: boolean): JQuery.Promise<SP.File>;
     }
+    export class WebApi {
+        ctrace: Logger;
+        ctx: SP.ClientContext;
+        constructor(ctx: SP.ClientContext);
+        ensureCTypes(ctypes: CTypeMeta[], web?: SP.Web): JQueryPromise<SP.ContentType[]>;
+        static GetApi(ctx: SP.ClientContext): WebApi;
+    }
 }
 declare module "meta.api" {
     import { ListApi } from "list.api";
@@ -114,6 +121,7 @@ declare module "meta.api" {
         jsLink?: string;
     }
     export var classBuilder: (list: ListMeta) => string;
+    export var tsClassBuilder: (list: ListMeta) => string;
     export type itemsFunction = (list: SP.List, dal: ListApi) => JQuery.Promise<Array<{
         [key: string]: any;
     }>>;
@@ -175,14 +183,17 @@ declare module "utils.api" {
 declare module "def.api" {
     import { Logger } from "logger.api";
     import { funcs } from "utils.api";
-    import { ListApi, ListDal } from "list.api";
-    export interface spexplorerjs {
+    import { ListApi, ListDal, FolderApi, WebApi } from "list.api";
+    export interface Ispexplorerjs {
         [key: string]: any;
         modules: {
-            logger: Logger;
-            utils: funcs;
-            listapi: ListApi;
-            listdal: ListDal;
+            logger: new (name: string) => Logger;
+            utils: new () => funcs;
+            funcs: funcs;
+            listapi: new (ctx?: SP.ClientContext) => ListApi;
+            listdal: new (ctx?: SP.ClientContext) => ListDal;
+            folderapi: new (ctx?: SP.ClientContext) => FolderApi;
+            webapi: new (ctx?: SP.ClientContext) => WebApi;
             jQuery: JQueryStatic;
         };
     }
