@@ -1,5 +1,6 @@
 "use strict";
 /// <reference types='sharepoint'/>
+// v 0.1.8 - 2020_04_10 - loadSpElem: reject promise on failure
 // v 0.1.7 - 2020_03_24 - pageArray
 // v 0.1.6 - 2020_03_20 - log all errors on reqFailure, context optional on spLoadElem, improved getGroups
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -8,7 +9,7 @@ var defaultLogger = new logger_api_1.Logger('Utils');
 var reqFailure = function (req, reqargs, dfd, logger) {
     if (logger === void 0) { logger = defaultLogger; }
     try {
-        var msg = " Request failed " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
+        var msg = " Request failed: " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
         logger.error(msg);
     }
     catch (e) {
@@ -17,7 +18,7 @@ var reqFailure = function (req, reqargs, dfd, logger) {
     if (dfd)
         dfd.reject(msg);
 };
-exports.version = '0.1.7';
+exports.version = '0.1.8';
 var pagewps = /** @class */ (function () {
     function pagewps() {
     }
@@ -123,8 +124,8 @@ var funcs = /** @class */ (function () {
                     var props = wpp.get_properties();
                     mee.loadSpElem([wp, wpp, props], ctx).done(function () {
                         dfd.resolve(wp);
-                    });
-                });
+                    }).fail(function (e) { dfd.reject(e); });
+                }).fail(function (e) { dfd.reject(e); });
             }).promise();
         };
         this.setformJsLink = function (formUrl, ctx, bizJs) {
@@ -276,7 +277,7 @@ var funcs = /** @class */ (function () {
             sptx.executeQueryAsync(function () {
                 dfd.resolve(elem, sptx);
             }, function (r, a) {
-                reqFailure(r, a);
+                reqFailure(r, a, dfd);
             });
         }).promise();
     };

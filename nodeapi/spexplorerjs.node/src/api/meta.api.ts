@@ -3,101 +3,101 @@
 import { ListApi } from "./list.api";
 
 export class ListMeta {
-  public fields: FieldMeta[];
-  public ctypes: CTypeMeta[];
-  public listTemplate: number;
-  public title: string;
-  public defaultItems: Array<{ [key: string]: any }> | itemsFunction;
-  public afterDefaultItemsAdded?: postItemsAddedFunction;
-  public listUpdates?: listUpdatesFunction;
-  public afterListCreated?: listUpdatesFunction;
-  public permissions?: GroupMeta[];
-  public getConfig?: () => any;
+    public fields: FieldMeta[];
+    public ctypes: CTypeMeta[];
+    public listTemplate: number;
+    public title: string;
+    public defaultItems: Array<{ [key: string]: any }> | itemsFunction;
+    public afterDefaultItemsAdded?: postItemsAddedFunction;
+    public listUpdates?: listUpdatesFunction;
+    public afterListCreated?: listUpdatesFunction;
+    public permissions?: GroupMeta[];
+    public getConfig?: () => any;
 
-  constructor(title: string) {
-    this.title = title;
-    this.fields = [];
-    this.defaultItems = [];
-  }
+    constructor(title: string) {
+        this.title = title;
+        this.fields = [];
+        this.defaultItems = [];
+    }
 
-  public static version: '0.1.4';
+    public static version: '0.1.4';
 }
 
 export class GroupMeta {
-  name: string;
-  permissions: [string];
-  desc?: string = '';
+    name: string;
+    permissions: [string];
+    desc?: string = '';
 }
 
 export class FieldMeta {
-  public markup: markupFunction | string;
-  public name: string;
-  public type?: SP.FieldType;
-  public flags?: number = 0;
-  public multiValue?: boolean = false;
-  public legacyName?: string | null;
-  public title?: string | null;
-  public post?: postFunction;
-  public inDefaultView?: boolean = false;
-  public addOptions?: SP.AddFieldOptions = SP.AddFieldOptions.addFieldInternalNameHint | SP.AddFieldOptions.addToAllContentTypes
+    public markup: markupFunction | string;
+    public name: string;
+    public type?: SP.FieldType;
+    public flags?: number = 0;
+    public multiValue?: boolean = false;
+    public legacyName?: string | null;
+    public title?: string | null;
+    public post?: postFunction;
+    public inDefaultView?: boolean = false;
+    public addOptions?: SP.AddFieldOptions = SP.AddFieldOptions.addFieldInternalNameHint | SP.AddFieldOptions.addToAllContentTypes
 }
 
 export class FieldLinkMeta {
-  public name: string;
-  public hidden?: boolean = null;
+    public name: string;
+    public hidden?: boolean = null;
 }
 
 export class CTypeMeta {
-  public name: string;
-  public parentCtypeId: string;
-  public fields: FieldLinkMeta[];
-  public group?: string;
-  public description?: string;
-  public jsLink?: string;
+    public name: string;
+    public parentCtypeId: string;
+    public fields: FieldLinkMeta[];
+    public group?: string;
+    public description?: string;
+    public jsLink?: string;
 }
 
 export var classBuilder = function (list: ListMeta): string {
 
-  var fieldStr = "";
-  list.fields.forEach(function (field) {
-    fieldStr += `public static ${field.name} : string = "${field.name}";\n`;
-  });
-  var template = `export class ${list.title}Def {
+    var fieldStr = "";
+    list.fields.forEach(function (field) {
+        fieldStr += `public static ${field.name} : string = "${field.name}";\n`;
+    });
+    var template = `export class ${list.title}Def {
 	${fieldStr}
 }`
-  return template;
+    return template;
 };
 export var tsClassBuilder = function (list: ListMeta): string {
 
-  var ctypes: CTypeMeta[] = JSON.parse(JSON.stringify(list.ctypes || [])); // copy
+    var ctypes: CTypeMeta[] = JSON.parse(JSON.stringify(list.ctypes || [])); // copy
 
-  if (ctypes.length == 0) {
-    //@ts-ignore
-    ctypes.push({
-      name: '',
-      fields: list.fields,
-    });
-  }
-  var fields: { [key: string]: string } = {};
-  list.fields.forEach((f) => {
-    var sType = "string"
-    if (f.type == SP.FieldType.user) {
-      sType = 'SP.FieldUserValue';
+    if (ctypes.length == 0) {
+        //@ts-ignore
+        ctypes.push({
+            name: '',
+            fields: list.fields,
+        });
     }
-    else if (f.type == SP.FieldType.lookup) {
-      sType = 'SP.FieldLookupValue';
-    }
-    else if (f.type == SP.FieldType.boolean) {
-      sType = 'boolean';
-    }
-    else if (f.type == SP.FieldType.dateTime) {
-      sType = 'Date';
-    }
+    var fields: { [key: string]: string } = {};
+    list.fields.forEach((f) => {
+        var sType = "string"
+        if (f.type == SP.FieldType.user) {
+            sType = 'SP.FieldUserValue';
+        }
+        else if (f.type == SP.FieldType.lookup) {
+            sType = 'SP.FieldLookupValue';
+        }
+        else if (f.type == SP.FieldType.boolean) {
+            sType = 'boolean';
+        }
+        else if (f.type == SP.FieldType.dateTime) {
+            sType = 'Date';
+        }
 
-    if (f.multiValue) {
-      sType += '[]';
-    }
-    var tmp = `${f.name}(val?: ${sType}): ${sType} {
+        if (f.multiValue) {
+            sType += '[]';
+        }
+        var tmp = `${f.name}(val?: ${sType}): ${sType} {
     var me = this;
     if (val) {
       me.li.set_item('${f.name}', val);
@@ -107,20 +107,20 @@ export var tsClassBuilder = function (list: ListMeta): string {
   }
 
 `;
-    //fields.push( );
-    fields[f.name] = tmp;
-  });
-
-  var res = '/// <reference types="sharepoint" />';
-  ctypes.forEach((c) => {
-
-    var ctypeFields = [];
-    c.fields.forEach((f) => {
-      ctypeFields.push(fields[f.name]);
+        //fields.push( );
+        fields[f.name] = tmp;
     });
 
-    var className = `${list.title.replace(/ /g, '')}${c.name.replace(/ /g, '')}Type`;
-    res += `
+    var res = '/// <reference types="sharepoint" />';
+    ctypes.forEach((c) => {
+
+        var ctypeFields = [];
+        c.fields.forEach((f) => {
+            ctypeFields.push(fields[f.name]);
+        });
+
+        var className = `${list.title.replace(/ /g, '')}${c.name.replace(/ /g, '')}Type`;
+        res += `
 export class ${className} {
   li: SP.ListItem;
   constructor(li?: SP.ListItem) {
@@ -130,9 +130,9 @@ export class ${className} {
   spitem(li?: SP.ListItem): SP.ListItem {
     if (li)
       this.li = li;
-    return li;
+    return this.li;
   }
-  id(val?: string): number{
+  id(val?: number): number{
     var me = this;
     if (val) {
       me.li.set_item('ID', val);
@@ -143,9 +143,24 @@ export class ${className} {
   title (val?: string): string {
     var me = this;
     if (val) {
-      me.li.set_item('title', val);
+      me.li.set_item('Title', val);
     }
-    var res: string = me.li.get_item('title');
+    var res: string = me.li.get_item('Title');
+    return res;
+  }
+  FileLeafRef(): string {
+    var me = this;
+    var res: string = me.li.get_item('FileLeafRef');
+    return res;
+  }
+  FileRef(): string {
+    var me = this;
+    var res: string = me.li.get_item('FileRef');
+    return res;
+  }
+  FileDirRef(): string {
+    var me = this;
+    var res: string = me.li.get_item('FileDirRef');
     return res;
   }
   ${ctypeFields.join(' ')}
@@ -170,8 +185,8 @@ export class ${className} {
 }
 `;
 
-  });
-  return res;
+    });
+    return res;
 };
 
 

@@ -35,7 +35,7 @@ export declare class ListApi {
     }>, splist: SP.List, folderUrl?: string, pageNum?: number): JQuery.Promise<Array<SP.ListItem>>;
     getQuery(caml?: string, folder?: string): SP.CamlQuery;
     runAllQuery(query: SP.CamlQuery, splist: SP.List, limit?: number, trace?: Logger): JQuery.Promise<Array<SP.ListItem>>;
-    getAll(splist: SP.List, caml: string, folder?: string, limit?: number): JQuery.Promise<Array<SP.ListItem>>;
+    getAll(splist: SP.List, caml?: string, folder?: string, limit?: number): JQuery.Promise<Array<SP.ListItem>>;
 }
 export declare class FolderApi {
     ctrace: Logger;

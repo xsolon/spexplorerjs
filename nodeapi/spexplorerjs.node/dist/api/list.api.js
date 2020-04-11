@@ -200,34 +200,22 @@ var ListApi = /** @class */ (function () {
         else {
             var listCtypes = splist.get_contentTypes();
             var listFields = splist.get_fields();
-            var rootWeb = ctx.get_site().get_rootWeb();
-            var rootContentTypeCollection = rootWeb.get_contentTypes();
-            var webTypesCol = splist.get_parentWeb().get_contentTypes();
+            var webTypesCol = splist.get_parentWeb().get_availableContentTypes();
             splist.set_contentTypesEnabled(true);
             splist.update();
-            ctx.load(rootContentTypeCollection);
             ctx.load(webTypesCol);
             ctx.load(listFields);
             ctx.load(listCtypes);
+            var webCtypesDic = null;
             var listCtypesDic = null;
             var listFieldsDic = null;
             var createCtype = function (ctypeMeta) {
                 var dfd1 = $.Deferred();
-                var webCtypesDic = utils.collectionToDictionary(webTypesCol, function (c) { return c.get_id().get_stringValue(); });
-                var rootCtypesDic = utils.collectionToDictionary(rootContentTypeCollection, function (c) { return c.get_id().get_stringValue(); });
                 var parentCtype = null;
                 if (webCtypesDic[ctypeMeta.parentCtypeId])
                     parentCtype = webCtypesDic[ctypeMeta.parentCtypeId];
-                else if (rootCtypesDic[ctypeMeta.parentCtypeId])
-                    parentCtype = rootCtypesDic[ctypeMeta.parentCtypeId];
-                else {
-                    webCtypesDic = utils.collectionToDictionary(webTypesCol, function (c) { return c.get_name(); });
-                    rootCtypesDic = utils.collectionToDictionary(rootContentTypeCollection, function (c) { return c.get_name(); });
-                    if (webCtypesDic[ctypeMeta.parentCtypeId])
-                        parentCtype = webCtypesDic[ctypeMeta.parentCtypeId];
-                    else
-                        parentCtype = rootCtypesDic[ctypeMeta.parentCtypeId];
-                }
+                else
+                    throw "Ctype " + ctypeMeta.parentCtypeId + " not found!";
                 ctx.load(parentCtype);
                 ctx.executeQueryAsync(function () {
                     me.ctrace.log(parentCtype.get_name());
@@ -316,6 +304,8 @@ var ListApi = /** @class */ (function () {
             ctx.executeQueryAsync(function () {
                 listFieldsDic = utils.collectionToDictionary(listFields, function (field) { return field.get_internalName(); });
                 listCtypesDic = utils.collectionToDictionary(listCtypes, function (cType) { return cType.get_name(); });
+                webCtypesDic = utils.collectionToDictionary(webTypesCol, function (c) { return c.get_name(); });
+                utils.collectionToArray(webTypesCol).forEach(function (x) { listCtypesDic[x.get_stringId()] = x; });
                 utils.processAsQueue(ctypes, function (ctypeMeta) {
                     return ensureCtype(ctypeMeta);
                 }).done(function () {
@@ -807,13 +797,13 @@ var WebApi = /** @class */ (function () {
             var webTypesCol = web.get_availableContentTypes();
             ctx.load(webTypesCol);
             ctx.load(fieldsCol);
-            var listCtypesDic = null;
-            var listFieldsDic = null;
+            var ctypesDic = null;
+            var fieldsDic = null;
             var createCtype = function (ctypeMeta) {
                 var dfd1 = $.Deferred();
                 var parentCtype = null;
-                if (listCtypesDic[ctypeMeta.parentCtypeId])
-                    parentCtype = listCtypesDic[ctypeMeta.parentCtypeId];
+                if (ctypesDic[ctypeMeta.parentCtypeId])
+                    parentCtype = ctypesDic[ctypeMeta.parentCtypeId];
                 ctx.load(parentCtype);
                 ctx.executeQueryAsync(function () {
                     me.ctrace.log(parentCtype.get_name());
@@ -851,7 +841,7 @@ var WebApi = /** @class */ (function () {
                     meta.fields.forEach(function (fieldMeta) {
                         if (!ctypeFieldLinks[fieldMeta.name]) {
                             me.ctrace.log("ctype " + meta.name + ": adding field link: " + fieldMeta.name);
-                            var field = listFieldsDic[fieldMeta.name];
+                            var field = fieldsDic[fieldMeta.name];
                             var newFieldLink = new SP.FieldLinkCreationInformation();
                             newFieldLink.set_field(field);
                             var fieldLink = links.add(newFieldLink);
@@ -892,19 +882,19 @@ var WebApi = /** @class */ (function () {
                         debugger;
                     });
                 };
-                if (!listCtypesDic[name]) {
+                if (!ctypesDic[name]) {
                     createCtype(ctype).done(doCtype);
                 }
                 else {
-                    doCtype(listCtypesDic[name]);
+                    doCtype(ctypesDic[name]);
                 }
                 return cDfd.promise();
             };
             ctx.executeQueryAsync(function () {
-                listFieldsDic = utils.collectionToDictionary(fieldsCol, function (field) { return field.get_internalName(); });
-                listCtypesDic = utils.collectionToDictionary(webTypesCol, function (cType) { return cType.get_name(); });
+                fieldsDic = utils.collectionToDictionary(fieldsCol, function (field) { return field.get_internalName(); });
+                ctypesDic = utils.collectionToDictionary(webTypesCol, function (cType) { return cType.get_name(); });
                 utils.collectionToArray(webTypesCol).forEach(function (x) {
-                    listCtypesDic[x.get_stringId()] = x;
+                    ctypesDic[x.get_stringId()] = x;
                 });
                 utils.processAsQueue(ctypes, function (ctypeMeta) {
                     return ensureCtype(ctypeMeta);
