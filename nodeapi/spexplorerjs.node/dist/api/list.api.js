@@ -751,13 +751,16 @@ var FolderApi = /** @class */ (function () {
      * @param filename: name of the file to save in sharepoint
      * @param replaceInvalidChars : replace invalid charaters (for onpremises)
      */
-    FolderApi.prototype.uploadFile = function (parentDir, buffer, filename, replaceInvalidChars) {
+    FolderApi.prototype.uploadFile = function (parentDir, buffer, filename, replaceInvalidChars, createInfo) {
         if (replaceInvalidChars === void 0) { replaceInvalidChars = true; }
         var me = this;
         var ctx = me.ctx;
         var trace = me.ctrace;
         var p = $.Deferred();
-        var createInfo = new SP.FileCreationInformation();
+        if (!createInfo) {
+            var createInfo = new SP.FileCreationInformation();
+            createInfo.set_overwrite(true);
+        }
         createInfo.set_content(buffer);
         var fileName = filename;
         if (replaceInvalidChars)

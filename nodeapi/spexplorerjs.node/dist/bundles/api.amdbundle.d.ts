@@ -63,7 +63,7 @@ declare module "list.api" {
         pathSteps(path: string): Array<string>;
         createFolderInList: (name: string, parentFolderPath: string, list: SP.List<any>) => JQuery.Promise<SP.Folder, any, any>;
         ensureFolderInList(serverRelativeUrl: string, list: SP.List): JQuery.Promise<SP.Folder>;
-        uploadFile(parentDir: SP.Folder, buffer: SP.Base64EncodedByteArray, filename: string, replaceInvalidChars?: boolean): JQuery.Promise<SP.File>;
+        uploadFile(parentDir: SP.Folder, buffer: SP.Base64EncodedByteArray, filename: string, replaceInvalidChars?: boolean, createInfo?: SP.FileCreationInformation): JQuery.Promise<SP.File>;
     }
     export class WebApi {
         ctrace: Logger;

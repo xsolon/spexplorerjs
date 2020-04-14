@@ -57,7 +57,7 @@ export declare class FolderApi {
      * @param filename: name of the file to save in sharepoint
      * @param replaceInvalidChars : replace invalid charaters (for onpremises)
      */
-    uploadFile(parentDir: SP.Folder, buffer: SP.Base64EncodedByteArray, filename: string, replaceInvalidChars?: boolean): JQuery.Promise<SP.File>;
+    uploadFile(parentDir: SP.Folder, buffer: SP.Base64EncodedByteArray, filename: string, replaceInvalidChars?: boolean, createInfo?: SP.FileCreationInformation): JQuery.Promise<SP.File>;
 }
 export declare class WebApi {
     ctrace: Logger;

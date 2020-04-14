@@ -835,15 +835,19 @@ export class FolderApi {
      * @param filename: name of the file to save in sharepoint
      * @param replaceInvalidChars : replace invalid charaters (for onpremises)
      */
-    uploadFile(parentDir: SP.Folder, buffer: SP.Base64EncodedByteArray, filename: string, replaceInvalidChars = true): JQuery.Promise<SP.File> {
+    uploadFile(parentDir: SP.Folder, buffer: SP.Base64EncodedByteArray, filename: string, replaceInvalidChars = true, createInfo?: SP.FileCreationInformation): JQuery.Promise<SP.File> {
         var me = this;
         var ctx = me.ctx;
         var trace = me.ctrace;
 
         var p = $.Deferred();
 
-        var createInfo = new SP.FileCreationInformation();
+        if (!createInfo) {
+            var createInfo = new SP.FileCreationInformation();
+            createInfo.set_overwrite(true);
+        }
         createInfo.set_content(buffer);
+
         var fileName = filename;
         if (replaceInvalidChars)
             fileName = fileName.replace(/[#%\*:<>?\/|]/g, "");// remove invalid chars
