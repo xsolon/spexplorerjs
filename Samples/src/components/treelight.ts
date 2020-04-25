@@ -2,7 +2,7 @@
 /// <reference types='jstree' />
 import 'jstree/dist/themes/default/style.css';
 import 'spexplorerts/api/def.api';
-import { spexplorerjs } from 'spexplorerts/api/def.api';
+import { Ispexplorerjs } from 'spexplorerts/api/def.api';
 import { Logger, funcs } from 'spexplorerts';
 
 require('jstree');
@@ -15,7 +15,7 @@ export class TreeLight {
     var ui = $(el);
     var me = this;
     trace.log('TreeLight.init');
-    var ns: spexplorerjs = window['spexplorerjs']
+    var ns: Ispexplorerjs = window['spexplorerjs']
     ExecuteOrDelayUntilScriptLoaded(() => {
       var ctx = SP.ClientContext.get_current();
 

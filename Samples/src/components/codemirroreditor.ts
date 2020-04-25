@@ -2,7 +2,7 @@
 /// <reference types='jstree' />
 import 'jstree/dist/themes/default/style.css';
 import 'spexplorerts/api/def.api';
-import { spexplorerjs } from 'spexplorerts/api/def.api';
+import { Ispexplorerjs } from 'spexplorerts/api/def.api';
 import { Logger, funcs } from 'spexplorerts';
 import * as tmp from './searchbox.template.html';
 import { CodeMirrorHelper } from './jseditor';
@@ -15,7 +15,7 @@ export class CodeMirrorEditor {
   constructor(el: any, opts?: { [key: string]: any }) {
     var ui = $(el);
     trace.log('CodeMirrorEditor.init');
-    var ns: spexplorerjs = window['spexplorerjs']
+    var ns: Ispexplorerjs = window['spexplorerjs']
     var helper = new CodeMirrorHelper();
 
     ui.html(tmp);
