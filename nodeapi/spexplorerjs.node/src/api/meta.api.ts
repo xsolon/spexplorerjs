@@ -133,6 +133,7 @@ export class ${className} {
       this.li = li;
     return this.li;
   }
+  update():void { this.li.update(); }
   id(val?: number): number{
     var me = this;
     if (arguments.length) {
@@ -162,6 +163,18 @@ export class ${className} {
   FileDirRef(): string {
     var me = this;
     var res: string = me.li.get_item('FileDirRef');
+    return res;
+  }
+  Modified(): Date {
+    var res: Date = this.li.get_item('Modified');
+    return res;
+  }
+  Editor(): SP.FieldUserValue {
+    var res: SP.FieldUserValue = this.li.get_item('Editor');
+    return res;
+  }
+  Author(): SP.FieldUserValue {
+    var res: SP.FieldUserValue = this.li.get_item('Author');
     return res;
   }
   ${ctypeFields.join(' ')}
