@@ -10,7 +10,7 @@ var getConfig = function (debug) {
       //search:'./src/components/SearchBox.ts',
       tree: './src/treeSample.ts'
     },
-    devtool: "inline-source-map",
+    devtool: debug ? "inline-source-map" : false,
     optimization: {
       minimize: debug ? false : true
     },
@@ -69,13 +69,11 @@ var getConfig = function (debug) {
     },
     output: {
       filename: debug ? '[name].js' : '[name].min.js',
-      //filename:'[name].js',
       path: path.resolve(__dirname, 'public/javascripts')
     }
   };
 
   return config;
-
 };
 var debugConfig = getConfig(true);
 const compiler = webpack(debugConfig);
@@ -95,14 +93,14 @@ compiler.run((err, stats) => {
 var prodConfig = getConfig(false);
 const compiler2 = webpack(prodConfig);
 //if (false)
-  compiler2.run((err, stats) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
+compiler2.run((err, stats) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
 
-    console.log(stats.toString({
-      chunks: false,  // Makes the build much quieter
-      colors: true    // Shows colors in the console
-    }));
-  });
+  console.log(stats.toString({
+    chunks: false,  // Makes the build much quieter
+    colors: true    // Shows colors in the console
+  }));
+});

@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "buildall",
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build",
+			"label": "npm: buildall",
+			"detail": "tsc --build & node packer.js all"
+		}
+	]
+}
