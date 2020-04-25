@@ -1,4 +1,5 @@
-﻿//var fs = require("fs");
+﻿var LZString = require('lz-string');
+var fs = require("fs");
 var path = require("path");
 var webpack = require("webpack");
 
@@ -82,6 +83,8 @@ compiler.run((err, stats) => {
   if (err) {
     console.error(err);
     return;
+  } else {
+    updateTemplate(true);
   }
 
   console.log(stats.toString({
@@ -90,6 +93,36 @@ compiler.run((err, stats) => {
   }));
 });
 
+var updateTemplate = function (debug) {
+  var jsPath = './public/javascripts/tree.js';
+  var resPath = './public/spexplorerjs.debug.aspx';
+  if (!debug) {
+    jsPath = './public/javascripts/tree.min.js';
+    resPath = './public/spexplorerjs.aspx';
+  }
+
+  var script = fs.readFileSync(jsPath).toString();
+
+  script = script
+    // .replace('"<script>"','"<" + "script>"')
+    // .replace(/</g,'&lt;')
+    //.replace(/</g,'>')
+    // .replace(/>/g,'&gt;')
+    //.replace(/>/g,'&gt;')
+    // .replace(/&&/g,'&amp;&amp;')
+    //..replace(/>/g,'\\x3C')
+    ;
+
+  script = LZString.compressToBase64(script);
+  var tmpPath = './src/templates/spexplorerjs.aspx';
+  var template = fs.readFileSync(tmpPath).toString();
+
+  template = template.replace('{0}',script);
+//   template = template + `${script}</script>
+// </asp:Content>`;
+
+  fs.writeFileSync(resPath, template);
+};
 var prodConfig = getConfig(false);
 const compiler2 = webpack(prodConfig);
 //if (false)
@@ -97,6 +130,9 @@ compiler2.run((err, stats) => {
   if (err) {
     console.error(err);
     return;
+  }
+  else {
+    updateTemplate(false);
   }
 
   console.log(stats.toString({

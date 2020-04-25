@@ -41,6 +41,7 @@
     "jquery": "^3.4.1",
     "js-beautify": "^1.10.3",
     "jshint": "^2.11.0",
+    "lz-string": "^1.4.4",
     "node-sass": "^4.13.1",
     "popper.js": "^1.16.1",
     "postcss-loader": "^3.0.0",

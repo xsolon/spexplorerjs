@@ -3,6 +3,16 @@
 	"tasks": [
 		{
 			"type": "npm",
+			"script": "start",
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build",
+			"label": "npm: start",
+			"detail": "node app"
+		},
+		{
+			"type": "npm",
 			"script": "buildall",
 			"problemMatcher": [
 				"$go"
