@@ -70,3 +70,5 @@ packages
 /.vs/config/applicationhost.config
 /routes/.vs
 /nodeapi/spexplorerjs.node/*.user
+.vs/spexplorerjs/v16/TestStore/0/000.testlog
+.vs/spexplorerjs/v16/TestStore/0/testlog.manifest
