@@ -1,4 +1,5 @@
-﻿var LZString = require('lz-string');
+﻿const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+var LZString = require('lz-string');
 var fs = require("fs");
 var path = require("path");
 var webpack = require("webpack");
@@ -9,7 +10,8 @@ var getConfig = function (debug) {
     entry: {
       //main:'./src/codeMirrorSample.ts',
       //search:'./src/components/SearchBox.ts',
-      tree: './src/treeSample.ts'
+      tree: './src/treeSample.ts',
+      monaco: './src/monacoSample.ts',
     },
     devtool: debug ? "inline-source-map" : false,
     optimization: {
@@ -42,8 +44,8 @@ var getConfig = function (debug) {
           use: [
             "url-loader"
           ]
-        }
-        , {
+        },
+        {
           test: /\.(scss)$/,
           use: [{
             loader: 'style-loader', // inject CSS to page
@@ -62,15 +64,32 @@ var getConfig = function (debug) {
           }, {
             loader: 'sass-loader' // compiles Sass to CSS
           }]
+        },
+        {
+          test: /\.ttf$/,
+          use: [{
+            loader: 'url-loader', 
+            options: { },
+          }]
         }
       ]
     },
+    plugins: [
+      new webpack.optimize.LimitChunkCountPlugin({
+        maxChunks: 1,
+      }),
+      new MonacoWebpackPlugin({
+        // languages: ['typescript'],
+        // features: ['folding']
+      })
+    ],
     resolve: {
       extensions: ['.tsx', '.ts', '.js']
     },
     output: {
+      publicPath: '/javascripts/',
       filename: debug ? '[name].js' : '[name].min.js',
-      path: path.resolve(__dirname, 'public/javascripts')
+      path: path.resolve(__dirname, 'public/javascripts'),
     }
   };
 
@@ -117,26 +136,26 @@ var updateTemplate = function (debug) {
   var tmpPath = './src/templates/spexplorerjs.aspx';
   var template = fs.readFileSync(tmpPath).toString();
 
-  template = template.replace('{0}',script);
-//   template = template + `${script}</script>
-// </asp:Content>`;
+  template = template.replace('{0}', script);
+  //   template = template + `${script}</script>
+  // </asp:Content>`;
 
   fs.writeFileSync(resPath, template);
 };
 var prodConfig = getConfig(false);
 const compiler2 = webpack(prodConfig);
-//if (false)
-compiler2.run((err, stats) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  else {
-    updateTemplate(false);
-  }
+// if (false)
+  compiler2.run((err, stats) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    else {
+      updateTemplate(false);
+    }
 
-  console.log(stats.toString({
-    chunks: false,  // Makes the build much quieter
-    colors: true    // Shows colors in the console
-  }));
-});
+    console.log(stats.toString({
+      chunks: false,  // Makes the build much quieter
+      colors: true    // Shows colors in the console
+    }));
+  });
