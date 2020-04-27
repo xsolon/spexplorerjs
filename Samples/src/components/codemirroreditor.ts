@@ -6,6 +6,7 @@ import { Ispexplorerjs } from 'spexplorerts/api/def.api';
 import { Logger, funcs } from 'spexplorerts';
 import * as tmp from './searchbox.template.html';
 import { CodeMirrorHelper } from './jseditor';
+import { MyMonacoEditor } from './myMonacoEditor';
 
 var trace: Logger = Logger.get("logger");
 trace.shouldDebug = true;
@@ -23,16 +24,17 @@ export class CodeMirrorEditor {
     var xmlEditor = helper.createXmlEditor(xmlUi, 'Xml Editor');
     this.xmlEditor = xmlEditor;
     var jsUi = $('#jsMirror', ui)[0];
-    var jsEditor = helper.createJsEditor(jsUi, "Code Editor");
+    // var jsEditor = helper.createJsEditor(jsUi, "Code Editor");
+    var jsEditor = new MyMonacoEditor(jsUi, 'javascript', 'var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
 
-    jsEditor.setValue('var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
+    // jsEditor.setValue('var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
 
     var onRun = function () {
       var code = jsEditor.getValue();
       runScript(code);
     };
 
-    var elem = jsEditor.getTextArea();
+    var elem = jsUi;//jsEditor.getTextArea();
     $(elem).on('run', onRun);
 
     $('#editorXmlTab').click(() => {

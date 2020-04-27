@@ -1,3 +1,4 @@
+/// <reference types='jquery' />
 import * as monaco from "monaco-editor";
 import * as tmp from 'spexplorerts/bundles/api.amdbundle.d.html';
 import * as sp from 'spexplorerts/bundles/sp.d.html';
@@ -11,20 +12,6 @@ self.MonacoEnvironment = {
         };
         importScripts('https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/base/worker/workerMain.js');`
         )}`;
-
-        if (label === "json") {
-            return "./javascripts/json.worker.js";
-        }
-        if (label === "css") {
-            return "./javascripts/css.worker.js";
-        }
-        if (label === "html") {
-            return "./javascripts/html.worker.js";
-        }
-        if (label === "typescript" || label === "javascript") {
-            return "./javascripts/ts.worker.js";
-        }
-        return "./javascripts/editor.worker.js";
     }
 };
 
@@ -36,44 +23,74 @@ self.MonacoEnvironment = {
 
 // compiler options
 monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-	target: monaco.languages.typescript.ScriptTarget.ES2016,
-	allowNonTsExtensions: true
+    target: monaco.languages.typescript.ScriptTarget.ES2016,
+    allowNonTsExtensions: true
 });
 
-// monaco.languages.typescript.typescriptDefaults.addExtraLib(tmp, 'ts:filename/spexplorerjs.d.ts');
-// monaco.languages.typescript.typescriptDefaults.addExtraLib(sp, 'ts:filename/sharepoint.d.ts');
-// monaco.languages.typescript.typescriptDefaults.addExtraLib('export declare module martin {}', 'node_modules/@types/martin.d.ts');
+//monaco.languages.typescript.javascriptDefaults.addExtraLib(tmp, 'ts:filename/spexplorerjs.d.ts');
+monaco.languages.typescript.javascriptDefaults.addExtraLib(sp, 'ts:filename/mysp.d.ts');
 // extra libraries
-monaco.languages.typescript.javascriptDefaults.addExtraLib([
-	'declare class Facts {',
-	'    /**',
-	'     * Returns the next fact',
-	'     */',
-	'    static next():string',
-	'}',
-].join('\n'), 'ts:filename/facts.d.ts');
+monaco.languages.typescript.javascriptDefaults.addExtraLib(
+    `declare class Test{
+        static next():string,
+    }`, 'ts:filename/test.d.ts');
+monaco.languages.typescript.javascriptDefaults.addExtraLib(
+    `declare class Test1{
+        static next():string,
+    }`, 'inmemory://model/test1.d.ts');
 
 export class MyMonacoEditor {
-    constructor(elem: string | HTMLElement, type: string, value: string) {
+    constructor(elemorId: string | HTMLElement, type: string, value: string) {
 
-        if (typeof elem === 'string')
-            elem = document.getElementById(elem);
+        var elem: HTMLElement;
+        if (typeof elemorId === 'string')
+            elem = document.getElementById(elemorId);
+            else elem = elemorId;
 
-        var uri = monaco.Uri.parse('file:///main.tsx');
-value = `
-"use strict";
+        var model = monaco.editor.createModel(value, type, monaco.Uri.parse('file:///main.tsx'));
+        this.editor = monaco.editor.create(elem, { model: model });
 
-class Chuck {
-    greet() {
-        return Facts.next();
-    }
-}
-`;
-        var model = monaco.editor.createModel(value, type, uri);
-        this.editor = monaco.editor.create(elem, {
-            // model: model
-            value: value,
-            language: 'javascript'
+        // Explanation:
+        // Press F1 (Alt-F1 in Edge) => the action will appear and run if it is enabled
+        // Press Ctrl-F10 => the action will run if it is enabled
+        // Press Chord Ctrl-K, Ctrl-M => the action will run if it is enabled
+
+        this.editor.addAction({
+            id: 'format',
+            label: 'Format',
+            keybindings: [ monaco.KeyMod.Alt | monaco.KeyCode.KEY_F, ],
+            precondition: null,
+            keybindingContext: null,
+            contextMenuGroupId: 'navigation',
+            contextMenuOrder: 1.5,
+            run: function (ed) {
+                ed.getAction('editor.action.formatDocument').run();
+                return null;
+            }
+        });
+        this.editor.addAction({
+            // An unique identifier of the contributed action.
+            id: 'runIt',
+            // A label of the action that will be presented to the user.
+            label: 'Run',
+            // An optional array of keybindings for the action.
+            keybindings: [
+                monaco.KeyMod.Alt | monaco.KeyCode.KEY_R,
+                // chord
+                //monaco.KeyMod.chord(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_K, monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_M)
+            ],
+            // A precondition for this action.
+            precondition: null,
+            // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
+            keybindingContext: null,
+            contextMenuGroupId: 'navigation',
+            contextMenuOrder: 1.5,
+            // Method that will be executed when the action is triggered.
+            // @param editor The editor instance is passed in as a convinience
+            run: function (ed) {
+                $(elem).trigger("run",ed.getValue());
+                return null;
+            }
         });
     }
     editor: monaco.editor.IStandaloneCodeEditor;

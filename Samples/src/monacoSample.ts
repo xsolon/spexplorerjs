@@ -1,6 +1,6 @@
 import { MyMonacoEditor } from './components/myMonacoEditor'
 var jQuery = require('jquery');
-var editor = new MyMonacoEditor('mirror', 'typescript', 'function test(){alert("hi");}');
+var editor = new MyMonacoEditor('mirror', 'javascript', 'function test(){alert("hi");}');
 
 // if (false)
 //     editor.setValue(`

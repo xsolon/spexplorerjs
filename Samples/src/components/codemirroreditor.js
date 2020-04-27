@@ -7,6 +7,7 @@ require("spexplorerts/api/def.api");
 var spexplorerts_1 = require("spexplorerts");
 var tmp = require("./searchbox.template.html");
 var jseditor_1 = require("./jseditor");
+var myMonacoEditor_1 = require("./myMonacoEditor");
 var trace = spexplorerts_1.Logger.get("logger");
 trace.shouldDebug = true;
 var CodeMirrorEditor = /** @class */ (function () {
@@ -20,13 +21,14 @@ var CodeMirrorEditor = /** @class */ (function () {
         var xmlEditor = helper.createXmlEditor(xmlUi, 'Xml Editor');
         this.xmlEditor = xmlEditor;
         var jsUi = $('#jsMirror', ui)[0];
-        var jsEditor = helper.createJsEditor(jsUi, "Code Editor");
-        jsEditor.setValue('var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
+        // var jsEditor = helper.createJsEditor(jsUi, "Code Editor");
+        var jsEditor = new myMonacoEditor_1.MyMonacoEditor(jsUi, 'javascript', 'var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
+        // jsEditor.setValue('var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
         var onRun = function () {
             var code = jsEditor.getValue();
             runScript(code);
         };
-        var elem = jsEditor.getTextArea();
+        var elem = jsUi; //jsEditor.getTextArea();
         $(elem).on('run', onRun);
         $('#editorXmlTab').click(function () {
             setTimeout(function () {

@@ -11,7 +11,7 @@ var getConfig = function (debug) {
       //main:'./src/codeMirrorSample.ts',
       //search:'./src/components/SearchBox.ts',
       tree: './src/treeSample.ts',
-      monaco: './src/monacoSample.ts',
+      //monaco: './src/monacoSample.ts',
     },
     devtool: debug ? "inline-source-map" : false,
     optimization: {
@@ -79,7 +79,7 @@ var getConfig = function (debug) {
         maxChunks: 1,
       }),
       new MonacoWebpackPlugin({
-        // languages: ['typescript'],
+        languages: ['javascript'],
         // features: ['folding']
       })
     ],
