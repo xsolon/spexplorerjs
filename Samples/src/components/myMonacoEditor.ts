@@ -1,8 +1,38 @@
 /// <reference types='jquery' />
 import * as monaco from "monaco-editor";
 import * as tmp from 'spexplorerts/bundles/api.amdbundle.d.html';
-import * as sp from 'spexplorerts/bundles/sp.d.html';
+import * as sp from '../defs/sp.d.html';
 
+//https://github.com/microsoft/monaco-typescript/pull/8
+// namespace ts {
+//     interface IMonacoTypeScriptServiceProxy {
+//         _getModel(uri: string): Promise<{ _eol: string, _lineStarts: any, _Lines: string[], length: number, _uri: monaco.Uri, _versionId: number }>;
+//         getCompilationSettings(): Promise<CompilerOptions>;
+//         getCompilerOptionsDiagnostics(): Promise<Diagnostic[]>;
+//         getCompletionEntryDetails(uri: string, position: number, name: string, formatOptions: FormatCodeOptions | FormatCodeSettings | undefined, source: string | undefined, preferences: UserPreferences | undefined): Promise<CompletionEntryDetails | undefined>;
+//         getCompletionsAtPosition(uri: string, position: number, options: GetCompletionsAtPositionOptions | undefined): Promise<WithMetadata<CompletionInfo> | undefined>;
+//         getCurrentDirectory(): Promise<string>;
+//         getDefaultLibFileName(options: CompilerOptions): Promise<string>;
+//         getDefinitionAtPosition(uri: string, position: number): Promise<ReadonlyArray<DefinitionInfo> | undefined>;
+//         getEmitOutput(uri: string, emitOnlyDtsFiles?: boolean): Promise<EmitOutput>;
+//         getFormattingEditsAfterKeystroke(uri: string, position: number, key: string, options: FormatCodeOptions | FormatCodeSettings): Promise<TextChange[]>;
+//         getFormattingEditsForDocument(uri: string, options: FormatCodeOptions | FormatCodeSettings): Promise<TextChange[]>;
+//         getFormattingEditsForRange(uri: string, start: number, end: number, options: FormatCodeOptions | FormatCodeSettings): Promise<TextChange[]>;
+//         getNavigationBarItems(uri: string): Promise<NavigationBarItem[]>;
+//         getOccurrencesAtPosition(uri: string, position: number): Promise<ReadonlyArray<ReferenceEntry> | undefined>;
+//         getQuickInfoAtPosition(uri: string, position: number): Promise<QuickInfo | undefined>;
+//         getReferencesAtPosition(uri: string, position: number): Promise<ReferenceEntry[] | undefined>;
+//         getScriptFileNames(): Promise<string[]>;
+//         getScriptKind(uri: string): Promise<ScriptKind>;
+//         getScriptSnapshot(uri: string): Promise<IScriptSnapshot | undefined>;
+//         getScriptVersion(uri: string): Promise<string>;
+//         /** The first time this is called, it will return global diagnostics (no location). */
+//         getSemanticDiagnostics(uri: string): Promise<Diagnostic[]>;
+//         getSignatureHelpItems(uri: string, position: number, options: SignatureHelpItemsOptions | undefined): Promise<SignatureHelpItems | undefined>;
+//         getSyntacticDiagnostics(uri: string): Promise<DiagnosticWithLocation[]>;
+//         isDefaultLibFileName(uri: string): Promise<boolean>;
+//     }
+// }
 // @ts-ignore
 self.MonacoEnvironment = {
     getWorkerUrl: function (moduleId, label) {
@@ -22,19 +52,19 @@ self.MonacoEnvironment = {
 // });
 
 // compiler options
-monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-    target: monaco.languages.typescript.ScriptTarget.ES2016,
+monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+    target: monaco.languages.typescript.ScriptTarget.ES5,
     allowNonTsExtensions: true
 });
 
-//monaco.languages.typescript.javascriptDefaults.addExtraLib(tmp, 'ts:filename/spexplorerjs.d.ts');
-monaco.languages.typescript.javascriptDefaults.addExtraLib(sp, 'ts:filename/mysp.d.ts');
+monaco.languages.typescript.typescriptDefaults.addExtraLib(tmp, 'ts:filename/spexplorerjs.d.ts');
+monaco.languages.typescript.typescriptDefaults.addExtraLib(sp, 'ts:filename/mysp.d.ts');
 // extra libraries
-monaco.languages.typescript.javascriptDefaults.addExtraLib(
+monaco.languages.typescript.typescriptDefaults.addExtraLib(
     `declare class Test{
         static next():string,
     }`, 'ts:filename/test.d.ts');
-monaco.languages.typescript.javascriptDefaults.addExtraLib(
+monaco.languages.typescript.typescriptDefaults.addExtraLib(
     `declare class Test1{
         static next():string,
     }`, 'inmemory://model/test1.d.ts');
@@ -45,11 +75,16 @@ export class MyMonacoEditor {
         var elem: HTMLElement;
         if (typeof elemorId === 'string')
             elem = document.getElementById(elemorId);
-            else elem = elemorId;
+        else elem = elemorId;
 
         var model = monaco.editor.createModel(value, type, monaco.Uri.parse('file:///main.tsx'));
-        this.editor = monaco.editor.create(elem, { model: model });
 
+        this.editor = monaco.editor.create(elem, { model: model });
+        monaco.languages.typescript.getTypeScriptWorker().then((worker) => {
+            worker(model.uri).then((client) => {
+                this.tsproxy = client;
+            });
+        });
         // Explanation:
         // Press F1 (Alt-F1 in Edge) => the action will appear and run if it is enabled
         // Press Ctrl-F10 => the action will run if it is enabled
@@ -58,7 +93,7 @@ export class MyMonacoEditor {
         this.editor.addAction({
             id: 'format',
             label: 'Format',
-            keybindings: [ monaco.KeyMod.Alt | monaco.KeyCode.KEY_F, ],
+            keybindings: [monaco.KeyMod.Alt | monaco.KeyCode.KEY_F,],
             precondition: null,
             keybindingContext: null,
             contextMenuGroupId: 'navigation',
@@ -88,16 +123,23 @@ export class MyMonacoEditor {
             // Method that will be executed when the action is triggered.
             // @param editor The editor instance is passed in as a convinience
             run: function (ed) {
-                $(elem).trigger("run",ed.getValue());
+                $(elem).trigger("run", ed.getValue());
                 return null;
             }
         });
     }
+    tsproxy: any;
     editor: monaco.editor.IStandaloneCodeEditor;
     setValue(val: string) {
         this.editor.setValue(val);
     }
-    getValue() {
-        return this.editor.getValue();
+    getValue(): JQuery.Promise<string> {
+        this.tsproxy.getEmitOutput('file:///main.tsx').then((r) => {
+            p1.resolve(r.outputFiles[0].text);
+        });
+
+        //return this.editor.getValue();
+        var p1 = $.Deferred();
+        return p1.promise();
     }
 }

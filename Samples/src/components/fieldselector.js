@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference types='jquery' />
 require("select2/dist/css/select2.css");
-require("spexplorerts/api/def.api");
+require("spexplorerts/api/def");
 var spexplorerts_1 = require("spexplorerts");
 require('select2');
 var trace = spexplorerts_1.Logger.get("logger");

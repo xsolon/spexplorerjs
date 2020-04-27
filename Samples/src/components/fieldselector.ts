@@ -1,7 +1,7 @@
 /// <reference types='jquery' />
 import 'select2/dist/css/select2.css';
-import 'spexplorerts/api/def.api';
-import { Ispexplorerjs } from 'spexplorerts/api/def.api';
+import 'spexplorerts/api/def';
+import { Ispexplorerjs } from 'spexplorerts/api/def';
 import { Logger, funcs } from 'spexplorerts';
 
 require('select2');

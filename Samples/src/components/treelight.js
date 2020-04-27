@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference types='jquery' />
 /// <reference types='jstree' />
 require("jstree/dist/themes/default/style.css");
-require("spexplorerts/api/def.api");
+require("spexplorerts/api/def");
 var spexplorerts_1 = require("spexplorerts");
 require('jstree');
 var trace = spexplorerts_1.Logger.get("logger");

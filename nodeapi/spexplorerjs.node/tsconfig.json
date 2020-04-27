@@ -16,7 +16,7 @@
 			"core-js"
 		]
 	},
-	"include": [ "./src/api/*" ],
+	"include": [ "./src/api/*.ts" ],
 	//"files": [ "app.ts" ],
 	"exclude": [
 		"node_modules"

@@ -17,7 +17,7 @@
 		]
 
 	},
-	"include": [ "src/**/*.api.ts" ],
+	"include": [ "src/index.api.ts", "src/api/def.ts" ],
 	"exclude": [
 		"node_modules",
 		"backups.node.ts",

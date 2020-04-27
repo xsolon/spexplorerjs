@@ -79,7 +79,7 @@ var getConfig = function (debug) {
         maxChunks: 1,
       }),
       new MonacoWebpackPlugin({
-        languages: ['javascript'],
+        languages: ['typescript'],
         // features: ['folding']
       })
     ],
@@ -144,7 +144,7 @@ var updateTemplate = function (debug) {
 };
 var prodConfig = getConfig(false);
 const compiler2 = webpack(prodConfig);
-// if (false)
+if (false)
   compiler2.run((err, stats) => {
     if (err) {
       console.error(err);

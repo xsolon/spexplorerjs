@@ -1,8 +1,8 @@
 /// <reference types='jquery' />
 /// <reference types='jstree' />
 import 'jstree/dist/themes/default/style.css';
-import 'spexplorerts/api/def.api';
-import { Ispexplorerjs } from 'spexplorerts/api/def.api';
+import 'spexplorerts/api/def';
+import { Ispexplorerjs } from 'spexplorerts/api/def';
 import { Logger, funcs } from 'spexplorerts';
 import * as tmp from './searchbox.template.html';
 import { CodeMirrorHelper } from './jseditor';
@@ -21,17 +21,17 @@ export class CodeMirrorEditor {
 
     ui.html(tmp);
     var xmlUi = $('#resultMirror', ui)[0];
-    var xmlEditor = helper.createXmlEditor(xmlUi, 'Xml Editor');
+    var xmlEditor = helper.createXmlEditor(xmlUi);
     this.xmlEditor = xmlEditor;
     var jsUi = $('#jsMirror', ui)[0];
     // var jsEditor = helper.createJsEditor(jsUi, "Code Editor");
-    var jsEditor = new MyMonacoEditor(jsUi, 'javascript', 'var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
-
     // jsEditor.setValue('var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
+    var jsEditor = new MyMonacoEditor(jsUi, 'typescript', 'var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
 
     var onRun = function () {
-      var code = jsEditor.getValue();
-      runScript(code);
+      jsEditor.getValue().done((code) => {
+        runScript(code);
+      });
     };
 
     var elem = jsUi;//jsEditor.getTextArea();
@@ -45,7 +45,7 @@ export class CodeMirrorEditor {
 
     var runScript = function (code: string) {
       try {
-        trace.log(code);
+        trace.debug(code);
         var script = "var log = console.log, clear = console.clear;\r\n\
                     {0}\r\n".replace("{0}", code);
 

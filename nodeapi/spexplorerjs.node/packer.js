@@ -5,7 +5,7 @@ var webpack = require("webpack");
 var getConfig = function (debug) {
 
   var config = {
-    entry: './src/api/def.api.ts',
+    entry: './src/api/def.ts',
     optimization: {
       minimize: debug ? false : true
     },

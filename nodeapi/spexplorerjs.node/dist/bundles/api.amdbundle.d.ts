@@ -1,5 +1,5 @@
 /// <reference types="sharepoint" />
-declare module "logger.api" {
+declare module "logger" {
     class Logger {
         version: '0.2';
         name: string;
@@ -15,9 +15,9 @@ declare module "logger.api" {
     }
     export { Logger };
 }
-declare module "list.api" {
-    import { Logger } from "logger.api";
-    import { FieldMeta, ListMeta, CTypeMeta } from "meta.api";
+declare module "list" {
+    import { Logger } from "logger";
+    import { FieldMeta, ListMeta, CTypeMeta } from "meta";
     export type QueueStep = (item: any) => Promise<void>;
     export type ArrayPromise = () => Promise<Array<any>>;
     export class ListDal {
@@ -73,8 +73,8 @@ declare module "list.api" {
         static GetApi(ctx: SP.ClientContext): WebApi;
     }
 }
-declare module "meta.api" {
-    import { ListApi } from "list.api";
+declare module "meta" {
+    import { ListApi } from "list";
     export class ListMeta {
         fields: FieldMeta[];
         ctypes: CTypeMeta[];
@@ -130,9 +130,9 @@ declare module "meta.api" {
     export type listUpdatesFunction = (list: SP.List, dal: ListApi) => JQuery.Promise<any>;
     export type postFunction = (field: SP.Field) => void;
 }
-declare module "utils.api" {
-    import { Logger } from "logger.api";
-    import { GroupMeta } from "meta.api";
+declare module "utils" {
+    import { Logger } from "logger";
+    import { GroupMeta } from "meta";
     export var version: string;
     export type QueueStep<T> = (item: T) => Promise<void>;
     export type ArrayPromise<T> = () => Promise<Array<T>>;
@@ -180,10 +180,10 @@ declare module "utils.api" {
     }
     export var initExtensions: () => void;
 }
-declare module "def.api" {
-    import { Logger } from "logger.api";
-    import { funcs } from "utils.api";
-    import { ListApi, ListDal, FolderApi, WebApi } from "list.api";
+declare module "def" {
+    import { Logger } from "logger";
+    import { funcs } from "utils";
+    import { ListApi, ListDal, FolderApi, WebApi } from "list";
     export interface Ispexplorerjs {
         [key: string]: any;
         modules: {

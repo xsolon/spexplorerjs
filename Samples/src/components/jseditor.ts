@@ -87,6 +87,7 @@ export class CodeMirrorHelper {
 
     return editor;
   }
+
   createJsEditor(divId: HTMLElement, title?:string): CodeMirror.EditorFromTextArea {
 
     this.trace.debug(`Creating js editor in ${divId}`);

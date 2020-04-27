@@ -1,4 +1,4 @@
-define("logger.api", ["require", "exports"], function (require, exports) {
+define("logger", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Logger = (function () {
@@ -34,11 +34,11 @@ define("logger.api", ["require", "exports"], function (require, exports) {
     }());
     exports.Logger = Logger;
 });
-define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api", "jquery"], function (require, exports, logger_api_1, meta_api_1, utils_api_1, jQuery) {
+define("list", ["require", "exports", "logger", "meta", "utils", "jquery"], function (require, exports, logger_1, meta_1, utils_1, jQuery) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     global['$'] = jQuery;
-    var utils = new utils_api_1.funcs();
+    var utils = new utils_1.funcs();
     var ListDal = (function () {
         function ListDal(title, defaultQuery) {
             if (defaultQuery === void 0) { defaultQuery = "<View/>"; }
@@ -76,7 +76,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
     exports.ListDal = ListDal;
     var ListApi = (function () {
         function ListApi(ctx) {
-            this.ctrace = new logger_api_1.Logger('ListApi');
+            this.ctrace = new logger_1.Logger('ListApi');
             this.ensureFields = function (list, fields) {
                 var me = this;
                 me.ctrace.debug('enureFields.begin');
@@ -433,7 +433,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
             me.ctx.load(fields);
             return $.Deferred(function (dfd) {
                 me.ctx.executeQueryAsync(function () {
-                    var meta = new meta_api_1.ListMeta(listTitle);
+                    var meta = new meta_1.ListMeta(listTitle);
                     var spFields = utils.collectionToArray(fields);
                     var attribsToSkip = ['RowOrdinal', 'ID', 'ColName', 'StaticName', 'SourceID'];
                     spFields.forEach(function (f) {
@@ -445,7 +445,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
                             attribsToSkip.forEach(function (n) { field.removeAttribute(n); });
                             xmlS = $('<x></x>').append($($xml).find('Field')).html().replace(/"/g, "'");
                             var display = f.get_title();
-                            var fieldMeta = new meta_api_1.FieldMeta();
+                            var fieldMeta = new meta_1.FieldMeta();
                             fieldMeta.markup = xmlS;
                             fieldMeta.name = name;
                             fieldMeta.legacyName = name;
@@ -622,7 +622,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
     exports.ListApi = ListApi;
     var FolderApi = (function () {
         function FolderApi(ctx) {
-            this.ctrace = new logger_api_1.Logger('FolderApi');
+            this.ctrace = new logger_1.Logger('FolderApi');
             this.createFolderInList = function (name, parentFolderPath, list) {
                 var ctx = this.ctx;
                 list.set_enableFolderCreation(true);
@@ -777,7 +777,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
     exports.FolderApi = FolderApi;
     var WebApi = (function () {
         function WebApi(ctx) {
-            this.ctrace = new logger_api_1.Logger('WebApi');
+            this.ctrace = new logger_1.Logger('WebApi');
             this.ctx = ctx;
         }
         WebApi.prototype.ensureCTypes = function (ctypes, web) {
@@ -909,7 +909,7 @@ define("list.api", ["require", "exports", "logger.api", "meta.api", "utils.api",
     }());
     exports.WebApi = WebApi;
 });
-define("meta.api", ["require", "exports"], function (require, exports) {
+define("meta", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ListMeta = (function () {
@@ -1000,10 +1000,10 @@ define("meta.api", ["require", "exports"], function (require, exports) {
         return res;
     };
 });
-define("utils.api", ["require", "exports", "logger.api"], function (require, exports, logger_api_2) {
+define("utils", ["require", "exports", "logger"], function (require, exports, logger_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var defaultLogger = new logger_api_2.Logger('Utils');
+    var defaultLogger = new logger_2.Logger('Utils');
     var reqFailure = function (req, reqargs, dfd, logger) {
         if (logger === void 0) { logger = defaultLogger; }
         try {
@@ -1490,20 +1490,20 @@ define("utils.api", ["require", "exports", "logger.api"], function (require, exp
     };
     exports.initExtensions();
 });
-define("def.api", ["require", "exports", "logger.api", "utils.api", "list.api", "jquery"], function (require, exports, logger_api_3, utils_api_2, list_api_1, jQuery) {
+define("def", ["require", "exports", "logger", "utils", "list", "jquery"], function (require, exports, logger_3, utils_2, list_1, jQuery) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     if (typeof window !== 'undefined') {
         window['spexplorerjs'] = window['spexplorerjs'] || {
             version: '1.0.3',
             modules: {
-                logger: logger_api_3.Logger,
-                funcs: new utils_api_2.funcs(),
-                utils: utils_api_2.funcs,
-                listapi: list_api_1.ListApi,
-                listdal: list_api_1.ListDal,
-                folderapi: list_api_1.FolderApi,
-                webapi: list_api_1.WebApi,
+                logger: logger_3.Logger,
+                funcs: new utils_2.funcs(),
+                utils: utils_2.funcs,
+                listapi: list_1.ListApi,
+                listdal: list_1.ListDal,
+                folderapi: list_1.FolderApi,
+                webapi: list_1.WebApi,
                 jQuery: jQuery
             }
         };

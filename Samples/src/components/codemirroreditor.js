@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference types='jquery' />
 /// <reference types='jstree' />
 require("jstree/dist/themes/default/style.css");
-require("spexplorerts/api/def.api");
+require("spexplorerts/api/def");
 var spexplorerts_1 = require("spexplorerts");
 var tmp = require("./searchbox.template.html");
 var jseditor_1 = require("./jseditor");
@@ -22,11 +22,12 @@ var CodeMirrorEditor = /** @class */ (function () {
         this.xmlEditor = xmlEditor;
         var jsUi = $('#jsMirror', ui)[0];
         // var jsEditor = helper.createJsEditor(jsUi, "Code Editor");
-        var jsEditor = new myMonacoEditor_1.MyMonacoEditor(jsUi, 'javascript', 'var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
+        var jsEditor = new myMonacoEditor_1.MyMonacoEditor(jsUi, 'typescript', 'var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
         // jsEditor.setValue('var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
         var onRun = function () {
-            var code = jsEditor.getValue();
-            runScript(code);
+            jsEditor.getValue().done(function (code) {
+                runScript(code);
+            });
         };
         var elem = jsUi; //jsEditor.getTextArea();
         $(elem).on('run', onRun);
