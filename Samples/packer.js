@@ -144,7 +144,7 @@ var updateTemplate = function (debug) {
 };
 var prodConfig = getConfig(false);
 const compiler2 = webpack(prodConfig);
-if (false)
+// if (false)
   compiler2.run((err, stats) => {
     if (err) {
       console.error(err);

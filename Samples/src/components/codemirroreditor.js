@@ -18,12 +18,12 @@ var CodeMirrorEditor = /** @class */ (function () {
         var helper = new jseditor_1.CodeMirrorHelper();
         ui.html(tmp);
         var xmlUi = $('#resultMirror', ui)[0];
-        var xmlEditor = helper.createXmlEditor(xmlUi, 'Xml Editor');
+        var xmlEditor = helper.createXmlEditor(xmlUi);
         this.xmlEditor = xmlEditor;
         var jsUi = $('#jsMirror', ui)[0];
         // var jsEditor = helper.createJsEditor(jsUi, "Code Editor");
-        var jsEditor = new myMonacoEditor_1.MyMonacoEditor(jsUi, 'typescript', 'var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
         // jsEditor.setValue('var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
+        var jsEditor = new myMonacoEditor_1.MyMonacoEditor(jsUi, 'typescript', 'var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
         var onRun = function () {
             jsEditor.getValue().done(function (code) {
                 runScript(code);
@@ -38,7 +38,7 @@ var CodeMirrorEditor = /** @class */ (function () {
         });
         var runScript = function (code) {
             try {
-                trace.log(code);
+                trace.debug(code);
                 var script = "var log = console.log, clear = console.clear;\r\n\
                     {0}\r\n".replace("{0}", code);
                 var args = ['xmlEditor', 'jsEditor'];

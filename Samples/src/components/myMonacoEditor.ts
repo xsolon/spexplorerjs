@@ -61,9 +61,23 @@ monaco.languages.typescript.typescriptDefaults.addExtraLib(tmp, 'ts:filename/spe
 monaco.languages.typescript.typescriptDefaults.addExtraLib(sp, 'ts:filename/mysp.d.ts');
 // extra libraries
 monaco.languages.typescript.typescriptDefaults.addExtraLib(
-    `declare class Test{
-        static next():string,
-    }`, 'ts:filename/test.d.ts');
+    `interface Ispexplorerjs {
+        [key: string]: any;
+        modules: {
+            logger: new (name: string) =>logger.Logger;
+            utils: new () => utils.funcs;
+            funcs: utils.funcs;
+            listapi: new (ctx?: SP.ClientContext) => list.ListApi;
+            listdal: new (ctx?: SP.ClientContext) => list.ListDal;
+            folderapi: new (ctx?: SP.ClientContext) => list.FolderApi;
+            webapi: new (ctx?: SP.ClientContext) => list.WebApi;
+            jQuery: JQueryStatic;
+        };
+    };
+
+// @ts-ignore
+var ns : Ispexplorerjs = window.spexplorerjs;    
+`, 'ts:filename/interface.d.ts');
 monaco.languages.typescript.typescriptDefaults.addExtraLib(
     `declare class Test1{
         static next():string,
