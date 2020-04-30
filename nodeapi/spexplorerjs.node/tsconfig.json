@@ -1,10 +1,11 @@
 {
 	"compilerOptions": {
-		"allowJs": true,
+		"allowJs": false,
 		"module": "commonjs",
 		"target": "es5",
 		"lib": [ "es6", "dom" ],
 		"sourceMap": true,
+		"declaration": true,
 		"moduleResolution": "node",
 		"typeRoots": [
 			"./node_modules/@types",

@@ -42,9 +42,9 @@ declare module "list" {
         constructor(ctx?: SP.ClientContext);
         ensureFields: (list: SP.List<any>, fields: FieldMeta[]) => JQuery.Promise<any, any, any>;
         listExists(title: string): Promise<[boolean, SP.List]>;
-        ensureCTypes(ctypes: CTypeMeta[], splist: SP.List): JQueryPromise<SP.ContentType[]>;
-        ensureList(meta: ListMeta): JQueryPromise<SP.List>;
-        createList(listTitle: any, templateType: any, web: any): JQueryPromise<SP.List>;
+        ensureCTypes(ctypes: CTypeMeta[], splist: SP.List): JQuery.Promise<SP.ContentType[]>;
+        ensureList(meta: ListMeta): JQuery.Promise<SP.List>;
+        createList(listTitle: any, templateType: any, web: any): JQuery.Promise<SP.List>;
         getMeta(listTitle: string, fieldNames: any): Promise<ListMeta>;
         setupForms: (tList: SP.List<any>, scriptLink: string, htmlLink?: string) => JQuery.Promise<any, any, any>;
         addItems(gitems: Array<{
@@ -69,7 +69,7 @@ declare module "list" {
         ctrace: Logger;
         ctx: SP.ClientContext;
         constructor(ctx: SP.ClientContext);
-        ensureCTypes(ctypes: CTypeMeta[], web?: SP.Web): JQueryPromise<SP.ContentType[]>;
+        ensureCTypes(ctypes: CTypeMeta[], web?: SP.Web): JQuery.Promise<SP.ContentType[]>;
         static GetApi(ctx: SP.ClientContext): WebApi;
     }
 }
@@ -167,7 +167,7 @@ declare module "utils" {
         addWebPart: (ctx: SP.ClientContext, serverRelativeFormUrl: string, wpXml: string, zone: string, position?: number) => JQuery.Promise<SP.WebParts.WebPartDefinition, any, any>;
         getPageWebParts(formUrl: string, ctx: SP.ClientContext): JQuery.Promise<pagewps>;
         setformJsLink: (formUrl: string, ctx: SP.ClientContext, bizJs: string) => Promise<any>;
-        breakRoleInheritance: (securable: SP.SecurableObject, copyRoleAssignments: boolean, clearSubscopes: boolean) => JQueryPromise<any>;
+        breakRoleInheritance: (securable: SP.SecurableObject, copyRoleAssignments: boolean, clearSubscopes: boolean) => JQuery.Promise<any, any, any>;
         getGroups(ctx: SP.ClientContext, logger?: Logger): JQuery.Promise<{
             [key: string]: SP.Group;
         }>;
@@ -181,10 +181,11 @@ declare module "utils" {
     export var initExtensions: () => void;
 }
 declare module "def" {
+    import 'jquery';
     import { Logger } from "logger";
     import { funcs } from "utils";
     import { ListApi, ListDal, FolderApi, WebApi } from "list";
-    export interface Ispexplorerjs {
+    interface Ispexplorerjs {
         [key: string]: any;
         modules: {
             logger: new (name: string) => Logger;
@@ -197,4 +198,10 @@ declare module "def" {
             jQuery: JQueryStatic;
         };
     }
+    interface Window {
+        [key: string]: any;
+        spexplorerjs: Ispexplorerjs;
+        spexplorerts: Ispexplorerjs;
+    }
+    export { Ispexplorerjs, Window };
 }

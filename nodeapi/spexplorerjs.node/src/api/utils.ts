@@ -8,8 +8,9 @@ import { GroupMeta } from './meta';
 
 var defaultLogger = new Logger('Utils');
 
-var reqFailure = function (req, reqargs, dfd?: JQueryDeferred<any>, logger: Logger = defaultLogger) {
+var reqFailure = function (req, reqargs, dfd?: JQuery.Deferred<any>, logger: Logger = defaultLogger) {
     try {
+        var d = $.Deferred();
         var msg = " Request failed: " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
         logger.error(msg);
     } catch (e) {
@@ -335,7 +336,7 @@ export class funcs {
         }).promise();
     };
     // --- Groups
-    public breakRoleInheritance = function (securable: SP.SecurableObject, copyRoleAssignments: boolean, clearSubscopes: boolean): JQueryPromise<any> {
+    public breakRoleInheritance = function (securable: SP.SecurableObject, copyRoleAssignments: boolean, clearSubscopes: boolean): JQuery.Promise<any> {
         securable.breakRoleInheritance(copyRoleAssignments, clearSubscopes);
         (<any>securable).any && (<any>securable).update();
 
@@ -488,8 +489,6 @@ export class funcs {
                 "content-type": "application/json;odata=verbose",
                 "X-RequestDigest": formDigest
             }
-        }).fail(function () {
-            debugger;
         });
     };
 

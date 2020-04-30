@@ -23,7 +23,7 @@ var CodeMirrorEditor = /** @class */ (function () {
         var jsUi = $('#jsMirror', ui)[0];
         // var jsEditor = helper.createJsEditor(jsUi, "Code Editor");
         // jsEditor.setValue('var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
-        var jsEditor = new myMonacoEditor_1.MyMonacoEditor(jsUi, 'typescript', 'var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
+        var jsEditor = new myMonacoEditor_1.MyMonacoEditor(jsUi, 'typescript', "\nimport * as Api from 'spexplorerjs';\n// @ts-ignore\nvar xml = xmlEditor.getValue();\n\nvar ns: Api.Ispexplorerjs = window['spexplorerjs']\n\nvar logger = new ns.modules.logger('test');\nlogger.log('Starting...');\n\nvar utils = new ns.modules.utils();\n\nvar ctx = SP.ClientContext.get_current();\nvar list = ctx.get_web().get_lists().getByTitle('Site Pages');\n\nctx.load(list, 'SchemaXml');\n\nctx.executeQueryAsync(() => {\n    // @ts-ignore\n    xmlEditor.setValue(list.get_schemaXml());\n    logger.log('Done');\n\n}, (s, e) => {\n    logger.error(e.get_message());\n});\n    ");
         var onRun = function () {
             jsEditor.getValue().done(function (code) {
                 runScript(code);
@@ -39,8 +39,7 @@ var CodeMirrorEditor = /** @class */ (function () {
         var runScript = function (code) {
             try {
                 trace.debug(code);
-                var script = "var log = console.log, clear = console.clear;\r\n\
-                    {0}\r\n".replace("{0}", code);
+                var script = "\n        var log = console.log, clear = console.clear;\n        var exports = {};\n                   " + code + "\n      ";
                 var args = ['xmlEditor', 'jsEditor'];
                 var vals = [xmlEditor, jsEditor];
                 //for (var name in resourceHash) {

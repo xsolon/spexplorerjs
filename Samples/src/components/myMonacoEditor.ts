@@ -1,41 +1,17 @@
 /// <reference types='jquery' />
 import * as monaco from "monaco-editor";
-import * as tmp from 'spexplorerts/bundles/api.amdbundle.d.html';
+import * as tmp from '../defs/spexplorerts.d.html';
+import * as legacy from '../defs/legacy.d.html'
+import * as misc from '../defs/misc.d.html'
+import * as jqueryDef from '../defs/JQuery.d.html'
+import * as jqueryStaticDef from '../defs/jqueryStatic.d.html';
 import * as sp from '../defs/sp.d.html';
 
 //https://github.com/microsoft/monaco-typescript/pull/8
-// namespace ts {
-//     interface IMonacoTypeScriptServiceProxy {
-//         _getModel(uri: string): Promise<{ _eol: string, _lineStarts: any, _Lines: string[], length: number, _uri: monaco.Uri, _versionId: number }>;
-//         getCompilationSettings(): Promise<CompilerOptions>;
-//         getCompilerOptionsDiagnostics(): Promise<Diagnostic[]>;
-//         getCompletionEntryDetails(uri: string, position: number, name: string, formatOptions: FormatCodeOptions | FormatCodeSettings | undefined, source: string | undefined, preferences: UserPreferences | undefined): Promise<CompletionEntryDetails | undefined>;
-//         getCompletionsAtPosition(uri: string, position: number, options: GetCompletionsAtPositionOptions | undefined): Promise<WithMetadata<CompletionInfo> | undefined>;
-//         getCurrentDirectory(): Promise<string>;
-//         getDefaultLibFileName(options: CompilerOptions): Promise<string>;
-//         getDefinitionAtPosition(uri: string, position: number): Promise<ReadonlyArray<DefinitionInfo> | undefined>;
-//         getEmitOutput(uri: string, emitOnlyDtsFiles?: boolean): Promise<EmitOutput>;
-//         getFormattingEditsAfterKeystroke(uri: string, position: number, key: string, options: FormatCodeOptions | FormatCodeSettings): Promise<TextChange[]>;
-//         getFormattingEditsForDocument(uri: string, options: FormatCodeOptions | FormatCodeSettings): Promise<TextChange[]>;
-//         getFormattingEditsForRange(uri: string, start: number, end: number, options: FormatCodeOptions | FormatCodeSettings): Promise<TextChange[]>;
-//         getNavigationBarItems(uri: string): Promise<NavigationBarItem[]>;
-//         getOccurrencesAtPosition(uri: string, position: number): Promise<ReadonlyArray<ReferenceEntry> | undefined>;
-//         getQuickInfoAtPosition(uri: string, position: number): Promise<QuickInfo | undefined>;
-//         getReferencesAtPosition(uri: string, position: number): Promise<ReferenceEntry[] | undefined>;
-//         getScriptFileNames(): Promise<string[]>;
-//         getScriptKind(uri: string): Promise<ScriptKind>;
-//         getScriptSnapshot(uri: string): Promise<IScriptSnapshot | undefined>;
-//         getScriptVersion(uri: string): Promise<string>;
-//         /** The first time this is called, it will return global diagnostics (no location). */
-//         getSemanticDiagnostics(uri: string): Promise<Diagnostic[]>;
-//         getSignatureHelpItems(uri: string, position: number, options: SignatureHelpItemsOptions | undefined): Promise<SignatureHelpItems | undefined>;
-//         getSyntacticDiagnostics(uri: string): Promise<DiagnosticWithLocation[]>;
-//         isDefaultLibFileName(uri: string): Promise<boolean>;
-//     }
-// }
+
 // @ts-ignore
 self.MonacoEnvironment = {
-    getWorkerUrl: function (moduleId, label) {
+    getWorkerUrl: function (moduleId: string, label: string) {
         return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
         self.MonacoEnvironment = {
           baseUrl: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/'
@@ -57,31 +33,16 @@ monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
     allowNonTsExtensions: true
 });
 
-monaco.languages.typescript.typescriptDefaults.addExtraLib(tmp, 'ts:filename/spexplorerjs.d.ts');
-monaco.languages.typescript.typescriptDefaults.addExtraLib(sp, 'ts:filename/mysp.d.ts');
-// extra libraries
-monaco.languages.typescript.typescriptDefaults.addExtraLib(
-    `interface Ispexplorerjs {
-        [key: string]: any;
-        modules: {
-            logger: new (name: string) =>logger.Logger;
-            utils: new () => utils.funcs;
-            funcs: utils.funcs;
-            listapi: new (ctx?: SP.ClientContext) => list.ListApi;
-            listdal: new (ctx?: SP.ClientContext) => list.ListDal;
-            folderapi: new (ctx?: SP.ClientContext) => list.FolderApi;
-            webapi: new (ctx?: SP.ClientContext) => list.WebApi;
-            jQuery: JQueryStatic;
-        };
-    };
+monaco.languages.typescript.typescriptDefaults.addExtraLib(legacy, 'file:///node_modules/@types/jquery/legacy.d.ts');
+monaco.languages.typescript.typescriptDefaults.addExtraLib(misc, 'file:///node_modules/@types/jquery/misc.d.ts');
+monaco.languages.typescript.typescriptDefaults.addExtraLib(jqueryStaticDef, 'file:///node_modules/@types/jquery/jQueryStatic.d.ts');
+monaco.languages.typescript.typescriptDefaults.addExtraLib(jqueryDef, 'file:///node_modules/@types/jquery/jQuery.d.ts');
 
-// @ts-ignore
-var ns : Ispexplorerjs = window.spexplorerjs;    
-`, 'ts:filename/interface.d.ts');
-monaco.languages.typescript.typescriptDefaults.addExtraLib(
-    `declare class Test1{
-        static next():string,
-    }`, 'inmemory://model/test1.d.ts');
+monaco.languages.typescript.typescriptDefaults.addExtraLib(sp, 'ts:filename/mysp.d.ts');
+monaco.languages.typescript.typescriptDefaults.addExtraLib(tmp, 'file:///node_modules/@types/spexplorerjs.d.ts');
+
+// monaco.languages.typescript.typescriptDefaults.addExtraLib("declare module 'test/file1' { export interface Test {} }", 'file:///node_modules/@types/test/file1.d.ts'); 
+//monaco.languages.typescript.typescriptDefaults.addExtraLib( `    `, 'inmemory://model/test7.d.ts');
 
 export class MyMonacoEditor {
     constructor(elemorId: string | HTMLElement, type: string, value: string) {
@@ -148,7 +109,7 @@ export class MyMonacoEditor {
         this.editor.setValue(val);
     }
     getValue(): JQuery.Promise<string> {
-        this.tsproxy.getEmitOutput('file:///main.tsx').then((r) => {
+        this.tsproxy.getEmitOutput('file:///main.tsx').then((r :any) => {
             p1.resolve(r.outputFiles[0].text);
         });
 

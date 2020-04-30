@@ -1,8 +1,8 @@
-﻿
+﻿import 'jquery';
 import { Logger } from './logger';
 import { funcs } from './utils';
 import { ListApi, ListDal, FolderApi, WebApi } from './list';
-import jQuery = require('jquery');
+//import jQuery = require('jquery');
 
 if (typeof window !== 'undefined') {
   window['spexplorerjs'] = window['spexplorerjs'] || {
@@ -20,7 +20,7 @@ if (typeof window !== 'undefined') {
   };
 }
 
-export interface Ispexplorerjs {
+interface Ispexplorerjs {
   [key: string]: any,
   modules: {
     logger: new (name:string) => Logger,
@@ -40,3 +40,5 @@ interface Window {
   spexplorerjs: Ispexplorerjs,
   spexplorerts: Ispexplorerjs
 }
+
+export {Ispexplorerjs, Window};

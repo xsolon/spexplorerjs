@@ -162,7 +162,7 @@ export class ListApi {
             });
         }).promise();
     };
-    ensureCTypes(ctypes: CTypeMeta[], splist: SP.List): JQueryPromise<SP.ContentType[]> {
+    ensureCTypes(ctypes: CTypeMeta[], splist: SP.List): JQuery.Promise<SP.ContentType[]> {
         var me = this;
         var ctx = me.ctx;
         var dfd = $.Deferred();
@@ -184,7 +184,7 @@ export class ListApi {
             var listCtypesDic: { [key: string]: SP.ContentType } = null;
             var listFieldsDic: { [key: string]: SP.Field } = null;
 
-            var createCtype = function (ctypeMeta: CTypeMeta): JQueryPromise<SP.ContentType> {
+            var createCtype = function (ctypeMeta: CTypeMeta): JQuery.Promise<SP.ContentType> {
                 var dfd1 = $.Deferred();
 
                 var parentCtype: SP.ContentType = null;
@@ -226,7 +226,7 @@ export class ListApi {
 
                 return dfd1.promise();
             };
-            var ensureFields = function (cType: SP.ContentType, meta: CTypeMeta): JQueryPromise<void> {
+            var ensureFields = function (cType: SP.ContentType, meta: CTypeMeta): JQuery.Promise<void> {
                 var dfd2 = $.Deferred();
 
                 var links = cType.get_fieldLinks();
@@ -261,7 +261,7 @@ export class ListApi {
                 return dfd2.promise();
             };
 
-            var ensureCtype = function (ctype: CTypeMeta): JQueryPromise<void> {
+            var ensureCtype = function (ctype: CTypeMeta): JQuery.Promise<void> {
                 var name = ctype.name;
                 var cDfd = $.Deferred();
 
@@ -309,7 +309,7 @@ export class ListApi {
         }
         return dfd.promise();
     };
-    ensureList(meta: ListMeta): JQueryPromise<SP.List> {
+    ensureList(meta: ListMeta): JQuery.Promise<SP.List> {
         var me = this;
         var dfd = $.Deferred();
         var done = function (list: SP.List, isNew: boolean) {
@@ -345,7 +345,7 @@ export class ListApi {
 
             };
 
-            var promise: JQueryPromise<any> = $.Deferred(function (dd) { dd.resolve(); }).promise();
+            var promise: JQuery.Promise<any> = $.Deferred(function (dd) { dd.resolve(); }).promise();
 
             if (isNew && meta.afterListCreated) {
                 promise = meta.afterListCreated(list, me);
@@ -362,7 +362,7 @@ export class ListApi {
             var exists: boolean = res[0];
             var existingList: SP.List = res[1];
 
-            var promise: JQueryPromise<SP.List> = $.Deferred(function (dd) { dd.resolve(existingList); }).promise();
+            var promise: JQuery.Promise<SP.List> = $.Deferred(function (dd) { dd.resolve(existingList); }).promise();
 
             if (!exists) {
                 promise = me.createList(meta.title, meta.listTemplate, me.ctx.get_web());
@@ -385,7 +385,7 @@ export class ListApi {
         });
         return dfd.promise();
     };
-    createList(listTitle, templateType, web): JQueryPromise<SP.List> {
+    createList(listTitle, templateType, web): JQuery.Promise<SP.List> {
         var me = this;
         me.ctrace.log("Creating list " + listTitle);
         return $.Deferred(function (dfd) {
@@ -873,7 +873,7 @@ export class WebApi {
     constructor(ctx: SP.ClientContext) {
         this.ctx = ctx;
     }
-    ensureCTypes(ctypes: CTypeMeta[], web: SP.Web = null): JQueryPromise<SP.ContentType[]> {
+    ensureCTypes(ctypes: CTypeMeta[], web: SP.Web = null): JQuery.Promise<SP.ContentType[]> {
         var me = this;
         var ctx = me.ctx;
         if (web == null) web = ctx.get_web();
@@ -892,7 +892,7 @@ export class WebApi {
             var ctypesDic: { [key: string]: SP.ContentType } = null;
             var fieldsDic: { [key: string]: SP.Field } = null;
 
-            var createCtype = function (ctypeMeta: CTypeMeta): JQueryPromise<SP.ContentType> {
+            var createCtype = function (ctypeMeta: CTypeMeta): JQuery.Promise<SP.ContentType> {
                 var dfd1 = $.Deferred();
 
                 var parentCtype: SP.ContentType = null;
@@ -933,7 +933,7 @@ export class WebApi {
 
                 return dfd1.promise();
             };
-            var ensureFields = function (cType: SP.ContentType, meta: CTypeMeta): JQueryPromise<void> {
+            var ensureFields = function (cType: SP.ContentType, meta: CTypeMeta): JQuery.Promise<void> {
                 var dfd2 = $.Deferred();
 
                 var links = cType.get_fieldLinks();
@@ -968,7 +968,7 @@ export class WebApi {
                 return dfd2.promise();
             };
 
-            var ensureCtype = function (ctype: CTypeMeta): JQueryPromise<void> {
+            var ensureCtype = function (ctype: CTypeMeta): JQuery.Promise<void> {
                 var name = ctype.name;
                 var cDfd = $.Deferred();
 

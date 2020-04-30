@@ -26,7 +26,32 @@ export class CodeMirrorEditor {
     var jsUi = $('#jsMirror', ui)[0];
     // var jsEditor = helper.createJsEditor(jsUi, "Code Editor");
     // jsEditor.setValue('var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
-    var jsEditor = new MyMonacoEditor(jsUi, 'typescript', 'var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
+    var jsEditor = new MyMonacoEditor(jsUi, 'typescript', `
+import * as Api from 'spexplorerjs';
+// @ts-ignore
+var xml = xmlEditor.getValue();
+
+var ns: Api.Ispexplorerjs = window['spexplorerjs']
+
+var logger = new ns.modules.logger('test');
+logger.log('Starting...');
+
+var utils = new ns.modules.utils();
+
+var ctx = SP.ClientContext.get_current();
+var list = ctx.get_web().get_lists().getByTitle('Site Pages');
+
+ctx.load(list, 'SchemaXml');
+
+ctx.executeQueryAsync(() => {
+    // @ts-ignore
+    xmlEditor.setValue(list.get_schemaXml());
+    logger.log('Done');
+
+}, (s, e) => {
+    logger.error(e.get_message());
+});
+    `);
 
     var onRun = function () {
       jsEditor.getValue().done((code) => {
@@ -46,8 +71,11 @@ export class CodeMirrorEditor {
     var runScript = function (code: string) {
       try {
         trace.debug(code);
-        var script = "var log = console.log, clear = console.clear;\r\n\
-                    {0}\r\n".replace("{0}", code);
+        var script = `
+        var log = console.log, clear = console.clear;
+        var exports = {};
+                   ${code}
+      `;
 
         var args: string[] = ['xmlEditor', 'jsEditor'];
         var vals = [xmlEditor, jsEditor];

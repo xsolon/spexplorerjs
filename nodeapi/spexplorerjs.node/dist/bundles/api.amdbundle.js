@@ -995,7 +995,7 @@ define("meta", ["require", "exports"], function (require, exports) {
                 ctypeFields.push(fields[f.name]);
             });
             var className = "" + list.title.replace(/ /g, '') + c.name.replace(/ /g, '') + "Type";
-            res += "\nexport class " + className + " {\n  li: SP.ListItem;\n  constructor(li?: SP.ListItem) {\n    if (li)\n      this.li = li;\n  }\n  spitem(li?: SP.ListItem): SP.ListItem {\n    if (li)\n      this.li = li;\n    return this.li;\n  }\n  update():void { this.li.update(); }\n  id(val?: number): number{\n    var me = this;\n    if (arguments.length) {\n      me.li.set_item('ID', val);\n    }\n    var res: number = me.li.get_item('ID');\n    return res;\n  }\n  title (val?: string): string {\n    var me = this;\n    if (arguments.length) {\n      me.li.set_item('Title', val);\n    }\n    var res: string = me.li.get_item('Title');\n    return res;\n  }\n  FileLeafRef(): string {\n    var me = this;\n    var res: string = me.li.get_item('FileLeafRef');\n    return res;\n  }\n  FileRef(): string {\n    var me = this;\n    var res: string = me.li.get_item('FileRef');\n    return res;\n  }\n  FileDirRef(): string {\n    var me = this;\n    var res: string = me.li.get_item('FileDirRef');\n    return res;\n  }\n  Modified(): Date {\n    var res: Date = this.li.get_item('Modified');\n    return res;\n  }\n  Editor(): SP.FieldUserValue {\n    var res: SP.FieldUserValue = this.li.get_item('Editor');\n    return res;\n  }\n  Author(): SP.FieldUserValue {\n    var res: SP.FieldUserValue = this.li.get_item('Author');\n    return res;\n  }\n  " + ctypeFields.join(' ') + "\n  public static FromArray(spArray: SP.ListItem[]): Array<" + className + "> {\n    var result = [];\n    (spArray || []).forEach((li) => {\n        result.push(new " + className + "(li));\n    });\n    return result;\n  };\n  public static FromCollection(spCollection: SP.ListItemCollection): Array<" + className + "> {\n    var result = [];\n    if (spCollection) {\n      var le = spCollection.getEnumerator();\n      while (le.moveNext()) {\n        var li = le.get_current();\n        result.push(new " + className + "(li));\n      }\n    }\n    return result;\n  };\n}\n";
+            res += "\nexport class " + className + " {\n  li: SP.ListItem;\n  constructor(li?: SP.ListItem) {\n    if (li)\n      this.li = li;\n  }\n  spitem(li?: SP.ListItem): SP.ListItem {\n    if (li)\n      this.li = li;\n    return this.li;\n  }\n  update():void { this.li.update(); }\n  id(val?: number): number{\n    var me = this;\n    if (arguments.length) {\n      me.li.set_item('ID', val);\n    }\n    var res: number = me.li.get_item('ID');\n    return res;\n  }\n  title (val?: string): string {\n    var me = this;\n    if (arguments.length) {\n      me.li.set_item('Title', val);\n    }\n    var res: string = me.li.get_item('Title');\n    return res;\n  }\n  FileLeafRef(): string {\n    var me = this;\n    var res: string = me.li.get_item('FileLeafRef');\n    return res;\n  }\n  FileRef(): string {\n    var me = this;\n    var res: string = me.li.get_item('FileRef');\n    return res;\n  }\n  FileDirRef(): string {\n    var me = this;\n    var res: string = me.li.get_item('FileDirRef');\n    return res;\n  }\n  Created(val?: Date): Date {\n      if (arguments.length) {\n          this.li.set_item('Created', val);\n      }\n      var res: Date = this.li.get_item('Created');\n      return res;\n  }\n  Modified(val?: Date): Date {\n      if (arguments.length) {\n          this.li.set_item('Modified', val);\n      }\n      var res: Date = this.li.get_item('Modified');\n      return res;\n  }\n  Editor(val?: SP.FieldUserValue): SP.FieldUserValue {\n      if (arguments.length) {\n          this.li.set_item('Editor', val);\n      }\n      var res: SP.FieldUserValue = this.li.get_item('Editor');\n      return res;\n  }\n  Author(): SP.FieldUserValue {\n    var res: SP.FieldUserValue = this.li.get_item('Author');\n    return res;\n  }\n  " + ctypeFields.join(' ') + "\n  public static FromArray(spArray: SP.ListItem[]): Array<" + className + "> {\n    var result = [];\n    (spArray || []).forEach((li) => {\n        result.push(new " + className + "(li));\n    });\n    return result;\n  };\n  public static FromCollection(spCollection: SP.ListItemCollection): Array<" + className + "> {\n    var result = [];\n    if (spCollection) {\n      var le = spCollection.getEnumerator();\n      while (le.moveNext()) {\n        var li = le.get_current();\n        result.push(new " + className + "(li));\n      }\n    }\n    return result;\n  };\n}\n";
         });
         return res;
     };
@@ -1007,6 +1007,7 @@ define("utils", ["require", "exports", "logger"], function (require, exports, lo
     var reqFailure = function (req, reqargs, dfd, logger) {
         if (logger === void 0) { logger = defaultLogger; }
         try {
+            var d = $.Deferred();
             var msg = " Request failed: " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
             logger.error(msg);
         }
@@ -1459,8 +1460,6 @@ define("utils", ["require", "exports", "logger"], function (require, exports, lo
                     "content-type": "application/json;odata=verbose",
                     "X-RequestDigest": formDigest
                 }
-            }).fail(function () {
-                debugger;
             });
         };
         ;
@@ -1490,7 +1489,7 @@ define("utils", ["require", "exports", "logger"], function (require, exports, lo
     };
     exports.initExtensions();
 });
-define("def", ["require", "exports", "logger", "utils", "list", "jquery"], function (require, exports, logger_3, utils_2, list_1, jQuery) {
+define("def", ["require", "exports", "logger", "utils", "list", "jquery"], function (require, exports, logger_3, utils_2, list_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     if (typeof window !== 'undefined') {
