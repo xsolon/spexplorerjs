@@ -13,6 +13,16 @@
 		},
 		{
 			"type": "npm",
+			"script": "startweb",
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build",
+			"label": "npm: startweb",
+			"detail": "nodemon --config web/config/nodemon.json"
+		},
+		{
+			"type": "npm",
 			"script": "buildall",
 			"problemMatcher": [
 				"$go"

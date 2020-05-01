@@ -72,3 +72,4 @@ packages
 /nodeapi/spexplorerjs.node/*.user
 .vs/spexplorerjs/v16/TestStore/0/000.testlog
 .vs/spexplorerjs/v16/TestStore/0/testlog.manifest
+/Samples/public/javascripts/ts.worker.js

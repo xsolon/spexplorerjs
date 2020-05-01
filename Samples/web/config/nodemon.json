@@ -1,0 +1,6 @@
+{
+  "watch": ["web"],
+  "ext": ".ts",
+  "ignore": [],
+  "exec": "tsc --build ./web/config/tsconfigWeb.json & ts-node ./web/app.ts"
+}

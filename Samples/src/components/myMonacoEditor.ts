@@ -1,11 +1,11 @@
 /// <reference types='jquery' />
 import * as monaco from "monaco-editor";
-import * as tmp from '../defs/spexplorerts.d.html';
-import * as legacy from '../defs/legacy.d.html'
-import * as misc from '../defs/misc.d.html'
-import * as jqueryDef from '../defs/JQuery.d.html'
-import * as jqueryStaticDef from '../defs/jqueryStatic.d.html';
-import * as sp from '../defs/sp.d.html';
+import * as tmp from './defs/spexplorerts.d.html';
+import * as legacy from './defs/legacy.d.html'
+import * as misc from './defs/misc.d.html'
+import * as jqueryDef from './defs/JQuery.d.html'
+import * as jqueryStaticDef from './defs/jqueryStatic.d.html';
+import * as sp from './defs/sp.d.html';
 
 //https://github.com/microsoft/monaco-typescript/pull/8
 

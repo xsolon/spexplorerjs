@@ -7,6 +7,8 @@ import users from './routes/user';
 
 var app = express();
 
+console.log(`dirname  : ${__dirname}`);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -58,11 +60,12 @@ var https = require('https');
 var fs = require('fs');
 
 var sslOptions = {
-  key: fs.readFileSync('src/keyDev1.pem'),
-  cert: fs.readFileSync('src/certDev1.pem'),
+  key: fs.readFileSync('web/config/keyDev1.pem'),
+  cert: fs.readFileSync('web/config/certDev1.pem'),
   passphrase: 'password'
 };
 
+console.log(`opening port: ${__dirname}:` + sslOptions);
 var serverSsl = https.createServer(sslOptions, app);
 serverSsl.listen(8443);
 // -------------------------------------------------------------
