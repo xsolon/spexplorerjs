@@ -11,9 +11,10 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\web\\app.js",
+            "preLaunchTask": "npm: buildweb",
+            "program": "${workspaceFolder}\\web\\app.ts",
             "outFiles": [
-                "${workspaceFolder}/**/*.js"
+                "${workspaceFolder}/web/app.js"
             ]
         },
 		{

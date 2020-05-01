@@ -13,6 +13,16 @@
 		},
 		{
 			"type": "npm",
+			"script": "buildweb",
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build",
+			"label": "npm: buildweb",
+			"detail": "tsc --build ${workspaceFolder}/web/config/tsconfigWeb.json"
+		},
+		{
+			"type": "npm",
 			"script": "startweb",
 			"problemMatcher": [
 				"$go"

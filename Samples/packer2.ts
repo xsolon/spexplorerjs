@@ -1,5 +1,5 @@
 /// <reference types='webpack' />
-//import webpack from 'webpack';
+import webpack from 'webpack';
 
 var folderPath = process.argv[1];
 (() => { // init
@@ -17,11 +17,11 @@ var MonacoWebpackPlugin1 = require('monaco-editor-webpack-plugin');
 var LZString = require('lz-string');
 var fs = require("fs");
 var path = require("path");
-var webpack = require("webpack");
+// @ts-ignore - ugh
+webpack = webpack || require("webpack");
 var getConfig = function (debug = true) {
 
-  //: webpack.Configuration = 
-  var config =
+  var config: webpack.Configuration =
   {
     watch: true,
     entry: {
@@ -120,18 +120,18 @@ compiler.run((err, stats) => {
     console.error(err);
     return;
   } else {
-    var watchOptions
-      //: webpack.Compiler.WatchOptions 
+    var watchOptions: webpack.Compiler.WatchOptions
       = {};
     console.log('watching for changes');
     compiler.watch(watchOptions, (err: Error, stats: any) => {
       if (err) {
         console.error(err);
       }
-      console.log(stats.toString({
-        chunks: false,  // Makes the build much quieter
-        colors: true    // Shows colors in the console
-      }));
+      console.log('updated...');
+      // console.log(stats.toString({
+      //   chunks: false,  // Makes the build much quieter
+      //   colors: true    // Shows colors in the console
+      // }));
 
     });
     // updateTemplate(true);
