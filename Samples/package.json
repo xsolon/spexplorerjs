@@ -9,7 +9,9 @@
     "pack": "concurrently \"tsc -w packer2\" \"nodemon -w packer2.js packer2.js\"",
     "start": "node web/app",
     "startweb": "nodemon --config web/config/nodemon.json",
-    "buildweb": "tsc --build ./web/config/tsconfigWeb.json"
+    "buildweb": "tsc --build ./web/config/tsconfigWeb.json",
+    "lint": "eslint . --ext .ts",
+    "lintfix": "eslint . --ext .ts --fix"
   },
   "description": "Samples",
   "author": {
@@ -40,10 +42,13 @@
     "@types/serve-static": "^1.7.32",
     "@types/sharepoint": "^2016.1.8",
     "@types/webpack": "^4.41.12",
+    "@typescript-eslint/eslint-plugin": "^2.30.0",
+    "@typescript-eslint/parser": "^2.30.0",
     "autoprefixer": "^9.7.5",
     "bootstrap": "^4.4.1",
     "concurrently": "^5.2.0",
     "css-loader": "^3.4.2",
+    "eslint": "^6.8.0",
     "html-loader": "^0.5.5",
     "jquery": "^3.4.1",
     "js-beautify": "^1.10.3",

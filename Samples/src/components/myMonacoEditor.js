@@ -1,13 +1,20 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference types='jquery' />
-var monaco = require("monaco-editor");
-var tmp = require("./defs/spexplorerts.d.html");
-var legacy = require("./defs/legacy.d.html");
-var misc = require("./defs/misc.d.html");
-var jqueryDef = require("./defs/JQuery.d.html");
-var jqueryStaticDef = require("./defs/jqueryStatic.d.html");
-var sp = require("./defs/sp.d.html");
+var monaco = __importStar(require("monaco-editor"));
+var tmp = __importStar(require("./defs/spexplorerts.d.html"));
+var legacy = __importStar(require("./defs/legacy.d.html"));
+var misc = __importStar(require("./defs/misc.d.html"));
+var jqueryDef = __importStar(require("./defs/JQuery.d.html"));
+var jqueryStaticDef = __importStar(require("./defs/jqueryStatic.d.html"));
+var sp = __importStar(require("./defs/sp.d.html"));
 //https://github.com/microsoft/monaco-typescript/pull/8
 // @ts-ignore
 self.MonacoEnvironment = {

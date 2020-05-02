@@ -1,25 +1,56 @@
-/// <reference types='webpack' />
+/// <reference types="webpack" />
+/// <reference types="@types/node" />
+// @ts-ignore
 import webpack from 'webpack';
+import path from 'path';
 
-var folderPath = process.argv[1];
-(() => { // init
-  const args = process.argv.slice(2);
-  var temp = [];
+var args = [];
+//#region arguments
+(() => {
   var folderPath = process.argv[1];
+  console.log(folderPath);
+  args = process.argv.slice(2);
+  var temp = [];
+
   args.forEach((val, index) => {
     temp.push(`${index}: ${val}`);
   });
 
   console.log(`packer v 0.2.2: ${temp.join(',')}\r\n`);
 })();
+//#endregion
 
-var MonacoWebpackPlugin1 = require('monaco-editor-webpack-plugin');
-var LZString = require('lz-string');
-var fs = require("fs");
-var path = require("path");
+var buildLocalSpPage = function (entryname: string, resPath: string) {
+  buildStandaloneTestPage(entryname, resPath, true);
+};
+var buildStandaloneTestPage = function (entryname: string, resPath: string, local = false) {
+  var LZString = require('lz-string');
+  var fs = require('fs');
+  var filename = path.basename(entryname, '.js');
+
+  var suffix = '';
+  var tmpPath = './src/templates/spexplorerjs.aspx';
+  var script = '';
+  if (local) {
+    tmpPath = './src/templates/spexplorerjs.local.aspx';
+    script = path.basename(entryname);
+    suffix = '.local';
+  } else {
+    script = fs.readFileSync(resPath).toString();
+    script = LZString.compressToBase64(script);
+  }
+  var template = fs.readFileSync(tmpPath).toString();
+  template = template.replace('{0}', script);
+
+  var destPath = `./public/standalone/${filename}${suffix}.aspx`;
+  fs.writeFileSync(destPath, template);
+
+};
+
 // @ts-ignore - ugh
-webpack = webpack || require("webpack");
+webpack = webpack || require('webpack');
 var getConfig = function (debug = true) {
+  var MonacoWebpackPlugin1 = require('monaco-editor-webpack-plugin');
 
   var config: webpack.Configuration =
   {
@@ -30,17 +61,17 @@ var getConfig = function (debug = true) {
       filesystem: './src/drivers/filesystem.ts',
       //monaco: './src/monacoSample.ts',
     },
-    devtool: debug ? "inline-source-map" : false,
+    devtool: debug ? 'inline-source-map' : false,
     optimization: {
       minimize: debug ? false : true
     },
-    mode: debug ? "development" : "production",
+    mode: debug ? 'development' : 'production',
     module: {
       rules: [
         {
           test: /\.html$/,
           use: [{
-            loader: "html-loader",
+            loader: 'html-loader',
             options: {
               minimize: false//debug ? false : true
             }
@@ -53,13 +84,14 @@ var getConfig = function (debug = true) {
         },
         {
           test: /\.css$/,
-          use: [{ loader: "style-loader", options: {} },
-          { loader: "css-loader", options: {} }]
+          use: [
+            { loader: 'style-loader', options: {} },
+            { loader: 'css-loader', options: {} }]
         },
         {
           test: /\.(gif|png|jpe?g|svg)$/i,
           use: [
-            "url-loader"
+            'url-loader'
           ]
         },
         {
@@ -107,6 +139,9 @@ var getConfig = function (debug = true) {
       publicPath: '/js/',
       filename: debug ? '[name].js' : '[name].min.js',
       path: path.resolve(__dirname, 'public/js'),
+    }, externals: {
+      // 'editor.worker.js': 'editor.worker.js'
+
     }
   };
 
@@ -115,30 +150,40 @@ var getConfig = function (debug = true) {
 var debugConfig = getConfig(true);
 var compiler = webpack(debugConfig);
 
-compiler.run((err, stats) => {
+
+var onDone = (err: Error, stats: webpack.Stats) => {
   if (err) {
     console.error(err);
-    return;
   } else {
-    var watchOptions: webpack.Compiler.WatchOptions
-      = {};
-    console.log('watching for changes');
-    compiler.watch(watchOptions, (err: Error, stats: any) => {
-      if (err) {
-        console.error(err);
+    console.log(stats.toString({
+      chunks: false, // Makes the build much quieter
+      colors: true // Shows colors in the console
+    }));
+    var assets: { [key: string]: { emitted: boolean, existsAt: string } } = stats.compilation.assets;
+    for (const key in assets) {
+      if (Object.prototype.hasOwnProperty.call(stats.compilation.assets, key)) {
+        console.log(key);
+        if (key != 'editor.worker.js' && key != 'ts.worker.js') {
+          buildStandaloneTestPage(key, assets[key].existsAt);
+          buildLocalSpPage(key, assets[key].existsAt);
+        }
       }
-      console.log('updated...');
-      // console.log(stats.toString({
-      //   chunks: false,  // Makes the build much quieter
-      //   colors: true    // Shows colors in the console
-      // }));
-
-    });
-    // updateTemplate(true);
+    }
   }
+};
+var watch = () => {
+  var watchOptions: webpack.Compiler.WatchOptions = {};
+  console.log('watching for changes');
+  compiler.watch(watchOptions, onDone);
+};
+var run = () => {
+  compiler.run((err: Error, stats: webpack.Stats) => {
+    onDone(err, stats);
+    watch();
+  });
+};
 
-  console.log(stats.toString({
-    chunks: false,  // Makes the build much quieter
-    colors: true    // Shows colors in the console
-  }));
-});
+if (args.length > 0 && args[0] == 'run') {
+  run();
+} else
+  watch();

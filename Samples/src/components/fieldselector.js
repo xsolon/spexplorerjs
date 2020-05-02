@@ -1,4 +1,11 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference types='jquery' />
 require("select2/dist/css/select2.css");
@@ -8,7 +15,7 @@ require('select2');
 var trace = spexplorerts_1.Logger.get("logger");
 trace.shouldDebug = true;
 var utils = new spexplorerts_1.funcs();
-var tmp = require("./fieldselector.html");
+var tmp = __importStar(require("./fieldselector.html"));
 var FieldSelector = /** @class */ (function () {
     function FieldSelector(el, opts) {
         var me = this;

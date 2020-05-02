@@ -1,11 +1,18 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference types='jquery' />
 /// <reference types='jstree' />
 require("jstree/dist/themes/default/style.css");
 require("spexplorerts/api/def");
 var spexplorerts_1 = require("spexplorerts");
-var tmp = require("./searchbox.template.html");
+var tmp = __importStar(require("./searchbox.template.html"));
 var jseditor_1 = require("./jseditor");
 var myMonacoEditor_1 = require("./myMonacoEditor");
 var trace = spexplorerts_1.Logger.get("logger");

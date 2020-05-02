@@ -33,6 +33,16 @@
 		},
 		{
 			"type": "npm",
+			"script": "build",
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build",
+			"label": "build",
+			"detail": "tsc --build"
+		},
+		{
+			"type": "npm",
 			"script": "buildall",
 			"problemMatcher": [
 				"$go"
