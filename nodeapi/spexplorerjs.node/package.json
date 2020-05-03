@@ -24,6 +24,7 @@
 		"@types/jquery": "^3.3.14",
 		"@types/microsoft-ajax": "0.0.33",
 		"@types/node": "^8.10.38",
+		"@types/webpack": "^4.41.12",
 		"html-loader": "^0.5.5",
 		"jquery": "^3.5.0",
 		"jsdom": "^12.1.0",
