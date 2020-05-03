@@ -1,9 +1,9 @@
 /// <reference types='jquery' />
-import * as monaco from "monaco-editor";
+import * as monaco from 'monaco-editor';
 import * as tmp from './defs/spexplorerts.d.html';
-import * as legacy from './defs/legacy.d.html'
-import * as misc from './defs/misc.d.html'
-import * as jqueryDef from './defs/JQuery.d.html'
+import * as legacy from './defs/legacy.d.html';
+import * as misc from './defs/misc.d.html';
+import * as jqueryDef from './defs/JQuery.d.html';
 import * as jqueryStaticDef from './defs/jqueryStatic.d.html';
 import * as sp from './defs/sp.d.html';
 
@@ -11,7 +11,7 @@ import * as sp from './defs/sp.d.html';
 
 // @ts-ignore
 self.MonacoEnvironment = {
-    getWorkerUrl: function (moduleId: string, label: string) {
+    getWorkerUrl: function (/*moduleId: string, label: string*/) {
         return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
         self.MonacoEnvironment = {
           baseUrl: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/'
@@ -98,7 +98,7 @@ export class MyMonacoEditor {
             // Method that will be executed when the action is triggered.
             // @param editor The editor instance is passed in as a convinience
             run: function (ed) {
-                $(elem).trigger("run", ed.getValue());
+                $(elem).trigger('run', ed.getValue());
                 return null;
             }
         });
@@ -109,7 +109,7 @@ export class MyMonacoEditor {
         this.editor.setValue(val);
     }
     getValue(): JQuery.Promise<string> {
-        this.tsproxy.getEmitOutput('file:///main.tsx').then((r :any) => {
+        this.tsproxy.getEmitOutput('file:///main.tsx').then((r: any) => {
             p1.resolve(r.outputFiles[0].text);
         });
 

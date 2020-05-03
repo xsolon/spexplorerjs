@@ -2,21 +2,21 @@
 /// <reference types='jstree' />
 import 'jstree/dist/themes/default/style.css';
 import 'spexplorerts/api/def';
-import { Ispexplorerjs } from 'spexplorerts/api/def';
-import { Logger, funcs } from 'spexplorerts';
+import * as Api from 'spexplorerts';
 import * as tmp from './searchbox.template.html';
 import { CodeMirrorHelper } from './jseditor';
 import { MyMonacoEditor } from './myMonacoEditor';
 
-var trace: Logger = Logger.get("logger");
+var trace: Api.Logger = Api.Logger.get('logger');
 trace.shouldDebug = true;
 
 export class CodeMirrorEditor {
   private xmlEditor: CodeMirror.EditorFromTextArea;
+  // eslint-disable-next-line no-unused-vars
   constructor(el: any, opts?: { [key: string]: any }) {
     var ui = $(el);
     trace.log('CodeMirrorEditor.init');
-    var ns: Ispexplorerjs = window['spexplorerjs']
+    // var ns: Api.Ispexplorerjs = window['spexplorerjs'];
     var helper = new CodeMirrorHelper();
 
     ui.html(tmp);

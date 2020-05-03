@@ -36,10 +36,7 @@
             "always"
         ],
         // we use 2 spaces to indent our code
-        "indent": [
-            "error",
-            2
-        ],
+        // "indent": [ "error", "tab" ],
         // we want to avoid useless spaces
         "no-multi-spaces": [
             "error"
