@@ -2,22 +2,27 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"target": "es5",
-		"lib": [ "es6", "dom" ],
+		"lib": [
+			"es6",
+			"dom"
+		],
 		"sourceMap": true,
 		"allowJs": false,
-			"typeRoots": [
-				"./node_modules/@types"
-				//,"./src/defs"
-			],
+		"typeRoots": [
+			"./node_modules/@types"
+			//,"./src/defs"
+		],
 		"moduleResolution": "node",
 		"declaration": true,
 		"types": [
 			"node",
-			"core-js"
-		]
-
+		],
+		"skipLibCheck": true,
+		"outDir": "./dist"
 	},
-	"include": [ "src/index.api.ts", "src/api/def.ts" ],
+	"include": [
+		"./src/index.ts"
+	],
 	"exclude": [
 		"node_modules",
 		"backups.node.ts",

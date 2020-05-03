@@ -1,6 +1,17 @@
 {
     "files.exclude": {
+        "*.js": true,
+        "*.js.map": true,
+        "node_modules": true,
+        "src/**/*.d.ts": true,
         "src/**/*.js": true,
         "src/**/*.js.map": true
-    }
+    },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "editor.formatOnSave": true,
+    "eslint.validate": [
+        "typescript"
+    ]
 }

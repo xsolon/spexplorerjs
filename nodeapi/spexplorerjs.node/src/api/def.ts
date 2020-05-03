@@ -2,14 +2,36 @@
 import { Logger } from './logger';
 import { funcs } from './utils';
 import { ListApi, ListDal, FolderApi, WebApi } from './list';
-//import jQuery = require('jquery');
+
+interface Ispexplorerjs {
+  [key: string]: any,
+  modules: {
+    logger: new (name: string) => Logger,
+    utils: new () => funcs,
+    funcs: funcs,
+    listapi: new (ctx?: SP.ClientContext) => ListApi,
+    listdal: new (title: string, defaultQuery?: string) => ListDal,
+    folderapi: new (ctx?: SP.ClientContext) => FolderApi,
+    webapi: new (ctx?: SP.ClientContext) => WebApi,
+    jQuery: JQueryStatic
+  }
+
+}
+
+interface IWindow {
+  [key: string]: any,
+  spexplorerjs: Ispexplorerjs,
+  spexplorerts: Ispexplorerjs
+}
 
 if (typeof window !== 'undefined') {
-  window['spexplorerjs'] = window['spexplorerjs'] || {
-    version: '1.0.3',
+  // @ts-ignore
+  var w: IWindow = window;
+  w.spexplorerjs = w.spexplorerjs || {
+    version: '1.0.7',
     modules: {
       logger: Logger,
-      funcs : new funcs(),
+      funcs: new funcs(),
       utils: funcs,
       listapi: ListApi,
       listdal: ListDal,
@@ -18,27 +40,8 @@ if (typeof window !== 'undefined') {
       jQuery: jQuery
     }
   };
+
+  w.spexplorerts = w.spexplorerts || w.spexplorerjs;
 }
 
-interface Ispexplorerjs {
-  [key: string]: any,
-  modules: {
-    logger: new (name:string) => Logger,
-    utils: new () => funcs,
-    funcs: funcs,
-    listapi: new (ctx?: SP.ClientContext) => ListApi,
-    listdal: new (ctx?: SP.ClientContext) => ListDal,
-    folderapi: new (ctx?: SP.ClientContext) => FolderApi,
-    webapi: new (ctx?: SP.ClientContext) => WebApi,
-    jQuery: JQueryStatic
-  }
-
-}
-
-interface Window {
-  [key: string]: any,
-  spexplorerjs: Ispexplorerjs,
-  spexplorerts: Ispexplorerjs
-}
-
-export {Ispexplorerjs, Window};
+export { Ispexplorerjs, IWindow };

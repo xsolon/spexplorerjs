@@ -3,6 +3,16 @@
 	"tasks": [
 		{
 			"type": "npm",
+			"script": "compile",
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build",
+			"label": "compile",
+			"detail": "tsc --build"
+		},
+		{
+			"type": "npm",
 			"script": "build",
 			"problemMatcher": [
 				"$go"

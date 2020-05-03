@@ -8,7 +8,8 @@ var args = [];
 //#region arguments
 (() => {
   var folderPath = process.argv[1];
-  console.log(folderPath);
+  var itemPath = process.argv[0];
+  console.log(`${folderPath} ${itemPath}`);
   args = process.argv.slice(2);
   var temp = [];
 
@@ -126,6 +127,13 @@ var getConfig = function (debug = true) {
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
+      }),
+      new webpack.BannerPlugin({
+        // @ts-ignore
+        banner: (v: any) => {
+          console.log(`v: ${v}`);
+          return ` ${new Date().toLocaleDateString()}`;
+        }
       }),
       new MonacoWebpackPlugin1({
         languages: ['typescript'],

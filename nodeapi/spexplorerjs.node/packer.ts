@@ -1,15 +1,21 @@
 /// <reference types="webpack" />
 /// <reference types="@types/node" />
 
-// @ts-ignore
+//import * as webpack from 'webpack';
+import * as path from 'path';
+import * as fs from 'fs';
 import webpack from 'webpack';
-import path from 'path';
 
+var myWebPack = require('webpack');
+var runFlag = process.argv.indexOf('--run') > -1;
+console.log(process.argv);
 var args = [];
 //#region arguments
 (() => {
+
     var folderPath = process.argv[1];
-    console.log(folderPath);
+    var filePath = process.argv[1];
+    console.log(`${filePath} ${folderPath}`);
     args = process.argv.slice(2);
     var temp = [];
 
@@ -17,42 +23,22 @@ var args = [];
         temp.push(`${index}: ${val}`);
     });
 
-    console.log(`packer v 0.2.2: ${temp.join(',')}\r\n`);
+    var lastModified = fs.statSync(filePath).mtime.toLocaleString();
+    console.log(`packer v 0.2.7 ${lastModified} run: ${runFlag} - ${temp.join(',')}\r\n`);
 })();
 //#endregion
 
-var buildLocalSpPage = function (entryname: string, resPath: string) {
-    buildStandaloneTestPage(entryname, resPath, true);
-};
-var buildStandaloneTestPage = function (entryname: string, resPath: string, local = false) {
-    var LZString = require('lz-string');
-    var fs = require('fs');
-    var filename = path.basename(entryname, '.js');
-
-    var suffix = '';
-    var tmpPath = './src/templates/spexplorerjs.aspx';
-    var script = '';
-    if (local) {
-        tmpPath = './src/templates/spexplorerjs.local.aspx';
-        script = path.basename(entryname);
-        suffix = '.local';
-    } else {
-        script = fs.readFileSync(resPath).toString();
-        script = LZString.compressToBase64(script);
-    }
-    var template = fs.readFileSync(tmpPath).toString();
-    template = template.replace('{0}', script);
-
-    var destPath = `./public/standalone/${filename}${suffix}.aspx`;
-    fs.writeFileSync(destPath, template);
-
-};
-
-// @ts-ignore - ugh
-webpack = webpack || require('webpack');
-var getConfig = function (debug = true) {
+var getConfig = function (debug) {
     const TypescriptDeclarationPlugin = require('typescript-declaration-webpack-plugin');
 
+    // @ts-ignore
+    var bannerOptions: webpack.BannerPlugin.Options = {
+        banner:
+            // @ts-ignore
+            (x: { filename: string }) => {
+                return `${x.filename} - ${new Date().toLocaleString()}`;
+            }
+    };
     var config: webpack.Configuration =
     {
         watch: true,
@@ -119,11 +105,7 @@ var getConfig = function (debug = true) {
                 }
             ]
         },
-        plugins: [
-            new TypescriptDeclarationPlugin({
-                out: 'spexplorerts.d.ts'
-            })
-        ],
+        plugins: [new webpack.BannerPlugin(bannerOptions)],
         resolve: {
             extensions: ['.tsx', '.ts', '.js']
         },
@@ -133,10 +115,11 @@ var getConfig = function (debug = true) {
         },
     };
 
+    if (!debug)
+        config.plugins.push(new TypescriptDeclarationPlugin({ out: 'spexplorerts.d.ts' }));
+
     return config;
 };
-var debugConfig = getConfig(true);
-var compiler = webpack(debugConfig);
 
 var onDone = (err: Error, stats: webpack.Stats) => {
     if (err) {
@@ -149,28 +132,44 @@ var onDone = (err: Error, stats: webpack.Stats) => {
         var assets: { [key: string]: { emitted: boolean, existsAt: string } } = stats.compilation.assets;
         for (const key in assets) {
             if (Object.prototype.hasOwnProperty.call(stats.compilation.assets, key)) {
-                console.log(key);
-                if (key != 'editor.worker.js' && key != 'ts.worker.js') {
-                    buildStandaloneTestPage(key, assets[key].existsAt);
-                    buildLocalSpPage(key, assets[key].existsAt);
+                if (key == 'spexplorerts.d.ts') {
+                    var htmlPath = `${path.dirname(assets[key].existsAt)}/${path.basename(assets[key].existsAt, '.js')}.html`;
+                    fs.copyFile(assets[key].existsAt, htmlPath, () => { });
                 }
             }
         }
     }
 };
-var watch = () => {
+
+var debugConfig = getConfig(true);
+var debugCompiler: webpack.Compiler = myWebPack(debugConfig);
+
+var prodConfig = getConfig(false);
+var prodCompiler: webpack.Compiler = myWebPack(prodConfig);
+
+if (runFlag) {
+    prodCompiler.run(onDone);
+    debugCompiler.run(onDone);
+}
+else {
     var watchOptions: webpack.Compiler.WatchOptions = {};
     console.log('watching for changes');
-    compiler.watch(watchOptions, onDone);
-};
-var run = () => {
-    compiler.run((err: Error, stats: webpack.Stats) => {
-        onDone(err, stats);
-        watch();
+    debugCompiler.watch(watchOptions, (err: Error, stats: webpack.Stats) => {
+        console.log('debug done');
+        if (err) {
+            console.error(err);
+        }
+        prodCompiler.run(onDone);
     });
-};
 
-if (args.length > 0 && args[0] == 'run') {
-    run();
-} else
-    watch();
+    const readline = require('readline');
+
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    rl.question('press any key to exit packer', (answer) => {
+        rl.close();
+    })
+}
