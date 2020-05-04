@@ -16,22 +16,27 @@
                 "${workspaceFolder}/**/*.js"
             ]
         },
-		{
+        {
             // https://gist.github.com/cecilemuller/2963155d0f249c1544289b78a1cdd695
-			"name": "ts-node",
-			"type": "node",
-			"request": "launch",
-			"args": ["${workspaceRoot}/web/app.ts"],
-			"runtimeArgs": ["-r", "ts-node/register"],
-			"cwd": "${workspaceRoot}",
-			"protocol": "inspector",
-			"internalConsoleOptions": "openOnSessionStart",
-			"env": {
-				"TS_NODE_IGNORE": "false"
-			},
+            "name": "ts-node",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "${workspaceRoot}/web/app.ts"
+            ],
+            "runtimeArgs": [
+                "-r",
+                "ts-node/register"
+            ],
+            "cwd": "${workspaceRoot}",
+            "protocol": "inspector",
+            "internalConsoleOptions": "openOnSessionStart",
+            "env": {
+                "TS_NODE_IGNORE": "false"
+            },
             "skipFiles": [
                 "<node_internals>/**"
             ]
-		}
+        }
     ]
 }

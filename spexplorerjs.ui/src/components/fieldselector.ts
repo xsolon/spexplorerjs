@@ -1,14 +1,16 @@
+/// <reference types='spexplorerts' />
 /// <reference types='jquery' />
 import 'select2/dist/css/select2.css';
 import 'spexplorerts/api/def';
-import { Ispexplorerjs } from 'spexplorerts/api/def';
-import { Logger, funcs } from 'spexplorerts';
-
-require('select2');
-var trace: Logger = Logger.get("logger");
-trace.shouldDebug = true;
-var utils = new funcs();
 import * as tmp from './fieldselector.html';
+// eslint-disable-next-line no-unused-vars
+import { IWindow, Logger, Ispexplorerjs } from 'spexplorerts';
+
+var ns: Ispexplorerjs = (<IWindow>window).spexplorerts;
+require('select2');
+var trace: Logger = new ns.modules.logger('logger');
+trace.shouldDebug = true;
+var utils = ns.modules.funcs;
 
 
 export class FieldSelector {
@@ -23,23 +25,23 @@ export class FieldSelector {
     ui.html(tmp);
     me.ui = ui;
     trace.log('FieldSelector.init');
-    var ns: Ispexplorerjs = window['spexplorerjs']
+    // var ns: Api.Ispexplorerjs = window['spexplorerjs'];
 
     if (opts && opts.target) {
       me.setTarget(opts.target);
     }
-    me.fieldSel = $(".fieldsDrp", this.ui).on("change", function () {
-      var field = me.fieldSel.find(":selected").prop("data-field");
+    me.fieldSel = $('.fieldsDrp', this.ui).on('change', function () {
+      var field = me.fieldSel.find(':selected').prop('data-field');
       if (field) {
-        var xml = field.get_schemaXml();
+        // var xml = field.get_schemaXml();
         trace.log({ field: field });
       }
     });
   }
   private bindSelect(fields: SP.Field[]): void {
     var me = this;
-    var fieldSel = me.fieldSel
-    fieldSel.html("");
+    var fieldSel = me.fieldSel;
+    fieldSel.html('');
 
     fields.sort((x, y) => {
       var xT = x.get_title();
@@ -51,7 +53,7 @@ export class FieldSelector {
 
     fields.forEach((field) => {
       var opt = $(`<option value="${field.get_title()}">${field.get_internalName().toString()}|${field.get_title()}</option>`);
-      opt.prop("data-field", field);
+      opt.prop('data-field', field);
 
       //if (excludereadonly && field.get_readOnlyField()) {
       //	trace.debug("readonly");
@@ -67,7 +69,7 @@ export class FieldSelector {
     <li>Static Name: ${field.get_staticName()}</li>
     <li>Id: ${field.get_id().toString()}</li>
     <li>Type: ${field.get_fieldTypeKind().toString()}</li>
-</ul>`
+</ul>`;
       return tmpl;
     };
     // @ts-ignore
@@ -76,14 +78,14 @@ export class FieldSelector {
 
         if (!state.id) { return state.text; }
 
-        var field = $(state.element).prop("data-field");
+        var field = $(state.element).prop('data-field');
 
         var $state = $(fieldLabel(field));
 
         return $state;
       }, templateSelection: function template(data/*, container*/) {
 
-        return $(data.element).prop("data-field").get_title();
+        return $(data.element).prop('data-field').get_title();
       }
     });
 

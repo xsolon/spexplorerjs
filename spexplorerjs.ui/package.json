@@ -8,7 +8,7 @@
     "clean": "tsc --build --clean",
     "pack": "concurrently \"tsc -w packer2\" \"nodemon -w packer2.js packer2.js\"",
     "start": "node web/app",
-    "startweb": "nodemon --config web/config/nodemon.json",
+    "startweb": "concurrently \"tsc --build ./web/config/tsconfigWeb.json -w\" \"nodemon --config web/config/nodemon.json\"",
     "buildweb": "tsc --build ./web/config/tsconfigWeb.json",
     "lint": "eslint . --ext .ts",
     "lintfix": "eslint . --ext .ts --fix"

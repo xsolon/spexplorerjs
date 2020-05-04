@@ -9,7 +9,7 @@ router.use('/javascripts', express.static(__dirname + '/../public/javascripts'))
 router.use('/js', express.static(jsPath));
 
 router.get('/', (req: express.Request, res: express.Response) => {
-    res.render('index', { title: 'Express', version: '0.0.7' });
+    res.render('index', { title: 'Express', version: '0.0.8' });
 });
 router.get('/spsearch', (req: express.Request, res: express.Response) => {
     res.render('spsearch', { title: 'Express', version: 'a1' });

@@ -2,7 +2,8 @@
 /// <reference types="@types/node" />
 // @ts-ignore
 import webpack from 'webpack';
-import path from 'path';
+import * as path from 'path';
+import * as fs from 'fs';
 
 var args = [];
 //#region arguments
@@ -26,7 +27,6 @@ var buildLocalSpPage = function (entryname: string, resPath: string) {
 };
 var buildStandaloneTestPage = function (entryname: string, resPath: string, local = false) {
   var LZString = require('lz-string');
-  var fs = require('fs');
   var filename = path.basename(entryname, '.js');
 
   var suffix = '';
@@ -125,13 +125,10 @@ var getConfig = function (debug = true) {
       ]
     },
     plugins: [
-      new webpack.optimize.LimitChunkCountPlugin({
-        maxChunks: 1,
-      }),
+      new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1, }),
       new webpack.BannerPlugin({
         // @ts-ignore
-        banner: (v: any) => {
-          console.log(`v: ${v}`);
+        banner: (/*v: any*/) => {
           return ` ${new Date().toLocaleDateString()}`;
         }
       }),
@@ -140,16 +137,11 @@ var getConfig = function (debug = true) {
         // features: ['folding']
       })
     ],
-    resolve: {
-      extensions: ['.tsx', '.ts', '.js']
-    },
+    resolve: { extensions: ['.tsx', '.ts', '.js'] },
     output: {
       publicPath: '/js/',
       filename: debug ? '[name].js' : '[name].min.js',
       path: path.resolve(__dirname, 'public/js'),
-    }, externals: {
-      // 'editor.worker.js': 'editor.worker.js'
-
     }
   };
 
