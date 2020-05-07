@@ -10,7 +10,7 @@
 	"scripts": {
 		"api": "tsc -p ./tsconfig.Api.Common.json",
 		"apiwatch": "tsc -w -p ./tsconfig.Api.Common.json",
-		"pack": "tsc -w packer --esModuleInterop & node packer.js --run",
+		"pack": "tsc packer --esModuleInterop & node packer.js --run",
 		"packwatch": "concurrently \"tsc -w packer --esModuleInterop\" \"nodemon -w packer.js packer.js\"",
 		"amdbundle": "tsc -p ./tsconfig.Api.Amd.json --outFile ./dist/bundles/api.amdbundle.js",
 		"build": "npm run api && npm run pack && npm run amdbundle",

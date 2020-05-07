@@ -7,11 +7,13 @@
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "pack": "concurrently \"tsc -w packer2\" \"nodemon -w packer2.js packer2.js\"",
-    "start": "node web/app",
-    "startweb": "concurrently \"tsc --build ./web/config/tsconfigWeb.json -w\" \"nodemon --config web/config/nodemon.json\"",
-    "buildweb": "tsc --build ./web/config/tsconfigWeb.json",
+    "web_watch": "tsc --build ./web/config/tsconfigWeb.json -w",
+    "web_run": "nodemon --config web/config/nodemon.json",
+    "web_all": "concurrently \"npm run web_watch\" \"npm run web_run\"",
+    "web_build": "tsc --build ./web/config/tsconfigWeb.json",
     "lint": "eslint . --ext .ts",
-    "lintfix": "eslint . --ext .ts --fix"
+    "lintfix": "eslint . --ext .ts --fix",
+    "all": "concurrently \"npm run web_all\" \"npm run pack\""
   },
   "description": "Samples",
   "author": {
@@ -61,7 +63,7 @@
     "precss": "^4.0.0",
     "sass-loader": "^8.0.2",
     "select2": "^4.0.13",
-    "spexplorerts": "^0.2.4",
+    "spexplorerts": "^0.2.6",
     "style-loader": "^1.1.3",
     "ts-loader": "^6.2.1",
     "ts-node": "^8.9.1",

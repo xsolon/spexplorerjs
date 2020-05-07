@@ -1,4 +1,4 @@
-﻿import 'jquery';
+﻿/// <references types="jquery"/>
 import { Logger } from './logger';
 import { funcs } from './utils';
 import { ListApi, ListDal, FolderApi, WebApi } from './list';
@@ -37,7 +37,7 @@ if (typeof window !== 'undefined') {
       listdal: ListDal,
       folderapi: FolderApi,
       webapi: WebApi,
-      jQuery: jQuery
+      jQuery: require('jquery')
     }
   };
 

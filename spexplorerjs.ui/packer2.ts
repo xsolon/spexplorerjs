@@ -162,13 +162,13 @@ var onDone = (err: Error, stats: webpack.Stats) => {
     var assets: { [key: string]: { emitted: boolean, existsAt: string } } = stats.compilation.assets;
     for (const key in assets) {
       if (Object.prototype.hasOwnProperty.call(stats.compilation.assets, key)) {
-        console.log(key);
         if (key != 'editor.worker.js' && key != 'ts.worker.js') {
           buildStandaloneTestPage(key, assets[key].existsAt);
           buildLocalSpPage(key, assets[key].existsAt);
         }
       }
     }
+    console.log(new Date().toLocaleTimeString());
   }
 };
 var watch = () => {

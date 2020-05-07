@@ -42,7 +42,7 @@ var getConfig = function (debug) {
     var config: webpack.Configuration =
     {
         watch: true,
-        entry: './src/api/def.ts',
+        entry: './src/index.ts',
         devtool: debug ? 'inline-source-map' : false,
         optimization: {
             minimize: debug ? false : true

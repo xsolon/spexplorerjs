@@ -13,7 +13,13 @@
         "source.fixAll.eslint": true
     },
     "editor.formatOnSave": true,
+    "[html]": {
+        "editor.formatOnSave": false // ContentLink issue in webparts
+    },
     "eslint.validate": [
         "typescript"
-    ]
+    ],
+    "files.associations": {
+        "*.aspx": "html" // https://code.visualstudio.com/docs/languages/identifiers
+    }
 }

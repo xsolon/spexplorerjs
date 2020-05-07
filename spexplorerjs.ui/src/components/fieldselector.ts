@@ -6,7 +6,9 @@ import * as tmp from './fieldselector.html';
 // eslint-disable-next-line no-unused-vars
 import { IWindow, Logger, Ispexplorerjs } from 'spexplorerts';
 
-var ns: Ispexplorerjs = (<IWindow>window).spexplorerts;
+// @ts-ignore
+var w: IWindow = window;
+var ns: Ispexplorerjs = w.spexplorerts;
 require('select2');
 var trace: Logger = new ns.modules.logger('logger');
 trace.shouldDebug = true;

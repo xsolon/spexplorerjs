@@ -1,8 +1,10 @@
-import { MyMonacoEditor } from '../components/myMonacoEditor'
+import { CodeMirrorEditor } from '../components/codemirroreditor';
 import 'jquery';
 import 'spexplorerts';
 import { Logger } from 'spexplorerts';
 import * as Api from 'spexplorerts';
+import 'bootstrap';
+import '../custom.scss';
 
 class FileSystemDriver {
     constructor() {
@@ -15,13 +17,12 @@ class FileSystemDriver {
         window['Api'] = Api;
         var logger = new Logger('test');
         logger.log('hello world!');
-        var editor = new MyMonacoEditor('mirror', 'typescript', 'function test(){alert("hi");}');
+
+        var code = new CodeMirrorEditor('#editor');
+        code.setXml('<view />');
+        // var editor = new MyMonacoEditor('mirror', 'typescript', 'function test(){alert("hi");}');
 
         jQuery('button').click(() => {
-            editor.getValue().done((code) => {
-                console.log(code);
-
-            })
         });
     }
 }

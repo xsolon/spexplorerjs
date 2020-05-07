@@ -1,6 +1,6 @@
 /// <reference types='jquery' />
 import * as monaco from 'monaco-editor';
-import * as tmp from './defs/spexplorerts.d.html';
+import * as tmp from '../../node_modules/spexplorerts/bundles/spexplorerts.d.ts.html';
 import * as legacy from './defs/legacy.d.html';
 import * as misc from './defs/misc.d.html';
 import * as jqueryDef from './defs/JQuery.d.html';
