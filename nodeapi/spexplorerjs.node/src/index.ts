@@ -1,4 +1,5 @@
-﻿export { Ispexplorerjs, IWindow } from './api/def';
+﻿import './api/def';
+export { Ispexplorerjs, IWindow } from './api/def';
 export { Logger } from './api/logger';
 export { funcs } from './api/utils';
 export { ListDal, ListApi, FolderApi, WebApi } from './api/list';

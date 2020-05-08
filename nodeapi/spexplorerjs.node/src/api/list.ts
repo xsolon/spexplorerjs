@@ -1,4 +1,5 @@
-﻿// v 0.1.18 - 2020_04_01 - Load Ctype from local web
+﻿// v 0.1.19 - 2020_05_08 - Use private jQuery
+// v 0.1.18 - 2020_04_01 - Load Ctype from local web
 // v 0.1.17 - 2020_03_26 - FolderApi: uploadFile
 // v 0.1.16 - 2020_03_24 - addItems pageNum parameter to insert items throw pages, afterDefaultItemsAdded on ListMeta, FolderApi: ensureAttachmentFolder
 // v 0.1.5  - 2018_11_27 - Use displayname if field definition does not have internal/name/static attributes
@@ -10,11 +11,10 @@ import { Logger } from './logger';
 import { FieldMeta, ListMeta, itemsFunction, CTypeMeta, FieldLinkMeta } from './meta';
 import { funcs } from "./utils";
 
-import jQuery = require('jquery');
-global['$'] = jQuery;
+var j$ = require('jquery');
 var utils: funcs = new funcs();
 
-export type QueueStep = (item) => Promise<void>;
+export type QueueStep = (item: any) => Promise<void>;
 export type ArrayPromise = () => Promise<Array<any>>;
 // 2020-01-30: 0.1.9 - getItems: additional parameter 'limit'
 export class ListDal {
@@ -50,7 +50,7 @@ export class ListDal {
         this.ctx.executeQueryAsync(function () {
             ddf.resolve(li);
         });
-        var ddf = jQuery.Deferred();
+        var ddf = j$.Deferred();
         return ddf.promise();
     }
 }
@@ -70,7 +70,7 @@ export class ListApi {
         //fields = fields || args.Fields || [];
         var spfields = list.get_fields();
         var loadFields = function (): Promise<Map<string, SP.Field>> {
-            return $.Deferred(function (dfd) {
+            return j$.Deferred(function (dfd) {
                 me.ctx.load(spfields, "Include(Title,FieldTypeKind,TypeAsString,InternalName)");
                 me.ctx.executeQueryAsync(function () {
 
@@ -90,7 +90,7 @@ export class ListApi {
             }).promise();
         };
         var getMarkup = function getMarkup(field: FieldMeta, spfields): Promise<string> {
-            return $.Deferred(function (dfd) {
+            return j$.Deferred(function (dfd) {
 
                 var xml = field.markup;
                 if (typeof field.markup == "function") {
@@ -107,7 +107,7 @@ export class ListApi {
             }).promise();
         };
 
-        return $.Deferred(function (dfd) {
+        return j$.Deferred(function (dfd) {
             var done = function done() {
                 me.ctrace.log('checking done');
                 spfields = list.get_fields();
@@ -120,11 +120,11 @@ export class ListApi {
             loadFields().then(function (spFieldMap) {
                 me.ctrace.log('checking fields');
                 utils.processAsQueue<FieldMeta>(fields.slice(), function (field: FieldMeta) {
-                    return $.Deferred(function (fieldDfd) {
+                    return j$.Deferred(function (fieldDfd) {
                         me.ctrace.log(`-- field: ${field.name}`);
                         getMarkup(field, spFieldMap).then(function (xml) {
 
-                            var fieldXML = $($.parseXML(xml)).find("Field");
+                            var fieldXML = j$(j$.parseXML(xml)).find("Field");
                             var internalName = fieldXML.attr("InternalName") || fieldXML.attr("Name") || fieldXML.attr("StaticName") || fieldXML.attr("DisplayName");
                             var spField = spFieldMap[internalName];
                             if (spField) {
@@ -154,7 +154,7 @@ export class ListApi {
 
         let lists = me.ctx.get_web().get_lists();
         me.ctx.load(lists, 'Include(Title)');
-        return $.Deferred(function (dfd) {
+        return j$.Deferred(function (dfd) {
             me.ctx.executeQueryAsync(function () {
                 var list = lists.get_data().find(i => i.get_title() == title);
                 me.ctrace.debug(`${title}.exists: ${list != null}`);
@@ -165,7 +165,7 @@ export class ListApi {
     ensureCTypes(ctypes: CTypeMeta[], splist: SP.List): JQuery.Promise<SP.ContentType[]> {
         var me = this;
         var ctx = me.ctx;
-        var dfd = $.Deferred();
+        var dfd = j$.Deferred();
 
         if (!ctypes) {
             dfd.resolve();
@@ -185,7 +185,7 @@ export class ListApi {
             var listFieldsDic: { [key: string]: SP.Field } = null;
 
             var createCtype = function (ctypeMeta: CTypeMeta): JQuery.Promise<SP.ContentType> {
-                var dfd1 = $.Deferred();
+                var dfd1 = j$.Deferred();
 
                 var parentCtype: SP.ContentType = null;
                 if (webCtypesDic[ctypeMeta.parentCtypeId])
@@ -227,7 +227,7 @@ export class ListApi {
                 return dfd1.promise();
             };
             var ensureFields = function (cType: SP.ContentType, meta: CTypeMeta): JQuery.Promise<void> {
-                var dfd2 = $.Deferred();
+                var dfd2 = j$.Deferred();
 
                 var links = cType.get_fieldLinks();
                 ctx.load(links);
@@ -263,7 +263,7 @@ export class ListApi {
 
             var ensureCtype = function (ctype: CTypeMeta): JQuery.Promise<void> {
                 var name = ctype.name;
-                var cDfd = $.Deferred();
+                var cDfd = j$.Deferred();
 
                 var doCtype = function (spctype: SP.ContentType) {
 
@@ -311,7 +311,7 @@ export class ListApi {
     };
     ensureList(meta: ListMeta): JQuery.Promise<SP.List> {
         var me = this;
-        var dfd = $.Deferred();
+        var dfd = j$.Deferred();
         var done = function (list: SP.List, isNew: boolean) {
 
             var runUpdates = function () {
@@ -345,7 +345,7 @@ export class ListApi {
 
             };
 
-            var promise: JQuery.Promise<any> = $.Deferred(function (dd) { dd.resolve(); }).promise();
+            var promise: JQuery.Promise<any> = j$.Deferred(function (dd) { dd.resolve(); }).promise();
 
             if (isNew && meta.afterListCreated) {
                 promise = meta.afterListCreated(list, me);
@@ -362,7 +362,7 @@ export class ListApi {
             var exists: boolean = res[0];
             var existingList: SP.List = res[1];
 
-            var promise: JQuery.Promise<SP.List> = $.Deferred(function (dd) { dd.resolve(existingList); }).promise();
+            var promise: JQuery.Promise<SP.List> = j$.Deferred(function (dd) { dd.resolve(existingList); }).promise();
 
             if (!exists) {
                 promise = me.createList(meta.title, meta.listTemplate, me.ctx.get_web());
@@ -388,7 +388,7 @@ export class ListApi {
     createList(listTitle, templateType, web): JQuery.Promise<SP.List> {
         var me = this;
         me.ctrace.log("Creating list " + listTitle);
-        return $.Deferred(function (dfd) {
+        return j$.Deferred(function (dfd) {
 
             var listCreationInfo = new SP.ListCreationInformation();
             listCreationInfo.set_title(listTitle);
@@ -413,7 +413,7 @@ export class ListApi {
 
         me.ctx.load(list);
         me.ctx.load(fields);
-        return $.Deferred(function (dfd) {
+        return j$.Deferred(function (dfd) {
 
             me.ctx.executeQueryAsync(function () {
                 var meta = new ListMeta(listTitle);
@@ -428,12 +428,12 @@ export class ListApi {
                     if (fieldNames[name] != undefined) {
                         var xmlS = f.get_schemaXml();
 
-                        var $xml = $.parseXML(xmlS);
+                        var $xml = j$.parseXML(xmlS);
 
                         var field = $xml.querySelector('Field');
                         attribsToSkip.forEach(function (n) { field.removeAttribute(n); });
 
-                        xmlS = $('<x></x>').append($($xml).find('Field')).html().replace(/"/g, "'");
+                        xmlS = j$('<x></x>').append(j$($xml).find('Field')).html().replace(/"/g, "'");
                         var display = f.get_title();
 
                         var fieldMeta = new FieldMeta();
@@ -478,7 +478,7 @@ export class ListApi {
             });
         };
 
-        return $.Deferred(function (dfd) {
+        return j$.Deferred(function (dfd) {
             utils.loadSpElem([editForm, dispForm, newForm], ctx).done(function () {
                 utils.setformJsLink(newForm.get_serverRelativeUrl(), ctx, jslinkUrl).then(function () {
                     utils.setformJsLink(dispForm.get_serverRelativeUrl(), ctx, jslinkUrl).then(function () {
@@ -530,7 +530,7 @@ export class ListApi {
                 me.ctrace.log('starting addItems');
                 var spItems: Array<SP.ListItem> = [];
                 var insertItems = function (items: Array<{ [key: string]: any }>): JQuery.Promise<Array<SP.ListItem>> {
-                    var iDfd = $.Deferred();
+                    var iDfd = j$.Deferred();
 
                     try {
                         items.forEach(function (data) {
@@ -591,7 +591,7 @@ export class ListApi {
 
         });
 
-        var dfd = $.Deferred();
+        var dfd = j$.Deferred();
         return dfd.promise();
     };
     getQuery(caml?: string, folder?: string): SP.CamlQuery {
@@ -657,7 +657,7 @@ export class ListApi {
 
         loadNext();
 
-        var dfd = $.Deferred();
+        var dfd = j$.Deferred();
         return dfd.promise();
     };
     getAll(splist: SP.List, caml?: string, folder?: string, limit: number = 0): JQuery.Promise<Array<SP.ListItem>> {
@@ -678,7 +678,7 @@ export class FolderApi {
 
     ensureAttachmentFolder(itemId: number, list: SP.List): JQuery.Promise<SP.Folder> {
         var id = itemId.toString();
-        var dfd = $.Deferred();
+        var dfd = j$.Deferred();
         var me = this;
         var ctx = me.ctx;
         var rootFolder = list.get_rootFolder();
@@ -719,7 +719,7 @@ export class FolderApi {
         if (!web) {
             web = ctx.get_web();
         }
-        var dfd = $.Deferred();
+        var dfd = j$.Deferred();
         var folder = web.getFolderByServerRelativeUrl(serverRelativeUrl);
 
         trace.debug("probing for folder " + serverRelativeUrl);
@@ -788,7 +788,7 @@ export class FolderApi {
         li.set_item("Title", name);
         li.update();
 
-        var dfd = $.Deferred();
+        var dfd = j$.Deferred();
         ctx.load(li);
         var folder = li.get_folder();
         ctx.load(folder);
@@ -807,7 +807,7 @@ export class FolderApi {
        */
     ensureFolderInList(serverRelativeUrl: string, list: SP.List): JQuery.Promise<SP.Folder> {
         var me = this;
-        var dfd = $.Deferred();
+        var dfd = j$.Deferred();
 
         me.folderExists(serverRelativeUrl, list.get_parentWeb()).done(function (folder) {
             if (folder === false) {
@@ -840,7 +840,7 @@ export class FolderApi {
         var ctx = me.ctx;
         var trace = me.ctrace;
 
-        var p = $.Deferred();
+        var p = j$.Deferred();
 
         if (!createInfo) {
             var createInfo = new SP.FileCreationInformation();
@@ -878,7 +878,7 @@ export class WebApi {
         var ctx = me.ctx;
         if (web == null) web = ctx.get_web();
 
-        var dfd = $.Deferred();
+        var dfd = j$.Deferred();
 
         if (!ctypes) {
             dfd.resolve();
@@ -893,7 +893,7 @@ export class WebApi {
             var fieldsDic: { [key: string]: SP.Field } = null;
 
             var createCtype = function (ctypeMeta: CTypeMeta): JQuery.Promise<SP.ContentType> {
-                var dfd1 = $.Deferred();
+                var dfd1 = j$.Deferred();
 
                 var parentCtype: SP.ContentType = null;
                 if (ctypesDic[ctypeMeta.parentCtypeId])
@@ -934,7 +934,7 @@ export class WebApi {
                 return dfd1.promise();
             };
             var ensureFields = function (cType: SP.ContentType, meta: CTypeMeta): JQuery.Promise<void> {
-                var dfd2 = $.Deferred();
+                var dfd2 = j$.Deferred();
 
                 var links = cType.get_fieldLinks();
                 ctx.load(links);
@@ -970,7 +970,7 @@ export class WebApi {
 
             var ensureCtype = function (ctype: CTypeMeta): JQuery.Promise<void> {
                 var name = ctype.name;
-                var cDfd = $.Deferred();
+                var cDfd = j$.Deferred();
 
                 var doCtype = function (spctype: SP.ContentType) {
 

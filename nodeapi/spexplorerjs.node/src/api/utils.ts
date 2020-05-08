@@ -1,16 +1,18 @@
 ﻿/// <reference types='sharepoint'/>
+/// <reference types='jquery'/>
+// v 0.1.9 - 2020_05_08 - Use private jQuery
 // v 0.1.8 - 2020_04_10 - loadSpElem: reject promise on failure
 // v 0.1.7 - 2020_03_24 - pageArray
 // v 0.1.6 - 2020_03_20 - log all errors on reqFailure, context optional on spLoadElem, improved getGroups
 
 import { Logger } from './logger';
 import { GroupMeta } from './meta';
+var $ = require('jquery');
 
 var defaultLogger = new Logger('Utils');
 
-var reqFailure = function (req, reqargs, dfd?: JQuery.Deferred<any>, logger: Logger = defaultLogger) {
+var reqFailure = function (req: any, reqargs: SP.ClientRequestFailedEventArgs, dfd?: JQuery.Deferred<any>, logger: Logger = defaultLogger) {
     try {
-        var d = $.Deferred();
         var msg = " Request failed: " + reqargs.get_message() + "\n" + reqargs.get_stackTrace();
         logger.error(msg);
     } catch (e) {
@@ -20,7 +22,7 @@ var reqFailure = function (req, reqargs, dfd?: JQuery.Deferred<any>, logger: Log
     if (dfd) dfd.reject(msg);
 };
 
-export var version: string = '0.1.8';
+export var version: string = '0.1.9';
 export type QueueStep<T> = (item: T) => Promise<void>;
 export type ArrayPromise<T> = () => Promise<Array<T>>;
 export type KeyFunc<T> = (item: T) => string;
