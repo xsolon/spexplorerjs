@@ -23,13 +23,13 @@ export declare class ListApi {
     ctx: SP.ClientContext;
     folderApi: FolderApi;
     constructor(ctx?: SP.ClientContext);
-    ensureFields: (list: SP.List<any>, fields: FieldMeta[]) => any;
+    ensureFields: (list: SP.List<any>, fields: FieldMeta[]) => JQuery.Promise<void, any, any>;
     listExists(title: string): Promise<[boolean, SP.List]>;
     ensureCTypes(ctypes: CTypeMeta[], splist: SP.List): JQuery.Promise<SP.ContentType[]>;
     ensureList(meta: ListMeta): JQuery.Promise<SP.List>;
     createList(listTitle: any, templateType: any, web: any): JQuery.Promise<SP.List>;
     getMeta(listTitle: string, fieldNames: any): Promise<ListMeta>;
-    setupForms: (tList: SP.List<any>, scriptLink: string, htmlLink?: string) => any;
+    setupForms: (tList: SP.List<any>, scriptLink: string, htmlLink?: string) => JQuery.Promise<void, any, any>;
     addItems(gitems: Array<{
         [key: string]: any;
     }>, splist: SP.List, folderUrl?: string, pageNum?: number): JQuery.Promise<Array<SP.ListItem>>;

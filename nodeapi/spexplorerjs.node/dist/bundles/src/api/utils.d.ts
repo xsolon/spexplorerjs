@@ -34,7 +34,7 @@ export declare class funcs {
     collectionToArray: <T>(spCollection: any) => T[];
     processAsQueue: <T>(arr: T[] | ArrayPromise<T>, action: QueueStep<T>) => JQuery.Promise<void, any, any>;
     loadSpElem(elem: Array<any> | any, sptx?: SP.ClientRuntimeContext, caller?: any | null): JQuery.Promise<any>;
-    removeScriptLink(ctx: SP.ClientContext, title: string, logger?: Logger): any;
+    removeScriptLink(ctx: SP.ClientContext, title: string, logger?: Logger): JQuery.Promise<void>;
     /**
      * Adds a script link to userCustomActions. If a match is found (by title) then a new record is not added
      * @param ctx SharePoint Client context
@@ -43,7 +43,7 @@ export declare class funcs {
      * @param sequence sequence of the script link
      * @param logger logger
      */
-    addScriptLink(ctx: SP.ClientContext, src: string, title: string, sequence?: number, logger?: Logger): any;
+    addScriptLink(ctx: SP.ClientContext, src: string, title: string, sequence?: number, logger?: Logger): JQuery.Promise<void>;
     setHomePage: (folderOrWeb: SP.Web | SP.Folder, url: string, logger?: Logger) => Promise<void>;
     addWebPart: (ctx: SP.ClientContext, serverRelativeFormUrl: string, wpXml: string, zone: string, position?: number) => JQuery.Promise<SP.WebParts.WebPartDefinition, any, any>;
     getPageWebParts(formUrl: string, ctx: SP.ClientContext): JQuery.Promise<pagewps>;
