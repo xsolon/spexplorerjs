@@ -64,7 +64,7 @@ export class ListApi {
         this.ctx = ctx || SP.ClientContext.get_current();
         this.folderApi = new FolderApi(this.ctx);
     }
-    ensureFields = function (list: SP.List, fields: Array<FieldMeta>) {
+    ensureFields = function (list: SP.List, fields: Array<FieldMeta>): JQuery.Promise<void> {
         var me = this;
         me.ctrace.debug('enureFields.begin');
         //fields = fields || args.Fields || [];
@@ -452,7 +452,7 @@ export class ListApi {
         }).promise();
 
     };
-    setupForms = function (tList: SP.List, scriptLink: string, htmlLink?: string) {
+    setupForms = function (tList: SP.List, scriptLink: string, htmlLink?: string): JQuery.Promise<void> {
 
         var editForm = tList.get_forms().getByPageType(6);
         var dispForm = tList.get_forms().getByPageType(4);

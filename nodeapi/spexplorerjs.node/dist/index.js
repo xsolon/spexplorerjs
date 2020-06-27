@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+require("./api/def");
 var logger_1 = require("./api/logger");
 exports.Logger = logger_1.Logger;
 var utils_1 = require("./api/utils");

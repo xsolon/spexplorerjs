@@ -186,6 +186,16 @@ export class ${className} {
       var res: SP.FieldUserValue = this.li.get_item('Editor');
       return res;
   }
+  Author(val?: SP.FieldUserValue): SP.FieldUserValue {
+      if (arguments.length) {
+          this.li.set_item('Author', val);
+      }
+      var res: SP.FieldUserValue = this.li.get_item('Author');
+      return res;
+  }
+  Attachments(): boolean {
+    return this.li.get_item('Attachments');
+  }  
   Author(): SP.FieldUserValue {
     var res: SP.FieldUserValue = this.li.get_item('Author');
     return res;

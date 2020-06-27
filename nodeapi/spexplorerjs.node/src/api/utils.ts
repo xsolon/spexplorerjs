@@ -158,7 +158,7 @@ export class funcs {
         }).promise();
     };
 
-    public removeScriptLink(ctx: SP.ClientContext, title: string, logger: Logger = defaultLogger) {
+    public removeScriptLink(ctx: SP.ClientContext, title: string, logger: Logger = defaultLogger): JQuery.Promise<void> {
         var mee = this;
         logger.debug(`removeScriptLink: title:${title}`);
         return $.Deferred(function (dfd) {
@@ -198,7 +198,7 @@ export class funcs {
      * @param sequence sequence of the script link
      * @param logger logger
      */
-    public addScriptLink(ctx: SP.ClientContext, src: string, title: string, sequence: number = 100, logger: Logger = defaultLogger) {
+    public addScriptLink(ctx: SP.ClientContext, src: string, title: string, sequence: number = 100, logger: Logger = defaultLogger): JQuery.Promise<void> {
         var mee = this;
         logger.debug(`addScriptLink: title:${title} src:${src}`);
 

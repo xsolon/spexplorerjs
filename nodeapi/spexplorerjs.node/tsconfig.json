@@ -3,7 +3,10 @@
 		"allowJs": false,
 		"module": "commonjs",
 		"target": "es5",
-		"lib": [ "es6", "dom" ],
+		"lib": [
+			"es6",
+			"dom"
+		],
 		"sourceMap": true,
 		"declaration": true,
 		"typeRoots": [
@@ -11,12 +14,16 @@
 			"./node_modules",
 			"./src/defs"
 		],
-		"types": [ "node" ],
+		"types": [
+			"node"
+		],
 		"moduleResolution": "node",
+		"skipLibCheck": true,
 		"esModuleInterop": true
 	},
-	"include": [ 
-		"./src/api/*.ts" ],
+	"include": [
+		"./src/api/*.ts"
+	],
 	//"files": [ "app.ts" ],
 	"exclude": [
 		"node_modules"
