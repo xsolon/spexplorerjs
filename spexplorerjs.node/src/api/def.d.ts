@@ -1,5 +1,4 @@
 /// <reference types="sharepoint" />
-/// <reference types="jquery" />
 import { Logger } from './logger';
 import { funcs } from './utils';
 import { ListApi, ListDal, FolderApi, WebApi } from './list';

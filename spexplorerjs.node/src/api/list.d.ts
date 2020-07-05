@@ -1,5 +1,4 @@
 /// <reference types="sharepoint" />
-/// <reference types="jquery" />
 import { Logger } from './logger';
 import { FieldMeta, ListMeta, CTypeMeta } from './meta';
 export declare type QueueStep = (item: any) => Promise<void>;
@@ -24,13 +23,13 @@ export declare class ListApi {
     ctx: SP.ClientContext;
     folderApi: FolderApi;
     constructor(ctx?: SP.ClientContext);
-    ensureFields: (list: SP.List, fields: Array<FieldMeta>) => any;
+    ensureFields: (list: SP.List<any>, fields: FieldMeta[]) => JQuery.Promise<void, any, any>;
     listExists(title: string): Promise<[boolean, SP.List]>;
     ensureCTypes(ctypes: CTypeMeta[], splist: SP.List): JQuery.Promise<SP.ContentType[]>;
     ensureList(meta: ListMeta): JQuery.Promise<SP.List>;
     createList(listTitle: any, templateType: any, web: any): JQuery.Promise<SP.List>;
     getMeta(listTitle: string, fieldNames: any): Promise<ListMeta>;
-    setupForms: (tList: SP.List, scriptLink: string, htmlLink?: string) => any;
+    setupForms: (tList: SP.List<any>, scriptLink: string, htmlLink?: string) => JQuery.Promise<void, any, any>;
     addItems(gitems: Array<{
         [key: string]: any;
     }>, splist: SP.List, folderUrl?: string, pageNum?: number): JQuery.Promise<Array<SP.ListItem>>;
@@ -45,7 +44,7 @@ export declare class FolderApi {
     ensureAttachmentFolder(itemId: number, list: SP.List): JQuery.Promise<SP.Folder>;
     folderExists(serverRelativeUrl: string, web?: SP.Web): JQuery.Promise<SP.Folder | boolean>;
     pathSteps(path: string): Array<string>;
-    createFolderInList: (name: string, parentFolderPath: string, list: SP.List) => JQuery.Promise<SP.Folder>;
+    createFolderInList: (name: string, parentFolderPath: string, list: SP.List<any>) => JQuery.Promise<SP.Folder, any, any>;
     /**
        * returns folder (creating it and its path if necessary)
        * @param {string} serverRelativeUrl

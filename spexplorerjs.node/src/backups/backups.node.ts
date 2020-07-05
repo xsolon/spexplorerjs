@@ -1,7 +1,7 @@
 ﻿/// <reference types="sharepoint" />
 /// <reference types="sp-request" />
-import fs from 'fs';
-import req from 'request';
+import * as fs from 'fs';
+import * as req from 'request';
 //v 0.1
 
 var jsdom = require("jsdom");
@@ -32,7 +32,7 @@ export async function backupNode(ctx: SP.ClientContext, List: SP.List | string, 
 	var serverRelativeUrl = web.get_serverRelativeUrl();
 	var webUrl = web.get_url();
 
-	var downloadFile = async function (serverRelativeUrl: string, filePath: string) {
+	var downloadFile = async function (serverRelativeUrl: string, filePath: string): Promise<void> {
 		var queryUrl = `${webUrl}/_api/web/GetFileByServerRelativeUrl('${serverRelativeUrl}')/$value`;
 		var opts = {
 			encoding: null,
@@ -43,14 +43,15 @@ export async function backupNode(ctx: SP.ClientContext, List: SP.List | string, 
 				'Accept': '*/*',
 				'Content-Type': 'application/octet-stream',
 				'Accept-Encoding': 'gzip, deflate, br'
-			}, callback1: function (error, response, body) {
-				debugger;
-				opts.headers = response.request.headers;
-				var r = req(opts);
-				r.on('response', function (res) {
-					res.pipe(fs.createWriteStream(filePath));
-				});
 			}
+			// , callback1: function (error, response, body) {
+			// 	debugger;
+			// 	opts.headers = response.request.headers;
+			// 	var r = req(opts);
+			// 	r.on('response', function (res) {
+			// 		res.pipe(fs.createWriteStream(filePath));
+			// 	});
+			// }
 		};
 
 		let spr = sprequest.create(settings);
@@ -72,6 +73,9 @@ export async function backupNode(ctx: SP.ClientContext, List: SP.List | string, 
 	await utils.loadSpElem(list);
 
 	var processFolder = async (folder: SP.Folder, localPath: string): Promise<void> => {
+		if (!fs.existsSync(localPath)) {
+			fs.mkdirSync(localPath);
+		}
 
 		ctx.load(folder);
 		await ctx.executeQueryPromise();
@@ -120,7 +124,8 @@ export async function backupNode(ctx: SP.ClientContext, List: SP.List | string, 
 		// return p2.promise();
 	}
 
-	await processFolder(rootFolder, 'c:\\temp\\backups');
+	var path = 'c:\\temp\\backups';
+	await processFolder(rootFolder, path);
 
 	console.log('backupNode.done');
 

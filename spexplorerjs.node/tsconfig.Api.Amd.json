@@ -3,16 +3,24 @@
 		"module": "amd",
 		"target": "es5",
 		"removeComments": true,
-		"lib": [ "es6", "dom" ],
+		"lib": [
+			"es6",
+			"dom"
+		],
 		"sourceMap": true,
 		//"outFile": "base.js",
-		"typeRoots": [ "./node_modules/@types" ],
+		"typeRoots": [
+			"./node_modules/@types"
+		],
 		"outDir": "./dist/",
 		"moduleResolution": "node",
 		"allowJs": false,
+		"skipLibCheck": true,
 		"declaration": true
 	},
-	"include": [ "src/api/*.ts" ],
+	"include": [
+		"src/api/*.ts"
+	],
 	"exclude": [
 		"node_modules",
 		"dist"

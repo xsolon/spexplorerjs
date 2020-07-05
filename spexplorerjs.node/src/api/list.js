@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WebApi = exports.FolderApi = exports.ListApi = exports.ListDal = void 0;
 // v 0.1.19 - 2020_05_08 - Use private jQuery
 // v 0.1.18 - 2020_04_01 - Load Ctype from local web
 // v 0.1.17 - 2020_03_26 - FolderApi: uploadFile
