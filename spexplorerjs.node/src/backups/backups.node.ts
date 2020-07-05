@@ -1,6 +1,7 @@
 ﻿/// <reference types="sharepoint" />
 /// <reference types="sp-request" />
-
+import fs from 'fs';
+import req from 'request';
 //v 0.1
 
 var jsdom = require("jsdom");
@@ -9,24 +10,126 @@ const { window } = new JSDOM();
 const { document } = (new JSDOM('')).window;
 global['document'] = document;
 global['window'] = window;
-const fs = require('fs');
 const path = require('path');
-//import * as Api from './def.api';
+//import * as Api from './def';
 import jQuery = require('jquery');
 var j$ = jQuery;
 //import * as Schema from "./schema";
 import * as sprequest from "sp-request";
-import { ListMeta } from '../api/meta.api';
-import { Logger } from '../api/logger.api';
-import { funcs } from '../api/utils.api';
-import { ListApi } from '../api/list.api';
+import { ListMeta } from '../api/meta';
+import { Logger } from '../api/logger';
+import { funcs } from '../api/utils';
+import { ListApi, ListDal } from '../api/list';
 
 var trace = new Logger("backups.node");
 var utils = new funcs();
 
+export async function backupNode(ctx: SP.ClientContext, List: SP.List | string, settings: any): Promise<void> {
+	var web = ctx.get_web();
+	var site = ctx.get_site();
+	ctx.load(web);
+	await utils.loadSpElem(site);
+	var serverRelativeUrl = web.get_serverRelativeUrl();
+	var webUrl = web.get_url();
+
+	var downloadFile = async function (serverRelativeUrl: string, filePath: string) {
+		var queryUrl = `${webUrl}/_api/web/GetFileByServerRelativeUrl('${serverRelativeUrl}')/$value`;
+		var opts = {
+			encoding: null,
+			method: 'GET',
+			url: queryUrl,
+			headers: {
+				json: false,
+				'Accept': '*/*',
+				'Content-Type': 'application/octet-stream',
+				'Accept-Encoding': 'gzip, deflate, br'
+			}, callback1: function (error, response, body) {
+				debugger;
+				opts.headers = response.request.headers;
+				var r = req(opts);
+				r.on('response', function (res) {
+					res.pipe(fs.createWriteStream(filePath));
+				});
+			}
+		};
+
+		let spr = sprequest.create(settings);
+
+		var res = await spr.get(opts);
+		fs.writeFileSync(filePath, res.body);
+	};
+
+	var list: SP.List;
+	if (typeof List == 'string') {
+		var web = ctx.get_web();
+		list = web.get_lists().getByTitle(List);
+	} else {
+		list = List;
+	}
+
+	var rootFolder = list.get_rootFolder();
+	var listDal = new ListApi(ctx);
+	await utils.loadSpElem(list);
+
+	var processFolder = async (folder: SP.Folder, localPath: string): Promise<void> => {
+
+		ctx.load(folder);
+		await ctx.executeQueryPromise();
+
+		console.log('processing ' + folder.get_name());
+		var spitems = await listDal.getAll(list, '<View />', folder.get_serverRelativeUrl());
+		var items = [];
+		// await spitems.forEach(async i => {
+		// });
+
+		await utils.processAsQueue(spitems, async i => {
+			var fields = i.get_fieldValues();
+			items.push(fields);
+			var ctypeid = fields.ContentTypeId['$17_1'];// i.get_contentType().get_stringId();
+			if (ctypeid.startsWith("0x0101")) {
+				var fileRef = i.get_item('FileRef');
+				var fileLeafRef = i.get_item('FileLeafRef');
+				var fullPath = localPath + '\\' + fileLeafRef;
+				if (!fs.existsSync(fullPath)) {
+					console.log(fullPath);
+					await downloadFile(fileRef, fullPath);
+				}
+			}
+
+		});
+
+		var metapath = localPath + '\\meta.json';
+		if (items.length > 0) {
+			if (!fs.existsSync(localPath)) {
+				fs.mkdirSync(localPath);
+			}
+			fs.writeFileSync(metapath, JSON.stringify(items))
+		}
+		var subFolders = folder.get_folders();
+		ctx.load(subFolders);
+		await ctx.executeQueryPromise();
+
+		var folderArr: SP.Folder[] = utils.collectionToArray(subFolders);
+		await utils.processAsQueue(folderArr, async f => {
+			var name = f.get_name();
+			var subPath = `${localPath}\\${name}\\`;
+			await processFolder(f, subPath);
+
+		});
+		// var p2 = $.Deferred();
+		// return p2.promise();
+	}
+
+	await processFolder(rootFolder, 'c:\\temp\\backups');
+
+	console.log('backupNode.done');
+
+	var p1 = $.Deferred();
+	return p1.promise();
+}
 export function backupList(listDef: ListMeta, ctx: SP.ClientContext, localFolder: string, settings: any): JQuery.Promise<void> {
 
-	trace.log(`backing-up ${listDef.title}`);
+	trace.log(`backing-up ${listDef.title} `);
 
 	var listDal = new ListApi(ctx);
 	var lDfd = j$.Deferred();
@@ -43,23 +146,23 @@ export function backupList(listDef: ListMeta, ctx: SP.ClientContext, localFolder
 			fields.push("Attachments");
 		}
 		fields.forEach(function (field) {
-			caml += `<FieldRef Name='${field}' />`;
+			caml += `< FieldRef Name = '${field}' /> `;
 		});
 		listDef.fields.forEach(function (field) {
-			caml += `<FieldRef Name='${field.name}' />`;
+			caml += `< FieldRef Name = '${field.name}' /> `;
 			fields.push(field.name);
 		});
-		caml += `</ViewFields></View>`;
+		caml += `< /ViewFields></View > `;
 
 		//var cdw = process.cwd();
-		var localPath = path.join(localFolder, `./lists/${listDef.title}`);
+		var localPath = path.join(localFolder, `./ lists / ${listDef.title} `);
 
 		var data = []; //serializable friendly array of items
 
 		var webUrl = web.get_url();
 
 		var downloadFile = function (serverRelativeUrl: string, filePath: string) {
-			var queryUrl = `${webUrl}/_api/web/GetFileByServerRelativeUrl('${serverRelativeUrl}')/$value`;
+			var queryUrl = `${webUrl} /_api/web / GetFileByServerRelativeUrl('${serverRelativeUrl}') / $value`;
 			var opts = {
 				encoding: null,
 				method: 'GET',
@@ -108,7 +211,7 @@ export function backupList(listDef: ListMeta, ctx: SP.ClientContext, localFolder
 				}
 				item[field] = value;
 			});
-			var attachmentsLocalPath = path.join(localPath, `/${item.ID}/Attachments`);
+			var attachmentsLocalPath = path.join(localPath, `/ ${item.ID} /Attachments`);
 			var mkdrip = require('mkdirp');
 			mkdrip(attachmentsLocalPath, function (err) {
 				if (err) {
