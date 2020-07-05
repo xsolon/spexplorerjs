@@ -59,7 +59,8 @@ var getConfig = function (debug = true) {
     entry: {
       //main:'./src/codeMirrorSample.ts',
       //search:'./src/components/SearchBox.ts',
-      filesystem: './src/drivers/filesystem.ts',
+      // filesystem: './src/drivers/filesystem.ts',
+      spexplorer: './src/drivers/spExplorer.ts',
       //monaco: './src/monacoSample.ts',
     },
     devtool: debug ? 'inline-source-map' : false,

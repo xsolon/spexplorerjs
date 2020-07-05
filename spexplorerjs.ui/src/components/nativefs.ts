@@ -14,7 +14,7 @@ interface ChooseFileSystemEntriesOptionsAccepts {
     extensions?: string;
 }
 
-interface ChooseFileSystemEntriesOptions {
+export interface ChooseFileSystemEntriesOptions {
     type?: ChooseFileSystemEntriesType;
     multiple?: boolean;
     accepts?: ChooseFileSystemEntriesOptionsAccepts[];
@@ -29,7 +29,7 @@ interface FileSystemCreateWriterOptions {
     keepExistingData?: boolean;
 }
 
-interface FileSystemGetFileOptions {
+export interface FileSystemGetFileOptions {
     create?: boolean;
 }
 
@@ -67,8 +67,9 @@ interface FileSystemHandleConstructor {
     new(): FileSystemHandle;
 }
 
-interface FileSystemFileHandle extends FileSystemHandle {
+export interface FileSystemFileHandle extends FileSystemHandle {
     getFile(): Promise<File>;
+    createWritable(options?: FileSystemCreateWriterOptions): Promise<FileSystemWriter>;
     createWriter(options?: FileSystemCreateWriterOptions): Promise<FileSystemWriter>;
 }
 
@@ -76,7 +77,7 @@ interface FileSystemFileHandleConstructor {
     new(): FileSystemFileHandle;
 }
 
-interface FileSystemDirectoryHandle extends FileSystemHandle {
+export interface FileSystemDirectoryHandle extends FileSystemHandle {
     getFile(name: string, options?: FileSystemGetFileOptions): Promise<FileSystemFileHandle>;
     getDirectory(name: string, options?: FileSystemGetDirectoryOptions): Promise<FileSystemDirectoryHandle>;
     //getEntries(): AsyncIterable<FileSystemFileHandle | FileSystemDirectoryHandle>;
@@ -88,7 +89,7 @@ interface FileSystemDirectoryHandleConstructor {
     getSystemDirectory(options: GetSystemDirectoryOptions): Promise<FileSystemDirectoryHandle>;
 }
 
-interface NSWindow {
+export interface NSWindow {
     chooseFileSystemEntries(options?: ChooseFileSystemEntriesOptions): Promise<FileSystemHandle | FileSystemHandle[]>;
     FileSystemHandle: FileSystemHandleConstructor;
     FileSystemFileHandle: FileSystemFileHandleConstructor;
