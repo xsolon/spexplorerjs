@@ -1,0 +1,12 @@
+export enum ChooseFileSystemEntriesType {
+    'openfile' = 'open-file',
+    'savefile' = 'save-file',
+    'opendirectory' = 'open-directory'
+}
+
+interface ChooseFileSystemEntriesOptionsAccepts {
+    description?: string;
+    mimeTypes?: string;
+    extensions?: string;
+}
+declare type QueueStep = (item: any) => Promise<void>;

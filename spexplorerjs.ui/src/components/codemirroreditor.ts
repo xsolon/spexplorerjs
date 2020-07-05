@@ -12,8 +12,10 @@ trace.shouldDebug = true;
 
 export class CodeMirrorEditor {
   private xmlEditor: CodeMirror.EditorFromTextArea;
+  private jsEditor: MyMonacoEditor;
   // eslint-disable-next-line no-unused-vars
   constructor(el: any, opts?: { [key: string]: any }) {
+    var me = this;
     var ui = $(el);
     trace.log('CodeMirrorEditor.init');
     // var ns: Api.Ispexplorerjs = window['spexplorerjs'];
@@ -26,7 +28,7 @@ export class CodeMirrorEditor {
     var jsUi = $('#jsMirror', ui)[0];
     // var jsEditor = helper.createJsEditor(jsUi, "Code Editor");
     // jsEditor.setValue('var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
-    var jsEditor = new MyMonacoEditor(jsUi, 'typescript', `
+    me.jsEditor = new MyMonacoEditor(jsUi, 'typescript', `
 import * as Api from 'spexplorerjs';
 // @ts-ignore
 var xml = xmlEditor.getValue();
@@ -52,9 +54,8 @@ ctx.executeQueryAsync(() => {
     logger.error(e.get_message());
 });
     `);
-
     var onRun = function () {
-      jsEditor.getValue().done((code) => {
+      me.jsEditor.getValue().done((code) => {
         runScript(code);
       });
     };
@@ -78,7 +79,7 @@ ctx.executeQueryAsync(() => {
       `;
 
         var args: string[] = ['xmlEditor', 'jsEditor'];
-        var vals = [xmlEditor, jsEditor];
+        var vals = [xmlEditor, me.jsEditor];
 
         //for (var name in resourceHash) {
         //  if (resourceHash.hasOwnProperty(name)) {
@@ -108,6 +109,9 @@ ctx.executeQueryAsync(() => {
       return false;
     });
 
+  }
+  setCode(code: string) {
+    this.jsEditor.setValue(code);
   }
   setXml(xml: string) {
     this.xmlEditor.setValue(xml);
