@@ -1,13 +1,13 @@
+// eslint-disable-next-line no-unused-vars
 import * as Api from 'spexplorerts';
 var app: Api.Ispexplorerjs = window['spexplorerts'];
 var $ = app.modules.jQuery;
 import 'select2/dist/css/select2.css';
 import * as tmp from './fieldselector.html';
 import * as tmp1 from '../templates/ui.colselect.html';
-// eslint-disable-next-line no-unused-vars
 
 // @ts-ignore
-var w: IWindow = window;
+var w: Api.IWindow = window;
 var ns: Api.Ispexplorerjs = w.spexplorerts;
 require('select2');
 var trace: Api.Logger = new ns.modules.logger('logger');
@@ -155,6 +155,9 @@ abstract class SpSelector<T> {
     this.ctx = target.get_context();
     this.loadCollection();
   }
+  getTarget(): SP.List | SP.Web {
+    return this.target;
+  }
 }
 
 export class ListSelector extends SpSelector<SP.List> {
@@ -162,7 +165,6 @@ export class ListSelector extends SpSelector<SP.List> {
     trace.log('ListSelector.init');
     super(el, opts);
   }
-
   bindSelect(fields: SP.List[]): void {
     var me = this;
     var fieldSel = me.fieldSel;
@@ -219,9 +221,5 @@ export class ListSelector extends SpSelector<SP.List> {
       target.get_context().load(this.col, 'Include(Title,DefaultViewUrl,Id)');
       super.setTarget(target);
     }
-  }
-
-  getTarget(): SP.List | SP.Web {
-    return this.target;
   }
 }
