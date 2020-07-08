@@ -128,6 +128,12 @@ export class SpBackupUI extends ns.modules.logger {
                 var file = await currentHandle.getFile('meta.json', { create: true });
                 if (items.length > 0) {
                     var json = JSON.stringify(items);
+                    //d.fromJson({LookupId:19,LookupValue:'asdf',Email:'martin@test.com'})
+                    //'{"$1p_1":19,"$5c_1":"asdf","$6_2":"martin@test.com"}{"$1p_1":19,"$5c_1":"asdf","$6_2":"martin@test.com"}'.replace(/\$1p_1/g,'LookupValue')
+                    json = json.replace(/\$1p_1/g, 'LookupId').replace(/\$5c_1/g, 'LookupValue').replace(/\$6_2/g, 'Email')
+                        .replace(/\$12_1/g, 'StringValue')
+                        .replace(/\$17_1/g, 'StringValue');
+
                     await updateFile(file, json);
                 }
                 var subFolders = folder.get_folders();
