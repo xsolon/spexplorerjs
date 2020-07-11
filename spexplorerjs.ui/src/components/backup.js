@@ -1,23 +1,17 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -54,8 +48,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SpBackupUI = void 0;
 var Api = __importStar(require("spexplorerts"));
 var fieldselector_1 = require("./fieldselector");
 var app = window['spexplorerts'];
@@ -66,23 +66,18 @@ var nativefs = __importStar(require("./nativefs"));
 // @ts-ignore
 var w = window;
 var ns = w.spexplorerts;
-var trace = new ns.modules.logger('logger');
-trace.shouldDebug = true;
 var utils = ns.modules.funcs;
-// class DriveNativeAL{
-//     ensureFolder();
-// }
-var SpBackupUI = /** @class */ (function () {
+var SpBackupUI = /** @class */ (function (_super) {
+    __extends(SpBackupUI, _super);
     function SpBackupUI(el, opts) {
-        var me = this;
+        var _this = _super.call(this, 'SpBackupUI') || this;
+        _this.log('{version}');
+        var me = _this;
         var ui = $(el);
         ui.html(tmp);
-        this.listCtrl = new fieldselector_1.ListSelector($('#listSelect', ui));
+        _this.listCtrl = new fieldselector_1.ListSelector($('#listSelect', ui));
         me.ui = ui;
-        trace.log('FieldSelector.init');
-        if (opts && opts.target) {
-            me.setTarget(opts.target);
-        }
+        me.debug('SpBackupUI.init');
         $('button', ui).click(function () {
             var selection = me.listCtrl.getTarget();
             var list = selection;
@@ -90,7 +85,34 @@ var SpBackupUI = /** @class */ (function () {
                 me.backup(list);
             }
         });
+        if (opts && opts.target) {
+            me.setTarget(opts.target);
+        }
+        else {
+            var ctx = SP.ClientContext.get_current();
+            me.setTarget(ctx.get_web());
+        }
+        return _this;
     }
+    SpBackupUI.prototype.debug = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        if (args && args.length == 1)
+            args = args[0];
+        console && console.debug && console.debug(args);
+    };
+    SpBackupUI.prototype.log = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        if (args && args.length == 1)
+            args = args[0];
+        console && console.log && console.log(args);
+        $('#log', this.ui).append("<li>" + args + "</li>");
+    };
     SpBackupUI.prototype.backup = function (list) {
         var me = this;
         var opts = { type: nativefs.ChooseFileSystemEntriesType.opendirectory };
@@ -99,7 +121,7 @@ var SpBackupUI = /** @class */ (function () {
         var app = window;
         var backupNode = function (List) {
             return __awaiter(this, void 0, void 0, function () {
-                var _a, _b, web, site, webUrl, downloadFile, list, web, rootFolder, listDal, processFolder, p1;
+                var _a, _b, web, site, webUrl, list, web, rootFolder, listDal, processFolder, p1;
                 var _this = this;
                 return __generator(this, function (_c) {
                     switch (_c.label) {
@@ -120,26 +142,6 @@ var SpBackupUI = /** @class */ (function () {
                         case 3:
                             _c.sent();
                             webUrl = web.get_url();
-                            downloadFile = function (serverRelativeUrl, filePath) {
-                                return __awaiter(this, void 0, void 0, function () {
-                                    var queryUrl, opts;
-                                    return __generator(this, function (_a) {
-                                        queryUrl = webUrl + "/_api/web/GetFileByServerRelativeUrl('" + serverRelativeUrl + "')/$value";
-                                        opts = {
-                                            encoding: null,
-                                            method: 'GET',
-                                            url: queryUrl,
-                                            headers: {
-                                                json: false,
-                                                'Accept': '*/*',
-                                                'Content-Type': 'application/octet-stream',
-                                                'Accept-Encoding': 'gzip, deflate, br'
-                                            }
-                                        };
-                                        return [2 /*return*/];
-                                    });
-                                });
-                            };
                             if (typeof List == 'string') {
                                 web = ctx.get_web();
                                 list = web.get_lists().getByTitle(List);
@@ -153,44 +155,11 @@ var SpBackupUI = /** @class */ (function () {
                         case 4:
                             _c.sent();
                             processFolder = function (folder, currentHandle) { return __awaiter(_this, void 0, void 0, function () {
-                                var spitems, items, file, updateFile, json, subFolders, folderArr;
+                                var updateFile, downloadFile, spitems, items, file, json, subFolders, folderArr;
                                 var _this = this;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
-                                        case 0: return [4 /*yield*/, currentHandle.getDirectory(folder.get_name(), { create: true })];
-                                        case 1:
-                                            currentHandle = _a.sent();
-                                            return [4 /*yield*/, utils.loadSpElem(folder)];
-                                        case 2:
-                                            _a.sent();
-                                            console.log('processing ' + folder.get_name());
-                                            return [4 /*yield*/, listDal.getAll(list, '<View />', folder.get_serverRelativeUrl())];
-                                        case 3:
-                                            spitems = _a.sent();
-                                            items = [];
-                                            return [4 /*yield*/, utils.processAsQueue(spitems, function (i) { return __awaiter(_this, void 0, void 0, function () {
-                                                    var fields, ctypeid;
-                                                    return __generator(this, function (_a) {
-                                                        fields = i.get_fieldValues();
-                                                        items.push(fields);
-                                                        ctypeid = fields.ContentTypeId['$17_1'] || fields.ContentTypeId.get_stringValue();
-                                                        if (ctypeid.startsWith('0x0101')) {
-                                                            // var fileRef = i.get_item('FileRef');
-                                                            // var fileLeafRef = i.get_item('FileLeafRef');
-                                                            // var fullPath = localPath + '\\' + fileLeafRef;
-                                                            // if (!fs.existsSync(fullPath)) {
-                                                            //     console.log(fullPath);
-                                                            //     await downloadFile(fileRef, fullPath);
-                                                            // }
-                                                        }
-                                                        return [2 /*return*/];
-                                                    });
-                                                }); })];
-                                        case 4:
-                                            _a.sent();
-                                            return [4 /*yield*/, currentHandle.getFile('meta.json', { create: true })];
-                                        case 5:
-                                            file = _a.sent();
+                                        case 0:
                                             updateFile = function (file, content) { return __awaiter(_this, void 0, void 0, function () {
                                                 var writable;
                                                 return __generator(this, function (_a) {
@@ -210,8 +179,86 @@ var SpBackupUI = /** @class */ (function () {
                                                     }
                                                 });
                                             }); };
+                                            downloadFile = function (serverRelativeUrl) {
+                                                return __awaiter(this, void 0, void 0, function () {
+                                                    var p2, url, xhr;
+                                                    return __generator(this, function (_a) {
+                                                        p2 = $.Deferred();
+                                                        me.log(serverRelativeUrl);
+                                                        url = webUrl + "/_api/web/GetFileByServerRelativeUrl('" + serverRelativeUrl + "')/$value";
+                                                        xhr = new window.XMLHttpRequest();
+                                                        xhr.open('GET', url, true);
+                                                        xhr.responseType = 'arraybuffer';
+                                                        xhr.addEventListener('load', function () {
+                                                            return __awaiter(this, void 0, void 0, function () {
+                                                                var data, blob, bits, fileName, file;
+                                                                return __generator(this, function (_a) {
+                                                                    switch (_a.label) {
+                                                                        case 0:
+                                                                            if (!(xhr.status === 200)) return [3 /*break*/, 3];
+                                                                            data = new Uint8Array(xhr.response);
+                                                                            blob = new Blob([data]);
+                                                                            bits = serverRelativeUrl.split('/');
+                                                                            fileName = bits[bits.length - 1];
+                                                                            return [4 /*yield*/, currentHandle.getFile(fileName, { create: true })];
+                                                                        case 1:
+                                                                            file = _a.sent();
+                                                                            return [4 /*yield*/, updateFile(file, blob)];
+                                                                        case 2:
+                                                                            _a.sent();
+                                                                            p2.resolve();
+                                                                            _a.label = 3;
+                                                                        case 3: return [2 /*return*/];
+                                                                    }
+                                                                });
+                                                            });
+                                                        });
+                                                        xhr.send();
+                                                        return [2 /*return*/, p2.promise()];
+                                                    });
+                                                });
+                                            };
+                                            return [4 /*yield*/, currentHandle.getDirectory(folder.get_name(), { create: true })];
+                                        case 1:
+                                            currentHandle = _a.sent();
+                                            return [4 /*yield*/, utils.loadSpElem(folder)];
+                                        case 2:
+                                            _a.sent();
+                                            me.log('Folder:' + folder.get_name());
+                                            return [4 /*yield*/, listDal.getAll(list, '<View />', folder.get_serverRelativeUrl())];
+                                        case 3:
+                                            spitems = _a.sent();
+                                            items = [];
+                                            return [4 /*yield*/, utils.processAsQueue(spitems, function (i) { return __awaiter(_this, void 0, void 0, function () {
+                                                    var fields, ctypeid, fileRef;
+                                                    return __generator(this, function (_a) {
+                                                        switch (_a.label) {
+                                                            case 0:
+                                                                fields = i.get_fieldValues();
+                                                                items.push(fields);
+                                                                ctypeid = fields.ContentTypeId['$12_1'] || fields.ContentTypeId['$17_1'] || fields.ContentTypeId.get_stringValue();
+                                                                if (!ctypeid.startsWith('0x0101')) return [3 /*break*/, 2];
+                                                                fileRef = i.get_item('FileRef');
+                                                                return [4 /*yield*/, downloadFile(fileRef)];
+                                                            case 1:
+                                                                _a.sent();
+                                                                _a.label = 2;
+                                                            case 2: return [2 /*return*/];
+                                                        }
+                                                    });
+                                                }); })];
+                                        case 4:
+                                            _a.sent();
+                                            return [4 /*yield*/, currentHandle.getFile('meta.json', { create: true })];
+                                        case 5:
+                                            file = _a.sent();
                                             if (!(items.length > 0)) return [3 /*break*/, 7];
                                             json = JSON.stringify(items);
+                                            //d.fromJson({LookupId:19,LookupValue:'asdf',Email:'martin@test.com'})
+                                            //'{"$1p_1":19,"$5c_1":"asdf","$6_2":"martin@test.com"}{"$1p_1":19,"$5c_1":"asdf","$6_2":"martin@test.com"}'.replace(/\$1p_1/g,'LookupValue')
+                                            json = json.replace(/\$1p_1/g, 'LookupId').replace(/\$5c_1/g, 'LookupValue').replace(/\$6_2/g, 'Email')
+                                                .replace(/\$12_1/g, 'StringValue')
+                                                .replace(/\$17_1/g, 'StringValue');
                                             return [4 /*yield*/, updateFile(file, json)];
                                         case 6:
                                             _a.sent();
@@ -223,16 +270,10 @@ var SpBackupUI = /** @class */ (function () {
                                             _a.sent();
                                             folderArr = utils.collectionToArray(subFolders);
                                             return [4 /*yield*/, utils.processAsQueue(folderArr, function (f) { return __awaiter(_this, void 0, void 0, function () {
-                                                    var name;
                                                     return __generator(this, function (_a) {
                                                         switch (_a.label) {
-                                                            case 0:
-                                                                name = f.get_name();
-                                                                return [4 /*yield*/, currentHandle.getDirectory(name, { create: true })];
+                                                            case 0: return [4 /*yield*/, processFolder(f, currentHandle)];
                                                             case 1:
-                                                                currentHandle = _a.sent();
-                                                                return [4 /*yield*/, processFolder(f, currentHandle)];
-                                                            case 2:
                                                                 _a.sent();
                                                                 return [2 /*return*/];
                                                         }
@@ -247,7 +288,7 @@ var SpBackupUI = /** @class */ (function () {
                             return [4 /*yield*/, processFolder(rootFolder, me.handle)];
                         case 5:
                             _c.sent();
-                            console.log('backupNode.done');
+                            me.log('Backup Complete');
                             p1 = $.Deferred();
                             return [2 /*return*/, p1.promise()];
                     }
@@ -267,6 +308,6 @@ var SpBackupUI = /** @class */ (function () {
         this.listCtrl.setTarget(target);
     };
     return SpBackupUI;
-}());
+}(ns.modules.logger));
 exports.SpBackupUI = SpBackupUI;
 //# sourceMappingURL=backup.js.map

@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SystemDirectoryType = exports.ChooseFileSystemEntriesType = void 0;
 var ChooseFileSystemEntriesType;
 (function (ChooseFileSystemEntriesType) {
     ChooseFileSystemEntriesType["openfile"] = "open-file";

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{{ title }}</title>
+  {{#each files.css}}
+  <link href='{{this}}' rel='stylesheet' />
+  {{/each}}
+</head>
+
+<body>
+  <h4>Monaco Editor</h4>
+  <div class="expjs">
+    <div id="monacoEditor" style='min-height:600px'></div>
+  </div>
+  {{#each files.js}}
+  <script src="{{this}}" type='text/javascript'></script>
+  {{/each}}
+</body>
+
+</html>

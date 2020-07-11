@@ -65,10 +65,11 @@ var fs = require('fs');
 var sslOptions = {
   key: fs.readFileSync('web/config/keyDev1.pem'),
   cert: fs.readFileSync('web/config/certDev1.pem'),
-  passphrase: 'password'
+  passphrase: 'password',
+  port: 8443
 };
 
-console.log(`opening port: ${__dirname}:` + sslOptions);
+console.log(`opening port: ${__dirname}: ${sslOptions.port}`);
 var serverSsl = https.createServer(sslOptions, app);
-serverSsl.listen(8443);
+serverSsl.listen(sslOptions.port);
 // -------------------------------------------------------------

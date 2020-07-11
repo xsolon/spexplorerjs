@@ -194,6 +194,7 @@ export class ListSelector extends SpSelector<SP.List> {
     };
     // @ts-ignore
     fieldSel.select2({
+      text: 'Select a list',
       templateResult: function formatState(state) {
 
         if (!state.id) { return state.text; }

@@ -60,10 +60,11 @@ var getConfig = function (debug = true) {
       //main:'./src/codeMirrorSample.ts',
       //search:'./src/components/SearchBox.ts',
       // filesystem: './src/drivers/filesystem.ts',
-      spexplorer: './src/drivers/spExplorer.ts',
+      backup: './src/drivers/backup.ts',
+      // spexplorer: './src/drivers/spExplorer.ts',
       //monaco: './src/monacoSample.ts',
     },
-    devtool: debug ? 'inline-source-map' : false,
+    devtool: debug ? 'source-map' : false,// 'inline-source-map'
     optimization: {
       minimize: debug ? false : true
     },
@@ -133,10 +134,7 @@ var getConfig = function (debug = true) {
           return ` ${new Date().toLocaleDateString()}`;
         }
       }),
-      new MonacoWebpackPlugin1({
-        languages: ['typescript'],
-        // features: ['folding']
-      })
+      new MonacoWebpackPlugin1({ languages: ['typescript'], })
     ],
     resolve: { extensions: ['.tsx', '.ts', '.js'] },
     output: {
@@ -151,7 +149,6 @@ var getConfig = function (debug = true) {
 var debugConfig = getConfig(true);
 var compiler = webpack(debugConfig);
 
-
 var onDone = (err: Error, stats: webpack.Stats) => {
   if (err) {
     console.error(err);
@@ -163,7 +160,7 @@ var onDone = (err: Error, stats: webpack.Stats) => {
     var assets: { [key: string]: { emitted: boolean, existsAt: string } } = stats.compilation.assets;
     for (const key in assets) {
       if (Object.prototype.hasOwnProperty.call(stats.compilation.assets, key)) {
-        if (key != 'editor.worker.js' && key != 'ts.worker.js') {
+        if (key.search(/\.map\./) == -1 && key != 'editor.worker.js' && key != 'ts.worker.js') {
           buildStandaloneTestPage(key, assets[key].existsAt);
           buildLocalSpPage(key, assets[key].existsAt);
         }

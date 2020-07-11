@@ -6,6 +6,7 @@ import * as misc from './defs/misc.d.html';
 import * as jqueryDef from './defs/JQuery.d.html';
 import * as jqueryStaticDef from './defs/jqueryStatic.d.html';
 import * as sp from './defs/sp.d.html';
+var $ = require('jquery');
 
 //https://github.com/microsoft/monaco-typescript/pull/8
 
