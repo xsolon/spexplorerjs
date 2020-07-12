@@ -140,3 +140,14 @@ nodeapi/spexplorerjs.node/packer.js.map
 nodeapi/spexplorerjs.node/src/index.api.d.ts
 nodeapi/spexplorerjs.node/src/index.api.js
 nodeapi/spexplorerjs.node/src/index.api.js.map
+spexplorerjs.ui/src/app3/page1.js
+spexplorerjs.ui/src/components/backup.js
+spexplorerjs.ui/src/components/backup.js.map
+spexplorerjs.ui/src/components/nativefs.js
+spexplorerjs.ui/src/components/nativefs.js.map
+spexplorerjs.ui/src/components/tinylogger.js
+spexplorerjs.ui/src/components/tinylogger.js.map
+spexplorerjs.ui/src/drivers/backup.js
+spexplorerjs.ui/src/drivers/backup.js.map
+spexplorerjs.ui/src/drivers/spExplorer.js
+spexplorerjs.ui/src/drivers/spExplorer.js.map

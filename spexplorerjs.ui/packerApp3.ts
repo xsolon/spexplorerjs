@@ -252,7 +252,7 @@ var getConfig = function (debug = true) {
 
   return config;
 };
-var debugConfig = getConfig(false);
+var debugConfig = getConfig(true);
 var compiler = webpack(debugConfig);
 
 

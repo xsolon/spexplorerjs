@@ -37,7 +37,7 @@ var getConfig = function (debug) {
             page2: './src/app3/page2.ts',
             monacoSample: './src/app3/monacoSample.ts'
         },
-        devtool: debug ? 'inline-source-map' : false,
+        devtool: 'source-map',
         optimization: {
             runtimeChunk: 'single',
             minimizer: [
