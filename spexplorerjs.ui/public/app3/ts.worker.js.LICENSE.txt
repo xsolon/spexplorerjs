@@ -1,0 +1,374 @@
+/*!  7/12/2020 */
+
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved. 
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0  
+ 
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE, 
+MERCHANTABLITY OR NON-INFRINGEMENT. 
+ 
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
+
+/*! ../../../base/common/arrays.js */
+
+/*! ../../../base/common/cancellation.js */
+
+/*! ../../../base/common/diff/diff.js */
+
+/*! ../../../base/common/event.js */
+
+/*! ../../../base/common/iterator.js */
+
+/*! ../../../base/common/keyCodes.js */
+
+/*! ../../../base/common/platform.js */
+
+/*! ../../../base/common/strings.js */
+
+/*! ../../../base/common/types.js */
+
+/*! ../../../base/common/uint.js */
+
+/*! ../../../base/common/uri.js */
+
+/*! ../../editor/editor.worker.js */
+
+/*! ../base/common/worker/simpleWorker.js */
+
+/*! ../core/characterClassifier.js */
+
+/*! ../core/position.js */
+
+/*! ../core/range.js */
+
+/*! ../core/selection.js */
+
+/*! ../core/token.js */
+
+/*! ../diff/diffComputer.js */
+
+/*! ../errors.js */
+
+/*! ../hash.js */
+
+/*! ../lifecycle.js */
+
+/*! ../model/mirrorTextModel.js */
+
+/*! ../model/wordHelper.js */
+
+/*! ../modes/linkComputer.js */
+
+/*! ../modes/supports/inplaceReplaceSupport.js */
+
+/*! ../platform.js */
+
+/*! ../standalone/standaloneBase.js */
+
+/*! ../types.js */
+
+/*! ../viewModel/prefixSumComputer.js */
+
+/*! ./../../../../../../../timers-browserify/main.js */
+
+/*! ./../../../../../../../webpack/buildin/global.js */
+
+/*! ./../../../../../../process/browser.js */
+
+/*! ./../../../../../../webpack/buildin/harmony-module.js */
+
+/*! ./../../../../../process/browser.js */
+
+/*! ./../../../../../webpack/buildin/global.js */
+
+/*! ./../process/browser.js */
+
+/*! ./../webpack/buildin/global.js */
+
+/*! ./common/services/editorSimpleWorker.js */
+
+/*! ./diffChange.js */
+
+/*! ./errors.js */
+
+/*! ./event.js */
+
+/*! ./functional.js */
+
+/*! ./iterator.js */
+
+/*! ./lib/lib.js */
+
+/*! ./lib/typescriptServices.js */
+
+/*! ./lifecycle.js */
+
+/*! ./linkedList.js */
+
+/*! ./platform.js */
+
+/*! ./position.js */
+
+/*! ./promise-polyfill/polyfill.js */
+
+/*! ./range.js */
+
+/*! ./standaloneEnums.js */
+
+/*! ./tsWorker.js */
+
+/*! exports provided: AccessibilitySupport, CompletionItemInsertTextRule, CompletionItemKind, CompletionItemTag, CompletionTriggerKind, ContentWidgetPositionPreference, CursorChangeReason, DefaultEndOfLine, DocumentHighlightKind, EditorAutoIndentStrategy, EditorOption, EndOfLinePreference, EndOfLineSequence, IndentAction, KeyCode, MarkerSeverity, MarkerTag, MinimapPosition, MouseTargetType, OverlayWidgetPositionPreference, OverviewRulerLane, RenderLineNumbersType, RenderMinimap, ScrollType, ScrollbarVisibility, SelectionDirection, SignatureHelpTriggerKind, SymbolKind, SymbolTag, TextEditorCursorBlinkingStyle, TextEditorCursorStyle, TrackedRangeStickiness, WrappingIndent */
+
+/*! exports provided: BasicInplaceReplace */
+
+/*! exports provided: CancellationToken, CancellationTokenSource */
+
+/*! exports provided: CharacterClassifier, CharacterSet */
+
+/*! exports provided: DiffChange */
+
+/*! exports provided: DiffComputer */
+
+/*! exports provided: EditorSimpleWorker, create */
+
+/*! exports provided: ErrorHandler, errorHandler, onUnexpectedError, onUnexpectedExternalError, transformErrorForSerialization, isPromiseCanceledError, canceled, illegalArgument, illegalState */
+
+/*! exports provided: Event, Emitter, PauseableEmitter, EventMultiplexer, EventBufferer, Relay */
+
+/*! exports provided: FIN, Iterator, ChainableIterator, getSequenceIterator, ArrayIterator, ArrayNavigator, MappedIterator */
+
+/*! exports provided: KeyCodeUtils, KeyChord, createKeybinding, createSimpleKeybinding, SimpleKeybinding, ChordKeybinding, ResolvedKeybindingPart, ResolvedKeybinding */
+
+/*! exports provided: KeyMod, createMonacoBaseAPI */
+
+/*! exports provided: LinkedList */
+
+/*! exports provided: MirrorTextModel */
+
+/*! exports provided: Position */
+
+/*! exports provided: PrefixSumIndexOfResult, PrefixSumComputer */
+
+/*! exports provided: Range */
+
+/*! exports provided: Selection */
+
+/*! exports provided: StringDiffSequence, stringDiff, Debug, MyArray, LcsDiff */
+
+/*! exports provided: Token, TokenizationResult, TokenizationResult2 */
+
+/*! exports provided: TypeScriptWorker, create */
+
+/*! exports provided: URI */
+
+/*! exports provided: USUAL_WORD_SEPARATORS, DEFAULT_WORD_REGEXP, ensureValidWordDefinition, getWordAtText */
+
+/*! exports provided: Uint8Matrix, StateMachine, LinkComputer, computeLinks */
+
+/*! exports provided: createClassifier, createLanguageService, displayPartsToString, EndOfLineState, flattenDiagnosticMessageText, IndentStyle, ScriptKind, ScriptTarget, TokenClass */
+
+/*! exports provided: hash, stringHash */
+
+/*! exports provided: initialize */
+
+/*! exports provided: isArray, isString, isObject, isNumber, isBoolean, isUndefined, isUndefinedOrNull, assertType, isEmptyObject, isFunction, validateConstraints, validateConstraint, getAllPropertyNames, getAllMethodNames, createProxyObject, withNullAsUndefined, withUndefinedAsNull */
+
+/*! exports provided: isDisposable, dispose, combinedDisposable, toDisposable, DisposableStore, Disposable, MutableDisposable, ImmortalReference */
+
+/*! exports provided: isFalsyOrWhitespace, pad, format, escape, escapeRegExpCharacters, trim, ltrim, rtrim, convertSimple2RegExpPattern, startsWith, endsWith, createRegExp, regExpLeadsToEndlessLoop, regExpFlags, firstNonWhitespaceIndex, getLeadingWhitespace, lastNonWhitespaceIndex, compare, compareIgnoreCase, isLowerAsciiLetter, isUpperAsciiLetter, equalsIgnoreCase, startsWithIgnoreCase, commonPrefixLength, commonSuffixLength, isHighSurrogate, isLowSurrogate, getNextCodePoint, nextCharLength, prevCharLength, containsRTL, containsEmoji, isBasicASCII, containsFullWidthCharacter, isFullWidthCharacter, isEmojiImprecise, UTF8_BOM_CHARACTER, startsWithUTF8BOM, safeBtoa, repeat, containsUppercaseCharacter, singleLetterHash, getGraphemeBreakType, breakBetweenGraphemeBreakType */
+
+/*! exports provided: isWindows, isMacintosh, isLinux, isNative, isWeb, isIOS, globals, setImmediate, OS */
+
+/*! exports provided: lib_es2015_symbol_dts, lib_es2015_symbol_wellknown_dts, lib_es2015_reflect_dts, lib_es2015_proxy_dts, lib_es2015_iterable_dts, lib_es2015_promise_dts, lib_es2015_generator_dts, lib_es2015_collection_dts, lib_es2015_core_dts, lib_dom_iterable_dts, lib_scripthost_dts, lib_webworker_importscripts_dts, lib_dom_dts, lib_es5_dts, lib_es2015_dts, lib_es6_dts, lib_dts */
+
+/*! exports provided: logOnceWebWorkerWarning, SimpleWorkerClient, SimpleWorkerServer, create */
+
+/*! exports provided: once */
+
+/*! exports provided: tail, tail2, equals, binarySearch, findFirstInSorted, mergeSort, groupBy, coalesce, isFalsyOrEmpty, isNonEmptyArray, distinct, distinctES6, fromSet, firstIndex, first, firstOrDefault, flatten, range, arrayInsert, pushToStart, pushToEnd, find, asArray */
+
+/*! exports provided: toUint8, toUint32 */
+
+/*! no exports provided */
+
+/*! no static exports found */
+
+/*! setimmediate */
+
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+
+/*!*****************************************!*\
+  !*** ./node_modules/process/browser.js ***!
+  \*****************************************/
+
+/*!*******************************************!*\
+  !*** (webpack)/buildin/harmony-module.js ***!
+  \*******************************************/
+
+/*!************************************************!*\
+  !*** ./node_modules/timers-browserify/main.js ***!
+  \************************************************/
+
+/*!***************************************************!*\
+  !*** ./node_modules/setimmediate/setImmediate.js ***!
+  \***************************************************/
+
+/*!**************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/uri.js ***!
+  \**************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/hash.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/uint.js ***!
+  \***************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/event.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/types.js ***!
+  \****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/arrays.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/errors.js ***!
+  \*****************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/strings.js ***!
+  \******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/iterator.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/keyCodes.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/platform.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/editor.worker.js ***!
+  \*******************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/diff/diff.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/lifecycle.js ***!
+  \********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/functional.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/linkedList.js ***!
+  \*********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/cancellation.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/core/range.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/core/token.js ***!
+  \***********************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/diff/diffChange.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/core/position.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/typescript/lib/lib.js ***!
+  \**************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/core/selection.js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/typescript/tsWorker.js ***!
+  \***************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/typescript/ts.worker.js ***!
+  \****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/model/wordHelper.js ***!
+  \*****************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/worker/simpleWorker.js ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/diff/diffComputer.js ***!
+  \******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/modes/linkComputer.js ***!
+  \*******************************************************************************/
+
+/*!**********************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/model/mirrorTextModel.js ***!
+  \**********************************************************************************/
+
+/*!*************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/core/characterClassifier.js ***!
+  \*************************************************************************************/
+
+/*!**************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/standalone/standaloneBase.js ***!
+  \**************************************************************************************/
+
+/*!***************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/standalone/standaloneEnums.js ***!
+  \***************************************************************************************/
+
+/*!****************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/services/editorSimpleWorker.js ***!
+  \****************************************************************************************/
+
+/*!****************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/viewModel/prefixSumComputer.js ***!
+  \****************************************************************************************/
+
+/*!*****************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/typescript/lib/typescriptServices.js ***!
+  \*****************************************************************************************/
+
+/*!*************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/modes/supports/inplaceReplaceSupport.js ***!
+  \*************************************************************************************************/
+
+/*!*************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/editor/common/standalone/promise-polyfill/polyfill.js ***!
+  \*************************************************************************************************/

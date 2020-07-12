@@ -1,11 +1,11 @@
 /// <reference types='jquery' />
 import * as monaco from 'monaco-editor';
-import * as tmp from '../../node_modules/spexplorerts/bundles/spexplorerts.d.ts.html';
-import * as legacy from './defs/legacy.d.html';
-import * as misc from './defs/misc.d.html';
-import * as jqueryDef from './defs/JQuery.d.html';
-import * as jqueryStaticDef from './defs/jqueryStatic.d.html';
-import * as sp from './defs/sp.d.html';
+import tmp from '../../node_modules/spexplorerts/bundles/spexplorerts.d.ts.html';
+import legacy from './defs/legacy.d.html';
+import misc from './defs/misc.d.html';
+import jqueryDef from './defs/JQuery.d.html';
+import jqueryStaticDef from './defs/jqueryStatic.d.html';
+import sp from './defs/sp.d.html';
 var $ = require('jquery');
 
 //https://github.com/microsoft/monaco-typescript/pull/8
@@ -110,7 +110,9 @@ export class MyMonacoEditor {
         this.editor.setValue(val);
     }
     getValue(): JQuery.Promise<string> {
+        console.log('getvalue');
         this.tsproxy.getEmitOutput('file:///main.tsx').then((r: any) => {
+            console.log({ 'gotvalue': r });
             p1.resolve(r.outputFiles[0].text);
         });
 

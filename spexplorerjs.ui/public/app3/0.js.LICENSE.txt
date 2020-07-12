@@ -1,0 +1,1083 @@
+/*!  7/12/2020 */
+
+/*! ../beautify/beautify-html.js */
+
+/*! ../cssLanguageTypes.js */
+
+/*! ../data/webCustomData.js */
+
+/*! ../htmlLanguageTypes.js */
+
+/*! ../jsonLanguageTypes.js */
+
+/*! ../languageFacts/builtinDataProviders.js */
+
+/*! ../languageFacts/dataProvider.js */
+
+/*! ../languageFacts/fact.js */
+
+/*! ../languageFacts/facts.js */
+
+/*! ../parser/cssNodes.js */
+
+/*! ../parser/cssScanner.js */
+
+/*! ../parser/cssSymbolScope.js */
+
+/*! ../parser/htmlEntities.js */
+
+/*! ../parser/htmlParser.js */
+
+/*! ../parser/htmlScanner.js */
+
+/*! ../parser/jsonParser.js */
+
+/*! ../parser/lessScanner.js */
+
+/*! ../parser/scssScanner.js */
+
+/*! ../services/lintRules.js */
+
+/*! ../typescript/typescript.js */
+
+/*! ../utils/arrays.js */
+
+/*! ../utils/colors.js */
+
+/*! ../utils/json.js */
+
+/*! ../utils/markup.js */
+
+/*! ../utils/object.js */
+
+/*! ../utils/objects.js */
+
+/*! ../utils/strings.js */
+
+/*! ./../../../../../../../process/browser.js */
+
+/*! ./../../../fillers/vscode-nls.js */
+
+/*! ./../../jsonc-parser/main.js */
+
+/*! ./../../vscode-uri/index.js */
+
+/*! ./../_deps/vscode-languageserver-types/main.js */
+
+/*! ./../jsonc-parser/main.js */
+
+/*! ./../vscode-languageserver-textdocument/lib/esm/main.js */
+
+/*! ./../vscode-languageserver-types/main.js */
+
+/*! ./_deps/jsonc-parser/main.js */
+
+/*! ./_deps/vscode-css-languageservice/cssLanguageService.js */
+
+/*! ./_deps/vscode-html-languageservice/htmlLanguageService.js */
+
+/*! ./_deps/vscode-json-languageservice/jsonLanguageService.js */
+
+/*! ./_deps/vscode-languageserver-textdocument/lib/esm/main.js */
+
+/*! ./_deps/vscode-languageserver-types/main.js */
+
+/*! ./beautify-css.js */
+
+/*! ./beautify.js */
+
+/*! ./builtinData.js */
+
+/*! ./colors.js */
+
+/*! ./cssCompletion.js */
+
+/*! ./cssErrors.js */
+
+/*! ./cssLanguageTypes.js */
+
+/*! ./cssNavigation.js */
+
+/*! ./cssNodes.js */
+
+/*! ./cssParser.js */
+
+/*! ./cssScanner.js */
+
+/*! ./data/webCustomData.js */
+
+/*! ./dataManager.js */
+
+/*! ./dataProvider.js */
+
+/*! ./entry.js */
+
+/*! ./format.js */
+
+/*! ./htmlLanguageTypes.js */
+
+/*! ./htmlScanner.js */
+
+/*! ./impl/edit.js */
+
+/*! ./impl/format.js */
+
+/*! ./impl/parser.js */
+
+/*! ./impl/scanner.js */
+
+/*! ./jsonLanguageTypes.js */
+
+/*! ./jsonSchemaService.js */
+
+/*! ./languageFacts/builtinDataProviders.js */
+
+/*! ./languageFacts/dataProvider.js */
+
+/*! ./languageFacts/facts.js */
+
+/*! ./languageFeatures.js */
+
+/*! ./lessScanner.js */
+
+/*! ./lint.js */
+
+/*! ./lintRules.js */
+
+/*! ./lintUtil.js */
+
+/*! ./parser.js */
+
+/*! ./parser/cssParser.js */
+
+/*! ./parser/htmlParser.js */
+
+/*! ./parser/htmlScanner.js */
+
+/*! ./parser/jsonParser.js */
+
+/*! ./parser/lessParser.js */
+
+/*! ./parser/scssParser.js */
+
+/*! ./scanner.js */
+
+/*! ./scssErrors.js */
+
+/*! ./scssScanner.js */
+
+/*! ./selectorPrinting.js */
+
+/*! ./services/configuration.js */
+
+/*! ./services/cssCodeActions.js */
+
+/*! ./services/cssCompletion.js */
+
+/*! ./services/cssFolding.js */
+
+/*! ./services/cssHover.js */
+
+/*! ./services/cssNavigation.js */
+
+/*! ./services/cssSelectionRange.js */
+
+/*! ./services/cssValidation.js */
+
+/*! ./services/htmlCompletion.js */
+
+/*! ./services/htmlFolding.js */
+
+/*! ./services/htmlFormatter.js */
+
+/*! ./services/htmlHighlighting.js */
+
+/*! ./services/htmlHover.js */
+
+/*! ./services/htmlLinks.js */
+
+/*! ./services/htmlMatchingTagPosition.js */
+
+/*! ./services/htmlRename.js */
+
+/*! ./services/htmlSelectionRange.js */
+
+/*! ./services/htmlSymbolsProvider.js */
+
+/*! ./services/jsonCompletion.js */
+
+/*! ./services/jsonDocumentSymbols.js */
+
+/*! ./services/jsonFolding.js */
+
+/*! ./services/jsonHover.js */
+
+/*! ./services/jsonSchemaService.js */
+
+/*! ./services/jsonSelectionRanges.js */
+
+/*! ./services/jsonValidation.js */
+
+/*! ./services/lessCompletion.js */
+
+/*! ./services/scssCompletion.js */
+
+/*! ./services/scssNavigation.js */
+
+/*! ./tokenization.js */
+
+/*! ./workerManager.js */
+
+/*! exports provided: ASTNodeImpl, NullASTNodeImpl, BooleanASTNodeImpl, ArrayASTNodeImpl, NumberASTNodeImpl, StringASTNodeImpl, PropertyASTNodeImpl, ObjectASTNodeImpl, asSchema, EnumMatch, ValidationResult, newJSONDocument, getNodeValue, getNodePath, contains, JSONDocument, parse */
+
+/*! exports provided: CSSCodeActions */
+
+/*! exports provided: CSSCompletion */
+
+/*! exports provided: CSSDataManager */
+
+/*! exports provided: CSSDataProvider */
+
+/*! exports provided: CSSHover */
+
+/*! exports provided: CSSIssueType, ParseError */
+
+/*! exports provided: CSSNavigation */
+
+/*! exports provided: CSSValidation */
+
+/*! exports provided: DiagnosticsAdapter, CompletionAdapter, HoverAdapter, DocumentHighlightAdapter, DefinitionAdapter, ReferenceAdapter, RenameAdapter, DocumentSymbolAdapter, DocumentColorAdapter, FoldingRangeAdapter, SelectionRangeAdapter */
+
+/*! exports provided: DiagnosticsAdapter, CompletionAdapter, HoverAdapter, DocumentHighlightAdapter, DocumentSymbolAdapter, DocumentLinkAdapter, DocumentFormattingEditProvider, DocumentRangeFormattingEditProvider, RenameAdapter, FoldingRangeAdapter, SelectionRangeAdapter */
+
+/*! exports provided: DiagnosticsAdapter, CompletionAdapter, HoverAdapter, DocumentSymbolAdapter, DocumentFormattingEditProvider, DocumentRangeFormattingEditProvider, DocumentColorAdapter, FoldingRangeAdapter, SelectionRangeAdapter */
+
+/*! exports provided: Element, RootElement, LabelElement, toElement, selectorToMarkedString, simpleSelectorToMarkedString, selectorToElement */
+
+/*! exports provided: Element, default */
+
+/*! exports provided: Ellipsis, LESSScanner */
+
+/*! exports provided: HTMLCompletion */
+
+/*! exports provided: HTMLDataProvider, generateDocumentation */
+
+/*! exports provided: HTMLHover */
+
+/*! exports provided: JSONCompletion */
+
+/*! exports provided: JSONDocumentSymbols */
+
+/*! exports provided: JSONHover */
+
+/*! exports provided: JSONValidation */
+
+/*! exports provided: LESSCompletion */
+
+/*! exports provided: LESSParser */
+
+/*! exports provided: LintVisitor */
+
+/*! exports provided: Node, parse */
+
+/*! exports provided: NodeType, ReferenceType, getNodeAtOffset, getNodePath, getParentDeclaration, Node, Nodelist, Identifier, Stylesheet, Declarations, BodyDeclaration, RuleSet, Selector, SimpleSelector, AtApplyRule, AbstractDeclaration, CustomPropertyDeclaration, CustomPropertySet, Declaration, Property, Invocation, Function, FunctionParameter, FunctionArgument, IfStatement, ForStatement, EachStatement, WhileStatement, ElseStatement, FunctionDeclaration, ViewPort, FontFace, NestedProperties, Keyframe, KeyframeSelector, Import, Use, ModuleConfiguration, Forward, ForwardVisibility, Namespace, Media, Supports, Document, Medialist, MediaQuery, SupportsCondition, Page, PageBoxMarginBox, Expression, BinaryExpression, Term, AttributeSelector, Operator, HexColorValue, NumericValue, VariableDeclaration, Interpolation, Variable, ExtendsReference, MixinReference, MixinDeclaration, UnknownAtRule, ListEntry, LessGuard, GuardCondition, Module, Level, Marker, ParseErrorCollector */
+
+/*! exports provided: Parser */
+
+/*! exports provided: Position, Range, Location, LocationLink, Color, ColorInformation, ColorPresentation, FoldingRangeKind, FoldingRange, DiagnosticRelatedInformation, DiagnosticSeverity, DiagnosticTag, Diagnostic, Command, TextEdit, TextDocumentEdit, CreateFile, RenameFile, DeleteFile, WorkspaceEdit, WorkspaceChange, TextDocumentIdentifier, VersionedTextDocumentIdentifier, TextDocumentItem, MarkupKind, MarkupContent, CompletionItemKind, InsertTextFormat, CompletionItemTag, CompletionItem, CompletionList, MarkedString, Hover, ParameterInformation, SignatureInformation, DocumentHighlightKind, DocumentHighlight, SymbolKind, SymbolTag, SymbolInformation, DocumentSymbol, CodeActionKind, CodeActionContext, CodeAction, CodeLens, FormattingOptions, DocumentLink, SelectionRange, EOL, TextDocument */
+
+/*! exports provided: Rule, Setting, Rules, Settings, LintConfigurationSettings */
+
+/*! exports provided: SCSSCompletion */
+
+/*! exports provided: SCSSIssueType, SCSSParseError */
+
+/*! exports provided: SCSSNavigation */
+
+/*! exports provided: SCSSParser */
+
+/*! exports provided: Scope, GlobalScope, Symbol, ScopeBuilder, Symbols */
+
+/*! exports provided: TextDocument */
+
+/*! exports provided: TextDocument, Position, Range, Location, LocationLink, Color, ColorInformation, ColorPresentation, FoldingRangeKind, FoldingRange, DiagnosticRelatedInformation, DiagnosticSeverity, DiagnosticTag, Diagnostic, Command, TextEdit, TextDocumentEdit, CreateFile, RenameFile, DeleteFile, WorkspaceEdit, WorkspaceChange, TextDocumentIdentifier, VersionedTextDocumentIdentifier, TextDocumentItem, MarkupKind, MarkupContent, CompletionItemKind, InsertTextFormat, CompletionItemTag, CompletionItem, CompletionList, MarkedString, Hover, ParameterInformation, SignatureInformation, DocumentHighlightKind, DocumentHighlight, SymbolKind, SymbolTag, SymbolInformation, DocumentSymbol, CodeActionKind, CodeActionContext, CodeAction, CodeLens, FormattingOptions, DocumentLink, SelectionRange, EOL, ClientCapabilities, FileType */
+
+/*! exports provided: TextDocument, Position, Range, Location, LocationLink, Color, ColorInformation, ColorPresentation, FoldingRangeKind, FoldingRange, DiagnosticRelatedInformation, DiagnosticSeverity, DiagnosticTag, Diagnostic, Command, TextEdit, TextDocumentEdit, CreateFile, RenameFile, DeleteFile, WorkspaceEdit, WorkspaceChange, TextDocumentIdentifier, VersionedTextDocumentIdentifier, TextDocumentItem, MarkupKind, MarkupContent, CompletionItemKind, InsertTextFormat, CompletionItemTag, CompletionItem, CompletionList, MarkedString, Hover, ParameterInformation, SignatureInformation, DocumentHighlightKind, DocumentHighlight, SymbolKind, SymbolTag, SymbolInformation, DocumentSymbol, CodeActionKind, CodeActionContext, CodeAction, CodeLens, FormattingOptions, DocumentLink, SelectionRange, EOL, ClientCapabilities, FileType, getCSSLanguageService, getSCSSLanguageService, getLESSLanguageService */
+
+/*! exports provided: TextDocument, Position, Range, Location, LocationLink, Color, ColorInformation, ColorPresentation, FoldingRangeKind, FoldingRange, DiagnosticRelatedInformation, DiagnosticSeverity, DiagnosticTag, Diagnostic, Command, TextEdit, TextDocumentEdit, CreateFile, RenameFile, DeleteFile, WorkspaceEdit, WorkspaceChange, TextDocumentIdentifier, VersionedTextDocumentIdentifier, TextDocumentItem, MarkupKind, MarkupContent, CompletionItemKind, InsertTextFormat, CompletionItemTag, CompletionItem, CompletionList, MarkedString, Hover, ParameterInformation, SignatureInformation, DocumentHighlightKind, DocumentHighlight, SymbolKind, SymbolTag, SymbolInformation, DocumentSymbol, CodeActionKind, CodeActionContext, CodeAction, CodeLens, FormattingOptions, DocumentLink, SelectionRange, EOL, ErrorCode, ClientCapabilities */
+
+/*! exports provided: TextDocument, Position, Range, Location, LocationLink, Color, ColorInformation, ColorPresentation, FoldingRangeKind, FoldingRange, DiagnosticRelatedInformation, DiagnosticSeverity, DiagnosticTag, Diagnostic, Command, TextEdit, TextDocumentEdit, CreateFile, RenameFile, DeleteFile, WorkspaceEdit, WorkspaceChange, TextDocumentIdentifier, VersionedTextDocumentIdentifier, TextDocumentItem, MarkupKind, MarkupContent, CompletionItemKind, InsertTextFormat, CompletionItemTag, CompletionItem, CompletionList, MarkedString, Hover, ParameterInformation, SignatureInformation, DocumentHighlightKind, DocumentHighlight, SymbolKind, SymbolTag, SymbolInformation, DocumentSymbol, CodeActionKind, CodeActionContext, CodeAction, CodeLens, FormattingOptions, DocumentLink, SelectionRange, EOL, ErrorCode, ClientCapabilities, getLanguageService */
+
+/*! exports provided: TokenType, MultiLineStream, Scanner */
+
+/*! exports provided: TokenType, ScannerState, ClientCapabilities */
+
+/*! exports provided: TokenType, ScannerState, ClientCapabilities, TextDocument, Position, Range, Location, LocationLink, Color, ColorInformation, ColorPresentation, FoldingRangeKind, FoldingRange, DiagnosticRelatedInformation, DiagnosticSeverity, DiagnosticTag, Diagnostic, Command, TextEdit, TextDocumentEdit, CreateFile, RenameFile, DeleteFile, WorkspaceEdit, WorkspaceChange, TextDocumentIdentifier, VersionedTextDocumentIdentifier, TextDocumentItem, MarkupKind, MarkupContent, CompletionItemKind, InsertTextFormat, CompletionItemTag, CompletionItem, CompletionList, MarkedString, Hover, ParameterInformation, SignatureInformation, DocumentHighlightKind, DocumentHighlight, SymbolKind, SymbolTag, SymbolInformation, DocumentSymbol, CodeActionKind, CodeActionContext, CodeAction, CodeLens, FormattingOptions, DocumentLink, SelectionRange, EOL, getLanguageService, newHTMLDataProvider */
+
+/*! exports provided: URI */
+
+/*! exports provided: UnresolvedSchema, ResolvedSchema, JSONSchemaService */
+
+/*! exports provided: VOID_ELEMENTS, isVoidElement */
+
+/*! exports provided: VariableName, InterpolationFunction, Default, EqualsOperator, NotEqualsOperator, GreaterEqualsOperator, SmallerEqualsOperator, Ellipsis, Module, Forward, Use, SCSSScanner */
+
+/*! exports provided: WorkerManager */
+
+/*! exports provided: browserNames, getEntryDescription, getBrowserLabel */
+
+/*! exports provided: browserNames, getEntryDescription, getBrowserLabel, colorFunctions, colors, colorKeywords, isColorConstructor, isColorValue, hexDigit, colorFromHex, colorFrom256RGB, colorFromHSL, hslFromColor, getColorValue, positionKeywords, repeatStyleKeywords, lineStyleKeywords, lineWidthKeywords, boxKeywords, geometryBoxKeywords, cssWideKeywords, imageFunctions, transitionTimingFunctions, basicShapeFunctions, units, html5Tags, svgElements, pageBoxDirectives, CSSDataProvider, CSSDataManager, cssDataManager */
+
+/*! exports provided: builtinDataProviders, getAllDataProviders, handleCustomDataProviders */
+
+/*! exports provided: colorFunctions, colors, colorKeywords, isColorConstructor, isColorValue, hexDigit, colorFromHex, colorFrom256RGB, colorFromHSL, hslFromColor, getColorValue */
+
+/*! exports provided: conf, language */
+
+/*! exports provided: createScanner */
+
+/*! exports provided: createScanner, getLocation, parse, parseTree, findNodeAtLocation, findNodeAtOffset, getNodePath, getNodeValue, visit, stripComments, printParseErrorCode, format, modify, applyEdits */
+
+/*! exports provided: createTokenizationSupport, TOKEN_DELIM_OBJECT, TOKEN_DELIM_ARRAY, TOKEN_DELIM_COLON, TOKEN_DELIM_COMMA, TOKEN_VALUE_BOOLEAN, TOKEN_VALUE_NULL, TOKEN_VALUE_STRING, TOKEN_VALUE_NUMBER, TOKEN_PROPERTY_NAME, TOKEN_COMMENT_BLOCK, TOKEN_COMMENT_LINE */
+
+/*! exports provided: cssData */
+
+/*! exports provided: css_beautify */
+
+/*! exports provided: doRename */
+
+/*! exports provided: entities */
+
+/*! exports provided: equals, isNumber, isDefined, isBoolean, isString */
+
+/*! exports provided: findDocumentHighlights */
+
+/*! exports provided: findDocumentLinks */
+
+/*! exports provided: findDocumentSymbols */
+
+/*! exports provided: findFirst, binarySearch */
+
+/*! exports provided: findFirst, includes, union */
+
+/*! exports provided: findMatchingTagPosition */
+
+/*! exports provided: flattenDiagnosticMessageText, Adapter, DiagnosticsAdapter, SuggestAdapter, SignatureHelpAdapter, QuickInfoAdapter, OccurrencesAdapter, DefinitionAdapter, ReferenceAdapter, OutlineAdapter, Kind, FormatHelper, FormatAdapter, FormatOnTypeAdapter, CodeActionAdaptor, RenameAdapter */
+
+/*! exports provided: format */
+
+/*! exports provided: format, isEOL */
+
+/*! exports provided: getFoldingRanges */
+
+/*! exports provided: getLocation, parse, parseTree, findNodeAtLocation, getNodePath, getNodeValue, contains, findNodeAtOffset, visit, stripComments, getNodeType */
+
+/*! exports provided: getSelectionRanges */
+
+/*! exports provided: hexDigit, colorFromHex, colorFrom256RGB */
+
+/*! exports provided: htmlData */
+
+/*! exports provided: html_beautify */
+
+/*! exports provided: isDefined */
+
+/*! exports provided: js_beautify */
+
+/*! exports provided: loadMessageBundle, config */
+
+/*! exports provided: normalizeMarkupContent */
+
+/*! exports provided: positionKeywords, repeatStyleKeywords, lineStyleKeywords, lineWidthKeywords, boxKeywords, geometryBoxKeywords, cssWideKeywords, imageFunctions, transitionTimingFunctions, basicShapeFunctions, units, html5Tags, svgElements, pageBoxDirectives */
+
+/*! exports provided: removeProperty, setProperty, applyEdit, isWS */
+
+/*! exports provided: schemaContributions */
+
+/*! exports provided: setupMode */
+
+/*! exports provided: setupMode1, setupMode */
+
+/*! exports provided: setupTypeScript, setupJavaScript, getJavaScriptWorker, getTypeScriptWorker */
+
+/*! exports provided: startsWith, endsWith, commonPrefixLength, repeat, isLetterOrDigit */
+
+/*! exports provided: startsWith, endsWith, convertSimple2RegExpPattern, repeat */
+
+/*! exports provided: startsWith, endsWith, difference, getLimitedString */
+
+/*! exports provided: stringifyObject */
+
+/*! exports provided: values, isDefined */
+
+/*!******************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/r/r.js ***!
+  \******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/cssMode.js ***!
+  \*******************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/go/go.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/sb/sb.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/st/st.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/vb/vb.js ***!
+  \********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/htmlMode.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/jsonMode.js ***!
+  \*********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/bat/bat.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/cpp/cpp.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/csp/csp.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/css/css.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/ini/ini.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/lua/lua.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/php/php.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/pug/pug.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/sql/sql.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/tcl/tcl.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/xml/xml.js ***!
+  \**********************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/abap/abap.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/apex/apex.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/html/html.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/java/java.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/less/less.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/mips/mips.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/perl/perl.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/ruby/ruby.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/rust/rust.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/scss/scss.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/twig/twig.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/yaml/yaml.js ***!
+  \************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/workerManager.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/tokenization.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/typescript/tsMode.js ***!
+  \*************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/azcli/azcli.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/msdax/msdax.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/mysql/mysql.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/pgsql/pgsql.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/razor/razor.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/redis/redis.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/shell/shell.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/swift/swift.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/workerManager.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/workerManager.js ***!
+  \**************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/coffee/coffee.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/csharp/csharp.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/fsharp/fsharp.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/kotlin/kotlin.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/pascal/pascal.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/python/python.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/scheme/scheme.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/sophia/sophia.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/languageFeatures.js ***!
+  \****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/languageFeatures.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/languageFeatures.js ***!
+  \*****************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/clojure/clojure.js ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/graphql/graphql.js ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/fillers/vscode-nls.js ***!
+  \******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/fillers/vscode-nls.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/fillers/vscode-nls.js ***!
+  \*******************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/cameligo/cameligo.js ***!
+  \********************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/markdown/markdown.js ***!
+  \********************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/postiats/postiats.js ***!
+  \********************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/redshift/redshift.js ***!
+  \********************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/solidity/solidity.js ***!
+  \********************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/typescript/workerManager.js ***!
+  \********************************************************************************/
+
+/*!**********************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/pascaligo/pascaligo.js ***!
+  \**********************************************************************************/
+
+/*!**********************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-uri/index.js ***!
+  \**********************************************************************************/
+
+/*!***********************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-uri/index.js ***!
+  \***********************************************************************************/
+
+/*!***********************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-uri/index.js ***!
+  \***********************************************************************************/
+
+/*!***********************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/typescript/languageFeatures.js ***!
+  \***********************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/dockerfile/dockerfile.js ***!
+  \************************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/handlebars/handlebars.js ***!
+  \************************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/javascript/javascript.js ***!
+  \************************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/powerquery/powerquery.js ***!
+  \************************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/powershell/powershell.js ***!
+  \************************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/typescript/typescript.js ***!
+  \************************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/main.js ***!
+  \************************************************************************************/
+
+/*!**************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/objective-c/objective-c.js ***!
+  \**************************************************************************************/
+
+/*!*****************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/edit.js ***!
+  \*****************************************************************************************/
+
+/*!*******************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/format.js ***!
+  \*******************************************************************************************/
+
+/*!*******************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/parser.js ***!
+  \*******************************************************************************************/
+
+/*!********************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/scanner.js ***!
+  \********************************************************************************************/
+
+/*!************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/basic-languages/restructuredtext/restructuredtext.js ***!
+  \************************************************************************************************/
+
+/*!**************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-languageserver-types/main.js ***!
+  \**************************************************************************************************/
+
+/*!***************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-languageserver-types/main.js ***!
+  \***************************************************************************************************/
+
+/*!*********************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/utils/arrays.js ***!
+  \*********************************************************************************************************/
+
+/*!*********************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/utils/json.js ***!
+  \*********************************************************************************************************/
+
+/*!**********************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/lint.js ***!
+  \**********************************************************************************************************/
+
+/*!**********************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/utils/objects.js ***!
+  \**********************************************************************************************************/
+
+/*!**********************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/utils/strings.js ***!
+  \**********************************************************************************************************/
+
+/*!***********************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/utils/arrays.js ***!
+  \***********************************************************************************************************/
+
+/*!***********************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/utils/markup.js ***!
+  \***********************************************************************************************************/
+
+/*!***********************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/utils/object.js ***!
+  \***********************************************************************************************************/
+
+/*!***********************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/utils/colors.js ***!
+  \***********************************************************************************************************/
+
+/*!************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/parser/cssNodes.js ***!
+  \************************************************************************************************************/
+
+/*!************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/utils/strings.js ***!
+  \************************************************************************************************************/
+
+/*!************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/utils/objects.js ***!
+  \************************************************************************************************************/
+
+/*!************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/utils/strings.js ***!
+  \************************************************************************************************************/
+
+/*!*************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/cssLanguageTypes.js ***!
+  \*************************************************************************************************************/
+
+/*!*************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/parser/cssErrors.js ***!
+  \*************************************************************************************************************/
+
+/*!*************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/parser/cssParser.js ***!
+  \*************************************************************************************************************/
+
+/*!**************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/parser/cssScanner.js ***!
+  \**************************************************************************************************************/
+
+/*!**************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/parser/lessParser.js ***!
+  \**************************************************************************************************************/
+
+/*!**************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/parser/scssErrors.js ***!
+  \**************************************************************************************************************/
+
+/*!**************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/parser/scssParser.js ***!
+  \**************************************************************************************************************/
+
+/*!**************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/cssHover.js ***!
+  \**************************************************************************************************************/
+
+/*!**************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/lintUtil.js ***!
+  \**************************************************************************************************************/
+
+/*!***************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/cssLanguageService.js ***!
+  \***************************************************************************************************************/
+
+/*!***************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/data/webCustomData.js ***!
+  \***************************************************************************************************************/
+
+/*!***************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/parser/lessScanner.js ***!
+  \***************************************************************************************************************/
+
+/*!***************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/parser/scssScanner.js ***!
+  \***************************************************************************************************************/
+
+/*!***************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/lintRules.js ***!
+  \***************************************************************************************************************/
+
+/*!****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/languageFacts/entry.js ***!
+  \****************************************************************************************************************/
+
+/*!****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/languageFacts/facts.js ***!
+  \****************************************************************************************************************/
+
+/*!****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/cssFolding.js ***!
+  \****************************************************************************************************************/
+
+/*!****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/beautify/beautify.js ***!
+  \****************************************************************************************************************/
+
+/*!****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/htmlLanguageTypes.js ***!
+  \****************************************************************************************************************/
+
+/*!****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/parser/htmlParser.js ***!
+  \****************************************************************************************************************/
+
+/*!****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/jsonLanguageTypes.js ***!
+  \****************************************************************************************************************/
+
+/*!****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/parser/jsonParser.js ***!
+  \****************************************************************************************************************/
+
+/*!*****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/languageFacts/colors.js ***!
+  \*****************************************************************************************************************/
+
+/*!*****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/fact.js ***!
+  \*****************************************************************************************************************/
+
+/*!*****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/parser/htmlScanner.js ***!
+  \*****************************************************************************************************************/
+
+/*!*****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/services/htmlHover.js ***!
+  \*****************************************************************************************************************/
+
+/*!*****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/services/htmlLinks.js ***!
+  \*****************************************************************************************************************/
+
+/*!*****************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonHover.js ***!
+  \*****************************************************************************************************************/
+
+/*!******************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/parser/cssSymbolScope.js ***!
+  \******************************************************************************************************************/
+
+/*!******************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/htmlLanguageService.js ***!
+  \******************************************************************************************************************/
+
+/*!******************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/parser/htmlEntities.js ***!
+  \******************************************************************************************************************/
+
+/*!******************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/services/htmlRename.js ***!
+  \******************************************************************************************************************/
+
+/*!******************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-languageserver-textdocument/lib/esm/main.js ***!
+  \******************************************************************************************************************/
+
+/*!******************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/jsonLanguageService.js ***!
+  \******************************************************************************************************************/
+
+/*!******************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-languageserver-textdocument/lib/esm/main.js ***!
+  \******************************************************************************************************************/
+
+/*!*******************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/cssCompletion.js ***!
+  \*******************************************************************************************************************/
+
+/*!*******************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/cssNavigation.js ***!
+  \*******************************************************************************************************************/
+
+/*!*******************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/cssValidation.js ***!
+  \*******************************************************************************************************************/
+
+/*!*******************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/services/htmlFolding.js ***!
+  \*******************************************************************************************************************/
+
+/*!*******************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonFolding.js ***!
+  \*******************************************************************************************************************/
+
+/*!********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/cssCodeActions.js ***!
+  \********************************************************************************************************************/
+
+/*!********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/lessCompletion.js ***!
+  \********************************************************************************************************************/
+
+/*!********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/scssCompletion.js ***!
+  \********************************************************************************************************************/
+
+/*!********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/scssNavigation.js ***!
+  \********************************************************************************************************************/
+
+/*!********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/beautify/beautify-css.js ***!
+  \********************************************************************************************************************/
+
+/*!*********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/beautify/beautify-html.js ***!
+  \*********************************************************************************************************************/
+
+/*!*********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/services/htmlFormatter.js ***!
+  \*********************************************************************************************************************/
+
+/*!*********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/configuration.js ***!
+  \*********************************************************************************************************************/
+
+/*!**********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/languageFacts/builtinData.js ***!
+  \**********************************************************************************************************************/
+
+/*!**********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/languageFacts/dataManager.js ***!
+  \**********************************************************************************************************************/
+
+/*!**********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/selectorPrinting.js ***!
+  \**********************************************************************************************************************/
+
+/*!**********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/services/htmlCompletion.js ***!
+  \**********************************************************************************************************************/
+
+/*!**********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonCompletion.js ***!
+  \**********************************************************************************************************************/
+
+/*!**********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonValidation.js ***!
+  \**********************************************************************************************************************/
+
+/*!***********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/languageFacts/dataProvider.js ***!
+  \***********************************************************************************************************************/
+
+/*!***********************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/cssSelectionRange.js ***!
+  \***********************************************************************************************************************/
+
+/*!************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/services/htmlHighlighting.js ***!
+  \************************************************************************************************************************/
+
+/*!*************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/dataProvider.js ***!
+  \*************************************************************************************************************************/
+
+/*!*************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonSchemaService.js ***!
+  \*************************************************************************************************************************/
+
+/*!**************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/services/htmlSelectionRange.js ***!
+  \**************************************************************************************************************************/
+
+/*!***************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/services/htmlSymbolsProvider.js ***!
+  \***************************************************************************************************************************/
+
+/*!***************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonDocumentSymbols.js ***!
+  \***************************************************************************************************************************/
+
+/*!***************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonSelectionRanges.js ***!
+  \***************************************************************************************************************************/
+
+/*!*******************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/data/webCustomData.js ***!
+  \*******************************************************************************************************************************/
+
+/*!*******************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/services/htmlMatchingTagPosition.js ***!
+  \*******************************************************************************************************************************/
+
+/*!*********************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/builtinDataProviders.js ***!
+  \*********************************************************************************************************************************/
+
+/*!*************************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/_deps/vscode-languageserver-types/main.js ***!
+  \*************************************************************************************************************************************/
+
+/*!**************************************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/_deps/vscode-languageserver-textdocument/lib/esm/main.js ***!
+  \**************************************************************************************************************************************************/
+
+/*!---------------------------------------------------------------------------------------------
+ *  Copyright (C) David Owens II, owensd.io. All rights reserved.
+ *--------------------------------------------------------------------------------------------*/

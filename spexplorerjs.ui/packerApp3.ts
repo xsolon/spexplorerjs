@@ -6,6 +6,7 @@ import * as path from 'path';
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 var MonacoWebpackPlugin1 = require('monaco-editor-webpack-plugin');
 var args = [];
 //#region arguments
@@ -32,14 +33,15 @@ var getConfig = function (debug = true) {
   {
     watch: true,
     entry: {
-      ui: ['jquery', 'bootstrap'],//   './src/components/myMonacoEditor.ts'],
-      page1: './src/drivers/page1.ts',
-      page2: './src/drivers/page2.ts',
-      monacoSample: './src/drivers/monacoSample.ts',
+      ui: ['jquery', 'bootstrap'],//, './src/components/myMonacoEditor.ts'],
+      page1: './src/app3/page1.ts',
+      page2: './src/app3/page2.ts',
+      monacoSample: './src/app3/monacoSample.ts',
     },
     devtool: debug ? 'source-map' : false,// 'inline-source-map'
     optimization: {
-      minimize: debug ? false : true,
+      minimizer: [new TerserPlugin()],
+      minimize: true,// debug ? false : true,
       // splitChunks: { chunks: 'all', name: 'vendor' }
       splitChunks: {
         cacheGroups: {
@@ -53,7 +55,6 @@ var getConfig = function (debug = true) {
           basecss: { // bootstrap
             chunks: 'initial',
             name: 'basecss',
-            // test: /\.scss$/,
             test: /custom\.scss$/,
             enforce: true,
           }
@@ -124,17 +125,17 @@ var getConfig = function (debug = true) {
             },
             // { loader: 'style-loader', // inject CSS to page }, 
             { loader: 'css-loader' }, // translates CSS into CommonJS modules }, 
-            // {
-            //   loader: 'postcss-loader', // Run post css actions
-            //   options: {
-            //     plugins: function () { // post css plugins, can be exported to postcss.config.js
-            //       return [
-            //         require('precss'),
-            //         require('autoprefixer')
-            //       ];
-            //     }
-            //   }
-            // },
+            {
+              loader: 'postcss-loader', // Run post css actions
+              options: {
+                plugins: function () { // post css plugins, can be exported to postcss.config.js
+                  return [
+                    require('precss'),
+                    require('autoprefixer')
+                  ];
+                }
+              }
+            },
             { loader: 'sass-loader' } // compiles Sass to CSS }
           ]
         },
@@ -201,14 +202,14 @@ var getConfig = function (debug = true) {
         template: './src/templates/pageTemplate.handlebar',
         title: 'Page1', filename: 'page1.html'
       }),
-      // new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1, }),
+      new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 5, }),
       new webpack.BannerPlugin({
         // @ts-ignore
         banner: (/*v: any*/) => {
           return ` ${new Date().toLocaleDateString()}`;
         }
       }),
-      new MonacoWebpackPlugin1({
+      new MonacoWebpackPlugin1(webpack, {
         languages: ['typescript'],
         // features: ['folding']
       })

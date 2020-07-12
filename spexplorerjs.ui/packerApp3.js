@@ -1,22 +1,13 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 /// <reference types="webpack" />
 /// <reference types="@types/node" />
 // @ts-ignore
-var webpack_1 = __importDefault(require("webpack"));
-var path = __importStar(require("path"));
+var webpack_1 = require("webpack");
+var path = require("path");
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
+var TerserPlugin = require('terser-webpack-plugin');
 var MonacoWebpackPlugin1 = require('monaco-editor-webpack-plugin');
 var args = [];
 //#region arguments
@@ -33,20 +24,21 @@ var args = [];
 })();
 //#endregion
 // @ts-ignore - ugh
-webpack_1.default = webpack_1.default || require('webpack');
+webpack_1["default"] = webpack_1["default"] || require('webpack');
 var getConfig = function (debug) {
     if (debug === void 0) { debug = true; }
     var config = {
         watch: true,
         entry: {
             ui: ['jquery', 'bootstrap'],
-            page1: './src/drivers/page1.ts',
-            page2: './src/drivers/page2.ts',
-            monacoSample: './src/drivers/monacoSample.ts',
+            page1: './src/app3/page1.ts',
+            page2: './src/app3/page2.ts',
+            monacoSample: './src/app3/monacoSample.ts'
         },
         devtool: debug ? 'source-map' : false,
         optimization: {
-            minimize: debug ? false : true,
+            minimizer: [new TerserPlugin()],
+            minimize: true,
             // splitChunks: { chunks: 'all', name: 'vendor' }
             splitChunks: {
                 cacheGroups: {
@@ -55,14 +47,13 @@ var getConfig = function (debug) {
                         chunks: 'initial',
                         name: 'ui',
                         test: 'ui',
-                        enforce: true,
+                        enforce: true
                     },
                     basecss: {
                         chunks: 'initial',
                         name: 'basecss',
-                        // test: /\.scss$/,
                         test: /custom\.scss$/,
-                        enforce: true,
+                        enforce: true
                     }
                 }
             }
@@ -72,11 +63,11 @@ var getConfig = function (debug) {
             rules: [
                 {
                     test: /\.handlebar$/i,
-                    use: 'handlebars-loader',
+                    use: 'handlebars-loader'
                 },
                 {
                     test: /\.aspx$/i,
-                    use: 'handlebars-loader',
+                    use: 'handlebars-loader'
                 },
                 {
                     test: /\.html$/,
@@ -97,7 +88,7 @@ var getConfig = function (debug) {
                     use: [
                         {
                             loader: MiniCssExtractPlugin.loader,
-                            options: {},
+                            options: {}
                         },
                         'css-loader'
                         // { loader: 'style-loader', options: {} },
@@ -130,17 +121,17 @@ var getConfig = function (debug) {
                         },
                         // { loader: 'style-loader', // inject CSS to page }, 
                         { loader: 'css-loader' },
-                        // {
-                        //   loader: 'postcss-loader', // Run post css actions
-                        //   options: {
-                        //     plugins: function () { // post css plugins, can be exported to postcss.config.js
-                        //       return [
-                        //         require('precss'),
-                        //         require('autoprefixer')
-                        //       ];
-                        //     }
-                        //   }
-                        // },
+                        {
+                            loader: 'postcss-loader',
+                            options: {
+                                plugins: function () {
+                                    return [
+                                        require('precss'),
+                                        require('autoprefixer')
+                                    ];
+                                }
+                            }
+                        },
                         { loader: 'sass-loader' } // compiles Sass to CSS }
                     ]
                 },
@@ -148,7 +139,7 @@ var getConfig = function (debug) {
                     test: /\.ttf$/,
                     use: [{
                             loader: 'url-loader',
-                            options: {},
+                            options: {}
                         }]
                 }
             ]
@@ -156,7 +147,7 @@ var getConfig = function (debug) {
         plugins: [
             new MiniCssExtractPlugin({
                 filename: 'css/[name].[hash].css',
-                chunkFilename: 'css/[id].[hash].css',
+                chunkFilename: 'css/[id].[hash].css'
             }),
             new HtmlWebpackPlugin({
                 inject: true,
@@ -184,7 +175,7 @@ var getConfig = function (debug) {
                         webpackConfig: compilation.options
                         // webpack: compilation.getStats().toJson()
                     };
-                },
+                }
             }),
             new HtmlWebpackPlugin({
                 inject: false,
@@ -206,15 +197,15 @@ var getConfig = function (debug) {
                 template: './src/templates/pageTemplate.handlebar',
                 title: 'Page1', filename: 'page1.html'
             }),
-            // new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1, }),
-            new webpack_1.default.BannerPlugin({
+            new webpack_1["default"].optimize.LimitChunkCountPlugin({ maxChunks: 5 }),
+            new webpack_1["default"].BannerPlugin({
                 // @ts-ignore
                 banner: function ( /*v: any*/) {
                     return " " + new Date().toLocaleDateString();
                 }
             }),
-            new MonacoWebpackPlugin1({
-                languages: ['typescript'],
+            new MonacoWebpackPlugin1(webpack_1["default"], {
+                languages: ['typescript']
             })
         ],
         resolve: { extensions: ['.tsx', '.ts', '.js'] },
@@ -228,7 +219,7 @@ var getConfig = function (debug) {
     return config;
 };
 var debugConfig = getConfig(true);
-var compiler = webpack_1.default(debugConfig);
+var compiler = webpack_1["default"](debugConfig);
 var onDone = function (err, stats) {
     if (err) {
         console.error(err);
@@ -265,4 +256,3 @@ if (args.length > 0 && args[0] == 'run') {
 }
 else
     watch();
-//# sourceMappingURL=packerApp3.js.map
