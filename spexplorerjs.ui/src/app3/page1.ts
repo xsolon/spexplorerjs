@@ -10,7 +10,7 @@ var logger = new TinyLogger();
 class Page1 {
     constructor() {
 
-        logger.log('init 0.1');
+        logger.log('init 0.2');
 
     }
     buildUI() {

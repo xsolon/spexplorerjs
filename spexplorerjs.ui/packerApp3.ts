@@ -3,10 +3,12 @@
 // @ts-ignore
 import webpack from 'webpack';
 import * as path from 'path';
-
+const WebpackShellPlugin = require('webpack-shell-plugin');
+// const CssnanoPlugin = require('cssnano-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+// const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 var MonacoWebpackPlugin1 = require('monaco-editor-webpack-plugin');
 var args = [];
 //#region arguments
@@ -33,30 +35,39 @@ var getConfig = function (debug = true) {
   {
     watch: true,
     entry: {
-      ui: ['jquery', 'bootstrap'],//, './src/components/myMonacoEditor.ts'],
       page1: './src/app3/page1.ts',
       page2: './src/app3/page2.ts',
       monacoSample: './src/app3/monacoSample.ts',
     },
-    devtool: debug ? 'source-map' : false,// 'inline-source-map'
+    devtool: debug ? 'inline-source-map' : false,// 'inline-source-map''source-map'
     optimization: {
-      minimizer: [new TerserPlugin()],
-      minimize: true,// debug ? false : true,
-      // splitChunks: { chunks: 'all', name: 'vendor' }
+      runtimeChunk: 'single',
+      minimizer: [
+        // new CssnanoPlugin(),
+        // new OptimizeCSSAssetsPlugin({
+        //   assetNameRegExp: /\.css$/g,
+        //   cssProcessor: require('cssnano'),
+        //   cssProcessorPluginOptions: {
+        //     preset: ['default', { discardComments: { removeAll: true } }],
+        //   },
+        //   canPrint: true
+        // }),
+        new TerserPlugin({ sourceMap: true })
+      ],
+      minimize: debug ? false : true,
       splitChunks: {
         cacheGroups: {
-          // match the entry point and spit out the file named here
-          ui: {
-            chunks: 'initial',
-            name: 'ui',
-            test: 'ui',
-            enforce: true,
+          baseGroup: {
+            test: /(bootstrap\.js|jquery\.js|custom\.scss)/,
+            name: 'base',
+            chunks: 'all',
+            enforce: true
           },
-          basecss: { // bootstrap
-            chunks: 'initial',
-            name: 'basecss',
-            test: /custom\.scss$/,
-            enforce: true,
+          monacoGroup: {
+            test: /monaco-editor/,
+            name: 'monaco',
+            chunks: 'all',
+            enforce: true
           }
         }
       }
@@ -89,14 +100,27 @@ var getConfig = function (debug = true) {
         {
           test: /\.css$/,
           use: [
+            MiniCssExtractPlugin.loader,
             {
-              loader: MiniCssExtractPlugin.loader,
+              loader: 'css-loader',
               options: {
-              },
+                sourceMap: false
+              }
             },
-            'css-loader'
-            // { loader: 'style-loader', options: {} },
-            // { loader: 'css-loader', options: {} }
+            {
+              loader: 'postcss-loader',
+              options: {
+                plugins: function () { // post css plugins, can be exported to postcss.config.js
+                  return [
+                    require('precss'),
+                    require('autoprefixer'),
+                    require('cssnano')({
+                      preset: 'default',
+                    }),
+                  ];
+                }
+              }
+            }
           ]
         },
         {
@@ -106,33 +130,33 @@ var getConfig = function (debug = true) {
           ]
         },
         {
-          test: /\.(scss)$/,
+          test: /\.scss$/,
           use: [
+            MiniCssExtractPlugin.loader,
+            // { loader: 'style-loader', // inject CSS to page }, 
             {
-              loader: MiniCssExtractPlugin.loader,
+              loader: 'css-loader',
               options: {
-                // publicPath: (resourcePath, context) => {
-                //   // publicPath is the relative path of the resource to the context
-                //   // e.g. for ./css/admin/main.css the publicPath will be ../../
-                //   // while for ./css/main.css the publicPath will be ../
-                //   console.log('test: ' + resourcePath);
-                //   console.log('test: ' + context);
-                //   var result = path.relative(path.dirname(resourcePath), context) + '/';
-                //   console.log('test: ' + result);
-                //   return '/app3/css/';
-                // },
+                sourceMap: false
               }
             },
-            // { loader: 'style-loader', // inject CSS to page }, 
-            { loader: 'css-loader' }, // translates CSS into CommonJS modules }, 
             {
               loader: 'postcss-loader', // Run post css actions
               options: {
+                sourceMap: false,
+                map: { inline: false },
                 plugins: function () { // post css plugins, can be exported to postcss.config.js
-                  return [
+                  var temp = [
                     require('precss'),
-                    require('autoprefixer')
+                    require('autoprefixer'),
                   ];
+                  if (debug)
+                    temp.push(
+                      require('cssnano')({
+                        preset: ['default', { discardComments: { removeAll: true } }],
+                      })
+                    );
+                  return temp;
                 }
               }
             },
@@ -150,10 +174,13 @@ var getConfig = function (debug = true) {
     },
     plugins: [
       new MiniCssExtractPlugin({
-        filename: 'css/[name].[hash].css',
-        chunkFilename: 'css/[id].[hash].css',
+        filename: 'css/[name].[contenthash].css',
+        chunkFilename: 'css/[id].[contenthash].css',
       }),
-
+      new WebpackShellPlugin({
+        onBuildStart: ['echo "Starting"'],
+        onBuildEnd: ['postcss --dir ./public/app3/css public/app3/css/*.css --map false']
+      }),
       new HtmlWebpackPlugin({
         inject: true,
         chunks: ['monacoSample'],
@@ -202,23 +229,22 @@ var getConfig = function (debug = true) {
         template: './src/templates/pageTemplate.handlebar',
         title: 'Page1', filename: 'page1.html'
       }),
-      new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 5, }),
-      new webpack.BannerPlugin({
-        // @ts-ignore
-        banner: (/*v: any*/) => {
-          return ` ${new Date().toLocaleDateString()}`;
-        }
-      }),
+      // new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 5, }),
+      // new webpack.BannerPlugin({
+      //   // @ts-ignore
+      //   banner: (/*v: any*/) => {
+      //     return ` ${new Date().toLocaleDateString()}`;
+      //   }
+      // }),
       new MonacoWebpackPlugin1(webpack, {
         languages: ['typescript'],
         // features: ['folding']
       })
     ],
     resolve: { extensions: ['.tsx', '.ts', '.js'] },
-
     output: {
       publicPath: '/app3/',
-      filename: debug ? '[name].js' : '[name].min.js',
+      filename: debug ? '[name].[contenthash].js' : '[name].[contenthash].min.js',
       path: path.resolve(__dirname, 'public/app3'),
       sourceMapFilename: '[name].js.map'
     }
