@@ -63,6 +63,12 @@ var getConfig = function (debug = true) {
             chunks: 'all',
             enforce: true
           },
+          pnpGroup: {
+            test: /(pnp|core-js|es6-map|whatwg-fetch)/, //core-js is for ie11 polyfill https://pnp.github.io/pnpjs/concepts/polyfill/
+            name: 'pnp',
+            chunks: 'all',
+            enforce: true
+          },
           monacoGroup: {
             test: /monaco-editor/,
             name: 'monaco',
@@ -243,8 +249,8 @@ var getConfig = function (debug = true) {
     ],
     resolve: { extensions: ['.tsx', '.ts', '.js'] },
     output: {
-      publicPath: '/app3/',
-      filename: debug ? '[name].[contenthash].js' : '[name].[contenthash].min.js',
+      publicPath: 'https://localhost:8443/app3/',
+      filename: debug ? '[name].js' : '[name].[contenthash].min.js',
       path: path.resolve(__dirname, 'public/app3'),
       sourceMapFilename: '[name].js.map'
     }

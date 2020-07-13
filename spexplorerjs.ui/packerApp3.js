@@ -61,6 +61,12 @@ var getConfig = function (debug) {
                         chunks: 'all',
                         enforce: true
                     },
+                    pnpGroup: {
+                        test: /(pnp|core-js|es6-map|whatwg-fetch)/,
+                        name: 'pnp',
+                        chunks: 'all',
+                        enforce: true
+                    },
                     monacoGroup: {
                         test: /monaco-editor/,
                         name: 'monaco',
@@ -238,8 +244,8 @@ var getConfig = function (debug) {
         ],
         resolve: { extensions: ['.tsx', '.ts', '.js'] },
         output: {
-            publicPath: '/app3/',
-            filename: debug ? '[name].[contenthash].js' : '[name].[contenthash].min.js',
+            publicPath: 'https://localhost:8443/app3/',
+            filename: debug ? '[name].js' : '[name].[contenthash].min.js',
             path: path.resolve(__dirname, 'public/app3'),
             sourceMapFilename: '[name].js.map'
         }

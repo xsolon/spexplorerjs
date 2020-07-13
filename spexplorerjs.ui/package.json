@@ -22,6 +22,9 @@
   },
   "main": "app.js",
   "dependencies": {
+    "@pnp/graph": "^2.0.6",
+    "@pnp/polyfill-ie11": "^2.0.2",
+    "@pnp/sp": "^2.0.6",
     "codemirror": "^5.52.0",
     "debug": "^2.2.0",
     "ejs": "^3.0.1",
@@ -58,7 +61,6 @@
     "handlebars": "^4.7.6",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^4.3.0",
-    "html-webpack-template": "^6.2.0",
     "jquery": "^3.5.1",
     "js-beautify": "^1.10.3",
     "jshint": "^2.11.0",
