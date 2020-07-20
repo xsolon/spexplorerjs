@@ -12,6 +12,10 @@ class Page1 {
 
         trace.log('init 0.1');
 
+        import('./MyAsyncClass').then((d => {
+            debugger;
+            var dd = d.MyAsyncClass;
+        }));
     }
     buildUI() {
         trace.log('buildUI');
