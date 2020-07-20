@@ -1,11 +1,19 @@
 /// <reference types='jquery' />
 import * as monaco from 'monaco-editor';
-import tmp from '../../node_modules/spexplorerts/bundles/spexplorerts.d.ts.html';
-import legacy from './defs/legacy.d.html';
-import misc from './defs/misc.d.html';
-import jqueryDef from './defs/JQuery.d.html';
-import jqueryStaticDef from './defs/jqueryStatic.d.html';
-import sp from './defs/sp.d.html';
+// import tmp from '../../node_modules/spexplorerts/bundles/spexplorerts.d.ts.html';
+// import tmp from './defs/spexplorerts.d.ts.html';
+var tmp = require('./defs/spexplorerts.d.ts.html').default;
+//var tmp = 'require(\'../../node_modules/spexplorerts/bundles/spexplorerts.d.ts.html\')';
+// import legacy from './defs/legacy.d.html';
+var legacy = 'require(\'./defs/legacy.d.html\')';
+// import misc from './defs/misc.d.html';
+var misc = 'require(\'./defs/misc.d.html\')';
+// import jqueryDef from './defs/JQuery.d.html';
+var jqueryDef = 'require(\'./defs/JQuery.d.html\')';
+// import jqueryStaticDef from './defs/jqueryStatic.d.html';
+var jqueryStaticDef = 'require(\'./defs/jqueryStatic.d.html\')';
+// import sp from './defs/sp.d.html';
+var sp = 'require = (\'./defs/sp.d.html\')';
 var $ = require('jquery');
 
 //https://github.com/microsoft/monaco-typescript/pull/8

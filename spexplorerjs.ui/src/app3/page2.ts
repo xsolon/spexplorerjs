@@ -11,11 +11,13 @@ class Page2 {
     }
     buildUI() {
 
+        import('./MyAsyncClass').then((d => {
+            debugger;
+            var dd = d.MyAsyncClass;
+        }));
         logger.log('buildUI');
         logger.log($.fn.jquery);
     }
 }
 
 var driver = new Page2();
-
-driver.buildUI();

@@ -37,7 +37,7 @@ var getConfig = function (debug = true) {
     entry: {
       page1: './src/app3/page1.ts',
       page2: './src/app3/page2.ts',
-      monacoSample: './src/app3/monacoSample.ts',
+      // monacoSample: './src/app3/monacoSample.ts',
     },
     devtool: 'source-map',// debug ? 'inline-source-map' : false,// 'inline-source-map''source-map'
     optimization: {
@@ -57,6 +57,13 @@ var getConfig = function (debug = true) {
       minimize: debug ? false : true,
       splitChunks: {
         cacheGroups: {
+          MyAsyncClass: {
+            test: /MyAsyncClass/,
+            name: 'MyAsyncClass',
+            chunks: 'async',
+            enforce: true
+          },
+
           baseGroup: {
             test: /(bootstrap\.js|jquery\.js|custom\.scss)/,
             name: 'base',
@@ -101,7 +108,7 @@ var getConfig = function (debug = true) {
         {
           test: /\.tsx?$/,
           use: 'ts-loader',
-          exclude: /node_modules/
+          exclude: /node_modules/,
         },
         {
           test: /\.css$/,
@@ -183,38 +190,38 @@ var getConfig = function (debug = true) {
         filename: 'css/[name].[contenthash].css',
         chunkFilename: 'css/[id].[contenthash].css',
       }),
-      new WebpackShellPlugin({
-        onBuildStart: ['echo "Starting"'],
-        onBuildEnd: ['postcss --dir ./public/app3/css public/app3/css/*.css --map false']
-      }),
-      new HtmlWebpackPlugin({
-        inject: true,
-        chunks: ['monacoSample'],
-        template: './src/templates/MonacoSample.handlebar',
-        filename: 'monacoSample.html'
-      }),
-      new HtmlWebpackPlugin({
-        inject: true,
-        chunks: ['page2'],
-        template: './src/templates/pageTemplate.handlebar',
-        filename: 'page2.html'
-      }),
-      new HtmlWebpackPlugin({
-        chunks: ['page1'],
-        filename: 'page1.aspx',
-        template: path.resolve(__dirname, './src/templates/pageTemplate.aspx'),
-        inject: false,
-        templateParameters: function (compilation, assets, options) {
-          console.log(JSON.stringify(assets));
-          return {
-            title: 'Document title',
-            files: assets,
-            options: options,
-            webpackConfig: compilation.options
-            // webpack: compilation.getStats().toJson()
-          };
-        },
-      }),
+      // new WebpackShellPlugin({
+      //   onBuildStart: ['echo "Starting"'],
+      //   onBuildEnd: ['postcss --dir ./public/app3/css public/app3/css/*.css --map false']
+      // }),
+      // new HtmlWebpackPlugin({
+      //   inject: true,
+      //   chunks: ['monacoSample'],
+      //   template: './src/templates/MonacoSample.handlebar',
+      //   filename: 'monacoSample.html'
+      // }),
+      // new HtmlWebpackPlugin({
+      //   inject: true,
+      //   chunks: ['page2'],
+      //   template: './src/templates/pageTemplate.handlebar',
+      //   filename: 'page2.html'
+      // }),
+      // new HtmlWebpackPlugin({
+      //   chunks: ['page1'],
+      //   filename: 'page1.aspx',
+      //   template: path.resolve(__dirname, './src/templates/pageTemplate.aspx'),
+      //   inject: false,
+      //   templateParameters: function (compilation, assets, options) {
+      //     console.log(JSON.stringify(assets));
+      //     return {
+      //       title: 'Document title',
+      //       files: assets,
+      //       options: options,
+      //       webpackConfig: compilation.options
+      //       // webpack: compilation.getStats().toJson()
+      //     };
+      //   },
+      // }),
       new HtmlWebpackPlugin({
         inject: false,
         templateParameters: function (compilation, assets: { css: string[], js: string[] }, options) {
@@ -242,17 +249,17 @@ var getConfig = function (debug = true) {
       //     return ` ${new Date().toLocaleDateString()}`;
       //   }
       // }),
-      new MonacoWebpackPlugin1(webpack, {
-        languages: ['typescript'],
-        // features: ['folding']
-      })
+      // new MonacoWebpackPlugin1(webpack, {
+      //   languages: ['typescript'],
+      //   // features: ['folding']
+      // })
     ],
     resolve: { extensions: ['.tsx', '.ts', '.js'] },
     output: {
       publicPath: 'https://localhost:8443/app3/',
       filename: debug ? '[name].js' : '[name].[contenthash].min.js',
-      path: path.resolve(__dirname, 'public/app3'),
-      sourceMapFilename: '[name].js.map'
+      path: path.resolve(__dirname, './public/app3/'),
+      // sourceMapFilename: '[name].js.map'
     }
   };
 

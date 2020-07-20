@@ -2,8 +2,10 @@
 import { TinyLogger } from '../components/tinylogger';
 import '@pnp/polyfill-ie11';
 import 'core-js/fn/object/assign';
+require('../../node_modules/proxy-polyfill/proxy.min.js');
+// import 'proxy-polyfill';
 //import 'core-js';
-import { sp, Web } from '@pnp/sp/presets/all';
+// import { sp, Web } from '@pnp/sp/presets/all';
 var $ = require('jquery');
 
 import 'bootstrap';
@@ -22,25 +24,19 @@ class Page1 {
         logger.log('buildUI');
         logger.log($.fn.jquery);
 
-        sp.setup({
-            // set ie 11 mode
-            ie11: true,
-            // only needed when working within SharePoint Framework
-            // spfxContext: this.context
-        });
-        //var web = await sp.web();
-        var lists = await sp.web.lists.select('Title', 'ID').get();
-        lists.forEach(list => {
-            logger.log(list.Title);
-        });
-        var title = (await sp.web()).Title;
-        // const w = Web(_spPageContextInfo.webAbsoluteUrl);
-        // const r = await w();
-        logger.log(title);
-        // var config  :SPConfiguration={
-
-        // };
-        // sp.setup()
+        import('./MyAsyncClass').then((d => {
+            debugger;
+            var dd = d.MyAsyncClass;
+        }));
+        // sp.setup({
+        //     ie11: true,
+        // });
+        // var lists = await sp.web.lists.select('Title', 'ID').get();
+        // lists.forEach(list => {
+        //     logger.log(list.Title);
+        // });
+        // var title = (await sp.web()).Title;
+        // logger.log(title);
     }
 }
 
