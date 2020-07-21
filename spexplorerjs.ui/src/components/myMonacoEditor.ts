@@ -117,6 +117,18 @@ export class MyMonacoEditor {
     setValue(val: string) {
         this.editor.setValue(val);
     }
+    setTarget(target: string) {
+
+        var _target = monaco.languages.typescript.ScriptTarget.ES5;
+
+        if (target.search('ES2015') > -1) {
+            _target = monaco.languages.typescript.ScriptTarget.ES2015;
+        }
+        monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+            target: _target,
+            allowNonTsExtensions: true
+        });
+    }
     getValue(): JQuery.Promise<string> {
         console.log('getvalue');
         this.tsproxy.getEmitOutput('file:///main.tsx').then((r: any) => {

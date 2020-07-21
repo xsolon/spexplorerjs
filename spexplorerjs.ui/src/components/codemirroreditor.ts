@@ -110,6 +110,11 @@ ctx.executeQueryAsync(() => {
     });
 
   }
+
+  setTarget(target: string) {
+    this.jsEditor.setTarget(target);
+  }
+
   setCode(code: string) {
     this.jsEditor.setValue(code);
   }

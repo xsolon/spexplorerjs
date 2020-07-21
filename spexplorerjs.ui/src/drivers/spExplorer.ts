@@ -2,7 +2,8 @@
 import { TreeLight } from '../components/treelight';
 import { CodeMirrorEditor } from '../components/codemirroreditor';
 import { SpBackupUI } from '../components/backup';
-import { FieldSelector, ListSelector } from '../components/fieldselector';
+import * as monaco from 'monaco-editor';
+// import { FieldSelector, ListSelector } from '../components/fieldselector';
 import 'bootstrap';
 import '../custom.scss';
 //import 'bootstrap/dist/css/bootstrap.min.css';
@@ -46,7 +47,12 @@ tree.on('selectionChange', (spelem: any): void => {
         code.setXml((spelem as SP.UserCustomAction).get_commandUIExtension());
     }
 });
+monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+    target: monaco.languages.typescript.ScriptTarget.ES2015,
+    allowNonTsExtensions: true
+});
 var code = new CodeMirrorEditor('#editor');
+code.setTarget('ES2017');
 
 ExecuteOrDelayUntilScriptLoaded(() => {
     // var ctx = SP.ClientContext.get_current();

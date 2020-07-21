@@ -160,7 +160,8 @@ var onDone = (err: Error, stats: webpack.Stats) => {
     var assets: { [key: string]: { emitted: boolean, existsAt: string } } = stats.compilation.assets;
     for (const key in assets) {
       if (Object.prototype.hasOwnProperty.call(stats.compilation.assets, key)) {
-        if (key.search(/\.map\./) == -1 && key != 'editor.worker.js' && key != 'ts.worker.js') {
+        if (key.search(/\.map$/) == -1 && key != 'editor.worker.js' && key != 'ts.worker.js') {
+          console.log(key);
           buildStandaloneTestPage(key, assets[key].existsAt);
           buildLocalSpPage(key, assets[key].existsAt);
         }
