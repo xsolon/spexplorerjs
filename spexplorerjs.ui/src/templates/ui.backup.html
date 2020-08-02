@@ -1,9 +1,49 @@
 <div class="xwidgetui">
     <fieldset>
         <legend>Backup List</legend>
-        <div class="form-group">
-            <div id='listSelect' style="min-width:250px" class='col-12'> </div>
-            <small id="emailHelp" class="form-text text-muted">Select a list to backup to a local folder</small>
+        <div class="form-group row">
+            <label for="select" class="col-4 col-form-label">List</label>
+            <div class="col-8">
+                <div id='listSelect' style="min-width:250px"> </div>
+                <span id="selectHelpBlock" class="form-text text-muted">List to backup</span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-4 col-form-label">Export Options</label>
+            <div class="col-8">
+                <div class="custom-controls-stacked">
+                    <div class="custom-control custom-checkbox">
+                        <input name="metadataoptions" id="metadataoptions_0" type="checkbox" checked
+                            class="custom-control-input" value="metadata" aria-describedby="metadataoptionsHelpBlock"/>
+                        <label for="metadataoptions_0" class="custom-control-label">Metadata</label>
+                    </div>
+                </div>
+                <div class="custom-controls-stacked">
+                    <div class="custom-control custom-checkbox">
+                        <input name="metadataoptions" id="metadataoptions_1" type="checkbox" checked
+                            class="custom-control-input" value="files" aria-describedby="metadataoptionsHelpBlock"/>
+                        <label for="metadataoptions_1" class="custom-control-label">Files</label>
+                    </div>
+                </div>
+                <div class="custom-controls-stacked">
+                    <div class="custom-control custom-checkbox">
+                        <input name="metadataoptions" id="metadataoptions_2" type="checkbox" checked
+                            class="custom-control-input" value="attachments"
+                            aria-describedby="metadataoptionsHelpBlock"/>
+                        <label for="metadataoptions_2" class="custom-control-label">Attachments</label>
+                    </div>
+                </div>
+                <div class="custom-controls-stacked">
+                    <div class="custom-control custom-checkbox">
+                        <input name="metadataoptions" id="metadataoptions_3" type="checkbox" 
+                            class="custom-control-input" value="rootfolderonly"
+                            aria-describedby="metadataoptionsHelpBlock"/>
+                        <label for="metadataoptions_3" class="custom-control-label">Root Folder Only</label>
+                    </div>
+                </div>
+                <span id="metadataoptionsHelpBlock" class="form-text text-muted">Select which parts of the list to
+                    download.</span>
+            </div>
         </div>
         <button class='btn btn-primary' type="button">Backup</button>
         <ul id='log'></ul>
