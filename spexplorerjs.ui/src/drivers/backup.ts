@@ -1,7 +1,6 @@
 import { SpBackupUI } from '../components/backup';
 import 'bootstrap';
 import '../custom.scss';
-//import 'bootstrap/dist/css/bootstrap.min.css';
 // import * as tmp from '../ui.template.html';
 
 var $ = require('jquery');
@@ -9,7 +8,7 @@ var tmp = `
 <div class="expjs">
     <div class="container">
     <div class="row">
-        <div id="ctrl"></div>
+        <div id="ctrl" class='col-12'></div>
     </div>
     </div>
 </div>

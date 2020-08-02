@@ -60,8 +60,8 @@ var getConfig = function (debug = true) {
       //main:'./src/codeMirrorSample.ts',
       //search:'./src/components/SearchBox.ts',
       // filesystem: './src/drivers/filesystem.ts',
-      // backup: './src/drivers/backup.ts',
-      spexplorer: './src/drivers/spExplorer.ts',
+      backup: './src/drivers/backup.ts',
+      // spexplorer: './src/drivers/spExplorer.ts',
       //monaco: './src/monacoSample.ts',
     },
     devtool: debug ? 'source-map' : false,// 'inline-source-map'

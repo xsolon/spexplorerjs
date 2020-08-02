@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import * as Api from 'spexplorerts';
-var app: Api.Ispexplorerjs = window['spexplorerts'];
-var $ = app.modules.jQuery;
+//var app: Api.Ispexplorerjs = window['spexplorerts'];
+var $ = require('jquery');//app.modules.jQuery;
 import 'select2/dist/css/select2.css';
 import * as tmp from './fieldselector.html';
 import * as tmp1 from '../templates/ui.colselect.html';
