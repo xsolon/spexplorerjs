@@ -9,6 +9,11 @@
 	<SharePoint:ScriptLink runat="server" name="microsoftajax.js"/>
 	<SharePoint:ScriptLink runat="server" name="core.js"/>	
 	<SharePoint:ScriptLink runat="server" name="sp.js" />
+	<SharePoint:ScriptLink name="clienttemplates.js" runat="server"  />
+    <SharePoint:ScriptLink name="clientforms.js" runat="server"  />
+	<SharePoint:ScriptLink name="clientpeoplepicker.js" runat="server" />
+	<SharePoint:ScriptLink name="autofill.js" runat="server" />
+	<link href='/_layouts/15/1033/styles/Themable/corev15.css' rel='stylesheet' />
 </head>
 <body>
 <form id="form1" runat="server">

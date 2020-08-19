@@ -145,7 +145,7 @@ abstract class SpSelector<T> {
   protected loadCollection(): void {
     var me = this;
     var ctx = me.ctx;
-    utils.loadSpElem(me.col, ctx).done(() => {
+    utils.loadSpElem([me.col], ctx).done(() => {
       var arr = utils.collectionToArray<T>(me.col);
       this.bindSelect(arr);
     });
@@ -178,9 +178,13 @@ export class ListSelector extends SpSelector<SP.List> {
       return 0;
     });
 
+    var targetId = me.target.get_id().toString();
     fields.forEach((field) => {
       var opt = $(`<option value="${field.get_title()}">${field.get_title()}</option>`);
       opt.prop('data-field', field);
+      if (targetId == field.get_id().toString()) {
+        opt.attr('selected', 'selected');
+      }
       fieldSel.append(opt);
     });
 

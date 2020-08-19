@@ -1,4 +1,60 @@
 <div class="xwidgetui">
+    <button type="button" id='showDlg' style='display:none' class="btn btn-primary" data-toggle="modal"
+        data-target="#exampleModal">
+        Launch demo modal
+    </button>
+    <div class="modal" id="userMapModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true" style='z-index:1601'>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Set User Map</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type='file' id='userMapInput' />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id='btnSetUserMap' class="btn btn-primary">Save</button>
+                    <button type="button" id='btnUploadBigFile' class="btn btn-primary">Upload Big File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true" style='z-index:1601'>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Map User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id='userInfoRaw'></div>
+                    <div id="peoplePickerDiv"></div>
+                    <div style='display:none'>
+                        <button type='button' id='btnUserInfo'>Get User Info</button>
+                        <br />
+                        <h1>User info:</h1>
+                        <p id="resolvedUsers"></p>
+                        <h1>User keys:</h1>
+                        <p id="userKeys"></p>
+                        <h1>User ID:</h1>
+                        <p id="userId"></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id='btnUserMap1' class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <fieldset>
         <legend>Backup List</legend>
         <div class="form-group row">
@@ -14,14 +70,14 @@
                 <div class="custom-controls-stacked">
                     <div class="custom-control custom-checkbox">
                         <input name="metadataoptions" id="metadataoptions_0" type="checkbox" checked
-                            class="custom-control-input" value="metadata" aria-describedby="metadataoptionsHelpBlock"/>
+                            class="custom-control-input" value="metadata" aria-describedby="metadataoptionsHelpBlock" />
                         <label for="metadataoptions_0" class="custom-control-label">Metadata</label>
                     </div>
                 </div>
                 <div class="custom-controls-stacked">
                     <div class="custom-control custom-checkbox">
                         <input name="metadataoptions" id="metadataoptions_1" type="checkbox" checked
-                            class="custom-control-input" value="files" aria-describedby="metadataoptionsHelpBlock"/>
+                            class="custom-control-input" value="files" aria-describedby="metadataoptionsHelpBlock" />
                         <label for="metadataoptions_1" class="custom-control-label">Files</label>
                     </div>
                 </div>
@@ -29,15 +85,15 @@
                     <div class="custom-control custom-checkbox">
                         <input name="metadataoptions" id="metadataoptions_2" type="checkbox" checked
                             class="custom-control-input" value="attachments"
-                            aria-describedby="metadataoptionsHelpBlock"/>
+                            aria-describedby="metadataoptionsHelpBlock" />
                         <label for="metadataoptions_2" class="custom-control-label">Attachments</label>
                     </div>
                 </div>
                 <div class="custom-controls-stacked">
                     <div class="custom-control custom-checkbox">
-                        <input name="metadataoptions" id="metadataoptions_3" type="checkbox" 
+                        <input name="metadataoptions" id="metadataoptions_3" type="checkbox"
                             class="custom-control-input" value="rootfolderonly"
-                            aria-describedby="metadataoptionsHelpBlock"/>
+                            aria-describedby="metadataoptionsHelpBlock" />
                         <label for="metadataoptions_3" class="custom-control-label">Root Folder Only</label>
                     </div>
                 </div>
@@ -45,7 +101,14 @@
                     download.</span>
             </div>
         </div>
-        <button class='btn btn-primary' type="button">Backup</button>
+        <button class='btn btn-primary' type="button" id='btnBackup'>Backup</button>
+        <button class='btn btn-primary' type="button" id='btnRestore'>Restore</button>
+
+        <button type="button" id='btnLoadUserMap' class="btn btn-info" data-toggle="modal"
+            data-target="#userMapModal">
+            Load User Map
+        </button>
+        <button class='btn btn-primary' type="button" id='btnExportUserMap'>Export User Map</button>
         <ul id='log'></ul>
     </fieldset>
 </div>

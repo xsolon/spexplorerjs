@@ -1,17 +1,22 @@
 /// <reference types='jquery' />
 /// <reference types='jstree' />
+import * as monaco from 'monaco-editor';
 import 'jstree/dist/themes/default/style.css';
 import 'spexplorerts/api/def';
 import * as Api from 'spexplorerts';
 import * as tmp from './searchbox.template.html';
-import { CodeMirrorHelper } from './jseditor';
+// import { CodeMirrorHelper } from './jseditor';
 import { MyMonacoEditor } from './myMonacoEditor';
+import * as pnp from '@pnp/sp/presets/all';
+var $: JQueryStatic = require('jquery');// app.modules.jQuery;
+var format = require('xml-formatter');
 
 var trace: Api.Logger = Api.Logger.get('logger');
 trace.shouldDebug = true;
 
 export class CodeMirrorEditor {
-  private xmlEditor: CodeMirror.EditorFromTextArea;
+  private xmlEditor: monaco.editor.IStandaloneCodeEditor;// CodeMirror.EditorFromTextArea;
+  private jsonEditor: monaco.editor.IStandaloneCodeEditor;// CodeMirror.EditorFromTextArea;
   private jsEditor: MyMonacoEditor;
   // eslint-disable-next-line no-unused-vars
   constructor(el: any, opts?: { [key: string]: any }) {
@@ -19,12 +24,62 @@ export class CodeMirrorEditor {
     var ui = $(el);
     trace.log('CodeMirrorEditor.init');
     // var ns: Api.Ispexplorerjs = window['spexplorerjs'];
-    var helper = new CodeMirrorHelper();
+    // var helper = new CodeMirrorHelper();
 
     ui.html(tmp);
-    var xmlUi = $('#resultMirror', ui)[0];
-    var xmlEditor = helper.createXmlEditor(xmlUi);
-    this.xmlEditor = xmlEditor;
+    // var xmlUi = $('#resultMirror', ui)[0];
+
+    var jsonEditor: monaco.editor.IStandaloneCodeEditor = (() => {
+      var modelUri = monaco.Uri.parse('a://b/foo.json'); // a made up unique URI for our model
+      var model = monaco.editor.createModel('[]', 'json', modelUri);
+      var jsonEditor = monaco.editor.create(document.getElementById('jsonMirror'), { model: model, automaticLayout: true });
+      $('#editorJsonTab').click(() => {
+        setTimeout(() => {
+          jsonEditor.layout();
+        }, 200);
+      });
+      return jsonEditor;
+    })();
+    this.jsonEditor = jsonEditor;
+    this.xmlEditor = (() => {
+      var modelUri = monaco.Uri.parse('a://b/foo.xml'); // a made up unique URI for our model
+      var model = monaco.editor.createModel('<xml></xml>', 'xml', modelUri);
+      var xmlEditor = monaco.editor.create(document.getElementById('xmlMirror'), { model: model, automaticLayout: true });
+      xmlEditor.addAction({
+        // An unique identifier of the contributed action.
+        id: 'myformatIt',
+        // A label of the action that will be presented to the user.
+        label: 'Xml Format',
+        // An optional array of keybindings for the action.
+        keybindings: [
+          monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F,
+          // chord
+          // monaco.KeyMod.chord(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F)
+        ],
+        // A precondition for this action.
+        precondition: null,
+        // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
+        keybindingContext: null,
+        contextMenuGroupId: 'navigation',
+        contextMenuOrder: 1.5,
+        // Method that will be executed when the action is triggered.
+        // @param editor The editor instance is passed in as a convinience
+        run: function (ed) {
+          var xml = ed.getValue();
+          xml = format(xml);
+          ed.setValue(xml);
+          return null;
+        }
+      });
+      $('#editorXmlTab').click(() => {
+        setTimeout(() => {
+          xmlEditor.layout();
+        }, 200);
+      });
+      return xmlEditor;
+    })();
+    // var xmlEditor = helper.createXmlEditor(xmlUi);
+    // this.xmlEditor = xmlEditor;
     var jsUi = $('#jsMirror', ui)[0];
     // var jsEditor = helper.createJsEditor(jsUi, "Code Editor");
     // jsEditor.setValue('var xml = xmlEditor.getValue();\r\nconsole.log(xml);');
@@ -63,11 +118,11 @@ ctx.executeQueryAsync(() => {
     var elem = jsUi;//jsEditor.getTextArea();
     $(elem).on('run', onRun);
 
-    $('#editorXmlTab').click(() => {
-      setTimeout(() => {
-        xmlEditor.refresh();
-      }, 200);
-    });
+    // $('#editorXmlTab').click(() => {
+    //   setTimeout(() => {
+    //     xmlEditor.refresh();
+    //   }, 200);
+    // });
 
     var runScript = function (code: string) {
       try {
@@ -78,8 +133,9 @@ ctx.executeQueryAsync(() => {
                    ${code}
       `;
 
-        var args: string[] = ['xmlEditor', 'jsEditor'];
-        var vals = [xmlEditor, me.jsEditor];
+        var args: string[] = ['xmlEditor', 'jsEditor', 'pnp', 'jsonEditor'];
+        //@ts-ignore
+        var vals = [me.xmlEditor, me.jsEditor, pnp, jsonEditor];
 
         //for (var name in resourceHash) {
         //  if (resourceHash.hasOwnProperty(name)) {
@@ -93,7 +149,8 @@ ctx.executeQueryAsync(() => {
         var res = tempFunction.apply(tempFunction, vals);
         if (res) {
           console.log(res);
-          xmlEditor.setValue(res);
+          me.xmlEditor.setValue(res);
+          // xmlEditor.setValue(res);
         }
 
       } catch (e) {
@@ -115,10 +172,17 @@ ctx.executeQueryAsync(() => {
     this.jsEditor.setTarget(target);
   }
 
-  setCode(code: string) {
-    this.jsEditor.setValue(code);
+  Code(code?: string): string {
+    return this.jsEditor.Code(code);
   }
-  setXml(xml: string) {
-    this.xmlEditor.setValue(xml);
+  Json(json?: string): string {
+    if (json)
+      this.jsonEditor.setValue(json);
+    return this.jsonEditor.getValue();
+  }
+  Xml(xml?: string): string {
+    if (arguments.length > 0)
+      this.xmlEditor.setValue(xml);
+    return this.xmlEditor.getValue();
   }
 }

@@ -1,7 +1,7 @@
 import * as Api from 'spexplorerts';
 import 'jstree/dist/themes/default/style.css';
-var app: Api.Ispexplorerjs = window['spexplorerts'];
-var $ = app.modules.jQuery;
+//var app: Api.Ispexplorerjs = window['spexplorerts'];
+var $ = require('jquery');// app.modules.jQuery;
 import 'jstree';
 console.log($.fn.jstree);
 var trace: Api.Logger = Api.Logger.get('logger');

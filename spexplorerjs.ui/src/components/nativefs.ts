@@ -25,7 +25,7 @@ interface FileSystemHandlePermissionDescriptor {
     writable?: boolean;
 }
 
-interface FileSystemCreateWriterOptions {
+export interface FileSystemCreateWriterOptions {
     keepExistingData?: boolean;
 }
 

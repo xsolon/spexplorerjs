@@ -1,21 +1,34 @@
 ﻿<p>
-    <ul class="nav nav-tabs hide" id="editorTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="editorJsTab" data-toggle="tab" href="#editorjsSection" role="tab"
-                aria-controls="editorjsSection" aria-selected="true">TypeScript</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="editorXmlTab" data-toggle="tab" href="#editorxmlSection" role="tab"
-                aria-controls="editorxmlSection" aria-selected="false">Xml</a>
-        </li>
-    </ul>
-    <div class="tab-content hide" id="editorTabContent">
-        <div class="tab-pane fade show active" id="editorjsSection" role="tabpanel" aria-labelledby="editorJsTab">
-            <div id="jsMirror" style='min-height:600px'></div>
-        </div>
-        <div class="tab-pane fade" id="editorxmlSection" role="tabpanel" aria-labelledby="editorXmlTab">
-            <div id="resultMirror"></div>
-        </div>
+<ul class="nav nav-tabs hide" id="editorTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="editorJsTab" data-toggle="tab" href="#editorjsSection" role="tab"
+            aria-controls="editorjsSection" aria-selected="true">TypeScript</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="editorXmlTab" data-toggle="tab" href="#editorxmlSection" role="tab"
+            aria-controls="editorxmlSection" aria-selected="false">Xml</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="editorJsonTab" data-toggle="tab" href="#editorjsonSection" role="tab"
+            aria-controls="editorjsonSection" aria-selected="false">Json</a>
+    </li>
+    <li class="nav-item">
+        <button id="btnRun" class='btn btn-primary' type="button"><svg width="1em" height="1em" viewBox="0 0 16 16"
+                class="bi bi-caret-right-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+            </svg>Run</button>
+    </li>
+</ul>
+<div class="tab-content hide" id="editorTabContent">
+    <div class="tab-pane fade show active" id="editorjsSection" role="tabpanel" aria-labelledby="editorJsTab">
+        <div id="jsMirror" style='min-height:600px'></div>
     </div>
-    <button id="btnRun">Run</button>
+    <div class="tab-pane fade" id="editorxmlSection" role="tabpanel" aria-labelledby="editorXmlTab">
+        <div id="xmlMirror" style='min-height:600px'></div>
+    </div>
+    <div class="tab-pane fade" id="editorjsonSection" role="tabpanel" aria-labelledby="editorJsonTab">
+        <div id="jsonMirror" style='min-height:600px'></div>
+    </div>
+</div>
 </p>

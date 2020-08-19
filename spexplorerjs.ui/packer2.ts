@@ -60,7 +60,8 @@ var getConfig = function (debug = true) {
       //main:'./src/codeMirrorSample.ts',
       //search:'./src/components/SearchBox.ts',
       // filesystem: './src/drivers/filesystem.ts',
-      backup: './src/drivers/backup.ts',
+      // backup: './src/drivers/backup.ts',
+      spscripteditor: './src/drivers/SPScriptEditor.ts',
       // spexplorer: './src/drivers/spExplorer.ts',
       //monaco: './src/monacoSample.ts',
     },
@@ -71,6 +72,15 @@ var getConfig = function (debug = true) {
     mode: debug ? 'development' : 'production',
     module: {
       rules: [
+        {
+          test: /\.d.ts$/,
+          use: [{
+            loader: 'html-loader',
+            options: {
+              minimize: false//debug ? false : true
+            }
+          }]
+        },
         {
           test: /\.html$/,
           use: [{

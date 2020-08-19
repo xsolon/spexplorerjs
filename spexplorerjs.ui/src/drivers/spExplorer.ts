@@ -8,12 +8,16 @@ import 'bootstrap';
 import '../custom.scss';
 //import 'bootstrap/dist/css/bootstrap.min.css';
 import * as tmp from '../ui.template.html';
+import { sp, Webs, Lists } from '@pnp/sp/presets/all';
 
 var $ = require('jquery');
 $('#ui').html(tmp);
 $('.version').html(new Date().toISOString());
 var tree = new TreeLight('#tree');
+//import * as pnp1 from '@pnp/sp';
 
+//@ts-ignore
+window.pnp1 = { sp, Webs, Lists };
 var widget: SpBackupUI = null;
 var ctrlSelector = $('#ctrlSelector');
 var ctrl = $('#ctrl');
@@ -25,6 +29,7 @@ ctrlSelector.change(function () {
 });
 // var field = new FieldSelector('#ctrl');
 tree.on('selectionChange', (spelem: any): void => {
+    window.spelem = spelem;
     if (widget != null) {
         widget.setTarget(spelem);
     }
@@ -32,24 +37,20 @@ tree.on('selectionChange', (spelem: any): void => {
 
     // @ts-ignore
     if (SP.View.isInstanceOfType(spelem)) {
-        code.setXml((spelem as SP.View).get_listViewXml());
+        code.Xml((spelem as SP.View).get_listViewXml());
     }
     // @ts-ignore
     else if (SP.ContentType.isInstanceOfType(spelem)) {
-        code.setXml((spelem as SP.ContentType).get_schemaXml());
+        code.Xml((spelem as SP.ContentType).get_schemaXml());
     }
     // @ts-ignore
     else if (SP.Field.isInstanceOfType(spelem)) {
-        code.setXml((spelem as SP.Field).get_schemaXml());
+        code.Xml((spelem as SP.Field).get_schemaXml());
     }
     // @ts-ignore
     else if (SP.UserCustomAction.isInstanceOfType(spelem)) {
-        code.setXml((spelem as SP.UserCustomAction).get_commandUIExtension());
+        code.Xml((spelem as SP.UserCustomAction).get_commandUIExtension());
     }
-});
-monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-    target: monaco.languages.typescript.ScriptTarget.ES2015,
-    allowNonTsExtensions: true
 });
 var code = new CodeMirrorEditor('#editor');
 code.setTarget('ES2017');
