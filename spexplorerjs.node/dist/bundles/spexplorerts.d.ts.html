@@ -1,4 +1,5 @@
 /// <reference types="sharepoint" />
+/// <reference types="jquery" />
 
 
 interface Ispexplorerjs {
@@ -42,13 +43,13 @@ export declare class ListApi {
     ctx: SP.ClientContext;
     folderApi: FolderApi;
     constructor(ctx?: SP.ClientContext);
-    ensureFields: (list: SP.List<any>, fields: FieldMeta[]) => JQuery.Promise<void, any, any>;
+    ensureFields: (list: SP.List, fields: Array<FieldMeta>) => JQuery.Promise<void>;
     listExists(title: string): Promise<[boolean, SP.List]>;
     ensureCTypes(ctypes: CTypeMeta[], splist: SP.List): JQuery.Promise<SP.ContentType[]>;
     ensureList(meta: ListMeta): JQuery.Promise<SP.List>;
     createList(listTitle: any, templateType: any, web: any): JQuery.Promise<SP.List>;
     getMeta(listTitle: string, fieldNames: any): Promise<ListMeta>;
-    setupForms: (tList: SP.List<any>, scriptLink: string, htmlLink?: string) => JQuery.Promise<void, any, any>;
+    setupForms: (tList: SP.List, scriptLink: string, htmlLink?: string) => JQuery.Promise<void>;
     addItems(gitems: Array<{
         [key: string]: any;
     }>, splist: SP.List, folderUrl?: string, pageNum?: number): JQuery.Promise<Array<SP.ListItem>>;
@@ -63,7 +64,7 @@ export declare class FolderApi {
     ensureAttachmentFolder(itemId: number, list: SP.List): JQuery.Promise<SP.Folder>;
     folderExists(serverRelativeUrl: string, web?: SP.Web): JQuery.Promise<SP.Folder | boolean>;
     pathSteps(path: string): Array<string>;
-    createFolderInList: (name: string, parentFolderPath: string, list: SP.List<any>) => JQuery.Promise<SP.Folder, any, any>;
+    createFolderInList: (name: string, parentFolderPath: string, list: SP.List) => JQuery.Promise<SP.Folder>;
     /**
        * returns folder (creating it and its path if necessary)
        * @param {string} serverRelativeUrl
@@ -186,7 +187,7 @@ export declare class funcs {
         [key: string]: T;
     };
     collectionToArray: <T>(spCollection: any) => T[];
-    processAsQueue: <T>(arr: T[] | ArrayPromise<T>, action: QueueStep<T>) => JQuery.Promise<void, any, any>;
+    processAsQueue: <T>(arr: T[] | ArrayPromise<T>, action: QueueStep<T>) => JQuery.Promise<void>;
     loadSpElem(elem: Array<any> | any, sptx?: SP.ClientRuntimeContext, caller?: any | null): JQuery.Promise<any>;
     removeScriptLink(ctx: SP.ClientContext, title: string, logger?: Logger): JQuery.Promise<void>;
     /**
@@ -199,15 +200,15 @@ export declare class funcs {
      */
     addScriptLink(ctx: SP.ClientContext, src: string, title: string, sequence?: number, logger?: Logger): JQuery.Promise<void>;
     setHomePage: (folderOrWeb: SP.Web | SP.Folder, url: string, logger?: Logger) => Promise<void>;
-    addWebPart: (ctx: SP.ClientContext, serverRelativeFormUrl: string, wpXml: string, zone: string, position?: number) => JQuery.Promise<SP.WebParts.WebPartDefinition, any, any>;
+    addWebPart: (ctx: SP.ClientContext, serverRelativeFormUrl: string, wpXml: string, zone: string, position?: number) => JQuery.Promise<SP.WebParts.WebPartDefinition>;
     getPageWebParts(formUrl: string, ctx: SP.ClientContext): JQuery.Promise<pagewps>;
     setformJsLink: (formUrl: string, ctx: SP.ClientContext, bizJs: string) => Promise<any>;
-    breakRoleInheritance: (securable: SP.SecurableObject, copyRoleAssignments: boolean, clearSubscopes: boolean) => JQuery.Promise<any, any, any>;
+    breakRoleInheritance: (securable: SP.SecurableObject, copyRoleAssignments: boolean, clearSubscopes: boolean) => JQuery.Promise<any>;
     getGroups(ctx: SP.ClientContext, logger?: Logger): JQuery.Promise<{
         [key: string]: SP.Group;
     }>;
     ensureGroup(name: any, desc: any, ctx: SP.ClientContext, logger?: Logger): JQuery.Promise<SP.Group>;
-    addPermission: (ctx: SP.ClientContext, principalIn: any, permissions: any, securable: SP.SecurableObject, parentWeb: SP.Web, logger?: Logger) => any;
+    addPermission: (ctx: SP.ClientContext, principalIn: any, permissions: any, securable: SP.SecurableObject, parentWeb: SP.Web | null, logger?: Logger) => any;
     ensureGroups(groups: Array<GroupMeta>, ctx: SP.ClientContext, securable?: SP.SecurableObject, logger?: Logger): JQuery.Promise<any>;
     createGroup(name: any, desc: any, ctx: SP.ClientContext, parentWeb: SP.Web | null, logger?: Logger): JQuery.Promise<SP.Group>;
     sendEmail(to: string | [string], body: string, subject: string, webUrl?: string): JQuery.Promise<any>;

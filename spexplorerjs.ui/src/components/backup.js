@@ -58,8 +58,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Api = __importStar(require("spexplorerts"));
 var fieldselector_1 = require("./fieldselector");
-var app = window['spexplorerts'];
-var $ = app.modules.jQuery;
+var $ = require('jquery'); // app.modules.jQuery;
 var tmp = __importStar(require("../templates/ui.backup.html"));
 // eslint-disable-next-line no-unused-vars
 var nativefs = __importStar(require("./nativefs"));
@@ -75,6 +74,7 @@ var SpBackupUI = /** @class */ (function (_super) {
         var me = _this;
         var ui = $(el);
         ui.html(tmp);
+        _this.opts = opts;
         _this.listCtrl = new fieldselector_1.ListSelector($('#listSelect', ui));
         me.ui = ui;
         me.debug('SpBackupUI.init');
@@ -115,21 +115,29 @@ var SpBackupUI = /** @class */ (function (_super) {
     };
     SpBackupUI.prototype.backup = function (list) {
         var me = this;
-        var opts = { type: nativefs.ChooseFileSystemEntriesType.opendirectory };
+        var ui = me.ui;
+        var htmlOpts = {
+            metadata: $('[value=metadata]:checked', ui).length == 1,
+            files: $('[value=files]:checked', ui).length == 1,
+            rootfolderonly: $('[value=rootfolderonly]:checked', ui).length == 1,
+            attachments: $('[value=attachments]:checked', ui).length == 1
+        };
+        me.opts = $.extend(me.opts || {}, htmlOpts);
         var ctx = SP.ClientContext.get_current();
         //@ts-ignore
         var app = window;
         var backupNode = function (List) {
             return __awaiter(this, void 0, void 0, function () {
-                var _a, _b, web, site, webUrl, list, web, rootFolder, listDal, processFolder, p1;
+                var fileopts, _a, _b, web, site, webUrl, list, web, rootFolder, listDal, listAttachments, attachmentHandle, processFolder, p1;
                 var _this = this;
                 return __generator(this, function (_c) {
                     switch (_c.label) {
                         case 0:
+                            fileopts = { type: nativefs.ChooseFileSystemEntriesType.opendirectory };
                             _a = me;
                             _b = me.handle;
                             if (_b) return [3 /*break*/, 2];
-                            return [4 /*yield*/, app.chooseFileSystemEntries(opts)];
+                            return [4 /*yield*/, app.chooseFileSystemEntries(fileopts)];
                         case 1:
                             _b = (_c.sent());
                             _c.label = 2;
@@ -154,6 +162,8 @@ var SpBackupUI = /** @class */ (function (_super) {
                             return [4 /*yield*/, utils.loadSpElem([list, rootFolder])];
                         case 4:
                             _c.sent();
+                            listAttachments = list.get_enableAttachments();
+                            attachmentHandle = null;
                             processFolder = function (folder, currentHandle) { return __awaiter(_this, void 0, void 0, function () {
                                 var updateFile, downloadFile, spitems, items, file, json, subFolders, folderArr;
                                 var _this = this;
@@ -179,7 +189,8 @@ var SpBackupUI = /** @class */ (function (_super) {
                                                     }
                                                 });
                                             }); };
-                                            downloadFile = function (serverRelativeUrl) {
+                                            downloadFile = function (serverRelativeUrl, handle) {
+                                                if (handle === void 0) { handle = currentHandle; }
                                                 return __awaiter(this, void 0, void 0, function () {
                                                     var p2, url, xhr;
                                                     return __generator(this, function (_a) {
@@ -200,7 +211,7 @@ var SpBackupUI = /** @class */ (function (_super) {
                                                                             blob = new Blob([data]);
                                                                             bits = serverRelativeUrl.split('/');
                                                                             fileName = bits[bits.length - 1];
-                                                                            return [4 /*yield*/, currentHandle.getFile(fileName, { create: true })];
+                                                                            return [4 /*yield*/, handle.getFile(fileName, { create: true })];
                                                                         case 1:
                                                                             file = _a.sent();
                                                                             return [4 /*yield*/, updateFile(file, blob)];
@@ -221,38 +232,88 @@ var SpBackupUI = /** @class */ (function (_super) {
                                             return [4 /*yield*/, currentHandle.getDirectory(folder.get_name(), { create: true })];
                                         case 1:
                                             currentHandle = _a.sent();
-                                            return [4 /*yield*/, utils.loadSpElem(folder)];
+                                            if (!(listAttachments && attachmentHandle == null)) return [3 /*break*/, 3];
+                                            return [4 /*yield*/, currentHandle.getDirectory('Attachments', { create: true })];
                                         case 2:
+                                            attachmentHandle = _a.sent();
+                                            _a.label = 3;
+                                        case 3: return [4 /*yield*/, utils.loadSpElem(folder)];
+                                        case 4:
                                             _a.sent();
                                             me.log('Folder:' + folder.get_name());
                                             return [4 /*yield*/, listDal.getAll(list, '<View />', folder.get_serverRelativeUrl())];
-                                        case 3:
+                                        case 5:
                                             spitems = _a.sent();
                                             items = [];
                                             return [4 /*yield*/, utils.processAsQueue(spitems, function (i) { return __awaiter(_this, void 0, void 0, function () {
-                                                    var fields, ctypeid, fileRef;
+                                                    var fields, ctypeid, fileRef, attachments, folderUrl, attFolder, attFiles, attachmentsArray;
                                                     return __generator(this, function (_a) {
                                                         switch (_a.label) {
                                                             case 0:
                                                                 fields = i.get_fieldValues();
                                                                 items.push(fields);
                                                                 ctypeid = fields.ContentTypeId['$12_1'] || fields.ContentTypeId['$17_1'] || fields.ContentTypeId.get_stringValue();
-                                                                if (!ctypeid.startsWith('0x0101')) return [3 /*break*/, 2];
+                                                                if (!(me.opts.files && ctypeid.startsWith('0x0101'))) return [3 /*break*/, 2];
                                                                 fileRef = i.get_item('FileRef');
                                                                 return [4 /*yield*/, downloadFile(fileRef)];
                                                             case 1:
                                                                 _a.sent();
                                                                 _a.label = 2;
-                                                            case 2: return [2 /*return*/];
+                                                            case 2:
+                                                                if (!(listAttachments && me.opts.attachments && fields.Attachments)) return [3 /*break*/, 4];
+                                                                attachments = i.get_attachmentFiles();
+                                                                folderUrl = rootFolder.get_serverRelativeUrl() + "/Attachments/" + i.get_id();
+                                                                attFolder = web.getFolderByServerRelativeUrl(folderUrl);
+                                                                attFiles = attFolder.get_files();
+                                                                ctx.load(attFiles, 'Include(ServerRelativeUrl,Name,Author)');
+                                                                // ctx.load(attachments);
+                                                                return [4 /*yield*/, utils.loadSpElem(attachments)];
+                                                            case 3:
+                                                                // ctx.load(attachments);
+                                                                _a.sent();
+                                                                attachmentsArray = utils.collectionToArray(attFiles);
+                                                                if (attachmentsArray.length > 0) {
+                                                                    fields.AttachmentList = [];
+                                                                    attachmentsArray.forEach(function (att) {
+                                                                        return __awaiter(this, void 0, void 0, function () {
+                                                                            var attServerRelativeUrl, attachmentFolderHandle, author, authorLookup, localAttPath;
+                                                                            return __generator(this, function (_a) {
+                                                                                switch (_a.label) {
+                                                                                    case 0:
+                                                                                        attServerRelativeUrl = att.get_serverRelativeUrl();
+                                                                                        return [4 /*yield*/, attachmentHandle.getDirectory(i.get_id().toString(), { create: true })];
+                                                                                    case 1:
+                                                                                        attachmentFolderHandle = _a.sent();
+                                                                                        downloadFile(attServerRelativeUrl, attachmentFolderHandle);
+                                                                                        author = att.get_author();
+                                                                                        authorLookup = {
+                                                                                            LookupId: author.get_id(),
+                                                                                            LookupValue: author.get_loginName(), Email: author.get_email()
+                                                                                        };
+                                                                                        localAttPath = attachmentHandle.name + '/' + attachmentFolderHandle.name + '/' + att.get_name();
+                                                                                        fields.AttachmentList.push({
+                                                                                            LocalPath: localAttPath,
+                                                                                            name: att.get_name(),
+                                                                                            author: authorLookup
+                                                                                        });
+                                                                                        return [2 /*return*/];
+                                                                                }
+                                                                            });
+                                                                        });
+                                                                    });
+                                                                }
+                                                                _a.label = 4;
+                                                            case 4: return [2 /*return*/];
                                                         }
                                                     });
                                                 }); })];
-                                        case 4:
+                                        case 6:
                                             _a.sent();
+                                            if (!me.opts.metadata) return [3 /*break*/, 9];
+                                            if (!(items.length > 0)) return [3 /*break*/, 9];
                                             return [4 /*yield*/, currentHandle.getFile('meta.json', { create: true })];
-                                        case 5:
+                                        case 7:
                                             file = _a.sent();
-                                            if (!(items.length > 0)) return [3 /*break*/, 7];
                                             json = JSON.stringify(items);
                                             //d.fromJson({LookupId:19,LookupValue:'asdf',Email:'martin@test.com'})
                                             //'{"$1p_1":19,"$5c_1":"asdf","$6_2":"martin@test.com"}{"$1p_1":19,"$5c_1":"asdf","$6_2":"martin@test.com"}'.replace(/\$1p_1/g,'LookupValue')
@@ -260,15 +321,16 @@ var SpBackupUI = /** @class */ (function (_super) {
                                                 .replace(/\$12_1/g, 'StringValue')
                                                 .replace(/\$17_1/g, 'StringValue');
                                             return [4 /*yield*/, updateFile(file, json)];
-                                        case 6:
-                                            _a.sent();
-                                            _a.label = 7;
-                                        case 7:
-                                            subFolders = folder.get_folders();
-                                            return [4 /*yield*/, utils.loadSpElem(subFolders)];
                                         case 8:
                                             _a.sent();
+                                            _a.label = 9;
+                                        case 9:
+                                            subFolders = folder.get_folders();
+                                            return [4 /*yield*/, utils.loadSpElem(subFolders)];
+                                        case 10:
+                                            _a.sent();
                                             folderArr = utils.collectionToArray(subFolders);
+                                            if (!!me.opts.rootfolderonly) return [3 /*break*/, 12];
                                             return [4 /*yield*/, utils.processAsQueue(folderArr, function (f) { return __awaiter(_this, void 0, void 0, function () {
                                                     return __generator(this, function (_a) {
                                                         switch (_a.label) {
@@ -279,9 +341,10 @@ var SpBackupUI = /** @class */ (function (_super) {
                                                         }
                                                     });
                                                 }); })];
-                                        case 9:
+                                        case 11:
                                             _a.sent();
-                                            return [2 /*return*/];
+                                            _a.label = 12;
+                                        case 12: return [2 /*return*/];
                                     }
                                 });
                             }); };

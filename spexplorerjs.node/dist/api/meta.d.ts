@@ -1,4 +1,5 @@
 /// <reference types="sharepoint" />
+/// <reference types="jquery" />
 import { ListApi } from "./list";
 export declare class ListMeta {
     fields: FieldMeta[];

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.WebApi = exports.FolderApi = exports.ListApi = exports.ListDal = void 0;
 // v 0.1.19 - 2020_05_08 - Use private jQuery
 // v 0.1.18 - 2020_04_01 - Load Ctype from local web
 // v 0.1.17 - 2020_03_26 - FolderApi: uploadFile
@@ -59,6 +60,7 @@ var ListApi = /** @class */ (function () {
             //fields = fields || args.Fields || [];
             var spfields = list.get_fields();
             var loadFields = function () {
+                //@ts-ignore
                 return j$.Deferred(function (dfd) {
                     me.ctx.load(spfields, "Include(Title,FieldTypeKind,TypeAsString,InternalName)");
                     me.ctx.executeQueryAsync(function () {
@@ -69,6 +71,7 @@ var ListApi = /** @class */ (function () {
                             var field = le.get_current();
                             parsed[field.get_internalName()] = field;
                         }
+                        //@ts-ignore
                         dfd.resolve(parsed);
                         me.ctrace.log("existing fields loaded");
                     }, function onError(sender, args) {
@@ -78,6 +81,7 @@ var ListApi = /** @class */ (function () {
                 }).promise();
             };
             var getMarkup = function getMarkup(field, spfields) {
+                //@ts-ignore
                 return j$.Deferred(function (dfd) {
                     var xml = field.markup;
                     if (typeof field.markup == "function") {
@@ -105,6 +109,7 @@ var ListApi = /** @class */ (function () {
                 };
                 loadFields().then(function (spFieldMap) {
                     me.ctrace.log('checking fields');
+                    //@ts-ignore
                     utils.processAsQueue(fields.slice(), function (field) {
                         return j$.Deferred(function (fieldDfd) {
                             me.ctrace.log("-- field: " + field.name);
@@ -181,6 +186,7 @@ var ListApi = /** @class */ (function () {
         var me = this;
         var lists = me.ctx.get_web().get_lists();
         me.ctx.load(lists, 'Include(Title)');
+        //@ts-ignore
         return j$.Deferred(function (dfd) {
             me.ctx.executeQueryAsync(function () {
                 var list = lists.get_data().find(function (i) { return i.get_title() == title; });
@@ -306,6 +312,7 @@ var ListApi = /** @class */ (function () {
                 listCtypesDic = utils.collectionToDictionary(listCtypes, function (cType) { return cType.get_name(); });
                 webCtypesDic = utils.collectionToDictionary(webTypesCol, function (c) { return c.get_name(); });
                 utils.collectionToArray(webTypesCol).forEach(function (x) { listCtypesDic[x.get_stringId()] = x; });
+                //@ts-ignore
                 utils.processAsQueue(ctypes, function (ctypeMeta) {
                     return ensureCtype(ctypeMeta);
                 }).done(function () {
@@ -410,6 +417,7 @@ var ListApi = /** @class */ (function () {
         var fields = list.get_fields();
         me.ctx.load(list);
         me.ctx.load(fields);
+        //@ts-ignore
         return j$.Deferred(function (dfd) {
             me.ctx.executeQueryAsync(function () {
                 var meta = new meta_1.ListMeta(listTitle);
@@ -520,7 +528,7 @@ var ListApi = /** @class */ (function () {
                     });
                     return iDfd.promise();
                 };
-                var pagedItems = utils.pageArray(gitems, pageNum);
+                //@ts-ignore
                 utils.processAsQueue(pagedItems, insertItems).done(function () {
                     me.ctrace.log('add items done');
                     dfd.resolve(spItems);
@@ -899,6 +907,7 @@ var WebApi = /** @class */ (function () {
                 utils.collectionToArray(webTypesCol).forEach(function (x) {
                     ctypesDic[x.get_stringId()] = x;
                 });
+                //@ts-ignore
                 utils.processAsQueue(ctypes, function (ctypeMeta) {
                     return ensureCtype(ctypeMeta);
                 }).done(function () {

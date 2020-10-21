@@ -6,6 +6,7 @@
 // v 0.1.7 - 2020_03_24 - pageArray
 // v 0.1.6 - 2020_03_20 - log all errors on reqFailure, context optional on spLoadElem, improved getGroups
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.initExtensions = exports.funcs = exports.pagewps = exports.version = void 0;
 var logger_1 = require("./logger");
 var $ = require('jquery');
 var defaultLogger = new logger_1.Logger('Utils');
@@ -359,7 +360,8 @@ var funcs = /** @class */ (function () {
     ;
     funcs.prototype.getPageWebParts = function (formUrl, ctx) {
         var result = {
-            ctx: ctx, wps: {}, lpm: null
+            ctx: ctx,
+            wps: {}, lpm: null
         };
         var me = this;
         var web = ctx.get_web();

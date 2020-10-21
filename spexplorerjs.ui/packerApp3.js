@@ -1,10 +1,20 @@
 "use strict";
-exports.__esModule = true;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference types="webpack" />
 /// <reference types="@types/node" />
 // @ts-ignore
-var webpack_1 = require("webpack");
-var path = require("path");
+var webpack_1 = __importDefault(require("webpack"));
+var path = __importStar(require("path"));
 var WebpackShellPlugin = require('webpack-shell-plugin');
 // const CssnanoPlugin = require('cssnano-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -27,7 +37,7 @@ var args = [];
 })();
 //#endregion
 // @ts-ignore - ugh
-webpack_1["default"] = webpack_1["default"] || require('webpack');
+webpack_1.default = webpack_1.default || require('webpack');
 var getConfig = function (debug) {
     if (debug === void 0) { debug = true; }
     var config = {
@@ -35,7 +45,6 @@ var getConfig = function (debug) {
         entry: {
             page1: './src/app3/page1.ts',
             page2: './src/app3/page2.ts',
-            monacoSample: './src/app3/monacoSample.ts'
         },
         devtool: 'source-map',
         optimization: {
@@ -55,6 +64,12 @@ var getConfig = function (debug) {
             minimize: debug ? false : true,
             splitChunks: {
                 cacheGroups: {
+                    MyAsyncClass: {
+                        test: /MyAsyncClass/,
+                        name: 'MyAsyncClass',
+                        chunks: 'async',
+                        enforce: true
+                    },
                     baseGroup: {
                         test: /(bootstrap\.js|jquery\.js|custom\.scss)/,
                         name: 'base',
@@ -81,11 +96,11 @@ var getConfig = function (debug) {
             rules: [
                 {
                     test: /\.handlebar$/i,
-                    use: 'handlebars-loader'
+                    use: 'handlebars-loader',
                 },
                 {
                     test: /\.aspx$/i,
-                    use: 'handlebars-loader'
+                    use: 'handlebars-loader',
                 },
                 {
                     test: /\.html$/,
@@ -99,7 +114,7 @@ var getConfig = function (debug) {
                 {
                     test: /\.tsx?$/,
                     use: 'ts-loader',
-                    exclude: /node_modules/
+                    exclude: /node_modules/,
                 },
                 {
                     test: /\.css$/,
@@ -119,7 +134,7 @@ var getConfig = function (debug) {
                                         require('precss'),
                                         require('autoprefixer'),
                                         require('cssnano')({
-                                            preset: 'default'
+                                            preset: 'default',
                                         }),
                                     ];
                                 }
@@ -156,7 +171,7 @@ var getConfig = function (debug) {
                                     ];
                                     if (debug)
                                         temp.push(require('cssnano')({
-                                            preset: ['default', { discardComments: { removeAll: true } }]
+                                            preset: ['default', { discardComments: { removeAll: true } }],
                                         }));
                                     return temp;
                                 }
@@ -169,7 +184,7 @@ var getConfig = function (debug) {
                     test: /\.ttf$/,
                     use: [{
                             loader: 'url-loader',
-                            options: {}
+                            options: {},
                         }]
                 }
             ]
@@ -177,40 +192,40 @@ var getConfig = function (debug) {
         plugins: [
             new MiniCssExtractPlugin({
                 filename: 'css/[name].[contenthash].css',
-                chunkFilename: 'css/[id].[contenthash].css'
+                chunkFilename: 'css/[id].[contenthash].css',
             }),
-            new WebpackShellPlugin({
-                onBuildStart: ['echo "Starting"'],
-                onBuildEnd: ['postcss --dir ./public/app3/css public/app3/css/*.css --map false']
-            }),
-            new HtmlWebpackPlugin({
-                inject: true,
-                chunks: ['monacoSample'],
-                template: './src/templates/MonacoSample.handlebar',
-                filename: 'monacoSample.html'
-            }),
-            new HtmlWebpackPlugin({
-                inject: true,
-                chunks: ['page2'],
-                template: './src/templates/pageTemplate.handlebar',
-                filename: 'page2.html'
-            }),
-            new HtmlWebpackPlugin({
-                chunks: ['page1'],
-                filename: 'page1.aspx',
-                template: path.resolve(__dirname, './src/templates/pageTemplate.aspx'),
-                inject: false,
-                templateParameters: function (compilation, assets, options) {
-                    console.log(JSON.stringify(assets));
-                    return {
-                        title: 'Document title',
-                        files: assets,
-                        options: options,
-                        webpackConfig: compilation.options
-                        // webpack: compilation.getStats().toJson()
-                    };
-                }
-            }),
+            // new WebpackShellPlugin({
+            //   onBuildStart: ['echo "Starting"'],
+            //   onBuildEnd: ['postcss --dir ./public/app3/css public/app3/css/*.css --map false']
+            // }),
+            // new HtmlWebpackPlugin({
+            //   inject: true,
+            //   chunks: ['monacoSample'],
+            //   template: './src/templates/MonacoSample.handlebar',
+            //   filename: 'monacoSample.html'
+            // }),
+            // new HtmlWebpackPlugin({
+            //   inject: true,
+            //   chunks: ['page2'],
+            //   template: './src/templates/pageTemplate.handlebar',
+            //   filename: 'page2.html'
+            // }),
+            // new HtmlWebpackPlugin({
+            //   chunks: ['page1'],
+            //   filename: 'page1.aspx',
+            //   template: path.resolve(__dirname, './src/templates/pageTemplate.aspx'),
+            //   inject: false,
+            //   templateParameters: function (compilation, assets, options) {
+            //     console.log(JSON.stringify(assets));
+            //     return {
+            //       title: 'Document title',
+            //       files: assets,
+            //       options: options,
+            //       webpackConfig: compilation.options
+            //       // webpack: compilation.getStats().toJson()
+            //     };
+            //   },
+            // }),
             new HtmlWebpackPlugin({
                 inject: false,
                 templateParameters: function (compilation, assets, options) {
@@ -231,29 +246,18 @@ var getConfig = function (debug) {
                 template: './src/templates/pageTemplate.handlebar',
                 title: 'Page1', filename: 'page1.html'
             }),
-            // new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 5, }),
-            // new webpack.BannerPlugin({
-            //   // @ts-ignore
-            //   banner: (/*v: any*/) => {
-            //     return ` ${new Date().toLocaleDateString()}`;
-            //   }
-            // }),
-            new MonacoWebpackPlugin1(webpack_1["default"], {
-                languages: ['typescript']
-            })
         ],
         resolve: { extensions: ['.tsx', '.ts', '.js'] },
         output: {
             publicPath: 'https://localhost:8443/app3/',
             filename: debug ? '[name].js' : '[name].[contenthash].min.js',
-            path: path.resolve(__dirname, 'public/app3'),
-            sourceMapFilename: '[name].js.map'
+            path: path.resolve(__dirname, './public/app3/'),
         }
     };
     return config;
 };
 var debugConfig = getConfig(true);
-var compiler = webpack_1["default"](debugConfig);
+var compiler = webpack_1.default(debugConfig);
 var onDone = function (err, stats) {
     if (err) {
         console.error(err);
@@ -290,3 +294,4 @@ if (args.length > 0 && args[0] == 'run') {
 }
 else
     watch();
+//# sourceMappingURL=packerApp3.js.map

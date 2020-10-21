@@ -279,6 +279,7 @@ export function backupList(listDef: ListMeta, ctx: SP.ClientContext, localFolder
 		listDal.getAll(list, caml).done(function (items: Array<SP.ListItem>) {
 			trace.log(`Item #: ${items.length}`);
 
+			//@ts-ignore
 			utils.processAsQueue<SP.ListItem>(items, function (li) {
 				return processItem(li);
 			}).done(function () {

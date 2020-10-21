@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -35,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.buildWebSchema = exports.restoreLists = exports.restoreList = exports.backupList = exports.backupNode = void 0;
 /// <reference types="sharepoint" />
 /// <reference types="sp-request" />
 var fs = require("fs");
@@ -247,7 +249,8 @@ function backupList(listDef, ctx, localFolder, settings) {
                     'Accept': '*/*',
                     'Content-Type': 'application/octet-stream',
                     'Accept-Encoding': 'gzip, deflate, br'
-                }, callback1: function (error, response, body) {
+                },
+                callback1: function (error, response, body) {
                     debugger;
                     var req = require('request');
                     opts.headers = response.request.headers;
@@ -345,6 +348,7 @@ function backupList(listDef, ctx, localFolder, settings) {
         trace.log('getting items');
         listDal.getAll(list, caml).done(function (items) {
             trace.log("Item #: " + items.length);
+            //@ts-ignore
             utils.processAsQueue(items, function (li) {
                 return processItem(li);
             }).done(function () {

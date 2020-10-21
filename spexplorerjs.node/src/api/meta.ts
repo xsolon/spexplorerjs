@@ -196,10 +196,6 @@ export class ${className} {
   Attachments(): boolean {
     return this.li.get_item('Attachments');
   }  
-  Author(): SP.FieldUserValue {
-    var res: SP.FieldUserValue = this.li.get_item('Author');
-    return res;
-  }
   ${ctypeFields.join(' ')}
   public static FromArray(spArray: SP.ListItem[]): Array<${className}> {
     var result = [];
@@ -207,7 +203,7 @@ export class ${className} {
         result.push(new ${className}(li));
     });
     return result;
-  };
+  }
   public static FromCollection(spCollection: SP.ListItemCollection): Array<${className}> {
     var result = [];
     if (spCollection) {
@@ -218,7 +214,7 @@ export class ${className} {
       }
     }
     return result;
-  };
+  }
 }
 `;
 

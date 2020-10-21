@@ -1,4 +1,5 @@
 /// <reference types="sharepoint" />
+/// <reference types="jquery" />
 import { ListMeta } from '../api/meta';
 export declare function backupNode(ctx: SP.ClientContext, List: SP.List | string, settings: any): Promise<void>;
 export declare function backupList(listDef: ListMeta, ctx: SP.ClientContext, localFolder: string, settings: any): JQuery.Promise<void>;

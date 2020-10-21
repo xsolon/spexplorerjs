@@ -11,7 +11,7 @@ import { Logger } from './logger';
 import { FieldMeta, ListMeta, itemsFunction, CTypeMeta, FieldLinkMeta } from './meta';
 import { funcs } from "./utils";
 
-var j$ = require('jquery');
+var j$: JQueryStatic = require('jquery');
 var utils: funcs = new funcs();
 
 export type QueueStep = (item: any) => Promise<void>;
@@ -70,7 +70,8 @@ export class ListApi {
         //fields = fields || args.Fields || [];
         var spfields = list.get_fields();
         var loadFields = function (): Promise<Map<string, SP.Field>> {
-            return j$.Deferred(function (dfd) {
+            //@ts-ignore
+            return j$.Deferred<Map<string, SP.Field>>((dfd) => {
                 me.ctx.load(spfields, "Include(Title,FieldTypeKind,TypeAsString,InternalName)");
                 me.ctx.executeQueryAsync(function () {
 
@@ -81,6 +82,7 @@ export class ListApi {
                         var field = le.get_current();
                         parsed[field.get_internalName()] = field;
                     }
+                    //@ts-ignore
                     dfd.resolve(parsed);
                     me.ctrace.log("existing fields loaded");
                 }, function onError(sender, args) {
@@ -88,8 +90,10 @@ export class ListApi {
                     dfd.reject("Request failed " + args.get_message() + "\n" + args.get_stackTrace());
                 });
             }).promise();
+
         };
         var getMarkup = function getMarkup(field: FieldMeta, spfields): Promise<string> {
+            //@ts-ignore
             return j$.Deferred(function (dfd) {
 
                 var xml = field.markup;
@@ -119,6 +123,7 @@ export class ListApi {
             };
             loadFields().then(function (spFieldMap) {
                 me.ctrace.log('checking fields');
+                //@ts-ignore
                 utils.processAsQueue<FieldMeta>(fields.slice(), function (field: FieldMeta) {
                     return j$.Deferred(function (fieldDfd) {
                         me.ctrace.log(`-- field: ${field.name}`);
@@ -154,6 +159,7 @@ export class ListApi {
 
         let lists = me.ctx.get_web().get_lists();
         me.ctx.load(lists, 'Include(Title)');
+        //@ts-ignore
         return j$.Deferred(function (dfd) {
             me.ctx.executeQueryAsync(function () {
                 var list = lists.get_data().find(i => i.get_title() == title);
@@ -300,6 +306,7 @@ export class ListApi {
 
                 utils.collectionToArray<SP.ContentType>(webTypesCol).forEach((x) => { listCtypesDic[x.get_stringId()] = x; });
 
+                //@ts-ignore
                 utils.processAsQueue<CTypeMeta>(ctypes, (ctypeMeta) => {
                     return ensureCtype(ctypeMeta);
                 }).done(function () {
@@ -413,6 +420,7 @@ export class ListApi {
 
         me.ctx.load(list);
         me.ctx.load(fields);
+        //@ts-ignore
         return j$.Deferred(function (dfd) {
 
             me.ctx.executeQueryAsync(function () {
@@ -580,7 +588,7 @@ export class ListApi {
                     return iDfd.promise();
                 };
 
-                var pagedItems = utils.pageArray(gitems, pageNum);
+                //@ts-ignore
                 utils.processAsQueue<Array<any>>(pagedItems, insertItems).done(() => {
                     me.ctrace.log('add items done');
                     dfd.resolve(spItems);
@@ -801,7 +809,7 @@ export class FolderApi {
         return dfd.promise();
     };
 
-	/**
+    /**
        * returns folder (creating it and its path if necessary)
        * @param {string} serverRelativeUrl
        */
@@ -1007,7 +1015,7 @@ export class WebApi {
                 utils.collectionToArray<SP.ContentType>(webTypesCol).forEach((x) => {
                     ctypesDic[x.get_stringId()] = x;
                 });
-
+                //@ts-ignore
                 utils.processAsQueue<CTypeMeta>(ctypes, (ctypeMeta) => {
                     return ensureCtype(ctypeMeta);
                 }).done(function () {

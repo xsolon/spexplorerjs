@@ -1,6 +1,7 @@
 define("logger", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Logger = void 0;
     var Logger = (function () {
         function Logger(name) {
             this.shouldLog = true;
@@ -37,6 +38,7 @@ define("logger", ["require", "exports"], function (require, exports) {
 define("list", ["require", "exports", "logger", "meta", "utils"], function (require, exports, logger_1, meta_1, utils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.WebApi = exports.FolderApi = exports.ListApi = exports.ListDal = void 0;
     var j$ = require('jquery');
     var utils = new utils_1.funcs();
     var ListDal = (function () {
@@ -540,7 +542,6 @@ define("list", ["require", "exports", "logger", "meta", "utils"], function (requ
                         });
                         return iDfd.promise();
                     };
-                    var pagedItems = utils.pageArray(gitems, pageNum);
                     utils.processAsQueue(pagedItems, insertItems).done(function () {
                         me.ctrace.log('add items done');
                         dfd.resolve(spItems);
@@ -912,6 +913,7 @@ define("list", ["require", "exports", "logger", "meta", "utils"], function (requ
 define("meta", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.tsClassBuilder = exports.classBuilder = exports.CTypeMeta = exports.FieldLinkMeta = exports.FieldMeta = exports.GroupMeta = exports.ListMeta = void 0;
     var ListMeta = (function () {
         function ListMeta(title) {
             this.title = title;
@@ -995,7 +997,7 @@ define("meta", ["require", "exports"], function (require, exports) {
                 ctypeFields.push(fields[f.name]);
             });
             var className = "" + list.title.replace(/ /g, '') + c.name.replace(/ /g, '') + "Type";
-            res += "\nexport class " + className + " {\n  li: SP.ListItem;\n  constructor(li?: SP.ListItem) {\n    if (li)\n      this.li = li;\n  }\n  spitem(li?: SP.ListItem): SP.ListItem {\n    if (li)\n      this.li = li;\n    return this.li;\n  }\n  update():void { this.li.update(); }\n  id(val?: number): number{\n    var me = this;\n    if (arguments.length) {\n      me.li.set_item('ID', val);\n    }\n    var res: number = me.li.get_item('ID');\n    return res;\n  }\n  title (val?: string): string {\n    var me = this;\n    if (arguments.length) {\n      me.li.set_item('Title', val);\n    }\n    var res: string = me.li.get_item('Title');\n    return res;\n  }\n  FileLeafRef(): string {\n    var me = this;\n    var res: string = me.li.get_item('FileLeafRef');\n    return res;\n  }\n  FileRef(): string {\n    var me = this;\n    var res: string = me.li.get_item('FileRef');\n    return res;\n  }\n  FileDirRef(): string {\n    var me = this;\n    var res: string = me.li.get_item('FileDirRef');\n    return res;\n  }\n  Created(val?: Date): Date {\n      if (arguments.length) {\n          this.li.set_item('Created', val);\n      }\n      var res: Date = this.li.get_item('Created');\n      return res;\n  }\n  Modified(val?: Date): Date {\n      if (arguments.length) {\n          this.li.set_item('Modified', val);\n      }\n      var res: Date = this.li.get_item('Modified');\n      return res;\n  }\n  Editor(val?: SP.FieldUserValue): SP.FieldUserValue {\n      if (arguments.length) {\n          this.li.set_item('Editor', val);\n      }\n      var res: SP.FieldUserValue = this.li.get_item('Editor');\n      return res;\n  }\n  Author(val?: SP.FieldUserValue): SP.FieldUserValue {\n      if (arguments.length) {\n          this.li.set_item('Author', val);\n      }\n      var res: SP.FieldUserValue = this.li.get_item('Author');\n      return res;\n  }\n  Attachments(): boolean {\n    return this.li.get_item('Attachments');\n  }  \n  Author(): SP.FieldUserValue {\n    var res: SP.FieldUserValue = this.li.get_item('Author');\n    return res;\n  }\n  " + ctypeFields.join(' ') + "\n  public static FromArray(spArray: SP.ListItem[]): Array<" + className + "> {\n    var result = [];\n    (spArray || []).forEach((li) => {\n        result.push(new " + className + "(li));\n    });\n    return result;\n  };\n  public static FromCollection(spCollection: SP.ListItemCollection): Array<" + className + "> {\n    var result = [];\n    if (spCollection) {\n      var le = spCollection.getEnumerator();\n      while (le.moveNext()) {\n        var li = le.get_current();\n        result.push(new " + className + "(li));\n      }\n    }\n    return result;\n  };\n}\n";
+            res += "\nexport class " + className + " {\n  li: SP.ListItem;\n  constructor(li?: SP.ListItem) {\n    if (li)\n      this.li = li;\n  }\n  spitem(li?: SP.ListItem): SP.ListItem {\n    if (li)\n      this.li = li;\n    return this.li;\n  }\n  update():void { this.li.update(); }\n  id(val?: number): number{\n    var me = this;\n    if (arguments.length) {\n      me.li.set_item('ID', val);\n    }\n    var res: number = me.li.get_item('ID');\n    return res;\n  }\n  title (val?: string): string {\n    var me = this;\n    if (arguments.length) {\n      me.li.set_item('Title', val);\n    }\n    var res: string = me.li.get_item('Title');\n    return res;\n  }\n  FileLeafRef(): string {\n    var me = this;\n    var res: string = me.li.get_item('FileLeafRef');\n    return res;\n  }\n  FileRef(): string {\n    var me = this;\n    var res: string = me.li.get_item('FileRef');\n    return res;\n  }\n  FileDirRef(): string {\n    var me = this;\n    var res: string = me.li.get_item('FileDirRef');\n    return res;\n  }\n  Created(val?: Date): Date {\n      if (arguments.length) {\n          this.li.set_item('Created', val);\n      }\n      var res: Date = this.li.get_item('Created');\n      return res;\n  }\n  Modified(val?: Date): Date {\n      if (arguments.length) {\n          this.li.set_item('Modified', val);\n      }\n      var res: Date = this.li.get_item('Modified');\n      return res;\n  }\n  Editor(val?: SP.FieldUserValue): SP.FieldUserValue {\n      if (arguments.length) {\n          this.li.set_item('Editor', val);\n      }\n      var res: SP.FieldUserValue = this.li.get_item('Editor');\n      return res;\n  }\n  Author(val?: SP.FieldUserValue): SP.FieldUserValue {\n      if (arguments.length) {\n          this.li.set_item('Author', val);\n      }\n      var res: SP.FieldUserValue = this.li.get_item('Author');\n      return res;\n  }\n  Attachments(): boolean {\n    return this.li.get_item('Attachments');\n  }  \n  " + ctypeFields.join(' ') + "\n  public static FromArray(spArray: SP.ListItem[]): Array<" + className + "> {\n    var result = [];\n    (spArray || []).forEach((li) => {\n        result.push(new " + className + "(li));\n    });\n    return result;\n  }\n  public static FromCollection(spCollection: SP.ListItemCollection): Array<" + className + "> {\n    var result = [];\n    if (spCollection) {\n      var le = spCollection.getEnumerator();\n      while (le.moveNext()) {\n        var li = le.get_current();\n        result.push(new " + className + "(li));\n      }\n    }\n    return result;\n  }\n}\n";
         });
         return res;
     };
@@ -1003,6 +1005,7 @@ define("meta", ["require", "exports"], function (require, exports) {
 define("utils", ["require", "exports", "logger"], function (require, exports, logger_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.initExtensions = exports.funcs = exports.pagewps = exports.version = void 0;
     var $ = require('jquery');
     var defaultLogger = new logger_2.Logger('Utils');
     var reqFailure = function (req, reqargs, dfd, logger) {
@@ -1331,7 +1334,8 @@ define("utils", ["require", "exports", "logger"], function (require, exports, lo
         ;
         funcs.prototype.getPageWebParts = function (formUrl, ctx) {
             var result = {
-                ctx: ctx, wps: {}, lpm: null
+                ctx: ctx,
+                wps: {}, lpm: null
             };
             var me = this;
             var web = ctx.get_web();
