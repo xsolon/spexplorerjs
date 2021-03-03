@@ -35,7 +35,7 @@
     "monaco-editor": "^0.20.0",
     "monaco-editor-webpack-plugin": "^1.9.0",
     "proxy-polyfill": "^0.3.2",
-    "pug": "^2.0.0-rc.3"
+    "pug": "^3.0.1"
   },
   "devDependencies": {
     "@types/codemirror": "0.0.87",
